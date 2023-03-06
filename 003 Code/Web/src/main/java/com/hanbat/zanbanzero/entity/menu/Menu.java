@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
+import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,29 +18,29 @@ public class Menu {
 
     private String name;
     private Integer cost;
-    private String info;
     private String image;
+    private Boolean sold;
 
     public static Menu createMenu(MenuDto dto) {
-        return new Menu(dto.getId(),
-        dto.getName(),
-        dto.getCost(),
-        dto.getInfo(),
-        dto.getImage());
+        return new Menu(
+                dto.getId(),
+                dto.getName(),
+                dto.getCost(),
+                dto.getImage(),
+                dto.getSold()
+        );
     };
 
-    public void patch(MenuDto dto) {
+    public void patch(MenuUpdateDto dto) {
         if (dto.getName() != null) {
             this.name = dto.getName();
         }
         if (dto.getCost() != null) {
             this.cost = dto.getCost();
         }
-        if (dto.getInfo() != null) {
-            this.info = dto.getInfo();
-        }
-        if (dto.getImage() != null) {
-            this.image = dto.getImage();
-        }
+    }
+
+    public void setSold(boolean type) {
+        sold = type;
     }
 }

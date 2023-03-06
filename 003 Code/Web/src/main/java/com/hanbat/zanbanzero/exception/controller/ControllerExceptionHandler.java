@@ -1,10 +1,7 @@
 package com.hanbat.zanbanzero.exception.controller;
 
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.RequestDataisNull;
+import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.exception.filter.ExceptionTemplate;
-import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -45,6 +42,13 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(RequestDataisNull.class)
     public final ResponseEntity<Object> requestDataisNull(Exception ex, WebRequest request){
         status = HttpStatus.PRECONDITION_FAILED;
+        ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
+        return new ResponseEntity(exceptionResponse, status);
+    }
+
+    @ExceptionHandler(WrongParameter.class)
+    public final ResponseEntity<Object> wrongParameter(Exception ex, WebRequest request){
+        status = HttpStatus.BAD_REQUEST;
         ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
         return new ResponseEntity(exceptionResponse, status);
     }

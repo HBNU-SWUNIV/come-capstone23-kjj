@@ -3,9 +3,13 @@ insert into zanbanzero.user(username, password, roles) values ('user1', '$2a$10$
 
 insert into zanbanzero.manager(password, roles, username) values ('$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_MANAGER', 'manager');
 
-insert into zanbanzero.menu(cost, info, name) values (2000, '두유, 복숭아', '치킨너겟');
-insert into zanbanzero.menu(cost, info, name) values (45000, '감자', '배고픈 무지');
-insert into zanbanzero.menu(cost, info, name) values (12345, '삼겹살 알레르기', '육회');
+insert into zanbanzero.menu(cost, name, sold) values (2000, '치킨너겟', true);
+insert into zanbanzero.menu(cost, name, sold) values (45000, '배고픈 무지', true);
+insert into zanbanzero.menu(cost, name, sold) values (12345, '육회', true);
+
+insert into zanbanzero.menu_info(menu_id, details, info) values (1, "하림이 만든 치킨너겟", "닭고기 알레르기");
+insert into zanbanzero.menu_info(menu_id, details, info) values (2, "무지개", "카카오 빈");
+insert into zanbanzero.menu_info(menu_id, details, info) values (3, "신선육회", "소고기");
 
 insert into zanbanzero.store(manager_id, lat, lon) values (1, 320, 200);
 insert into zanbanzero.store_state(store_manager_id, congestion) values(1, 50);

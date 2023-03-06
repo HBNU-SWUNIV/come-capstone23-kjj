@@ -12,16 +12,16 @@ public class MenuDto {
     private Long id;
     private String name;
     private Integer cost;
-    private String info;
     private String image;
+    private Boolean sold;
 
     public static MenuDto createMenuDto(Menu menu) {
         return new MenuDto(
                 menu.getId(),
                 menu.getName(),
                 menu.getCost(),
-                menu.getInfo(),
-                menu.getImage()
+                menu.getImage(),
+                menu.getSold()
         );
     }
 }
