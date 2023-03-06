@@ -2,4 +2,5 @@
 
 한밭대학교 2023 캡스톤디자인
 
-src/main/frontend 하위에 react 구성하여 연동
+백엔드 API :  
+https://docs.google.com/spreadsheets/d/1OK9Lz6OWnOiIdpQcVPsFch9fzmaH6ZWSOozb64vnp0M/edit#gid=0
