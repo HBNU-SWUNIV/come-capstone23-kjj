@@ -22,9 +22,8 @@ public class ManagerService {
         }
 
         Manager manager = managerRepository.findByUsername(dto.getUsername());
-        ManagerInfoDto managerInfoDto = ManagerInfoDto.createManagerInfoDto(manager);
 
-        return managerInfoDto;
+        return ManagerInfoDto.createManagerInfoDto(manager);
     }
 
 }
