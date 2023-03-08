@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.auth.Login.UserDetails.ManagerPrincipalDetails;
 import com.hanbat.zanbanzero.auth.Login.UserDetails.UserPrincipalDetails;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.FilterChain;
@@ -26,7 +27,6 @@ import java.io.IOException;
 public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
 
-
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
@@ -42,28 +42,24 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
         this.authenticationManager = authenticationManager;
     }
 
+
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        UsernamePasswordAuthenticationToken token = null;
+        LoginFilterInterface loginFilterInterface;
 
-        if (request.getRequestURI().equals("/login/user")) {
-            try {
-                User user = objectMapper.readValue(request.getInputStream(), User.class);
-                token = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else if (request.getRequestURI().equals("/login/manager")) {
-            try {
-                Manager manager = objectMapper.readValue(request.getInputStream(), Manager.class);
-                token = new UsernamePasswordAuthenticationToken(manager.getUsername(), manager.getPassword());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        switch (request.getRequestURI()) {
+            case "/login/user":
+                loginFilterInterface = new LoginToUser();
+                break;
+            case "/login/manager":
+                loginFilterInterface = new LoginToManager();
+                break;
+            default:
+                throw new WrongParameter("잘못된 주소입니다.");
         }
 
+        UsernamePasswordAuthenticationToken token = loginFilterInterface.createToken(request);
         token.setDetails(request.getRequestURI());
 
         Authentication authentication = authenticationManager.authenticate(token);
@@ -73,12 +69,17 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        UserDetails principalDetails = (UserDetails) authResult.getPrincipal();
-        if (request.getRequestURI().equals("/login/user")) {
-            principalDetails = (UserPrincipalDetails) authResult.getPrincipal();
-        }
-        else if (request.getRequestURI().equals("/login/manager")) {
-            principalDetails = (ManagerPrincipalDetails) authResult.getPrincipal();
+        UserDetails principalDetails;
+
+        switch (request.getRequestURI()) {
+            case "/login/user":
+                principalDetails = (UserPrincipalDetails) authResult.getPrincipal();
+                break;
+            case "/login/manager":
+                principalDetails = (ManagerPrincipalDetails) authResult.getPrincipal();
+                break;
+            default:
+                throw new WrongParameter("잘못된 주소입니다.");
         }
 
         // HMAC256
