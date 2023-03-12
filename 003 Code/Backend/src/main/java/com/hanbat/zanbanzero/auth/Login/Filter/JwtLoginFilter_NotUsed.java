@@ -1,8 +1,8 @@
-package com.hanbat.zanbanzero.auth.Login.Filter;
+package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.Login.UserDetails.UserPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.UserDetails.UserPrincipalDetails;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

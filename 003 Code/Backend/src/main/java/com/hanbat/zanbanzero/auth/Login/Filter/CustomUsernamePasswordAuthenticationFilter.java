@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.Login.Filter;
+package com.hanbat.zanbanzero.auth.login.filter;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

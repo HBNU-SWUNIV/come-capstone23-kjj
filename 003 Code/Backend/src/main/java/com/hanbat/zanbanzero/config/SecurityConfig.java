@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.CustomAuthenticationManager;
-import com.hanbat.zanbanzero.auth.Login.Filter.LonginFilter;
+import com.hanbat.zanbanzero.auth.login.filter.LonginFilter;
 import com.hanbat.zanbanzero.auth.jwt.JwtAuthFilter;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeBasicAuthentication;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeUsernamePassword;

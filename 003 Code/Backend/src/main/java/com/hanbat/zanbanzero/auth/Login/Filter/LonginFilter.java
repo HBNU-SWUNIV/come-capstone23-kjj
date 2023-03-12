@@ -1,12 +1,9 @@
-package com.hanbat.zanbanzero.auth.Login.Filter;
+package com.hanbat.zanbanzero.auth.login.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
-import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.Login.UserDetails.ManagerPrincipalDetails;
-import com.hanbat.zanbanzero.auth.Login.UserDetails.UserPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
+import com.hanbat.zanbanzero.auth.login.UserDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.auth.login.filter.util.LoginFilterInterface;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.FilterChain;
@@ -20,16 +17,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 
 public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
+    private CustomUriMapper customUriMapper;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
+            customUriMapper = new CustomUriMapper(request);
             super.doFilter(request, response, chain);
         } else {
             chain.doFilter(request, response);
@@ -46,18 +44,7 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        LoginFilterInterface loginFilterInterface;
-
-        switch (request.getRequestURI()) {
-            case "/login/user":
-                loginFilterInterface = new LoginToUser();
-                break;
-            case "/login/manager":
-                loginFilterInterface = new LoginToManager();
-                break;
-            default:
-                throw new WrongParameter("잘못된 주소입니다.");
-        }
+        LoginFilterInterface loginFilterInterface = customUriMapper.getLoginFilter();
 
         UsernamePasswordAuthenticationToken token = loginFilterInterface.createToken(request);
         token.setDetails(request.getRequestURI());
@@ -69,21 +56,10 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        UserDetails principalDetails;
-
-        switch (request.getRequestURI()) {
-            case "/login/user":
-                principalDetails = (UserPrincipalDetails) authResult.getPrincipal();
-                break;
-            case "/login/manager":
-                principalDetails = (ManagerPrincipalDetails) authResult.getPrincipal();
-                break;
-            default:
-                throw new WrongParameter("잘못된 주소입니다.");
-        }
+        UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
-        String JwtToken = JwtUtil.createToken(principalDetails, request.getRequestURI());
+        String JwtToken = JwtUtil.createToken(principalDetails);
         String RefreshToken = JwtUtil.createRefreshToken(principalDetails);
 
         response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);

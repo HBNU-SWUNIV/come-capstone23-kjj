@@ -1,15 +1,14 @@
-package com.hanbat.zanbanzero.auth.Login.UserDetails;
+package com.hanbat.zanbanzero.auth.login.UserDetails;
 
 import com.hanbat.zanbanzero.entity.user.user.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-public class UserPrincipalDetails implements UserDetails {
+public class UserPrincipalDetails implements UserDetailsInterface {
 
     private User user;
 
@@ -52,6 +51,16 @@ public class UserPrincipalDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    @Override
+    public String getMemberRoles() {
+        return user.getRoles();
+    }
+
+    @Override
+    public Long getMemberId() {
+        return user.getId();
     }
 
 }

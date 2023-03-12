@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.auth;
 
-import com.hanbat.zanbanzero.auth.Login.Provider.CustomAuthenticationProvider;
+import com.hanbat.zanbanzero.auth.login.Provider.CustomAuthenticationProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
