@@ -12,7 +12,7 @@
 ## DB
 <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
 
-## 백엔드 API  
+## API  
 https://docs.google.com/spreadsheets/d/1OK9Lz6OWnOiIdpQcVPsFch9fzmaH6ZWSOozb64vnp0M/edit#gid=0
 
 ## ERD
