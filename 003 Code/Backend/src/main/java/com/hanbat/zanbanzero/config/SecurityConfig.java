@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.CustomAuthenticationManager;
-import com.hanbat.zanbanzero.auth.login.filter.LonginFilter;
+import com.hanbat.zanbanzero.auth.login.filter.LoginFilter;
 import com.hanbat.zanbanzero.auth.jwt.JwtAuthFilter;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeBasicAuthentication;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeUsernamePassword;
@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LonginFilter(customAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter(customAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeBasicAuthentication(), BasicAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(customAuthenticationManager, userRepository, managerRepository))
                 .authorizeHttpRequests()

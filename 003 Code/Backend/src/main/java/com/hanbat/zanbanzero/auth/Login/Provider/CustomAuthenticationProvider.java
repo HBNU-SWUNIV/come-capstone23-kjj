@@ -1,7 +1,7 @@
-package com.hanbat.zanbanzero.auth.login.Provider;
+package com.hanbat.zanbanzero.auth.login.provider;
 
-import com.hanbat.zanbanzero.auth.login.UserDetailsService.ManagerPrincipalDetailsService;
-import com.hanbat.zanbanzero.auth.login.UserDetailsService.UserPrincipalDetailsService;
+import com.hanbat.zanbanzero.auth.login.userdetailsservice.ManagerPrincipalDetailsService;
+import com.hanbat.zanbanzero.auth.login.userdetailsservice.UserPrincipalDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;

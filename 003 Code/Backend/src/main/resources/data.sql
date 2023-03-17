@@ -1,3 +1,5 @@
+alter table zanbanzero convert to charset utf8
+
 insert into zanbanzero.user(username, password, roles) values ('user', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 insert into zanbanzero.user(username, password, roles) values ('user1', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 

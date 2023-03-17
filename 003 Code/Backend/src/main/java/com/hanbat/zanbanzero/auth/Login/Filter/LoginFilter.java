@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
-import com.hanbat.zanbanzero.auth.login.UserDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.userdetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.LoginFilterInterface;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
@@ -20,7 +20,7 @@ import org.springframework.security.core.AuthenticationException;
 
 import java.io.IOException;
 
-public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
+public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
 
@@ -34,7 +34,7 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
         }
     }
 
-    public LonginFilter(AuthenticationManager authenticationManager) {
+    public LoginFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
 
         this.authenticationManager = authenticationManager;

@@ -10,10 +10,10 @@ public class CustomUriMapper {
     public CustomUriMapper(ServletRequest request) {
         switch (((HttpServletRequest) request).getRequestURI()) {
             case "/login/user":
-                loginFilterInterface = new LoginToUser();
+                loginFilterInterface = new CreateUserToken();
                 break;
             case "/login/manager":
-                loginFilterInterface = new LoginToManager();
+                loginFilterInterface = new CreateManagerToken();
                 break;
             default:
                 throw new WrongParameter("잘못된 주소입니다.");

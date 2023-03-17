@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  db-mysql:
+    image: mysql:8.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${PASSWORD}
+      MYSQL_DATABASE: zanbanzero
+    ports:
+      - "3306:3306"
+
+  backend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db-mysql

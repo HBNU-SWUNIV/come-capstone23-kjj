@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.login.UserDetails;
+package com.hanbat.zanbanzero.auth.login.userdetails;
 
 import org.springframework.security.core.userdetails.UserDetails;
 

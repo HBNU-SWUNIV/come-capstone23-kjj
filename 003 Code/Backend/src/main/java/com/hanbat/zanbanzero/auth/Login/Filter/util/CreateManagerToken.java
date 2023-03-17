@@ -6,12 +6,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 
 import java.io.IOException;
 
-public class LoginToManager implements LoginFilterInterface {
+public class CreateManagerToken implements LoginFilterInterface {
     @Override
     public UsernamePasswordAuthenticationToken createToken(HttpServletRequest request) {
         Manager manager;
         try {
             manager = objectMapper.readValue(request.getInputStream(), Manager.class);
+            System.out.println(objectMapper);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

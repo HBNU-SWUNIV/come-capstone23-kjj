@@ -1,7 +1,7 @@
-package com.hanbat.zanbanzero.auth.login.UserDetailsService;
+package com.hanbat.zanbanzero.auth.login.userdetailsservice;
 
 import com.hanbat.zanbanzero.entity.user.manager.Manager;
-import com.hanbat.zanbanzero.auth.login.UserDetails.ManagerPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.userdetails.ManagerPrincipalDetails;
 import com.hanbat.zanbanzero.repository.user.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;

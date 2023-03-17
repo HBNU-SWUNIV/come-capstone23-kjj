@@ -30,6 +30,7 @@ out/
 JwtTemplate.java
 application-env.properties
 logback-spring.xml
+.env
 
 ### NetBeans ###
 /nbproject/private/
