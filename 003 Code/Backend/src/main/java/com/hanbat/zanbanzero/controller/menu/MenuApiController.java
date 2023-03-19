@@ -8,6 +8,7 @@ import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class MenuApiController {
     private final MenuService menuService;
 
     @GetMapping("/api/user/menu")
-    public ResponseEntity<List<MenuDto>> getMenu() {
+    public ResponseEntity<List<MenuDto>> getMenus() {
         List<MenuDto> menus = menuService.getMenus();
         return ResponseEntity.status(HttpStatus.OK).body(menus);
     }

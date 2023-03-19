@@ -12,7 +12,6 @@ public class CreateUserToken implements LoginFilterInterface {
         User user;
         try {
             user = objectMapper.readValue(request.getInputStream(), User.class);
-            System.out.println(objectMapper);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

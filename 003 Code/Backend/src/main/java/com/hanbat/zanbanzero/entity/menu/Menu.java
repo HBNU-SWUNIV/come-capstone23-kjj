@@ -17,7 +17,7 @@ public class Menu {
     private Long id;
 
     private String name;
-    private Integer cost;
+    private int cost;
     private String image;
     private Boolean sold;
 

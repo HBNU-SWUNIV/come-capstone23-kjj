@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class MenuDto {
     private Long id;
     private String name;
-    private Integer cost;
+    private int cost;
     private String image;
     private Boolean sold;
 

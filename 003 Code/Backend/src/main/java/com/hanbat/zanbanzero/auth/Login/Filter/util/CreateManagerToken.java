@@ -12,7 +12,6 @@ public class CreateManagerToken implements LoginFilterInterface {
         Manager manager;
         try {
             manager = objectMapper.readValue(request.getInputStream(), Manager.class);
-            System.out.println(objectMapper);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
