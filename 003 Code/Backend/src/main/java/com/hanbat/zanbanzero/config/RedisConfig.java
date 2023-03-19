@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.config;
 
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
