@@ -12,6 +12,7 @@ import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,16 +27,18 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public int join(UserDto dto) throws JsonProcessingException {
-        if (userRepository.existsByUsername(dto.getUsername()))
-            return 0;
+    public void join(UserDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
 
         User user = userRepository.save(User.createUser(dto));
 
         userMyPageRepository.save(UserMyPage.createNewUserMyPage(user));
+    }
 
-        return 1;
+    public boolean check(UserDto dto) {
+        if (userRepository.existsByUsername(dto.getUsername()))
+            return true;
+        else return false;
     }
 
     public UserInfoDto getInfo(UserDto dto) throws JwtException {
@@ -49,4 +52,5 @@ public class UserService {
 
         return UserMyPageDto.createUserMyPageDto(userMyPage);
     }
+
 }
