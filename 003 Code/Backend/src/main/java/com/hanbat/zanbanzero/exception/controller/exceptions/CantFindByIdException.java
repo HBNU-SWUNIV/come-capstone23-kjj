@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.exception.controller.exceptions;
 import lombok.Getter;
 
 @Getter
-public class CantFindByIdException extends Exception{
+public class CantFindByIdException extends RuntimeException{
     public CantFindByIdException() {
     }
 

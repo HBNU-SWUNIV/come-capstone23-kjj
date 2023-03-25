@@ -9,6 +9,7 @@ import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class StoreService {
 
     private Long storeId = 1L;
 
+    @Transactional
     public void setLocation(Long lat, Long lon) throws CantFindByIdException, RequestDataisNull {
         if (lat == null || lon == null) {
             throw new RequestDataisNull("데이터가 부족합니다.");
@@ -29,8 +31,6 @@ public class StoreService {
 
         Store store = storeRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
         store.setLocation(lat, lon);
-
-        storeRepository.save(store);
     }
 
     public Map<String, Long> getLocation() throws CantFindByIdException {
@@ -42,11 +42,10 @@ public class StoreService {
         );
     }
 
+    @Transactional
     public void setCongestion(StoreStateDto storeStateDto) throws CantFindByIdException {
         StoreState storeState = storeStateRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
         storeState.setCongestion(storeStateDto.getCongestion());
-
-        storeStateRepository.save(storeState);
     }
 
     public Long getCongestion() throws CantFindByIdException {

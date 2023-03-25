@@ -35,8 +35,8 @@ public class UserApiController {
     }
 
     @GetMapping("/api/user/info")
-    public ResponseEntity<UserInfoDto> getInfo(@RequestBody UserDto dto, @RequestHeader("Authorization") String token) throws JwtException {
-        UserInfoDto user = userService.getInfo(dto, token);
+    public ResponseEntity<UserInfoDto> getInfo(@RequestBody UserDto dto) throws JwtException {
+        UserInfoDto user = userService.getInfo(dto);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 

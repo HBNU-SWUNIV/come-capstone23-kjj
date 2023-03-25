@@ -1,11 +1,9 @@
-package com.hanbat.zanbanzero.auth.Login.Filter;
+package com.hanbat.zanbanzero.auth.login.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
-import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.Login.UserDetails.ManagerPrincipalDetails;
-import com.hanbat.zanbanzero.auth.Login.UserDetails.UserPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.FilterChain;
@@ -19,51 +17,35 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 
-public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
+public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
-
+    private CustomUriMapper customUriMapper;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
+            customUriMapper = new CustomUriMapper(request);
             super.doFilter(request, response, chain);
         } else {
             chain.doFilter(request, response);
         }
     }
 
-    public LonginFilter(AuthenticationManager authenticationManager) {
+    public LoginFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
 
         this.authenticationManager = authenticationManager;
     }
 
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        UsernamePasswordAuthenticationToken token = null;
+        CreateTokenInterface createTokenInterface = customUriMapper.getLoginFilter();
 
-        if (request.getRequestURI().equals("/login/user")) {
-            try {
-                User user = objectMapper.readValue(request.getInputStream(), User.class);
-                token = new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else if (request.getRequestURI().equals("/login/manager")) {
-            try {
-                Manager manager = objectMapper.readValue(request.getInputStream(), Manager.class);
-                token = new UsernamePasswordAuthenticationToken(manager.getUsername(), manager.getPassword());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
+        UsernamePasswordAuthenticationToken token = createTokenInterface.createToken(request);
         token.setDetails(request.getRequestURI());
 
         Authentication authentication = authenticationManager.authenticate(token);
@@ -73,16 +55,10 @@ public class LonginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
-        UserDetails principalDetails = (UserDetails) authResult.getPrincipal();
-        if (request.getRequestURI().equals("/login/user")) {
-            principalDetails = (UserPrincipalDetails) authResult.getPrincipal();
-        }
-        else if (request.getRequestURI().equals("/login/manager")) {
-            principalDetails = (ManagerPrincipalDetails) authResult.getPrincipal();
-        }
+        UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
-        String JwtToken = JwtUtil.createToken(principalDetails, request.getRequestURI());
+        String JwtToken = JwtUtil.createToken(principalDetails);
         String RefreshToken = JwtUtil.createRefreshToken(principalDetails);
 
         response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);

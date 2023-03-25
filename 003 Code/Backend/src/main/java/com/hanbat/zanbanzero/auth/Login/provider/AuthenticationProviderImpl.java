@@ -1,7 +1,7 @@
-package com.hanbat.zanbanzero.auth.Login.Provider;
+package com.hanbat.zanbanzero.auth.login.provider;
 
-import com.hanbat.zanbanzero.auth.Login.UserDetailsService.ManagerPrincipalDetailsService;
-import com.hanbat.zanbanzero.auth.Login.UserDetailsService.UserPrincipalDetailsService;
+import com.hanbat.zanbanzero.auth.login.userDetailsService.ManagerDetailsServiceImpl;
+import com.hanbat.zanbanzero.auth.login.userDetailsService.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -19,10 +19,10 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class CustomAuthenticationProvider implements AuthenticationProvider {
+public class AuthenticationProviderImpl implements AuthenticationProvider {
 
-    private final ManagerPrincipalDetailsService managerPrincipalDetailsService;
-    private final UserPrincipalDetailsService userPrincipalDetailsService;
+    private final ManagerDetailsServiceImpl managerDetailsServiceImpl;
+    private final UserDetailsServiceImpl userDetailsServiceImpl;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -34,10 +34,10 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         UserDetails principalDetails = null;
 
         if (uri.endsWith("/user")) {
-            principalDetails = userPrincipalDetailsService.loadUserByUsername(username);
+            principalDetails = userDetailsServiceImpl.loadUserByUsername(username);
         }
         else if (uri.endsWith("/manager")) {
-            principalDetails = managerPrincipalDetailsService.loadUserByUsername(username);
+            principalDetails = managerDetailsServiceImpl.loadUserByUsername(username);
         }
 
         if (password == null || !bCryptPasswordEncoder.matches(password, principalDetails.getPassword())) {

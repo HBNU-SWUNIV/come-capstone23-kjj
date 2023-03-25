@@ -11,6 +11,7 @@ import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
 
+    @Cacheable(value = "MenuDto", cacheManager = "cacheManager")
     public List<MenuDto> getMenus() {
         List<Menu> menus = menuRepository.findAll();
 
@@ -32,11 +34,11 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 
-        return MenuInfoDto.createMenuDto(menu);
+        MenuInfoDto result = MenuInfoDto.createMenuDto(menu);
+        return result;
     }
 
     @Transactional

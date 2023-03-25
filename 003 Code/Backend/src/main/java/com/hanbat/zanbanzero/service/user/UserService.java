@@ -1,10 +1,8 @@
 package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMyPage;
@@ -16,8 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -27,37 +24,29 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMyPageRepository userMyPageRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JwtUtil jwtUtil;
 
+    @Transactional
     public int join(UserDto dto) throws JsonProcessingException {
         if (userRepository.existsByUsername(dto.getUsername()))
             return 0;
         dto.setEncodePassword(bCryptPasswordEncoder);
 
-        User target = User.createUser(dto);
-        User user = userRepository.save(target);
+        User user = userRepository.save(User.createUser(dto));
 
-        UserMyPage userMyPage = UserMyPage.createNewUserMyPage(user);
-        userMyPageRepository.save(userMyPage);
+        userMyPageRepository.save(UserMyPage.createNewUserMyPage(user));
 
         return 1;
     }
 
-    public UserInfoDto getInfo(UserDto dto, String token) throws JwtException {
-        if (!jwtUtil.checkJwt(dto.getUsername(), token)) {
-            throw new JwtException("토큰과 유저명이 다릅니다.");
-        }
-
+    public UserInfoDto getInfo(UserDto dto) throws JwtException {
         User user = userRepository.findByUsername(dto.getUsername());
-        UserInfoDto userInfoDto = new UserInfoDto(user.getId(), user.getUsername());
 
-        return userInfoDto;
+        return new UserInfoDto(user.getId(), user.getUsername());
     }
 
     public UserMyPageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
         UserMyPage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
 
-        UserMyPageDto userMyPageDto = UserMyPageDto.createUserMyPageDto(userMyPage);
-        return userMyPageDto;
+        return UserMyPageDto.createUserMyPageDto(userMyPage);
     }
 }
