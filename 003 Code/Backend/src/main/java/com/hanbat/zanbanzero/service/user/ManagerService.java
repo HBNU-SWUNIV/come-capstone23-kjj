@@ -12,15 +12,10 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ManagerService {
-    private  final JwtUtil jwtUtil;
 
     private final ManagerRepository managerRepository;
 
-    public ManagerInfoDto getInfo(ManagerDto dto, String token) throws JwtException {
-        if (!jwtUtil.checkJwt(dto.getUsername(), token)) {
-            throw new JwtException("토큰과 유저명이 다릅니다.");
-        }
-
+    public ManagerInfoDto getInfo(ManagerDto dto) throws JwtException {
         Manager manager = managerRepository.findByUsername(dto.getUsername());
 
         return ManagerInfoDto.createManagerInfoDto(manager);

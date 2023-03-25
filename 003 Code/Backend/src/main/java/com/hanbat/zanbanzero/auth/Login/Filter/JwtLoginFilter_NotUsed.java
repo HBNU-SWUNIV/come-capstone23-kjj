@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.login.userdetails.UserPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -50,7 +50,7 @@ public class JwtLoginFilter_NotUsed extends UsernamePasswordAuthenticationFilter
     // 인증 성공 시 JWT 발급
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        UserPrincipalDetails userPrincipalDetails = (UserPrincipalDetails) authResult.getPrincipal();
+        UserDetailsInterfaceImpl userDetailsInterfaceImpl = (UserDetailsInterfaceImpl) authResult.getPrincipal();
 
         // HMAC256
         // String JwtToken = JwtUtil.createToken(userPrincipalDetails);

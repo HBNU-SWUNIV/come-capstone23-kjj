@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 
-public interface LoginFilterInterface {
+public interface CreateTokenInterface {
     ObjectMapper objectMapper = new ObjectMapper();
     UsernamePasswordAuthenticationToken createToken(HttpServletRequest request);
 }

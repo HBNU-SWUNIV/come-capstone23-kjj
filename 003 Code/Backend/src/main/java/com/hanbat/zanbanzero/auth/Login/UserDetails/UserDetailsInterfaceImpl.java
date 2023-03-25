@@ -1,6 +1,6 @@
-package com.hanbat.zanbanzero.auth.login.userdetails;
+package com.hanbat.zanbanzero.auth.login.userDetails;
 
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
+import com.hanbat.zanbanzero.entity.user.user.User;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -8,29 +8,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Data
-public class ManagerPrincipalDetails implements UserDetailsInterface {
+public class UserDetailsInterfaceImpl implements UserDetailsInterface {
 
-    private Manager manager;
+    private User user;
 
-    public ManagerPrincipalDetails(Manager manager) {
-        this.manager = manager;
+    public UserDetailsInterfaceImpl(User user) {
+        this.user = user;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> manager.getRoles());
+        authorities.add(() -> user.getRoles());
         return authorities;
     }
 
     @Override
     public String getPassword() {
-        return manager.getPassword();
+        return user.getPassword();
     }
 
     @Override
     public String getUsername() {
-        return manager.getUsername();
+        return user.getUsername();
     }
 
     @Override
@@ -55,12 +55,12 @@ public class ManagerPrincipalDetails implements UserDetailsInterface {
 
     @Override
     public String getMemberRoles() {
-        return manager.getRoles();
+        return user.getRoles();
     }
 
     @Override
     public Long getMemberId() {
-        return manager.getId();
+        return user.getId();
     }
 
 }

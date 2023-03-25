@@ -2,10 +2,11 @@ package com.hanbat.zanbanzero.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.entity.user.manager.Manager;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.login.userdetails.ManagerPrincipalDetails;
-import com.hanbat.zanbanzero.auth.login.userdetails.UserPrincipalDetails;
+import com.hanbat.zanbanzero.auth.login.userDetails.ManagerDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.repository.user.ManagerRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -21,7 +22,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import java.io.*;
 
 public class JwtAuthFilter extends BasicAuthenticationFilter {
-    
+
     private UserRepository userRepository;
     private ManagerRepository managerRepository;
 
@@ -37,7 +38,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String jwtHeader = request.getHeader(JwtTemplate.HEADER_STRING);
         // JWT(Header)가 있는지 확인
         if ((jwtHeader == null || !jwtHeader.startsWith(JwtTemplate.TOKEN_PREFIX))) {
-            if (request.getRequestURI().equals("/join") || request.getRequestURI().equals("/login/user") || request.getRequestURI().equals("/login/manager")){
+            if (request.getRequestURI().equals("/join") || request.getRequestURI().startsWith("/login/")){
                 chain.doFilter(request, response);
                 return;
             }
@@ -51,29 +52,23 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String roles = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("roles").asString();
 
         if (username != null) {
+            UserDetailsInterface userDetails = null;
             if (roles.equals("ROLE_USER")) {
                 User user = userRepository.findByUsername(username);
-
-                UserPrincipalDetails principalDetails = new UserPrincipalDetails(user);
-                // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-
-                // SecurityContextHolder = 시큐리티 세션 공간에 저장
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                userDetails = new UserDetailsInterfaceImpl(user);
             }
-
             else if (roles.equals("ROLE_MANAGER")) {
                 Manager manager = managerRepository.findByUsername(username);
-
-                ManagerPrincipalDetails principalDetails = new ManagerPrincipalDetails(manager);
-                // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
-                Authentication authentication =
-                        new UsernamePasswordAuthenticationToken(principalDetails, null, principalDetails.getAuthorities());
-
-                // SecurityContextHolder = 시큐리티 세션 공간에 저장
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                userDetails = new ManagerDetailsInterfaceImpl(manager);
             }
+
+            // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            // SecurityContextHolder = 시큐리티 세션 공간에 저장
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             chain.doFilter(request, response);
         }
     }

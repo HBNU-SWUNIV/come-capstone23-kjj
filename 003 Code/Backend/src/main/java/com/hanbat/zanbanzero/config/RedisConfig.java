@@ -29,7 +29,7 @@ public class RedisConfig {
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);
     }
-    
+
     // 디폴트 : JdkSerializationRedisSerializer
     // Json 데이터 직렬화 불가 -> GenericJackson2JsonRedisSerializer 변경
     @Bean
@@ -37,7 +37,7 @@ public class RedisConfig {
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()))
-                .entryTtl(Duration.ofMinutes(60));
+                .entryTtl(Duration.ofMinutes(120));
         builder.cacheDefaults(configuration);
         return builder.build();
     }

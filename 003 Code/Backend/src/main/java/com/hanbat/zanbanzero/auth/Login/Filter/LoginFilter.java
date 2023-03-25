@@ -1,9 +1,9 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
-import com.hanbat.zanbanzero.auth.login.userdetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.login.filter.util.LoginFilterInterface;
+import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.FilterChain;
@@ -41,12 +41,11 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     }
 
 
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        LoginFilterInterface loginFilterInterface = customUriMapper.getLoginFilter();
+        CreateTokenInterface createTokenInterface = customUriMapper.getLoginFilter();
 
-        UsernamePasswordAuthenticationToken token = loginFilterInterface.createToken(request);
+        UsernamePasswordAuthenticationToken token = createTokenInterface.createToken(request);
         token.setDetails(request.getRequestURI());
 
         Authentication authentication = authenticationManager.authenticate(token);

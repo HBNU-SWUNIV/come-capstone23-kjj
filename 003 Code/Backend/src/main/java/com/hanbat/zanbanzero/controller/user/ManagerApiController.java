@@ -15,8 +15,8 @@ public class ManagerApiController {
     private final ManagerService managerService;
 
     @GetMapping("/api/manager/info")
-    public ResponseEntity<ManagerInfoDto> getInfo(@RequestBody ManagerDto dto, @RequestHeader("Authorization") String token) throws JwtException {
-        ManagerInfoDto managerDto = managerService.getInfo(dto, token);
+    public ResponseEntity<ManagerInfoDto> getInfo(@RequestBody ManagerDto dto) throws JwtException {
+        ManagerInfoDto managerDto = managerService.getInfo(dto);
         return ResponseEntity.status(HttpStatus.OK).body(managerDto);
     }
 

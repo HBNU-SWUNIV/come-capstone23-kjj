@@ -25,6 +25,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
 
+    @Cacheable(value = "MenuDto", cacheManager = "cacheManager")
     public List<MenuDto> getMenus() {
         List<Menu> menus = menuRepository.findAll();
 
@@ -33,7 +34,6 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 

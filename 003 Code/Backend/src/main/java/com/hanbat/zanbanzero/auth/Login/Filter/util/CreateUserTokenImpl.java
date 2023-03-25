@@ -1,20 +1,20 @@
 package com.hanbat.zanbanzero.auth.login.filter.util;
 
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
+import com.hanbat.zanbanzero.entity.user.user.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.io.IOException;
 
-public class CreateManagerToken implements LoginFilterInterface {
+public class CreateUserTokenImpl implements CreateTokenInterface {
     @Override
     public UsernamePasswordAuthenticationToken createToken(HttpServletRequest request) {
-        Manager manager;
+        User user;
         try {
-            manager = objectMapper.readValue(request.getInputStream(), Manager.class);
+            user = objectMapper.readValue(request.getInputStream(), User.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new UsernamePasswordAuthenticationToken(manager.getUsername(), manager.getPassword());
+        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
     }
 }
