@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDetailsDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.RequestDataisNull;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +20,7 @@ public class OrderApiController {
     private final OrderService orderService;
 
     @PostMapping("/api/user/{id}/order/add")
-    public ResponseEntity<String> addOrder(@RequestBody OrderDetailsDto orderDto, @PathVariable Long id) throws RequestDataisNull, JsonProcessingException {
+    public ResponseEntity<String> addOrder(@RequestBody OrderDetailsDto orderDto, @PathVariable Long id) throws WrongRequestDetails, JsonProcessingException {
         orderService.addOrder(orderDto, id);
         return ResponseEntity.status(HttpStatus.OK).body("등록되었습니다.");
     }

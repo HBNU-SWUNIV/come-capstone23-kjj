@@ -2,9 +2,8 @@ package com.hanbat.zanbanzero.controller.store;
 
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
-import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.RequestDataisNull;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.store.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,7 +19,7 @@ public class StoreApiController {
     private final StoreService storeService;
 
     @PostMapping("/api/manager/store/set/location")
-    public ResponseEntity<String> setLocation(@RequestBody StoreDto storeDto) throws CantFindByIdException, RequestDataisNull {
+    public ResponseEntity<String> setLocation(@RequestBody StoreDto storeDto) throws CantFindByIdException, WrongRequestDetails {
         storeService.setLocation(storeDto.getLat(), storeDto.getLon());
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }

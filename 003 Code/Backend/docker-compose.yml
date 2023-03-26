@@ -23,6 +23,7 @@ services:
       - "8080:8080"
     depends_on:
       - db-mysql
+      - db-redis
 
   db-redis:
     image: redis:latest

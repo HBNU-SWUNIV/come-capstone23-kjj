@@ -8,6 +8,7 @@ import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMyPage;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,23 @@ public class UserService {
     private final UserMyPageRepository userMyPageRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private boolean checkForm(UserDto dto) {
+        if (dto.getId() == null || dto.getPassword() == null) {
+            return false;
+        }
+
+        else if (dto.getId().equals("") || dto.getPassword().equals("")) {
+            return false;
+        }
+        return true;
+    }
+
     @Transactional
     public void join(UserDto dto) throws JsonProcessingException {
+        if (checkForm(dto)) {
+            throw new WrongRequestDetails("잘못된 정보입니다.");
+        }
+
         dto.setEncodePassword(bCryptPasswordEncoder);
 
         User user = userRepository.save(User.createUser(dto));
@@ -52,5 +68,4 @@ public class UserService {
 
         return UserMyPageDto.createUserMyPageDto(userMyPage);
     }
-
 }
