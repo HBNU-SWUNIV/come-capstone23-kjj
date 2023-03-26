@@ -14,7 +14,3 @@
 
 ## API  
 https://docs.google.com/spreadsheets/d/1OK9Lz6OWnOiIdpQcVPsFch9fzmaH6ZWSOozb64vnp0M/edit#gid=0
-
-## ERD
-<img src="./img/ERD.jpg">
-    
