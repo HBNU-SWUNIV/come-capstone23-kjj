@@ -5,6 +5,8 @@ import com.hanbat.zanbanzero.dto.order.OrderDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 
 @Entity
 @AllArgsConstructor
@@ -22,7 +24,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String updated;
+    private Timestamp updated;
     // 0 : 미승인, 1 : 승인, 2 : 취소
     private int recognize;
 
