@@ -12,6 +12,7 @@ import com.hanbat.zanbanzero.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -22,16 +23,16 @@ public class UserApiController {
 
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody UserDto dto) throws SameNameException, JsonProcessingException {
-        int result = userService.join(dto);
-        if (result == 0) {
-            throw new SameNameException("중복된 아이디입니다.");
-        }
+        userService.join(dto);
+
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
     }
 
-    @PutMapping("/logout")
-    public ResponseEntity<ExceptionTemplate> logout() {
-        return null;
+    @PostMapping("/join/check")
+    public ResponseEntity<String> check(@RequestBody UserDto dto) {
+        boolean result = userService.check(dto);
+        if (result) return ResponseEntity.status(HttpStatus.CONFLICT).body("중복된 아이디입니다.");
+        else return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
 
     @GetMapping("/api/user/info")

@@ -4,7 +4,7 @@ import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.RequestDataisNull;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class StoreService {
     private Long storeId = 1L;
 
     @Transactional
-    public void setLocation(Long lat, Long lon) throws CantFindByIdException, RequestDataisNull {
+    public void setLocation(Long lat, Long lon) throws CantFindByIdException, WrongRequestDetails {
         if (lat == null || lon == null) {
-            throw new RequestDataisNull("데이터가 부족합니다.");
+            throw new WrongRequestDetails("데이터가 부족합니다.");
         }
 
         Store store = storeRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
@@ -44,6 +44,10 @@ public class StoreService {
 
     @Transactional
     public void setCongestion(StoreStateDto storeStateDto) throws CantFindByIdException {
+        if (storeStateDto.getCongestion() == null) {
+            throw new WrongRequestDetails("데이터가 부족합니다.");
+        }
+
         StoreState storeState = storeStateRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
         storeState.setCongestion(storeStateDto.getCongestion());
     }

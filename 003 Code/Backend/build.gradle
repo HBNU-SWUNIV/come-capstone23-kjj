@@ -45,6 +45,7 @@ dependencies {
 	testImplementation 'org.projectlombok:lombok:1.18.22'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'junit:junit:4.13.1'
 
 	// view test
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'

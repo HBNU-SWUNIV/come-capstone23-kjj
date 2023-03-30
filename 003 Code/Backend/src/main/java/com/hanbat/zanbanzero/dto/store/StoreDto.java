@@ -14,6 +14,11 @@ public class StoreDto {
     private Long lat;
     private long lon;
 
+    public StoreDto(Long lat, Long lon) {
+        this.lat = lat;
+        this.lon = lon;
+    }
+
     public static StoreDto createStoreDto(Store store) {
         return new StoreDto(
                 store.getId(),

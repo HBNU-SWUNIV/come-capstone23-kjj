@@ -8,10 +8,12 @@ import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMyPage;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.reactivestreams.Publisher;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +27,34 @@ public class UserService {
     private final UserMyPageRepository userMyPageRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private boolean checkForm(UserDto dto) {
+        if (dto.getId() == null || dto.getPassword() == null) {
+            return false;
+        }
+
+        else if (dto.getId().equals("") || dto.getPassword().equals("")) {
+            return false;
+        }
+        return true;
+    }
+
     @Transactional
-    public int join(UserDto dto) throws JsonProcessingException {
-        if (userRepository.existsByUsername(dto.getUsername()))
-            return 0;
+    public void join(UserDto dto) throws JsonProcessingException {
+        if (checkForm(dto)) {
+            throw new WrongRequestDetails("잘못된 정보입니다.");
+        }
+
         dto.setEncodePassword(bCryptPasswordEncoder);
 
         User user = userRepository.save(User.createUser(dto));
 
         userMyPageRepository.save(UserMyPage.createNewUserMyPage(user));
+    }
 
-        return 1;
+    public boolean check(UserDto dto) {
+        if (userRepository.existsByUsername(dto.getUsername()))
+            return true;
+        else return false;
     }
 
     public UserInfoDto getInfo(UserDto dto) throws JwtException {

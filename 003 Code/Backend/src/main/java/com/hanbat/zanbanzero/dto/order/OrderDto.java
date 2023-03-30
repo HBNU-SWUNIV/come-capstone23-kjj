@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.entity.order.Order;
 import lombok.*;
 
+import java.sql.Timestamp;
+
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,7 +16,7 @@ public class OrderDto {
     private Long id;
     private Long userId;
 
-    private String updated;
+    private Timestamp updated;
     private int recognize;
 
     public static OrderDto createOrderDto(Order order) throws JsonProcessingException {
