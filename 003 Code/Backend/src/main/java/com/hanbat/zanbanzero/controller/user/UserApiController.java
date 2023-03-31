@@ -6,13 +6,12 @@ import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
-import com.hanbat.zanbanzero.exception.filter.ExceptionTemplate;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.service.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -21,6 +20,7 @@ public class UserApiController {
 
     private final UserService userService;
 
+    @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody UserDto dto) throws SameNameException, JsonProcessingException {
         userService.join(dto);

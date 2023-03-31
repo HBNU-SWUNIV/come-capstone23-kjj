@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.auth.login.provider;
 
-import com.hanbat.zanbanzero.auth.login.userDetailsService.ManagerDetailsServiceImpl;
-import com.hanbat.zanbanzero.auth.login.userDetailsService.UserDetailsServiceImpl;
+import com.hanbat.zanbanzero.service.user.ManagerService;
+import com.hanbat.zanbanzero.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationProviderImpl implements AuthenticationProvider {
 
-    private final ManagerDetailsServiceImpl managerDetailsServiceImpl;
-    private final UserDetailsServiceImpl userDetailsServiceImpl;
+    private final ManagerService managerService;
+    private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
@@ -34,10 +34,10 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
         UserDetails principalDetails = null;
 
         if (uri.endsWith("/user")) {
-            principalDetails = userDetailsServiceImpl.loadUserByUsername(username);
+            principalDetails = userService.loadUserByUsername(username);
         }
         else if (uri.endsWith("/manager")) {
-            principalDetails = managerDetailsServiceImpl.loadUserByUsername(username);
+            principalDetails = managerService.loadUserByUsername(username);
         }
 
         if (password == null || !bCryptPasswordEncoder.matches(password, principalDetails.getPassword())) {
