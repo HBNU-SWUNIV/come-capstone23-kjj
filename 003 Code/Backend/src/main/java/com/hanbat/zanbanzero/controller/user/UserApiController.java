@@ -28,6 +28,7 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
     }
 
+    @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복체크")
     @PostMapping("/join/check")
     public ResponseEntity<String> check(@RequestBody UserDto dto) {
         boolean result = userService.check(dto);
@@ -35,12 +36,14 @@ public class UserApiController {
         else return ResponseEntity.ok("사용 가능한 아이디입니다.");
     }
 
+    @Operation(summary="일반회원 대표정보 조회", description="username만 입력받아 토큰과 비교하여 정보 제공")
     @GetMapping("/api/user/info")
     public ResponseEntity<UserInfoDto> getInfo(@RequestBody UserDto dto) throws JwtException {
         UserInfoDto user = userService.getInfo(dto);
         return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 
+    @Operation(summary="일반 유저 마이페이지 조회", description="유저 상세정보 조회")
     @GetMapping("/api/user/{id}/page")
     public ResponseEntity<UserMyPageDto> getMyPage(@PathVariable Long id) throws CantFindByIdException, JsonProcessingException {
         UserMyPageDto userMyPageDto = userService.getMyPage(id);

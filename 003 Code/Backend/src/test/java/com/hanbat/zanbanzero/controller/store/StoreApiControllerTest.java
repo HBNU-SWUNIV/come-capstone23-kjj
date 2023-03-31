@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.controller.store;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
-import com.hanbat.zanbanzero.controller.user.UserApiController;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
