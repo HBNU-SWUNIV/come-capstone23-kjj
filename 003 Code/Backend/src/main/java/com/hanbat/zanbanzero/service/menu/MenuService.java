@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
@@ -10,8 +11,16 @@ import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +33,9 @@ public class MenuService {
 
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
+    private final CacheManager cacheManager;
 
-    @Cacheable(value = "MenuDto", cacheManager = "cacheManager")
+    @Cacheable(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public List<MenuDto> getMenus() {
         List<Menu> menus = menuRepository.findAll();
 
@@ -34,6 +44,7 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 
@@ -42,6 +53,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void addMenu(MenuUpdateDto dto) throws SameNameException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
@@ -64,6 +76,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
     public void updateMenuInfo(MenuUpdateDto dto, Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
@@ -77,6 +90,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
