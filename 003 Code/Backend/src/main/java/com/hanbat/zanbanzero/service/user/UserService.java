@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
@@ -14,6 +15,9 @@ import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMyPageRepository userMyPageRepository;
@@ -67,5 +71,11 @@ public class UserService {
         UserMyPage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
 
         return UserMyPageDto.createUserMyPageDto(userMyPage);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        return new UserDetailsInterfaceImpl(user);
     }
 }

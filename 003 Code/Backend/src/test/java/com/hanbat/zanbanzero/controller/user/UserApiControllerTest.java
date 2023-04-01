@@ -64,7 +64,7 @@ class UserApiControllerTest extends ControllerTestClass {
                             .andReturn();
 
             // Then
-            assertEquals(412, result.getResponse().getStatus());
+            assertEquals(400, result.getResponse().getStatus());
 
             Mockito.verify(userService, Mockito.times(1)).join(nullDto);
         }
@@ -82,7 +82,7 @@ class UserApiControllerTest extends ControllerTestClass {
                             .andReturn();
 
             // Then
-            assertEquals(412, result.getResponse().getStatus());
+            assertEquals(400, result.getResponse().getStatus());
 
             Mockito.verify(userService, Mockito.times(1)).join(emptyDto);
         }

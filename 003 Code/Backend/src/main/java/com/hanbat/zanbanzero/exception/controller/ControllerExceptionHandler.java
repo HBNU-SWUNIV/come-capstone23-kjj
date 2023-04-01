@@ -19,7 +19,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
      HttpStatus status;
 
     @ExceptionHandler(SameNameException.class)
-    public final ResponseEntity<Object> sameUsername(Exception ex, WebRequest request){
+    public final ResponseEntity<Object> sameName(Exception ex, WebRequest request){
         status = HttpStatus.CONFLICT;
         ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
         return new ResponseEntity<>(exceptionResponse, status);
