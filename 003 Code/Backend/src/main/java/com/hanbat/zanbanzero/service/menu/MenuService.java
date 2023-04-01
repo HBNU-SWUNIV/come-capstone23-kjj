@@ -54,6 +54,10 @@ public class MenuService {
 
     @Transactional
     public void updateMenu(MenuUpdateDto dto, Long id) throws CantFindByIdException {
+        if (menuRepository.existsByName(dto.getName())) {
+            throw new SameNameException("데이터 중복입니다.");
+        }
+
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         menu.patch(dto);
@@ -73,14 +77,14 @@ public class MenuService {
     }
 
     @Transactional
-    public void setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
+    public void setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         switch (type) {
-            case "n":
+            case 'n':
                 menu.setSold(false);
                 break;
-            case "y":
+            case 'y':
                 menu.setSold(true);
                 break;
             default:

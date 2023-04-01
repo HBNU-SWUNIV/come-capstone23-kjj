@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.leftover.LeftoverShowDto;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverHistory;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverShow;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverHistoryRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,10 @@ public class LeftoverService {
 
     @Transactional
     public void setLeftover(LeftoverShowDto leftoverShowDto) throws CantFindByIdException {
+        if (leftoverShowDto.getLeftover() == null) {
+            throw new WrongRequestDetails("데이터가 부족합니다.");
+        }
+
         LeftoverShow old = leftoverRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
         LeftoverHistory history = LeftoverHistory.createLeftoverHistory(old);
 

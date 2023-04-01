@@ -66,7 +66,7 @@ public class MenuApiController {
 
     @Operation(summary="관리자 - 품절 지정", description="")
     @PatchMapping("/api/manager/menu/{id}/sold/{type}")
-    public ResponseEntity<String> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {
+    public ResponseEntity<String> setSoldOut(@PathVariable Long id, @PathVariable char type) throws CantFindByIdException, WrongParameter {
         menuService.setSoldOut(id, type);
         return ResponseEntity.status(HttpStatus.OK).body("반영되었습니다.");
     }
