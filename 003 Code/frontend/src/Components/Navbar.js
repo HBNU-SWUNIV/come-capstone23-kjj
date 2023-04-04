@@ -27,7 +27,7 @@ align-items:center;
 `
 
 function Navbar(){
-    let [now,setNow] = useState(0);
+    let [now,setNow] = useState(2);
     
     const onclick = (id) => {
         setNow(id);
