@@ -19,6 +19,13 @@ public class StoreApiController {
 
     private final StoreService storeService;
 
+    @Operation(summary="식당 정보 조회", description="")
+    @GetMapping("/api/user/store")
+    public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException, WrongRequestDetails {
+        StoreDto result = storeService.getStoreData();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
     @Operation(summary="가게 위치정보 설정", description="lat, lon 받아 지정")
     @PostMapping("/api/manager/store/set/location")
     public ResponseEntity<String> setLocation(@RequestBody StoreDto storeDto) throws CantFindByIdException, WrongRequestDetails {

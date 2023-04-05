@@ -17,13 +17,15 @@ public class UserMyPageDto {
     private Long userId;
     private Map<Integer, String> coupon;
     private int point;
+    private int count;
 
     public static UserMyPageDto createUserMyPageDto(UserMyPage userMyPage) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         return new UserMyPageDto(
                 userMyPage.getId(),
                 objectMapper.readValue(userMyPage.getCoupon(), new TypeReference<Map<Integer, String>>() {}),
-                userMyPage.getPoint()
+                userMyPage.getPoint(),
+                userMyPage.getCount()
         );
     }
 }
