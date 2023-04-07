@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoreDto {
-    private Long id;
-    private Long managerId;
+    private String name;
     private Long lat;
     private long lon;
 
@@ -21,8 +20,7 @@ public class StoreDto {
 
     public static StoreDto createStoreDto(Store store) {
         return new StoreDto(
-                store.getId(),
-                store.getManager().getId(),
+                store.getName(),
                 store.getLat(),
                 store.getLon()
         );

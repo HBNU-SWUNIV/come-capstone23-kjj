@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.store;
 
+import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
@@ -22,6 +23,11 @@ public class StoreService {
     private final StoreStateRepository storeStateRepository;
 
     private Long storeId = 1L;
+
+    public StoreDto getStoreData() {
+        Store store = storeRepository.findById(storeId).orElseThrow(CantFindByIdException::new);
+        return StoreDto.createStoreDto(store);
+    }
 
     @Transactional
     public void setLocation(Long lat, Long lon) throws CantFindByIdException, WrongRequestDetails {
@@ -57,4 +63,5 @@ public class StoreService {
 
         return storeState.getCongestion();
     }
+
 }
