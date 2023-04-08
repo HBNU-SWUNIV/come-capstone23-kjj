@@ -11,10 +11,7 @@ INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (1, "하림이 �
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (2, "무지개", "카카오 빈");
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "신선육회", "소고기");
 
-INSERT INTO zanbanzero.store(manager_id, name, lat, lon) VALUES (1, "한밭대",320, 200);
-INSERT INTO zanbanzero.store_state(store_manager_id, congestion) VALUES(1, 50);
-
-INSERT INTO zanbanzero.leftover_show(store_manager_id, leftover, updated) VALUES(1, 52.4, "22");
+INSERT INTO zanbanzero.leftover_show(leftover, updated) VALUES(52.4, '2023-03-02 10:00:00.000000000');
 
 INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-03-02 10:00:00.000000000', '닭발 콩나무물무침 계란말이', 362);
 INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-02 10:00:00.000000000', '피자', 1362);

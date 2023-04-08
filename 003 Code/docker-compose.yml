@@ -15,20 +15,27 @@ services:
     ports:
       - "3306:3306"
 
+  db-redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
   backend:
     build:
-      context: ./
-      dockerfile: Dockerfile
+      context: Backend
+      dockerfile: Backend/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - db-mysql
       - db-redis
 
-  db-redis:
-    image: redis:latest
+  frontend:
+    build:
+      context: frontend
+      dockerfile: frontend/Dockerfile
     ports:
-      - "6379:6379"
+      - "80:80"
 
   os-ubuntu:
     image: ubuntu:latest

@@ -10,19 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreDto {
     private String name;
-    private Long lat;
-    private long lon;
-
-    public StoreDto(Long lat, Long lon) {
-        this.lat = lat;
-        this.lon = lon;
-    }
+    private String info;
 
     public static StoreDto createStoreDto(Store store) {
         return new StoreDto(
                 store.getName(),
-                store.getLat(),
-                store.getLon()
+                store.getInfo()
         );
     }
 }

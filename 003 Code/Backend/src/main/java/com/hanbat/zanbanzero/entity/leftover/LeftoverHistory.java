@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class LeftoverHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String date;
+    private Timestamp date;
     private Double leftover;
 
     public static LeftoverHistory createLeftoverHistory(LeftoverShow leftoverShow) {

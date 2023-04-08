@@ -19,24 +19,26 @@ public class StoreApiController {
 
     private final StoreService storeService;
 
+    @Operation(summary="식당 정보 세팅 확인", description="관리자 로그인시 세팅 여부 확인")
+    @GetMapping("/api/manager/isSetting")
+    public ResponseEntity<Boolean> isSetting() {
+        boolean result = storeService.isSetting();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="식당 정보 세팅", description="세팅정보 없을 시 세팅")
+    @PostMapping("/api/manager/setSetting")
+    public ResponseEntity<String> setSetting(@RequestBody StoreDto dto) {
+        storeService.setSetting(dto);
+        storeService.setStoreState();
+        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+
     @Operation(summary="식당 정보 조회", description="")
     @GetMapping("/api/user/store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException, WrongRequestDetails {
         StoreDto result = storeService.getStoreData();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
-    @Operation(summary="가게 위치정보 설정", description="lat, lon 받아 지정")
-    @PostMapping("/api/manager/store/set/location")
-    public ResponseEntity<String> setLocation(@RequestBody StoreDto storeDto) throws CantFindByIdException, WrongRequestDetails {
-        storeService.setLocation(storeDto.getLat(), storeDto.getLon());
-        return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
-    }
-
-    @Operation(summary="가게 위치정보 조회", description="lat, lon JSON 데이터 반환")
-    @GetMapping("/api/manager/store/location")
-    public ResponseEntity<Map<String, Long>> getLocation() throws CantFindByIdException {
-        Map<String, Long> result = storeService.getLocation();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
