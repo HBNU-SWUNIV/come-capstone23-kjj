@@ -6,23 +6,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.entity.planner.Planner;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class PlannerDto {
-    private Timestamp date;
+    private String date;
     private String menus;
-    private int kcal;
 
     public static PlannerDto createPlannerDto(Planner planner){
-        ObjectMapper objectMapper = new ObjectMapper();
         return new PlannerDto(
                 planner.getDate(),
-                planner.getMenus(),
-                planner.getKcal()
+                planner.getMenus()
         );
     }
 }

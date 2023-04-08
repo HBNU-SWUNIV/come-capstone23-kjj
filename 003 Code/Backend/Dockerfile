@@ -1,7 +1,7 @@
 FROM gradle:7.5.1-alpine AS BUILD_DIR
-WORKDIR /home/gradle/src/
 
 COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src/
 USER root
 RUN chown -R gradle /home/gradle/src
 

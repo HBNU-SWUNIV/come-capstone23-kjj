@@ -23,17 +23,18 @@ public class Planner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Timestamp date;
+    private String date;
     private String menus;
-    private int kcal;
 
-    public static Planner createPlanner(PlannerDto dto) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static Planner createPlanner(PlannerDto dto){
         return new Planner(
                 null,
                 dto.getDate(),
-                dto.getMenus(),
-                dto.getKcal()
+                dto.getMenus()
         );
+    }
+
+    public void setMenus(String menus) {
+        this.menus = menus;
     }
 }

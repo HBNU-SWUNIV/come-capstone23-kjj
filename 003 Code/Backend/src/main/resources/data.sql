@@ -13,11 +13,12 @@ INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "신선육�
 
 INSERT INTO zanbanzero.leftover_show(leftover, updated) VALUES(52.4, '2023-03-02 10:00:00.000000000');
 
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-03-02 10:00:00.000000000', '닭발 콩나무물무침 계란말이', 362);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-02 10:00:00.000000000', '피자', 1362);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-03 10:00:00.000000000', '치킨너겟 케찹', 2362);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-04 10:00:00.000000000', '닭가슴살 훈제', 32);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-05 10:00:00.000000000', '건강 밀키트', 33);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-06 10:00:00.000000000', '콩나물죽 김치볶음', 3162);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-07 10:00:00.000000000', '지옥의 삼겹살', 23362);
-INSERT INTO zanbanzero.planner(date, menus, kcal) VALUES ('2023-04-22 10:00:00.000000000', '강낭콩볶음 훈제로스트치킨', 1362);
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-03-02', '닭발 콩나무물무침 계란말이');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-03-03', '닭발 잭과콩나무');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-02', '피자');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-03', '치킨너겟 케찹');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-04', '닭가슴살 훈제');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-05', '건강 밀키트');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-06', '콩나물죽 김치볶음');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-07', '지옥의 삼겹살');
+INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-22', '강낭콩볶음 훈제로스트치킨');
