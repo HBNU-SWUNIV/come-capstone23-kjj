@@ -13,6 +13,15 @@ INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "신선육�
 
 INSERT INTO zanbanzero.leftover_show(leftover, updated) VALUES(52.4, '2023-03-02 10:00:00.000000000');
 
+INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-08', '2023-04-09 10:00:00.000000000', 0);
+INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-08', '2023-04-09 10:00:00.000000000', 0);
+INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-09', '2023-04-09 10:00:00.000000000', 0);
+INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-09', '2023-04-09 10:00:00.000000000', 0);
+
+INSERT INTO zanbanzero.store_state(date, congestion, today) VALUES ('2023-03-03', null, 234);
+INSERT INTO zanbanzero.store_state(date, congestion, today) VALUES ('2023-03-02', null, 123);
+INSERT INTO zanbanzero.store_state(date, congestion, today) VALUES ('2023-03-04', null, 146);
+
 INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-03-02', '닭발 콩나무물무침 계란말이');
 INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-03-03', '닭발 잭과콩나무');
 INSERT INTO zanbanzero.planner(date, menus) VALUES ('2023-04-02', '피자');

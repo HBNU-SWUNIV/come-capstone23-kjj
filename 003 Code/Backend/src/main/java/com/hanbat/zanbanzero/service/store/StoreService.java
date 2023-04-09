@@ -15,6 +15,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.DateFormatter;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 
@@ -64,8 +67,10 @@ public class StoreService {
 
     @Transactional
     public void setStoreState() {
-        Store store = storeRepository.findByIdWithManager(finalId);
-        StoreState storeState = new StoreState(null, store, null);
+        //Store store = storeRepository.findByIdWithManager(finalId);
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        StoreState storeState = new StoreState(null, now.format(formatter), null, 0);
         storeStateRepository.save(storeState);
     }
 }

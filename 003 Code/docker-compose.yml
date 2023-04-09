@@ -6,12 +6,12 @@ services:
       - --character-set-server=utf8
       - --collation-server=utf8_unicode_ci
     environment:
-      - MYSQL_ROOT_PASSWORD=${R00T_PASSWORD}
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=${USER_PASSWORD}
-      - MYSQL_DATABASE=zanbanzero
-      - MYSQL_ALLOW_EMPTY_PASSWORD="yes"
-      - TZ=Asia/Seoul
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      MYSQL_USER: user
+      MYSQL_PASSWORD: ${USER_PASSWORD}
+      MYSQL_DATABASE: zanbanzero
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      TZ: Asia/Seoul
     ports:
       - "3306:3306"
 
