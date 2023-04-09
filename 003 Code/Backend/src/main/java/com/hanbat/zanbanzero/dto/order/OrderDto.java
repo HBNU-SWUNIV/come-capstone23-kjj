@@ -16,6 +16,7 @@ public class OrderDto {
     private Long id;
     private Long userId;
 
+    private String orderDate;
     private Timestamp updated;
     private int recognize;
 
@@ -23,6 +24,7 @@ public class OrderDto {
         return new OrderDto(
                 order.getId(),
                 order.getUser().getId(),
+                order.getOrderDate(),
                 order.getUpdated(),
                 order.getRecognize()
         );

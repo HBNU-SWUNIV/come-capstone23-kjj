@@ -14,11 +14,9 @@ public class StoreState {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    Store store;
-
+    private String date;
     private Long congestion;
+    private int today;
 
     public void setCongestion(Long congestion) {
         this.congestion = congestion;

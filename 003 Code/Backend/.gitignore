@@ -30,7 +30,7 @@ out/
 JwtTemplate.java
 application-env.properties
 logback-spring.xml
-.env
+../.env
 data
 gradlew
 gradlew.bat

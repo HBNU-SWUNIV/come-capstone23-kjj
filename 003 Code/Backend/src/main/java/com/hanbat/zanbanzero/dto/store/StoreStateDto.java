@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreStateDto {
 
-    private Long id;
-    private Long storeId;
+    private String date;
     private Long congestion;
+    private int today;
 }

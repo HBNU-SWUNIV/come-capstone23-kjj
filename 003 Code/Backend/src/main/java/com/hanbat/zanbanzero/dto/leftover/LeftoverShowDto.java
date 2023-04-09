@@ -6,13 +6,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class LeftoverShowDto {
 
     private Double leftover;
-    private String updated;
+    private Timestamp updated;
 
     public static LeftoverShowDto createLeftoverShowDto(LeftoverShow leftoverShow) {
         return new LeftoverShowDto(leftoverShow.getLeftover(), leftoverShow.getUpdated());

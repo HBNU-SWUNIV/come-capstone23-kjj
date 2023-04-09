@@ -24,6 +24,7 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String orderDate;
     private Timestamp updated;
     // 0 : 미승인, 1 : 승인, 2 : 취소
     private int recognize;
@@ -32,6 +33,7 @@ public class Order {
         return new Order(
                 dto.getId(),
                 user,
+                dto.getOrderDate(),
                 dto.getUpdated(),
                 dto.getRecognize()
         );

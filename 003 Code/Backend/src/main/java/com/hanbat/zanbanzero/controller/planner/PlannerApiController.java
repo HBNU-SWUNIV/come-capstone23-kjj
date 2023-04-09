@@ -5,10 +5,7 @@ import com.hanbat.zanbanzero.service.planner.PlannerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,17 +15,24 @@ public class PlannerApiController {
 
     private final PlannerService service;
 
-    @Operation(summary="식단표 조회", description="n월 한달의 식단표 조회")
+    @Operation(summary="식단표 업로드", description="n월 n일의 식단표 업로드(추가, 수정)")
+    @PostMapping("/api/user/planner/set/{year}/{month}/{day}")
+    public ResponseEntity<String> setPlanner(@RequestBody PlannerDto dto,@PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        service.setPlanner(dto, year, month, day);
+        return ResponseEntity.ok().body("저장되었습니다.");
+    }
+
+    @Operation(summary="일별 식단표 조회", description="n월 n일 하루의 식단표 조회")
+    @GetMapping("/api/user/planner/{year}/{month}/{day}")
+    public ResponseEntity<PlannerDto> getOnePlanner(@PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        PlannerDto result = service.getOnePlanner(year, month, day);
+        return ResponseEntity.ok().body(result);
+    }
+
+    @Operation(summary="월간 식단표 조회", description="n월 한달의 식단표 조회")
     @GetMapping("/api/user/planner/{year}/{month}")
     public ResponseEntity<List<PlannerDto>> getPlanner(@PathVariable int year, @PathVariable int month) {
         List<PlannerDto> result = service.getPlanner(year, month);
         return ResponseEntity.ok().body(result);
-    }
-
-    @Operation(summary="식단표 업로드", description="n월 한달의 식단표 업로드")
-    @PostMapping("/api/user/planner/set/{month}")
-    public ResponseEntity<String> setPlanner(@PathVariable int month) {
-        service.setPlanner(month);
-        return ResponseEntity.ok().body("저장되었습니다.");
     }
 }

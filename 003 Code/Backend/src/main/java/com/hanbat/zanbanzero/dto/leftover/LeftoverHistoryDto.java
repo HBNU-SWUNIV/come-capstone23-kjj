@@ -5,13 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class LeftoverHistoryDto {
 
     private Long id;
-    private String date;
+    private Timestamp date;
     private Double leftover;
 
     public static LeftoverHistoryDto createLeftoverHistoryDto(LeftoverHistory leftoverHistory) {
