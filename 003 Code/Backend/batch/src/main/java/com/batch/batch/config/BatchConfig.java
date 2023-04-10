@@ -1,6 +1,6 @@
-package com.hanbat.zanbanzero.config;
+package com.batch.batch.config;
 
-import com.hanbat.zanbanzero.batch.order.CountOrdersByDateTasklet;
+import com.batch.batch.batch.order.CountOrdersByDateTasklet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
