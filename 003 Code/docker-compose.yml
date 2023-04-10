@@ -22,7 +22,7 @@ services:
 
   backend:
     build:
-      context: Backend
+      context: backend/api
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
@@ -30,6 +30,14 @@ services:
     depends_on:
       - db-mysql
       - db-redis
+
+  batch:
+    build:
+      context: backend/batch
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - backend
 
   frontend:
     build:
