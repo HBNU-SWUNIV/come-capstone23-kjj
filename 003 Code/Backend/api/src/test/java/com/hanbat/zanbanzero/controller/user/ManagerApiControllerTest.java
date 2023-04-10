@@ -28,7 +28,7 @@ class ManagerApiControllerTest extends ControllerTestClass {
     @Test
     void getInfo() throws Exception{
         ManagerInfoDto managerInfoDto = new ManagerInfoDto();
-        Mockito.when(managerService.getInfo(dto)).thenReturn(managerInfoDto);
+        Mockito.when(managerService.getInfo()).thenReturn(managerInfoDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/info")
                         .content(objectMapper.writeValueAsString(dto))
@@ -36,6 +36,6 @@ class ManagerApiControllerTest extends ControllerTestClass {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(managerInfoDto)));
 
-        Mockito.verify(managerService, Mockito.times(1)).getInfo(dto);
+        Mockito.verify(managerService, Mockito.times(1)).getInfo();
     }
 }

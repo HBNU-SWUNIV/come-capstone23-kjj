@@ -25,73 +25,9 @@ class StoreApiControllerTest extends ControllerTestClass {
     @MockBean
     private StoreService storeService;
 
-    private final StoreDto dto = new StoreDto(10L, 10L);
-    private final StoreStateDto stateDto = new StoreStateDto(null, null, 30L);
+    private final StoreDto dto = new StoreDto("test store", "store info");
+    private final StoreStateDto stateDto = new StoreStateDto(null, null, 30);
 
-    @Test
-    void setLocation() throws Exception{
-        // 1. 정상 요청
-        {
-            // Given
-            Mockito.doNothing().when(storeService).setLocation(dto.getLat(), dto.getLon());
-
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/manager/store/set/location")
-                            .content(objectMapper.writeValueAsString(dto))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andReturn();
-
-            // Then
-            String expected = "수정되었습니다.";
-
-            assertEquals(expected, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(storeService, Mockito.times(1)).setLocation(dto.getLat(), dto.getLon());
-        }
-
-        // 2. null 요청
-        {
-            // Given
-            String error = "데이터가 부족합니다.";
-            final StoreDto nullDto = new StoreDto(null, 10L);
-            Mockito.doThrow(new WrongRequestDetails(error)).when(storeService).setLocation(nullDto.getLat(), nullDto.getLon());
-
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/manager/store/set/location")
-                            .content(objectMapper.writeValueAsString(nullDto))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andReturn();
-
-            // Then
-            assertEquals(error, result.getResolvedException().getMessage());
-            assertEquals(400, result.getResponse().getStatus());
-
-            Mockito.verify(storeService, Mockito.times(1)).setLocation(nullDto.getLat(), nullDto.getLon());
-        }
-    }
-
-    @Test
-    void getLocation() throws Exception{
-        // 1. 정상 요청
-        {
-            // Given
-            final Map<String, Long> returnObj = Map.of(
-                    "lat", dto.getLat(),
-                    "lon", dto.getLat()
-            );
-            Mockito.when(storeService.getLocation()).thenReturn(returnObj);
-
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/store/location")).andReturn();
-
-            // Then
-            assertEquals(objectMapper.writeValueAsString(returnObj), result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(storeService, Mockito.times(1)).getLocation();
-        }
-    }
 
     @Test
     void setCongestion() throws Exception{
@@ -119,7 +55,7 @@ class StoreApiControllerTest extends ControllerTestClass {
         {
             // Given
             String error = "데이터가 부족합니다.";
-            final StoreStateDto nullDto = new StoreStateDto(null, null, null);
+            final StoreStateDto nullDto = new StoreStateDto(null, null, 124);
             Mockito.doThrow(new WrongRequestDetails(error)).when(storeService).setCongestion(nullDto);
 
             // When
