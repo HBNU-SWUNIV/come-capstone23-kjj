@@ -34,16 +34,31 @@ public class PlannerService {
 
     @Transactional
     public void setPlanner(PlannerDto dto, int year, int month, int day) {
-        String result = makeDateString(year, month, day);
+        String dateString = makeDateString(year, month, day);
 
-        Planner planner = repository.findOnePlanner(result);
+        Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
-            dto.setDate(result);
+            dto.setDate(dateString);
+            dto.setOff(false);
 
             repository.save(Planner.createPlanner(dto));
         }
         else {
             planner.setMenus(dto.getMenus());
+        }
+    }
+
+    @Transactional
+    public void setOff(PlannerDto dto, int year, int month, int day) {
+        String dateString = makeDateString(year, month, day);
+
+        Planner planner = repository.findOnePlanner(dateString);
+        if (planner == null) {
+            dto.setDate(dateString);
+            repository.save(Planner.createPlanner(dto));
+        }
+        else {
+            planner.setOff(dto.isOff());
         }
     }
 
