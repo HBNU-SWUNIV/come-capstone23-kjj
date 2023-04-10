@@ -50,13 +50,6 @@ public class MenuApiController {
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }
 
-    @Operation(summary="관리자 - 메뉴 상세정보 수정", description="")
-    @PatchMapping("/api/manager/menu/{id}/info/update")
-    public ResponseEntity<String> updateMenuInfo(@RequestBody MenuUpdateDto dto, @PathVariable Long id) throws CantFindByIdException {
-        menuService.updateMenuInfo(dto, id);
-        return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
-    }
-
     @Operation(summary="관리자 - 메뉴 삭제", description="")
     @DeleteMapping("/api/manager/menu/{id}/del")
     public ResponseEntity<String> deleteMenu(@PathVariable Long id) throws CantFindByIdException {

@@ -3,14 +3,20 @@ package com.hanbat.zanbanzero.service.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMyPage;
+import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
+import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
+import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +35,9 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMyPageRepository userMyPageRepository;
+    private final UserPolicyRepository userPolicyRepository;
+
+    private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private boolean checkForm(UserDto dto) {
@@ -77,5 +86,25 @@ public class UserService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         return new UserDetailsInterfaceImpl(user);
+    }
+
+    @Transactional
+    public void setUserDatePolicy(UserPolicyDto dto, Long id) {
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        policy.updatePolicy(dto);
+    }
+
+    @Transactional
+    public void setUserMenuPolicy(Long userId, Long menuId) {
+        if (!menuRepository.existsById(menuId)) {
+            throw new WrongParameter("잘못된 메뉴 ID");
+        }
+        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        policy.updatePolicy(menuId);
+    }
+
+    public UserPolicyDto getUserPolicy(Long id) {
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        return UserPolicyDto.createUserPolicyDto(policy);
     }
 }

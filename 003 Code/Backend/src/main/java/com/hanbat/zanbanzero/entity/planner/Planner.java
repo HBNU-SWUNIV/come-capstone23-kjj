@@ -21,16 +21,19 @@ public class Planner {
     @Index(name = "planner_date_index")
     private String date;
     private String menus;
+    private boolean off;
 
     public static Planner createPlanner(PlannerDto dto){
         return new Planner(
                 null,
                 dto.getDate(),
-                dto.getMenus()
+                dto.getMenus(),
+                dto.isOff()
         );
     }
 
     public void setMenus(String menus) {
         this.menus = menus;
     }
+    public void setOff(boolean off) { this.off = off; }
 }

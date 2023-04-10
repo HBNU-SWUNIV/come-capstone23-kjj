@@ -71,16 +71,10 @@ public class MenuService {
         }
 
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         menu.patch(dto);
-    }
-
-    @Transactional
-    @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
-    public void updateMenuInfo(MenuUpdateDto dto, Long id) throws CantFindByIdException {
-        MenuInfo menu = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
-
-        menu.patch(dto);
+        menuInfo.patch(dto);
     }
 
     public void deleteMenu(Long id) throws CantFindByIdException {

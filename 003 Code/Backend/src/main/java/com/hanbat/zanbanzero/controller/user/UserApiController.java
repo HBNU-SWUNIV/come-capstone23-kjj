@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
@@ -51,4 +52,27 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(userMyPageDto);
     }
 
+    @Operation(summary="일반 유저 요일정책 설정", description="유저 요일정책 설정")
+    @PatchMapping("/api/user/{id}/set/policy/date")
+    public ResponseEntity<String> setUserDatePolicy(@RequestBody UserPolicyDto dto, @PathVariable Long id) {
+        userService.setUserDatePolicy(dto, id);
+
+        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+    @Operation(summary="일반 유저 메뉴정책 설정", description="유저 메뉴정책 설정")
+    @PatchMapping("/api/user/{user_id}/set/policy/menu/{menu_id}")
+    public ResponseEntity<String> setUserMenuPolicy(@PathVariable Long user_id, @PathVariable Long menu_id) {
+        userService.setUserMenuPolicy(user_id, menu_id);
+
+        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+    @Operation(summary="일반 유저 정책 조회", description="유저 요일정책 조회")
+    @GetMapping("/api/user/{id}/get/policy/date")
+    public ResponseEntity<UserPolicyDto> getUserPolicy(@PathVariable Long id) throws CantFindByIdException {
+        UserPolicyDto dto = userService.getUserPolicy(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    }
 }
