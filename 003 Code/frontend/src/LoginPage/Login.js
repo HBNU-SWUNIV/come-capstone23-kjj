@@ -93,7 +93,6 @@ span{
 margin-bottom:80px;
 `
 
-
 function Login(){
     const dispatch = useDispatch();
     const [ID,setID] = useState(''), [PW,setPW] = useState('');
@@ -104,7 +103,8 @@ function Login(){
         .then(res => res.data.filter(res_ID => res_ID.ID === body.ID != '') ?
         res.data.filter(res_PW => res_PW.ID === body.ID)[0].PW === body.PW?
         axios.post(`http://localhost:3000/users`,body)
-        .then(res => dispatch(R_login(res.data))):null:null)
+        .then(res => dispatch(R_login(res.data)))
+        :null:null)
     }
     return(
         <Wrapper>
@@ -113,7 +113,7 @@ function Login(){
                     <span>ZanbanZero</span>
                     <span>관리자</span>
                 </Title>
-
+                
                 <LogininputW>
                     <IDD>
                         <span>ID</span>
