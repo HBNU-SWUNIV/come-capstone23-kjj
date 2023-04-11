@@ -17,7 +17,7 @@ public class BatchConfig {
     private final DataSource batchDataSource;
 
     @Bean
-    JobRepository jobRepository() throws Exception {
+    public JobRepository jobRepository() throws Exception {
         JobRepositoryFactoryBean factoryBean = new JobRepositoryFactoryBean();
         factoryBean.setDataSource(batchDataSource);
         factoryBean.setTransactionManager(new DataSourceTransactionManager(batchDataSource));
