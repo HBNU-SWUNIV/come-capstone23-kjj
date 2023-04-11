@@ -71,7 +71,7 @@ const Menus = styled.div`
 function Navbar(){
     let [id,setId] = useState(1);
     const navigate = useNavigate();
-    
+    console.log(id)
     return(
        <Wrapper>
             <Title>
@@ -82,25 +82,28 @@ function Navbar(){
                 <div onClick={() => {setId(1)
                                      navigate('/home')}}
                     style={{backgroundColor:`${id==1?'#DAE9FC':'white'}`}}>
-                    <RiHomeSmileFill style={{fontSize:'20px'}}/>
+                    {id==1? <RiHomeSmileFill style={{fontSize:'20px'}}/>:<BiHomeSmile style={{fontSize:'20px'}}/>}
                     <span>홈</span>
                 </div>
+                
                 <div onClick={() => {setId(2)
                                      navigate('/Menu')}}
                     style={{backgroundColor:`${id==2?'#DAE9FC':'white'}`}}>
-                    <TbChartBar style={{fontSize:'20px'}}/>
+                    {id==2? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
                     <span>메뉴 관리</span>
                 </div>
+
                 <div onClick={() => {setId(3)
                                      navigate('/backban')}}
                     style={{backgroundColor:`${id==3?'#DAE9FC':'white'}`}}>
-                    <TbChartBar style={{fontSize:'20px'}}/>
+                     {id==3? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
                     <span>백반 관리</span>
                 </div>
+
                 <div onClick={() => {setId(4)
                                      navigate('/setting')}}
                     style={{backgroundColor:`${id==4?'#DAE9FC':'white'}`}}>
-                    <AiOutlineSetting style={{fontSize:'20px'}}/>
+                    {id==4? <AiTwotoneSetting style={{fontSize:'20px'}}/> : <AiOutlineSetting style={{fontSize:'20px'}}/>}        
                     <span>설정</span>
                 </div>
             </Menus>

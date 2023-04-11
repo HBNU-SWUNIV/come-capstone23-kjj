@@ -5,8 +5,12 @@ import { R_logout } from '../store';
 import ApexCharts from "react-apexcharts";
 import { useState } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const Wrapper = styled.div`
+margin-top:35px;
 display:flex;
 flex-direction:column;
 width:85vw;
@@ -19,6 +23,7 @@ width:85vw;
 height:15vh;
 justify-content:space-between;
 align-items:center;
+margin-bottom:50px;
 span{
     margin-left:30px;
     font-size:30px;
@@ -175,6 +180,12 @@ const SecondChart = styled.div`
 
 const LastChart = styled.div`
     width:50vw;
+    margin-top:1vw;
+    span{
+        margin-left:20px;
+        font-size:18px;
+        font-weight:600;
+    }
 `;
 
 const InputW = styled.form`
@@ -191,7 +202,7 @@ const InputW = styled.form`
     justify-content:space-evenly;
     align-items:center;
     flex-direction:column;
-    button{
+    button:last-child{
         width:140px;
         height:35px;
         border-radius:20px;
@@ -228,6 +239,9 @@ function Dashboard(){
     const onClick = () => {
         setInput(true);
     }
+
+    const [startDate, setStartDate] = useState(new Date());
+    
     return(
         <Wrapper>
         <Nav>
@@ -331,11 +345,13 @@ function Dashboard(){
                 <div>
                     <Items>
                         <span>날짜선택</span>
-                        <span>2023-04-05</span>
+                        <div>                       
+                        <DatePicker selected={startDate} onChange={date => setStartDate(date)}/>
+                        </div>
                     </Items>
                     <Items>
                         <span>총 잔반량</span>
-                        <span>입력창</span>
+                        <input type='number' placeholder='kg수를 적으세요.'/>
                     </Items>
                 </div>
 
@@ -346,6 +362,7 @@ function Dashboard(){
 
 
         <LastChart>
+            <span>이번주 이용자 수</span>          
         <ApexCharts
                 type="line"
                 series={ [
