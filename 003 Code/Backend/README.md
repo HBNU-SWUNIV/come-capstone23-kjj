@@ -17,4 +17,5 @@ https://docs.google.com/spreadsheets/d/1OK9Lz6OWnOiIdpQcVPsFch9fzmaH6ZWSOozb64vn
 
 ## 개선 
 1차 코드 리팩토링 : https://jeong-mok.tistory.com/7  
-캐싱을 이용한 성능개선 : https://jeong-mok.tistory.com/8
+캐싱을 이용한 성능개선 : https://jeong-mok.tistory.com/8  
+자동 마감 시스템을 위한 Spring Batch 적용 : https://jeong-mok.tistory.com/10
