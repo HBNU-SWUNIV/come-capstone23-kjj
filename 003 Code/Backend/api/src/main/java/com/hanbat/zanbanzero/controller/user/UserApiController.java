@@ -29,6 +29,14 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
     }
 
+    @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")
+    @PostMapping("/withdraw")
+    public ResponseEntity<String> withdraw(@RequestBody UserDto dto) throws SameNameException {
+        userService.withdraw(dto);
+
+        return ResponseEntity.status(HttpStatus.OK).body("탈퇴되었습니다.");
+    }
+
     @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복체크")
     @PostMapping("/join/check")
     public ResponseEntity<String> check(@RequestBody UserDto dto) {

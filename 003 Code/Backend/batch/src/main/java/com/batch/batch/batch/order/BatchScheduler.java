@@ -17,7 +17,7 @@ public class BatchScheduler {
     private final Job job;
 
     // Docker image(openjdk:17) 기준 한국이 9시간 느림
-    @Scheduled(cron = "0 22 20 * * ?")
+    @Scheduled(cron = "0 30 1 * * ?")
     public void runOrderJob() throws Exception {
         jobLauncher.run(job, new JobParameters());
     }
