@@ -14,19 +14,19 @@ import java.sql.Timestamp;
 public class OrderDto {
 
     private Long id;
-    private Long userId;
 
+    private Long menu;
+    private int cost;
     private String orderDate;
-    private Timestamp updated;
-    private int recognize;
+    private boolean recognize;
 
     public static OrderDto createOrderDto(Order order) throws JsonProcessingException {
         return new OrderDto(
                 order.getId(),
-                order.getUser().getId(),
+                order.getMenu(),
+                order.getCost(),
                 order.getOrderDate(),
-                order.getUpdated(),
-                order.getRecognize()
+                order.isRecognize()
         );
     }
 

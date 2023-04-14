@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.tasklet.CountOrdersByDateTasklet;
+import com.batch.batch.batch.order.tasklet.CreateTodayOrderTasklet;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -19,6 +20,15 @@ public class OrderStep {
 
     public OrderStep(@Qualifier("dataDataSource") DataSource dataSource) {
         dataDataSource = dataSource;
+    }
+
+    @Bean
+    public Step createTodayOrderStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        return new StepBuilder("countOrdersByDateStep", jobRepository)
+                .chunk(10, transactionManager)
+                .reader(new CreateTodayOrderTasklet().todayUserReader(null))
+                .allowStartIfComplete(true)
+                .build();
     }
 
     @Bean

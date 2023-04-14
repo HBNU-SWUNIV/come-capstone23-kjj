@@ -24,22 +24,28 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private Long menu;
+    private int cost;
     private String orderDate;
-    private Timestamp updated;
-    // 0 : 미승인, 1 : 승인, 2 : 취소
-    private int recognize;
+    private boolean recognize;
 
     public static Order createOrder(OrderDto dto, User user) {
         return new Order(
                 dto.getId(),
                 user,
+                dto.getMenu(),
+                dto.getCost(),
                 dto.getOrderDate(),
-                dto.getUpdated(),
-                dto.getRecognize()
+                dto.isRecognize()
         );
     }
 
+    public void setMenu(Long menu_id) {menu = menu_id;}
+
     public void setRecognizeToCancel() {
-        recognize = 2;
+        recognize = false;
+    }
+
+    public void setRecognizeToUse() { recognize = true;
     }
 }

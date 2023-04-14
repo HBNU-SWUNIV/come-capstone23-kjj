@@ -1,21 +1,25 @@
 package com.hanbat.zanbanzero.service.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
-import com.hanbat.zanbanzero.entity.order.OrderDetails;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
-import com.hanbat.zanbanzero.dto.order.OrderDetailsDto;
+import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.repository.order.OrderDetailsRepository;
+import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
+import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
+import java.time.Year;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,34 +30,52 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final UserRepository userRepository;
+    private final UserPolicyRepository userPolicyRepository;
+    private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
-    private final OrderDetailsRepository orderDetailsRepository;
+
+    private Order createNewOrder(Long userId, String date, boolean type) {
+        UserPolicy userPolicy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        Menu menu = menuRepository.findById(userPolicy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+        return new Order(
+                null,
+                userRepository.getReferenceById(userId),
+                userPolicy.getDefaultMenu(),
+                menu.getCost(),
+                date,
+                type
+        );
+    }
 
     @Transactional
-    public void addOrder(OrderDetailsDto dto, Long id) throws WrongRequestDetails, JsonProcessingException {
-        if (dto.getMenu() == null) {
-            throw new WrongRequestDetails("데이터가 부족합니다.");
+    public void cancelOrder(Long id, int year, int month, int day) {
+        String date = DateTools.makeDateString(year, month, day);
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
+
+        if (order == null) {
+            Order data = createNewOrder(id, date, false);
+            orderRepository.save(data);
         }
-
-        OrderDto orderDto = OrderDto.builder()
-                .updated(new Timestamp(System.currentTimeMillis()))
-                .userId(id)
-                .recognize(0)
-                .build();
-
-        Order order = Order.createOrder(orderDto, userRepository.getReferenceById(id));
-        orderRepository.save(order);
-
-        OrderDetails orderDetails = OrderDetails.createOrderDetails(dto, order);
-        orderDetailsRepository.save(orderDetails);
+        else {
+            order.setRecognizeToCancel();
+        }
     }
 
     @Transactional
-    public void deleteOrder(Long id) throws CantFindByIdException {
-        Order order = orderRepository.findById(id).orElseThrow(CantFindByIdException::new);
+    public void addOrder(Long id, Long menuId, int year, int month, int day) {
+        String date = DateTools.makeDateString(year, month, day);
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
-        order.setRecognizeToCancel();
+        if (order == null) {
+            Order data = createNewOrder(id, date, true);
+            orderRepository.save(data);
+        }
+        else {
+            order.setMenu(menuId);
+            order.setRecognizeToUse();
+        }
     }
+
 
     public List<OrderDto> getOrders(Long id) {
         List<Order> orders = orderRepository.findByUserId(id);
@@ -69,9 +91,4 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
-    public OrderDetailsDto getOrderDetails(Long id) throws CantFindByIdException, JsonProcessingException {
-        OrderDetails orderDetails = orderDetailsRepository.getOrderDetails(id).orElseThrow(CantFindByIdException::new);
-
-        return OrderDetailsDto.createOrderMenuDto(orderDetails);
-    }
 }

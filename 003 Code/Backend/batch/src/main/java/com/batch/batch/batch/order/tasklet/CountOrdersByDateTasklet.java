@@ -28,7 +28,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String date = getTodayToString();
 
-        String getQuery = "select count(*) from orders where order_date = ?";
+        String getQuery = "select count(*) from orders where order_date = ? and recognize = 1";
         Connection connection = dataSource.getConnection();
         PreparedStatement statement = connection.prepareStatement(getQuery);
         statement.setNString(1, date);
