@@ -2,14 +2,19 @@ import { useDispatch } from "react-redux";
 import styled from "styled-components";
 import { IoMdLogOut } from "react-icons/io";
 import { R_logout } from '../store';
-import { getTest, makeImagePath } from "../api&utils";
-import {useQuery} from '@tanstack/react-query';
+import { makeImagePath } from "../api&utils";
+import { useState } from "react";
+import { useEffect } from "react";
+import { useMatch, useNavigate } from "react-router-dom";
+import axios from 'axios';
+import { AiFillCloseCircle } from "react-icons/ai";
 
 const Wrapper = styled.div`
 display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
+margin-top:30px;
 `;
 
 const Nav = styled.div`
@@ -36,6 +41,7 @@ div{
 const ItemWrapper = styled.div`
     width:85vw;
     height:100vh;
+    position:relative;
     span{
         margin-left:30px;
         font-weight:600;
@@ -49,6 +55,7 @@ const Item = styled.div`
     margin:10px 30px;
     display:flex;
     align-items:center;
+    justify-content:center;
 `;
 
 const Itemimg = styled.div`
@@ -64,6 +71,7 @@ const ItemInfo = styled.div`
     width:30vw;
     height:15vh;
     display:flex;
+    position:relative;
     flex-direction:column;
     justify-content:center;
     align-items:flex-start;
@@ -74,6 +82,15 @@ const ItemInfo = styled.div`
         margin-left:28px;
         font-size:24px;
         font-weight:600;
+    }
+    button{
+        margin-left:14vw;
+        background-color:#6F4FF2;
+        width:5vw;
+        height:4vh;
+        color:white;
+        border:1px solid #6F4FF2;
+        border-radius:5px;
     }
 `
 const ItemUD = styled.div`
@@ -111,53 +128,307 @@ const Itemfinal = styled.div`
     }
 `
 
-function Menu(){
-    const dispatch = useDispatch();
-    const {data, isLoading} = useQuery(['test'],getTest)
+const CheckDelete = styled.div`
+    width:24vw;
+    height:36vh;
+    background-color:white;
+    border:1px solid #1473E6;
+    position:absolute; 
+    margin:0 auto;
+    left:0;
+    right:0;
+    top:250px;
+    position:fixed;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+`
+
+const CheckDelete_img = styled.div`
+    width:10vw;
+    height:15vh;
+    background-image:url(${props => props.bgPhoto});
+    background-size:cover;
+    background-position:center center;
     
-    console.log(data)
+`
+
+const CheckDelete_btn = styled.div`
+    width:12vw;
+    height:15vh;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    button{
+        width:4.5vw;
+        height:4vh;
+        border-radius:5px;
+        color:white;
+    }
+    button:first-child{
+        background-color:#DC3546;
+        border:1px solid #DC3546;
+    }
+    button:last-child{
+        background-color:#6F4FF2;
+        border:1px solid #6F4FF2;
+    }
+`;
+
+const 메뉴추가 = styled.button`
+    width:12vw;
+    height:5vh;
+    background-color:#C8D5EF;
+    border-radius:5px;
+    border: 1px solid black;
+    position:absolute;
+    right:0;
+    top:110px;
+    margin-right:10vw;
+`;
+
+const UpdateWrapper = styled.div`
+    width:30vw;
+    height:80vh;
+    background-color:white;
+    position:absolute;
+    border:1px solid #1473E6;
+    left:0;
+    right:0;
+    margin:0 auto;
+    top:100px;
+    position:fixed;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+    button{
+        width:6vw;
+        height:5vh;
+        background-color:#6F4FF2;
+        border:1px solid #6F4FF2;
+        border-radius:15px;
+        margin-bottom:25px;
+        color:white;
+    }
+`;
+
+const UpdateTitle = styled.div`
+    width:26vw;
+    height:10vh;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    span{
+        font-size:20px;
+        font-weight:600;
+    }
+`
+
+const UpdateImg = styled.div`
+    width:24vw;
+    height:30vh;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    button{
+        background-color:#1473E6;
+        border:1px solid #1473E6;
+        border-radius:15px;
+        width:6vw;
+        height:5vh;
+        color:white;
+        margin-right:60px;
+    }
+`;
+
+const UpdateImg_img = styled.div`
+    width:10vw;
+    height:20vh;
+    background-image:url(${props => props.bgPhoto});
+    background-size:cover;
+    background-position:center center;
+`
+
+const UpdateText = styled.form`
+    width:22vw;
+    height:25vh;
+    margin-bottom:60px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    align-items:center;
+    div{
+        width:22vw;
+        height:7vh;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        span{
+            font-size:15px;
+            font-weight:600;
+        }
+        input{
+            width:12vw;
+            height:3vh;
+            border-radius:25px;
+            border:1px solid gray;
+        }
+    }
+`;
+
+
+function Menu(){
+    const [isLoading, setIsLoading] = useState(true);
+    let [savedData, setSaveddata] = useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const deletePathMatch = useMatch('/menu/:deleteId');
+    const UpdatePathMatch = useMatch('/menu/update/:updateId');
+    const [품절, set품절] = useState([]);
+    const [재판매, set재판매] = useState([]);
+
+    useEffect(() => {
+        const getApi = async() => {
+            const {data} = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=505148347d18c10aeac2faa958dbbf5c');
+            return data;
+        }
+        getApi().then(result => setSaveddata(result.results),set품절(savedData))
+        .then(setIsLoading(false));
+    },[]) 
+    
+    const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
+    const UpdatePath = UpdatePathMatch?.params.updateId && savedData?.find(data => data.id == UpdatePathMatch.params.updateId);
+    
+    const onDelete = (id) => {
+        navigate(`/menu/${id}`);
+    }
+
+    const onFinalDelete = (id) => {
+        let newData = [];
+        newData = savedData?.filter(prev => prev.id !== id);
+        setSaveddata(newData);
+        navigate('/menu');
+    }
+    let 재판매하기위해저장 = [];
+    console.log(재판매)
+    const on품절 = (id) => {
+
+        if(품절.length ==0){
+            set품절(savedData);
+            let newData = [...savedData];
+            newData = newData.filter(data => data.id !== id);
+            set품절(newData);
+            
+            재판매하기위해저장 = [...재판매하기위해저장,...savedData.filter(data => data.id == id)]
+            set재판매(재판매하기위해저장);
+        }
+        else{
+            let prevData = [...품절];
+            prevData = prevData.filter(data => data.id !== id);
+            set품절(prevData);
+            
+            재판매하기위해저장 = [...재판매하기위해저장,...savedData.filter(data => data.id == id)]
+            set재판매(재판매하기위해저장);
+        }        
+    }
+    
+    const on재판매 = (id) => {
+        
+    }
+
+    const onUpdate = (id) => {
+        navigate(`/menu/update/${id}`);
+    }
+
     return(
         <Wrapper>
             <Nav>
                 <span>메뉴 관리</span>
                 <div><IoMdLogOut onClick={() => dispatch(R_logout())}/></div>
             </Nav>
+            {
+                isLoading? <h1 style={{marginTop:'150px'}}>'Loading..'</h1> : 
+            
             <ItemWrapper>
-                <span>전체 3종</span>
-                <Item>
-                    <Itemimg>1</Itemimg>
+                <span>전체 {savedData?.length}종</span>
+            
+                {savedData?.map(data => 
+                <Item style={{opacity:`${품절.filter(a=> a.id == data.id).length == 1 ? 1 : 0.3}`}}>
+                    <Itemimg bgPhoto={makeImagePath(data?.backdrop_path,'w400'||'')}/>
                     <ItemInfo>
-                        <span>해물순두부 찌개</span>
-                        <span>따뜻한 순두부찌개입니다</span>
-                        <span>알레르기정보: 복숭아,대두</span>
-                        <span>5000원</span>
-                    </ItemInfo>
-                    <ItemUD>
-                        <button>삭제</button>
-                        <button>품절</button>
-                    </ItemUD>
-                    <Itemfinal>
-                        <button>메뉴 수정</button>
-                    </Itemfinal>
-                </Item>
-                {data?.results.map(data => 
-                <Item >
-                    <Itemimg bgPhoto={makeImagePath(data.backdrop_path,'w400'||'')}/>
-                    <ItemInfo>
-                        <span>{data.original_title}</span>  
-                        <span>{data.overview.slice(0,8)+''}</span>  
-                        <span>{data.release_date}</span>  
-                        <span>{data.vote_count}</span>    
+                        <span>{data?.original_title}</span>  
+                        <span>{data?.overview.slice(0,8)+''}</span>  
+                        <span>{data?.release_date}</span>  
+                        <span>{data?.vote_count}</span> 
+                        <span style={{position:'absolute',marginLeft:'12vw',color:'#DC3546',fontSize:'24px'}}>{품절.filter(a=> a.id == data.id).length == 0 ? '품 절 되었어요':''}</span> 
+                        {품절.filter(a=> a.id == data.id).length == 0 ? <button onClick={() => on재판매(data?.id)}>재판매</button> : null}  
                     </ItemInfo> 
                     <ItemUD>
-                        <button>삭제</button> 
-                        <button>품절</button>    
+                        <button onClick={() => onDelete(data?.id)}>삭제</button> 
+                        <button onClick={() => on품절(data?.id)}>품절</button>    
                     </ItemUD>    
                     <Itemfinal>
-                        <button>메뉴 수정</button>
+                        <button type="submit" onClick={() => onUpdate(data?.id)}>메뉴 수정</button>
                     </Itemfinal>
                 </Item>)}
+                
             </ItemWrapper>
+            }
+        
+        {deletePathMatch?
+        <CheckDelete>
+        <div style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
+            <CheckDelete_img bgPhoto={makeImagePath(DeletePath?.backdrop_path,'w400'||'')}/>
+            <div style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
+                <span style={{fontSize:'22px',fontWeight:'600'}}>{DeletePath?.original_title}</span>
+                <span>{DeletePath?.vote_count}</span>
+            </div>
+        </div>
+        <span style={{marginTop:'30px',fontWeight:'600'}}>정말 삭제하시겠습니까?</span>
+        <CheckDelete_btn>
+            <button onClick={() => onFinalDelete(DeletePath?.id)}>삭제</button>
+            <button onClick={() => navigate('/menu')}>취소</button>
+        </CheckDelete_btn>
+        </CheckDelete>
+        :
+        null}
+
+        {UpdatePathMatch?
+        <UpdateWrapper>
+            <UpdateTitle>
+                <span>메뉴 수정</span>
+                <AiFillCloseCircle onClick={() => navigate('/menu')} style={{fontSize:'20px',fontWeight:600}}/>
+            </UpdateTitle>
+            <UpdateImg>
+                <UpdateImg_img bgPhoto={makeImagePath(UpdatePath?.backdrop_path,'w400'||'')}/>
+                <button>이미지 수정</button>
+            </UpdateImg>
+            <UpdateText>
+                <div>
+                    <span>메뉴명</span>
+                    <input placeholder={UpdatePath?.original_title}/>
+                </div>
+                <div>
+                    <span>가격</span>
+                    <input placeholder={UpdatePath?.overview.slice(0,8)+''}/>
+                </div>
+                <div>
+                    <span>소개</span>
+                    <input placeholder={UpdatePath?.release_date}/>
+                </div>
+                <div>
+                    <span>추가정보</span>
+                    <input placeholder={UpdatePath?.vote_count}/>
+                </div>
+            </UpdateText>
+            <button onClick={()=>navigate('/menu')}>저장</button>
+        </UpdateWrapper>
+        :
+        null}
+
+        <메뉴추가 onClick={() => navigate('/menu/update/1')}>메뉴 추가</메뉴추가>
+
 
         </Wrapper>
     )

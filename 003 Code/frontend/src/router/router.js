@@ -26,7 +26,19 @@ const router = createBrowserRouter([
                 element:<Menu/>
             },
             {
+                path:'/menu/:deleteId',
+                element:<Menu/>
+            },
+            {
+                path:'/menu/update/:updateId',
+                element:<Menu/>
+            },
+            {
                 path:'/backban',
+                element:<Backban/>
+            },
+            {
+                path:'/backban/:id',
                 element:<Backban/>
             },
             {

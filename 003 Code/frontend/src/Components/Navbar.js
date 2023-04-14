@@ -71,7 +71,7 @@ const Menus = styled.div`
 function Navbar(){
     let [id,setId] = useState(1);
     const navigate = useNavigate();
-    console.log(id)
+    
     return(
        <Wrapper>
             <Title>
