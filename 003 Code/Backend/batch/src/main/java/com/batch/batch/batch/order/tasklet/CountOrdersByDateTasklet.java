@@ -27,21 +27,26 @@ public class CountOrdersByDateTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String date = getTodayToString();
-
-        String getQuery = "select count(*) from orders where order_date = ? and recognize = 1";
         Connection connection = dataSource.getConnection();
-        PreparedStatement statement = connection.prepareStatement(getQuery);
-        statement.setNString(1, date);
-        ResultSet resultSet = statement.executeQuery();
-        resultSet.next();
-        int result = resultSet.getInt(1);
+
+        int result;
+        String getQuery = "select count(*) from orders where order_date = ? and recognize = 1";
+        try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
+            statement.setNString(1, date);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                result = resultSet.getInt(1);
+            }
+        }
 
         String insertQuery = "insert into store_state(date, congestion, today) values(?, null, ?)";
-        PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-        insertStatement.setNString(1, date);
-        insertStatement.setInt(2, result);
-        insertStatement.executeUpdate();
+        try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            insertStatement.setNString(1, date);
+            insertStatement.setInt(2, result);
+            insertStatement.executeUpdate();
+        }
 
+        connection.close();
         return RepeatStatus.FINISHED;
     }
 }
