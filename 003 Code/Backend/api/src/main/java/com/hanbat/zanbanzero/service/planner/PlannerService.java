@@ -4,13 +4,11 @@ import com.hanbat.zanbanzero.dto.planner.PlannerDto;
 import com.hanbat.zanbanzero.entity.planner.Planner;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.planner.PlannerRepository;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,21 +18,9 @@ public class PlannerService {
 
     private final PlannerRepository repository;
 
-    private String makeDateString(int year, int month, int day) {
-        Date date = new Date(year - 1900, month - 1, day);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(date);
-    }
-
-    private int getLastDay(int year, int month) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(year, month - 1, 1);
-        return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-    }
-
     @Transactional
     public void setPlanner(PlannerDto dto, int year, int month, int day) {
-        String dateString = makeDateString(year, month, day);
+        String dateString = DateTools.makeDateString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -50,7 +36,7 @@ public class PlannerService {
 
     @Transactional
     public void setOff(PlannerDto dto, int year, int month, int day) {
-        String dateString = makeDateString(year, month, day);
+        String dateString = DateTools.makeDateString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -63,7 +49,7 @@ public class PlannerService {
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        String date = makeDateString(year, month, day);
+        String date = DateTools.makeDateString(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -73,8 +59,8 @@ public class PlannerService {
     public List<PlannerDto> getPlanner(int year, int month) {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
 
-        String start = makeDateString(year, month, 1);
-        String end = makeDateString(year, month, getLastDay(year, month));
+        String start = DateTools.makeDateString(year, month, 1);
+        String end = DateTools.makeDateString(year, month, DateTools.getLastDay(year, month));
 
         List<Planner> result = repository.findAllByDateBetween(start, end);
         return result.stream()

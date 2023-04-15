@@ -1,8 +1,43 @@
 INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user1', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user2', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user3', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user4', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user5', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user6', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user7', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user8', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user9', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user10', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user11', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user12', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user13', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user14', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user15', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user16', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user17', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user18', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user19', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 
-INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (1, 1, 0, 1, 0, 1, 1);
-INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (2, 1, 1, 1, 1, 1, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (1, 1, 0, 0, 0, 0, 1);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (2, 0, 1, 0, 0, 0, 1);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (3, 0, 0, 1, 0, 0, 1);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (4, 0, 0, 0, 1, 0, 1);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (5, 0, 0, 0, 0, 1, 1);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (6, 1, 0, 1, 0, 1, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (7, 1, 0, 1, 0, 1, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (8, 1, 0, 1, 0, 1, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (9, 1, 0, 1, 0, 1, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (10, 0, 1, 1, 1, 0, 2);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (11, 0, 1, 1, 1, 0, 3);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (12, 0, 1, 1, 1, 0, 3);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (13, 1, 1, 1, 0, 0, 3);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (14, 1, 1, 1, 0, 0, 3);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (15, 0, 0, 1, 1, 1, 3);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (16, 0, 0, 1, 1, 1, 4);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (17, 1, 0, 1, 1, 1, 4);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (18, 1, 1, 1, 0, 1, 4);
+INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (19, 0, 0, 1, 0, 0, 4);
 
 INSERT INTO zanbanzero.manager(password, roles, username) values ('$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_MANAGER', 'manager');
 
@@ -17,11 +52,6 @@ INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "무지개",
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (4, "신선육회", "소고기");
 
 INSERT INTO zanbanzero.leftover_show(leftover, updated) VALUES(52.4, '2023-03-02 10:00:00.000000000');
-
-INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-08', '2023-04-09 10:00:00.000000000', 0);
-INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-08', '2023-04-09 10:00:00.000000000', 0);
-INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-09', '2023-04-09 10:00:00.000000000', 0);
-INSERT INTO zanbanzero.orders(user_id, order_date, updated, recognize) VALUES (null, '2023-04-09', '2023-04-09 10:00:00.000000000', 0);
 
 INSERT INTO zanbanzero.store_state(date, congestion, today) VALUES ('2023-03-03', null, 234);
 INSERT INTO zanbanzero.store_state(date, congestion, today) VALUES ('2023-03-02', null, 123);

@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -32,6 +32,20 @@ public class StoreApiController {
         storeService.setSetting(dto);
         storeService.setStoreState();
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+    @Operation(summary="금일 총 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
+    @GetMapping("/api/manager/get/state/today")
+    public ResponseEntity<StoreStateDto> getToday() {
+        StoreStateDto dto = storeService.getToday();
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    }
+
+    @Operation(summary="1주간 총 이용자 수 조회", description="최근 7개 데이터")
+    @GetMapping("/api/manager/get/state/weekend")
+    public ResponseEntity<List<StoreStateDto>> getWeekend() {
+        List<StoreStateDto> dtos = storeService.getWeekend();
+        return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
 
 

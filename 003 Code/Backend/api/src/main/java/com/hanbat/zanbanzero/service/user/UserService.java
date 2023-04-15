@@ -64,6 +64,19 @@ public class UserService implements UserDetailsService {
         userMyPageRepository.save(UserMyPage.createNewUserMyPage(user));
     }
 
+    @Transactional
+    public void withdraw(UserDto dto) {
+        if (checkForm(dto)) {
+            throw new WrongRequestDetails("잘못된 정보입니다.");
+        }
+
+        User user = userRepository.findByUsername(dto.getUsername());
+        UserMyPage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
+
+        userMyPageRepository.delete(userMyPage);
+        userRepository.delete(user);
+    }
+
     public boolean check(UserDto dto) {
         if (userRepository.existsByUsername(dto.getUsername()))
             return true;

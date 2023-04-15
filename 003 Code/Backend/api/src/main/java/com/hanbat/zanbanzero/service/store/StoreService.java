@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.swing.text.DateFormatter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,6 +32,12 @@ public class StoreService {
     private final ManagerRepository managerRepository;
 
     private final Long finalId = 1L;
+
+    private String getTodayDate() {
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return now.format(formatter);
+    }
 
     public boolean isSetting() {
         boolean result = storeRepository.existsById(finalId);
@@ -67,10 +75,20 @@ public class StoreService {
 
     @Transactional
     public void setStoreState() {
-        //Store store = storeRepository.findByIdWithManager(finalId);
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        StoreState storeState = new StoreState(null, now.format(formatter), null, 0);
+        StoreState storeState = new StoreState(null, getTodayDate(), null, 0);
         storeStateRepository.save(storeState);
+    }
+
+    public StoreStateDto getToday() {
+        StoreState storeState = storeStateRepository.findByDate(getTodayDate());
+        if (storeState == null) return null;
+        return StoreStateDto.createStoreStateDto(storeState);
+    }
+
+    public List<StoreStateDto> getWeekend() {
+        List<StoreState> storeStates = storeStateRepository.findTop7ByOrderByCreatedAtDesc();
+        return storeStates.stream()
+                .map(state -> StoreStateDto.createStoreStateDto(state))
+                .collect(Collectors.toList());
     }
 }
