@@ -23,7 +23,7 @@ public class UserMyPageDto {
         ObjectMapper objectMapper = new ObjectMapper();
         return new UserMyPageDto(
                 userMyPage.getId(),
-                objectMapper.readValue(userMyPage.getCoupon(), new TypeReference<Map<Integer, String>>() {}),
+                objectMapper.readValue(userMyPage.getCoupon(), new TypeReference<>() {}),
                 userMyPage.getPoint(),
                 userMyPage.getCount()
         );

@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.controller.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
@@ -37,6 +38,13 @@ public class OrderApiController {
     @GetMapping("/api/user/{id}/order/show")
     public ResponseEntity<List<OrderDto>> getOrders(@PathVariable Long id) {
         List<OrderDto> result = orderService.getOrders(id);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="단일 주문내역 조회(QR용)", description="")
+    @GetMapping("/api/user/{id}/order/last")
+    public ResponseEntity<LastOrderDto> getLastOrder(@PathVariable Long id) {
+        LastOrderDto result = orderService.getLastOrder(id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

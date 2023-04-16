@@ -15,10 +15,7 @@ public class StoreState {
     private Long id;
 
     private String date;
-    private Long congestion;
     private int today;
-
-    public void setCongestion(Long congestion) {
-        this.congestion = congestion;
-    }
+    private String allMenus;
+    private int sales;
 }

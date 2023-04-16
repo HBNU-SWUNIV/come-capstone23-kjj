@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.entity.store.Store;
@@ -49,21 +50,6 @@ public class StoreService {
         return StoreDto.createStoreDto(store);
     }
 
-    @Transactional
-    public void setCongestion(StoreStateDto storeStateDto) throws CantFindByIdException {
-        if (storeStateDto.getCongestion() == null) {
-            throw new WrongRequestDetails("데이터가 부족합니다.");
-        }
-
-        StoreState storeState = storeStateRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
-        storeState.setCongestion(storeStateDto.getCongestion());
-    }
-
-    public Long getCongestion() throws CantFindByIdException {
-        StoreState storeState = storeStateRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
-
-        return storeState.getCongestion();
-    }
 
     public void setSetting(StoreDto dto) {
         if (storeRepository.existsById(finalId)) {
@@ -73,13 +59,7 @@ public class StoreService {
         storeRepository.save(store);
     }
 
-    @Transactional
-    public void setStoreState() {
-        StoreState storeState = new StoreState(null, getTodayDate(), null, 0);
-        storeStateRepository.save(storeState);
-    }
-
-    public StoreStateDto getToday() {
+    public StoreStateDto getToday() throws JsonProcessingException {
         StoreState storeState = storeStateRepository.findByDate(getTodayDate());
         if (storeState == null) return null;
         return StoreStateDto.createStoreStateDto(storeState);
@@ -88,7 +68,14 @@ public class StoreService {
     public List<StoreStateDto> getWeekend() {
         List<StoreState> storeStates = storeStateRepository.findTop7ByOrderByCreatedAtDesc();
         return storeStates.stream()
-                .map(state -> StoreStateDto.createStoreStateDto(state))
+                .map(state -> {
+                    try {
+                        return StoreStateDto.createStoreStateDto(state);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                })
                 .collect(Collectors.toList());
     }
 }
