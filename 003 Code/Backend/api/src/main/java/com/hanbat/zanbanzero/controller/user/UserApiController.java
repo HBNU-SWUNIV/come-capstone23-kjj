@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.controller.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
-import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
@@ -54,8 +54,8 @@ public class UserApiController {
 
     @Operation(summary="일반 유저 마이페이지 조회", description="유저 상세정보 조회")
     @GetMapping("/api/user/{id}/page")
-    public ResponseEntity<UserMyPageDto> getMyPage(@PathVariable Long id) throws CantFindByIdException, JsonProcessingException {
-        UserMyPageDto userMyPageDto = userService.getMyPage(id);
+    public ResponseEntity<UserMypageDto> getMyPage(@PathVariable Long id) throws CantFindByIdException, JsonProcessingException {
+        UserMypageDto userMyPageDto = userService.getMyPage(id);
 
         return ResponseEntity.status(HttpStatus.OK).body(userMyPageDto);
     }

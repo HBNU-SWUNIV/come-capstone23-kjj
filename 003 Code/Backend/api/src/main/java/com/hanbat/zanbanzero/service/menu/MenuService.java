@@ -10,6 +10,7 @@ import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
+import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,9 +25,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
+    private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final CacheManager cacheManager;
+    private final Long storeId = 1L;
 
     @Cacheable(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public List<MenuDto> getMenus() {
@@ -52,7 +55,7 @@ public class MenuService {
             throw new SameNameException("데이터 중복입니다.");
         }
 
-        Menu menu = menuRepository.save(dto.toMenu());
+        Menu menu = menuRepository.save(dto.toMenu(storeRepository.getReferenceById(storeId)));
 
         menuInfoRepository.save(dto.toMenuInfo(menu));
     }

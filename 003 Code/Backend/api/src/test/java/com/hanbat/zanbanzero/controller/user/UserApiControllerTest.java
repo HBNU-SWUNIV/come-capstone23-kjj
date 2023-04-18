@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.controller.user;
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
-import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.UserService;
@@ -143,7 +143,7 @@ class UserApiControllerTest extends ControllerTestClass {
         // 1. 정상 요청
         {
             // Given
-            UserMyPageDto userMyPageDto = new UserMyPageDto();
+            UserMypageDto userMyPageDto = new UserMypageDto();
             Mockito.when(userService.getMyPage(dto.getId())).thenReturn(userMyPageDto);
 
             // When

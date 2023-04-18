@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserMyPage {
+public class UserMypage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,16 +24,14 @@ public class UserMyPage {
 
     private String coupon;
     private int point;
-    private int count;
 
-    public static UserMyPage createNewUserMyPage(User user) throws JsonProcessingException {
+    public static UserMypage createNewUserMyPage(User user) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<Integer, String> first_coupon = Map.of(1, "신규가입 환영 쿠폰");
-        return new UserMyPage(
+        return new UserMypage(
                 user.getId(),
                 user,
                 objectMapper.writeValueAsString(first_coupon),
-                0,
                 0
                 );
     }

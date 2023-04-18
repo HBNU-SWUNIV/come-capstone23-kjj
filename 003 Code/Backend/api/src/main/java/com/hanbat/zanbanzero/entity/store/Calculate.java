@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class StoreState {
+public class Calculate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

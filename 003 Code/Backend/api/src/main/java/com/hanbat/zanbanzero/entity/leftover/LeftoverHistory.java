@@ -1,9 +1,8 @@
 package com.hanbat.zanbanzero.entity.leftover;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.hanbat.zanbanzero.dto.leftover.LeftoverHistoryDto;
+import com.hanbat.zanbanzero.entity.store.Store;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +19,13 @@ public class LeftoverHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Timestamp date;
-    private Double leftover;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Store store;
 
-    public static LeftoverHistory createLeftoverHistory(LeftoverShow leftoverShow) {
-        return new LeftoverHistory(null, leftoverShow.getUpdated(), leftoverShow.getLeftover());
+    private String date;
+    private double leftover;
+
+    public static LeftoverHistory createLeftoverHistory(LeftoverHistoryDto dto, Store store) {
+        return new LeftoverHistory(null, store, dto.getDate(), dto.getLeftover());
     }
 }
