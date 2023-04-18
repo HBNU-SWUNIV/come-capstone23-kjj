@@ -58,6 +58,7 @@ public class MenuService {
     }
 
     @Transactional
+    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void updateMenu(MenuUpdateDto dto, Long id) throws CantFindByIdException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
@@ -70,6 +71,7 @@ public class MenuService {
         menuInfo.patch(dto);
     }
 
+    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void deleteMenu(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
