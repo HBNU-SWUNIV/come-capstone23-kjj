@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import background from '../image/capstone_background.png';
+import { R_Firstvisit } from '../store';
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 
 const Wrapper = styled.div`
     background-image:url(${background});
@@ -107,11 +111,21 @@ const Sogae = styled.div`
 `
 
 function FirstLogin(){
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        alert("저장하시겠습니까?");
+        dispatch(R_Firstvisit());
+        navigate('/home');
+    }
+
     return(
         <Wrapper>
             <LoginW>
                 <Title>
-                    <span>ZanbanZero</span>
+                    <span>잔반제로</span>
                     <span>초기 설정</span>
                 </Title>
                 <Text>
@@ -129,7 +143,7 @@ function FirstLogin(){
                         <span>소개</span>
                         <input style={{marginRight:'10px', width:'300px',height:'120px',borderRadius:'20px',border:'1px solid gray'}}/>
                     </Sogae>
-                    <button>저장</button>
+                    <button onClick={onSubmit}>저장</button>
                 </TW>
             </LoginW>
         </Wrapper>
