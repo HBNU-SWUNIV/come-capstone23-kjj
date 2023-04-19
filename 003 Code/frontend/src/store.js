@@ -9,7 +9,7 @@ const User = createSlice({
         S_PW:'',
         isLogin:false,
         isFirst:true,
-        gotoMain:false,
+        testFirstvisit:true,
     },
     reducers:{
         R_login(state,action){
@@ -21,7 +21,10 @@ const User = createSlice({
             state.S_ID = '';
             state.S_PW = '';
             state.isLogin = false;
-            state.gotoMain = false;
+            state.testFirstvisit = true;
+        },
+        R_Firstvisit(state){
+            state.testFirstvisit = false;
         }
     }
 })
@@ -46,4 +49,4 @@ export default configureStore({
 // })
 
 // export default persistReducer(persistConfig, rootReducer);
-export const {R_login, R_logout} = User.actions;
+export const {R_login, R_logout,R_Firstvisit} = User.actions;

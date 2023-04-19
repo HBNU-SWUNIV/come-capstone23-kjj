@@ -1,12 +1,12 @@
 import styled from 'styled-components';
-import { IoMdLogOut } from "react-icons/io";
 import {useDispatch} from 'react-redux';
-import { R_logout } from '../store';
 import ApexCharts from "react-apexcharts";
 import { useState } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { useNavigate } from "react-router-dom";
+import Navtop from '../Components/Navtop';
 
 
 const Wrapper = styled.div`
@@ -15,28 +15,6 @@ display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
-`;
-
-const Nav = styled.div`
-display:flex;
-width:85vw;
-height:15vh;
-justify-content:space-between;
-align-items:center;
-margin-bottom:50px;
-span{
-    margin-left:30px;
-    font-size:30px;
-    font-weight:600;
-    font-family:'Alegreya';
-    color:#0A376E;
-}
-div{
-    margin-right:30px;
-    font-size:30px;
-    font-weight:600;
-    font-family:'Alegreya';
-}
 `;
 
 const Statistis = styled.div`
@@ -231,24 +209,23 @@ const Items = styled.div`
         font-weight:600;
     }
 `
-
+    
 function Dashboard(){
     const [Input, setInput] = useState(false);
-    const dispatch = useDispatch();
-
     const onClick = () => {
         setInput(true);
+    }
+
+    const onsubmit = (e) => {
+        e.preventDefault();
+        setInput(false);
     }
 
     const [startDate, setStartDate] = useState(new Date());
     
     return(
         <Wrapper>
-        <Nav>
-            <span>홈</span>
-            <div><IoMdLogOut onClick={() => dispatch(R_logout())}/></div>
-        </Nav>
-
+            <Navtop pages={"홈"}/>
         <Statistis>
             <금일>
                 <span>23-04-07</span>
@@ -355,11 +332,10 @@ function Dashboard(){
                     </Items>
                 </div>
 
-                <button>등록하기</button>
+                <button onClick={onsubmit}>등록하기</button>
             </InputW>
         </>) 
         : null}        
-
 
         <LastChart>
             <span>이번주 이용자 수</span>          

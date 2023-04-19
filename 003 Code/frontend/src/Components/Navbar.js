@@ -13,6 +13,17 @@ const Wrapper = styled.div`
     border:1px solid #DDDDDD;
 `
 
+const Image = styled.button`
+    width: 100px;
+    height: 100px;
+    border-radius:50px;
+    margin-bottom:20px;
+    margin-top:-40px;
+    background-color:white;
+    color:#979797;
+    border:1px solid #979797;
+`;
+
 const Title = styled.div`
     width:15vw;
     height:20vh;
@@ -20,7 +31,7 @@ const Title = styled.div`
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    margin-top:30px;
+    margin-top:60px;
     span{
         font-size:22px;
         color:#0A376E;
@@ -35,7 +46,7 @@ const Title = styled.div`
 const Menus = styled.div`
     width:15vw;
     height:30vh;
-    margin-top:-50px;
+    margin-top:10px;
     display:flex;
     flex-direction:column;
     justify-content:space-evenly;
@@ -75,6 +86,7 @@ function Navbar(){
     return(
        <Wrapper>
             <Title>
+                <Image>default Image</Image>
                 <span>ZanBanZero</span>
                 <span>수요 관리 시스템</span>
             </Title>

@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { AiFillCloseCircle } from "react-icons/ai";
+import man from "../image/man.png";
+import Navtop from "../Components/Navtop";
 
 const Wrapper = styled.div`
 display:flex;
@@ -17,25 +19,33 @@ height:100vh;
 margin-top:30px;
 `;
 
-const Nav = styled.div`
-display:flex;
-width:85vw;
-height:15vh;
-justify-content:space-between;
-align-items:center;
-span{
-    margin-left:30px;
-    font-size:30px;
-    font-weight:600;
-    font-family:'Alegreya';
-    color:#0A376E;
-}
-div{
-    margin-right:30px;
-    font-size:30px;
-    font-weight:600;
-    font-family:'Alegreya';
-}
+// const Nav = styled.div`
+// display:flex;
+// width:85vw;
+// height:15vh;
+// justify-content:space-between;
+// align-items:center;
+// span{
+//     margin-left:30px;
+//     font-size:30px;
+//     font-weight:600;
+//     font-family:'Alegreya';
+//     color:#0A376E;
+// }
+// div{
+//     margin-right:30px;
+//     font-size:30px;
+//     font-weight:600;
+//     font-family:'Alegreya';
+// }
+// `;
+
+const UserImage = styled.div`
+width:3vw;
+height:6vh;
+background-image:url(${man});
+background-size:cover;
+background-position:center center;
 `;
 
 const ItemWrapper = styled.div`
@@ -288,6 +298,12 @@ function Menu(){
     const [품절, set품절] = useState([]);
     const [재판매, set재판매] = useState([]);
 
+    const onLogout = (e) => {
+        e.preventDefault();
+        dispatch(R_logout());
+        navigate('/');
+    }
+
     useEffect(() => {
         const getApi = async() => {
             const {data} = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=505148347d18c10aeac2faa958dbbf5c');
@@ -311,7 +327,7 @@ function Menu(){
         navigate('/menu');
     }
     let 재판매하기위해저장 = [];
-    console.log(재판매)
+    
     const on품절 = (id) => {
 
         if(품절.length ==0){
@@ -343,10 +359,11 @@ function Menu(){
 
     return(
         <Wrapper>
-            <Nav>
+            {/* <Nav>
                 <span>메뉴 관리</span>
-                <div><IoMdLogOut onClick={() => dispatch(R_logout())}/></div>
-            </Nav>
+                <UserImage></UserImage>
+            </Nav> */}
+            <Navtop pages={"메뉴 관리"}/>
             {
                 isLoading? <h1 style={{marginTop:'150px'}}>'Loading..'</h1> : 
             
