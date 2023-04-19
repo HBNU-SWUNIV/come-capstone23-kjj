@@ -216,7 +216,6 @@ function Calander(){
         setCurrentMonth(addMonths(currentMonth,1));
     }
 
-    
 
     return(
         <Wrapper>

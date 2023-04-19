@@ -9,10 +9,10 @@ display:flex;
 
 function App() {
   const User = useSelector(state => state.User);
-
+  console.log(User)
   return (
     <Wrapper>
-      <Navbar/>
+      {User.testFirstvisit == false ? <Navbar/> : null}
       <Outlet/>
     </Wrapper>         
   );

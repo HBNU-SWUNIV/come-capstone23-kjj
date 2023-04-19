@@ -110,7 +110,7 @@ function Login(){
         <Wrapper>
             <LoginW onSubmit={onSubmit}>
                 <Title>
-                    <span>ZanbanZero</span>
+                    <span>잔반제로</span>
                     <span>관리자</span>
                 </Title>
                 
