@@ -57,7 +57,7 @@ public class CreateTodayOrderTasklet {
                 }
             }
         }
-        log.info("initMenu() Complete");
+        log.info("initMenu() 완료");
     }
 
     @Bean
@@ -78,12 +78,12 @@ public class CreateTodayOrderTasklet {
 
     @Bean
     public ItemProcessor<UserPolicy, Order> createOrderProcessor() {
-        String date = DateTools.getDate();
-
         return item -> {
             boolean exists;
             Long userId = item.getUser_id();
             Long defaultMenu = item.getDefault_menu();
+            String date = DateTools.getDate();
+            log.info("오더 생성 Processor run : " + date);
 
             try (Connection connection = dataSource.getConnection()) {
                 String findOrderQuery = "select * from orders where user_id = ? and order_date = ?";
@@ -118,6 +118,6 @@ public class CreateTodayOrderTasklet {
 
     @Bean
     public ItemWriter<Order> orderItemWriter() {
-        return chunk -> log.info(DateTools.getDate() + "(" + DateTools.getToday() + ") 정산 완료 - 신규 Order : " + chunk.size());
+        return chunk -> log.info(DateTools.getDate() + "(" + DateTools.getToday() + ") 오더 생성 완료 - 신규 Order : " + chunk.size());
     }
 }

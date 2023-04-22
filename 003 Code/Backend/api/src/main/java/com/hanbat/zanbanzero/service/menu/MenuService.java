@@ -17,7 +17,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
+    private final MenuImageService menuImageService;
     private final StoreRepository storeRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
@@ -50,25 +53,31 @@ public class MenuService {
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void addMenu(MenuUpdateDto dto) throws SameNameException {
+    public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
         }
 
-        Menu menu = menuRepository.save(dto.toMenu(storeRepository.getReferenceById(storeId)));
+        Menu menu = menuRepository.save(Menu.createMenu(dto, storeRepository.getReferenceById(storeId), filePath));
 
-        menuInfoRepository.save(dto.toMenuInfo(menu));
+        menuInfoRepository.save(dto.createMenuInfo(menu));
     }
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, Long id) throws CantFindByIdException {
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
         }
-
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
+
+        if (file != null) {
+            if (menu.getImage() == null) {
+                menu.setImage(menuImageService.uploadImage(file));
+            }
+            else menuImageService.updateImage(file, menu.getImage());
+        }
 
         menu.patch(dto);
         menuInfo.patch(dto);

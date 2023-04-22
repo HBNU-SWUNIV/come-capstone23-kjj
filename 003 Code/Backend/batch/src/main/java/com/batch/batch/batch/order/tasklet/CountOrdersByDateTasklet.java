@@ -1,7 +1,9 @@
 package com.batch.batch.batch.order.tasklet;
 
+import com.batch.batch.tools.DateTools;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -16,18 +18,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CountOrdersByDateTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final CreateTodayOrderTasklet createTodayOrderTasklet;
     private Map<String, Integer> resultMap = new HashMap<>();
-
-    private String getTodayToString() {
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return now.format(formatter);
-    }
 
     private int countTodayOrders(Connection connection, String date) throws Exception{
         int result = 0;
@@ -57,16 +54,21 @@ public class CountOrdersByDateTasklet implements Tasklet {
         return sales;
     }
 
+    private void clear() {
+        resultMap.clear();
+    }
+
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        String date = getTodayToString();
+        String date = DateTools.getDate();
         ObjectMapper objectMapper = new ObjectMapper();
         Connection connection = dataSource.getConnection();
 
         int count = countTodayOrders(connection, date);
         int sales = getSales();
+        log.info("정산 tasklet run : " + date);
 
-        String insertQuery = "insert into store_state(date, today, all_menus, sales) values(?, ?, ?, ?)";
+        String insertQuery = "insert into calculate(date, today, all_menus, sales) values(?, ?, ?, ?)";
         try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
             insertStatement.setString(1, date);
             insertStatement.setInt(2, count);
@@ -76,6 +78,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
         }
 
         connection.close();
+        clear();
         return RepeatStatus.FINISHED;
     }
 }

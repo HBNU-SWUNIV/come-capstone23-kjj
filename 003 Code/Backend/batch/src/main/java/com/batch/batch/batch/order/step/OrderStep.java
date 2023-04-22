@@ -5,7 +5,6 @@ import com.batch.batch.batch.order.tasklet.CreateTodayOrderTasklet;
 import com.batch.batch.pojo.Order;
 import com.batch.batch.pojo.UserPolicy;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;

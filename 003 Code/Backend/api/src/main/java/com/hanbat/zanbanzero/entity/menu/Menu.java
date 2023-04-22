@@ -33,6 +33,18 @@ public class Menu {
         }
     }
 
+    public static Menu createMenu(MenuUpdateDto dto, Store store, String filePath) {
+        return new Menu(
+                null,
+                store,
+                dto.getName(),
+                dto.getCost(),
+                filePath,
+                true
+        );
+    }
+
+    public void setImage(String path) { image = path; }
     public void setSold(boolean type) {
         sold = type;
     }
