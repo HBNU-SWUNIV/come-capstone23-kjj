@@ -1,6 +1,6 @@
 import styled from "styled-components";
-import Calander from "../BackbanPage/Calander";
 import Navtop from "../Components/Navtop";
+import Calander2 from "./Calander2";
 
 
 const Wrapper = styled.div`
@@ -103,7 +103,7 @@ function Setting(){
                 <span>휴일을 설정할 수 있어요.</span>
                 <button>휴일 등록</button>
             </CalanderHeader>
-            <Calander/>
+            <Calander2/>
         </CalanderWrapper>
         </Wrapper>
     )
