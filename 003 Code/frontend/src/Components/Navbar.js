@@ -9,7 +9,7 @@ import {useNavigate} from 'react-router-dom';
 
 const Wrapper = styled.div`
     width:15vw;
-    height:100vh;
+    height:170vh;
     border:1px solid #DDDDDD;
 `
 

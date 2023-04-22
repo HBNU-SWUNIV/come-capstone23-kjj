@@ -1,9 +1,12 @@
 import {addMonths, subMonths, format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays} from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
-import { Navigate, useMatch, useNavigate } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -60,7 +63,7 @@ const DivDay = styled.div`
     }
     span:last-child{
         font-size:13px;
-        white-space:pre-wrap;
+        
     }
 `;
 
@@ -77,21 +80,19 @@ const DivWrapper = styled.div`
 `;
 
 const WriteWrapper = styled.form`
-    width:40vw;
+    width:34vw;
     height:40vh;
     position:absolute;
-    left:0;
-    right:0;
     margin:0 auto;
+    margin-top:-220px;
     position:fixed;
-    margin-top:10vw;
     display:flex; 
     flex-direction:column;
     align-items:center;
     background-color:white;
     border:1px solid #1473E6;
     button{
-        width:15vw;
+        width:9vw;
         height:5vh;
         border:1px solid #1473E6;
         background-color:#1473E6;
@@ -102,7 +103,7 @@ const WriteWrapper = styled.form`
 `;
 
 const WriteTitle = styled.div`
-    width:38vw;
+    width:33vw;
     height:10vh;
     display:flex;
     justify-content:space-between;
@@ -115,67 +116,39 @@ const WriteTitle = styled.div`
     }
     span:first-child{
         font-weight:600;
+        font-size:22px;
         margin:20px 20px;
         text-decoration:underline;
     }
 `;
 
 const WriteInfo = styled.div`
-    width:35vw;
-    height:20vh;
+    width:24vw;
+    height:10vh;
     display:flex;
+    align-items:center;
     justify-content:space-between;
     span{
         font-weight:600;
-    }
-    textarea{
-        width:30vw;
-        height:18vh;
-        border:1px solid gray;
-        border-radius:10px;
-        resize:none;
-        
+        font-size:20px;
     }
 `;
 
+const WriteButton = styled.div`
+    display:flex;
+    align-items:center;
+    justify-content:space-evenly;
+    width:24vw;
 
-function Calander(){
-    const navigate = useNavigate();
+`;
+
+function Calander2(){
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [Backbaninfo, setBackbaninfo] = useState('');
-    const [savedBackbaninfo, setSavedBackbaninfo] = useState([]);
-
-    const onBackban = event => {
-        event.preventDefault();
-        setBackbaninfo(event.target.value);
-    }
-
-    // const onBackbanTap구현 = (e) => {
-    //     // tap의 keycode는 9다.
-    //     if (e.keyCode === 13) {
-    //         e.preventDefault();
-    //         let val = e.target.value;
-    //         let start = e.target.selectionStart;
-    //         let end = e.target.selectionEnd;
-    //         e.target.value = val.substring(0, start) + "\t" + val.substring(end);
-    //         e.target.selectionStart = e.target.selectionEnd = start + 1;
-    //         onBackban(e);
-    //         return false; 
-    //       }
-    // }
-
-    const onSave = (id) => {
-        setSavedBackbaninfo(prev => [
-            ...prev, {id:id, text:Backbaninfo}
-        ]);
-        navigate('/backban');
-        setBackbaninfo('');
-    }
-
-    console.log(savedBackbaninfo.map(a => a.id));
-
+    const [Text, setText] = useState([]);
+    const [startDate1, setStartDate1] = useState(new Date());
     const days = [];
     const date = ['일','월','화','수','목','금','토'];
+    const navigate = useNavigate();
     for (let i=0; i<7; i++){
         days.push(
             <DaysDiv>
@@ -192,11 +165,15 @@ function Calander(){
     let dayss = [];
     let line = [];
     let formattedDate = '';
-    const DayPathMatch = useMatch('/backban/:id'); 
+
+    const DayPathMatch = useMatch('/setting/:id'); 
+
 
     const onDay = (id) => {
-        navigate(`/backban/${id}`);
+        navigate(`/setting/${id}`);
     }
+
+
 
     while(day <= endDate){
         for(let i=0; i<7; i++){
@@ -220,7 +197,7 @@ function Calander(){
                             {formattedDate}
                         </span>
                         <span>
-                            {savedBackbaninfo.map(savedbackban => savedbackban.id === id ? savedbackban.text : null)}
+                            { }
                         </span>
                     </DivDay>
                 )
@@ -234,13 +211,17 @@ function Calander(){
         )
         dayss=[];
     }
+
+
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
     }
+
     const nextMonth = () => {
         setCurrentMonth(addMonths(currentMonth,1));
     }
 
+    
     return(
         <Wrapper>
             <HeaderW>
@@ -257,30 +238,32 @@ function Calander(){
             {DayPathMatch ? 
             <WriteWrapper>
                 <WriteTitle>
-                    <span>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}</span>
-                    <span>백반 식단 관리</span>
+                    <span>휴일 등록</span>
                     <AiFillCloseCircle 
-                    onClick={() => navigate('/backban')}
+                    onClick={() => navigate('/setting')}
                     style={{fontSize:'30px',marginRight:'10px',marginBottom:'10px'}}/>
                 </WriteTitle>
                 <WriteInfo>
-                    <span>Menu</span>
-                    <textarea
-                    placeholder='여기에 백반메뉴를 입력하세요.'
-                    value={Backbaninfo}
-                    onChange={onBackban}
-                    // onKeyDown={onBackbanTap구현}
-                    />
+                        <span>날짜선택</span>
+                        <div>                       
+                        <DatePicker selected={startDate1} onChange={date => setStartDate1(date)}/>
+                        </div>
                 </WriteInfo>
-                <button onClick={() => onSave(DayPathMatch.params.id)}>
-                    저장
-                </button>
+                <h3>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}일을 휴일로 지정하시겠습니까?</h3>
+                <WriteButton>
+                    <button onClick={() => navigate('/setting')}>
+                        휴일로 지정
+                    </button>
+                    <button onClick={() => navigate('/setting')}>
+                        영업일로 지정
+                    </button>
+                </WriteButton>
             </WriteWrapper>:null}
 
 
-
+                
         </Wrapper>
-    )
+    )// 
 }
 
-export default Calander;
+export default Calander2;

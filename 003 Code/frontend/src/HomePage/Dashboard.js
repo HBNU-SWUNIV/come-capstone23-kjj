@@ -1,13 +1,11 @@
 import styled from 'styled-components';
-import {useDispatch} from 'react-redux';
 import ApexCharts from "react-apexcharts";
 import { useState } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
 import Navtop from '../Components/Navtop';
-
+import { format } from 'date-fns';
 
 const Wrapper = styled.div`
 margin-top:35px;
@@ -211,24 +209,26 @@ const Items = styled.div`
 `
     
 function Dashboard(){
-    const [Input, setInput] = useState(false);
+    const [ShowInput, SetShowInput] = useState(false);
+
     const onClick = () => {
-        setInput(true);
-    }
+        SetShowInput(true);
+    };
 
     const onsubmit = (e) => {
         e.preventDefault();
-        setInput(false);
-    }
+        SetShowInput(false);
+    };
 
     const [startDate, setStartDate] = useState(new Date());
     
     return(
         <Wrapper>
             <Navtop pages={"홈"}/>
+
         <Statistis>
             <금일>
-                <span>23-04-07</span>
+                <span>{format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}</span>
                 <span>금일 이용자 수</span>
             </금일>
 
@@ -311,12 +311,12 @@ function Dashboard(){
         </SecondChart>
         </차트2개>
 
-        {Input? 
+        {ShowInput? 
         (<>
             <InputW>
                 <Title>
                     <span style={{fontSize:'22px',fontWeight:'600',textDecoration: 'underline', textDecorationColor:'#1473E6',textDecorationThickness:'2px'}}>잔반량 등록</span>
-                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'-15px',marginTop:'-40px'}} onClick={()=>setInput(false)}/>
+                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'-15px',marginTop:'-40px'}} onClick={()=>SetShowInput(false)}/>
                 </Title>
 
                 <div>

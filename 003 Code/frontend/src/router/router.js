@@ -44,6 +44,10 @@ const router = createBrowserRouter([
             {
                 path:'/setting',
                 element:<Setting/>
+            },
+            {
+                path:'/setting/:id',
+                element:<Setting/>
             }
         ]
     }
