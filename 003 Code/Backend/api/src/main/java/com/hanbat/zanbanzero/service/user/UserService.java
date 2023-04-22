@@ -2,13 +2,12 @@ package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.dto.user.user.UserMyPageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
-import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
-import com.hanbat.zanbanzero.entity.user.user.UserMyPage;
+import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
@@ -20,7 +19,6 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -61,7 +59,7 @@ public class UserService implements UserDetailsService {
 
         User user = userRepository.save(User.createUser(dto));
 
-        userMyPageRepository.save(UserMyPage.createNewUserMyPage(user));
+        userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
     }
 
     @Transactional
@@ -71,7 +69,7 @@ public class UserService implements UserDetailsService {
         }
 
         User user = userRepository.findByUsername(dto.getUsername());
-        UserMyPage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
+        UserMypage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
 
         userMyPageRepository.delete(userMyPage);
         userRepository.delete(user);
@@ -89,10 +87,10 @@ public class UserService implements UserDetailsService {
         return new UserInfoDto(user.getId(), user.getUsername());
     }
 
-    public UserMyPageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
-        UserMyPage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
+    public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
+        UserMypage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
 
-        return UserMyPageDto.createUserMyPageDto(userMyPage);
+        return UserMypageDto.createUserMyPageDto(userMyPage);
     }
 
     @Override

@@ -16,17 +16,7 @@ public class MenuUpdateDto {
     private String info;
     private String details;
 
-    public Menu toMenu() {
-        return new Menu(
-                null,
-                name,
-                cost,
-                null,
-                true
-        );
-    }
-
-    public MenuInfo toMenuInfo(Menu menu) {
+    public MenuInfo createMenuInfo(Menu menu) {
         return new MenuInfo(
                 null,
                 menu,

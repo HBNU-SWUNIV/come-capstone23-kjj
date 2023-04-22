@@ -19,17 +19,18 @@ public class BatchScheduler {
     private final Job job;
 
     // Docker image(openjdk:17) 기준 한국이 9시간 느림
-    @Scheduled(cron = "0 39 22 * * ?")
+    @Scheduled(cron = "0 20 9 * * ?")
     public void runOrderJob() throws Exception {
         String day = DateTools.getToday();
         String date = DateTools.getDate();
-        //if (!day.equals("SATURDAY") && !day.equals("SUNDAY")) {
+        if (!day.equals("SATURDAY") && !day.equals("SUNDAY")) {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("date", date)
-                    .addString("today", "wednesday")
-                    //.addString("today", day.toLowerCase())
+                    //.addString("today", "friday")
+                    //.addString("time", String.valueOf(System.currentTimeMillis()))
+                    .addString("today", day.toLowerCase())
                     .toJobParameters();
             jobLauncher.run(job, jobParameters);
-        //}
+        }
     }
 }

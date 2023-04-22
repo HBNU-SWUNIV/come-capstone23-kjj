@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.controller.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -30,13 +31,12 @@ public class StoreApiController {
     @PostMapping("/api/manager/setSetting")
     public ResponseEntity<String> setSetting(@RequestBody StoreDto dto) {
         storeService.setSetting(dto);
-        storeService.setStoreState();
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
     }
 
-    @Operation(summary="금일 총 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
+    @Operation(summary="금일 총 정산결과 조회", description="10:30분마다 정산하여 갱신됨")
     @GetMapping("/api/manager/get/state/today")
-    public ResponseEntity<StoreStateDto> getToday() {
+    public ResponseEntity<StoreStateDto> getToday() throws JsonProcessingException {
         StoreStateDto dto = storeService.getToday();
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
@@ -48,26 +48,10 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body(dtos);
     }
 
-
     @Operation(summary="식당 정보 조회", description="")
     @GetMapping("/api/user/store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException, WrongRequestDetails {
         StoreDto result = storeService.getStoreData();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
-
-    @Operation(summary="가게 혼잡도 지정", description="0~100 숫자 입력")
-    @PostMapping("/api/manager/store/set/congestion")
-    public ResponseEntity<String> setCongestion(@RequestBody StoreStateDto storeStateDto) throws CantFindByIdException {
-        storeService.setCongestion(storeStateDto);
-        return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
-    }
-
-    @Operation(summary="가게 혼잡도 확인", description="int값 반환")
-    @GetMapping("/api/manager/store/congestion")
-    public ResponseEntity<Long> getCongestion() throws CantFindByIdException {
-        Long result = storeService.getCongestion();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
-    }
-
 }

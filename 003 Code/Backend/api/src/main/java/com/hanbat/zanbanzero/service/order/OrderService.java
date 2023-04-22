@@ -1,13 +1,12 @@
 package com.hanbat.zanbanzero.service.order;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
@@ -18,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.Year;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,4 +87,13 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public LastOrderDto getLastOrder(Long id) {
+        Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
+
+        if (order == null) return null;
+        Menu menu = menuRepository.findById(order.getMenu()).orElseThrow(CantFindByIdException::new);
+
+        return LastOrderDto.createOrderDto(order, menu);
+    }
 }

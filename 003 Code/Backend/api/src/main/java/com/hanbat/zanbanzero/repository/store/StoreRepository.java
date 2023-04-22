@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    @Query("select s from Store s join fetch s.manager where s.id = :id")
-    Store findByIdWithManager(@Param("id") Long id);
+
 }

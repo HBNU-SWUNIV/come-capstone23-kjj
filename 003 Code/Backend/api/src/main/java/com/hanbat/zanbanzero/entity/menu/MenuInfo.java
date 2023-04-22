@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.entity.menu;
 
-import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
