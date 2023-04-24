@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.entity.menu;
 
-import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
+import com.hanbat.zanbanzero.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,20 +16,13 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Store store;
+
     private String name;
     private int cost;
     private String image;
     private Boolean sold;
-
-    public static Menu createMenu(MenuDto dto) {
-        return new Menu(
-                dto.getId(),
-                dto.getName(),
-                dto.getCost(),
-                dto.getImage(),
-                dto.getSold()
-        );
-    };
 
     public void patch(MenuUpdateDto dto) {
         if (dto.getName() != null) {
@@ -40,6 +33,18 @@ public class Menu {
         }
     }
 
+    public static Menu createMenu(MenuUpdateDto dto, Store store, String filePath) {
+        return new Menu(
+                null,
+                store,
+                dto.getName(),
+                dto.getCost(),
+                filePath,
+                true
+        );
+    }
+
+    public void setImage(String path) { image = path; }
     public void setSold(boolean type) {
         sold = type;
     }

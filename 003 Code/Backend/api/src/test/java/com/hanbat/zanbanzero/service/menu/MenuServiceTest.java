@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.service.menu;
 
 import com.hanbat.zanbanzero.entity.menu.Menu;
+import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ class MenuServiceTest {
 
     @BeforeEach
     void setup() {
-        final Menu menu = new Menu(null, name, 2000, "두유", null);
+        final Menu menu = new Menu(null, new Store(), name, 2000, "두유", null);
         menuRepository.save(menu);
     }
 }

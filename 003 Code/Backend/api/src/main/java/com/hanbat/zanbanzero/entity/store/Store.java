@@ -12,19 +12,15 @@ import lombok.*;
 @ToString
 public class Store {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Manager manager;
 
     private String name;
     private String info;
 
-    public static Store createStore(Long id, Manager manager, StoreDto dto) {
+    public static Store createStore(Long id, StoreDto dto) {
         return new Store(
                 id,
-                manager,
                 dto.getName(),
                 dto.getInfo()
         );

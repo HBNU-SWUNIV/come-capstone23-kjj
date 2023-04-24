@@ -1,7 +1,4 @@
-import { useDispatch } from "react-redux";
 import styled from "styled-components";
-import { IoMdLogOut } from "react-icons/io";
-import { R_logout } from '../store';
 import { makeImagePath } from "../api&utils";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -17,35 +14,6 @@ flex-direction:column;
 width:85vw;
 height:100vh;
 margin-top:30px;
-`;
-
-// const Nav = styled.div`
-// display:flex;
-// width:85vw;
-// height:15vh;
-// justify-content:space-between;
-// align-items:center;
-// span{
-//     margin-left:30px;
-//     font-size:30px;
-//     font-weight:600;
-//     font-family:'Alegreya';
-//     color:#0A376E;
-// }
-// div{
-//     margin-right:30px;
-//     font-size:30px;
-//     font-weight:600;
-//     font-family:'Alegreya';
-// }
-// `;
-
-const UserImage = styled.div`
-width:3vw;
-height:6vh;
-background-image:url(${man});
-background-size:cover;
-background-position:center center;
 `;
 
 const ItemWrapper = styled.div`
@@ -291,25 +259,17 @@ const UpdateText = styled.form`
 function Menu(){
     const [isLoading, setIsLoading] = useState(true);
     let [savedData, setSaveddata] = useState([]);
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const deletePathMatch = useMatch('/menu/:deleteId');
     const UpdatePathMatch = useMatch('/menu/update/:updateId');
     const [품절, set품절] = useState([]);
-    const [재판매, set재판매] = useState([]);
-
-    const onLogout = (e) => {
-        e.preventDefault();
-        dispatch(R_logout());
-        navigate('/');
-    }
 
     useEffect(() => {
         const getApi = async() => {
             const {data} = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=505148347d18c10aeac2faa958dbbf5c');
             return data;
         }
-        getApi().then(result => setSaveddata(result.results),set품절(savedData))
+        getApi().then(result => setSaveddata(result.results))
         .then(setIsLoading(false));
     },[]) 
     
@@ -319,50 +279,28 @@ function Menu(){
     const onDelete = (id) => {
         navigate(`/menu/${id}`);
     }
-
     const onFinalDelete = (id) => {
         let newData = [];
         newData = savedData?.filter(prev => prev.id !== id);
         setSaveddata(newData);
         navigate('/menu');
     }
-    let 재판매하기위해저장 = [];
-    
-    const on품절 = (id) => {
-
-        if(품절.length ==0){
-            set품절(savedData);
-            let newData = [...savedData];
-            newData = newData.filter(data => data.id !== id);
-            set품절(newData);
-            
-            재판매하기위해저장 = [...재판매하기위해저장,...savedData.filter(data => data.id == id)]
-            set재판매(재판매하기위해저장);
-        }
-        else{
-            let prevData = [...품절];
-            prevData = prevData.filter(data => data.id !== id);
-            set품절(prevData);
-            
-            재판매하기위해저장 = [...재판매하기위해저장,...savedData.filter(data => data.id == id)]
-            set재판매(재판매하기위해저장);
-        }        
-    }
-    
-    const on재판매 = (id) => {
-        
-    }
-
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
+    }
+    const on품절 = (id) => {
+        set품절(prev => [
+            ...prev, {id:id}
+        ])  
+    };
+    const on재판매 = (id) => {
+        let 재판매 = [...품절];
+        재판매 = 재판매.filter(a => a.id !== id);
+        set품절(재판매);
     }
 
     return(
         <Wrapper>
-            {/* <Nav>
-                <span>메뉴 관리</span>
-                <UserImage></UserImage>
-            </Nav> */}
             <Navtop pages={"메뉴 관리"}/>
             {
                 isLoading? <h1 style={{marginTop:'150px'}}>'Loading..'</h1> : 
@@ -371,15 +309,20 @@ function Menu(){
                 <span>전체 {savedData?.length}종</span>
             
                 {savedData?.map(data => 
-                <Item style={{opacity:`${품절.filter(a=> a.id == data.id).length == 1 ? 1 : 0.3}`}}>
+                <Item 
+                style={{opacity:`${품절.filter(soldout => soldout.id == data.id).length == 1 ? '0.5' : '1' }`}}>
                     <Itemimg bgPhoto={makeImagePath(data?.backdrop_path,'w400'||'')}/>
                     <ItemInfo>
                         <span>{data?.original_title}</span>  
                         <span>{data?.overview.slice(0,8)+''}</span>  
                         <span>{data?.release_date}</span>  
                         <span>{data?.vote_count}</span> 
-                        <span style={{position:'absolute',marginLeft:'12vw',color:'#DC3546',fontSize:'24px'}}>{품절.filter(a=> a.id == data.id).length == 0 ? '품 절 되었어요':''}</span> 
-                        {품절.filter(a=> a.id == data.id).length == 0 ? <button onClick={() => on재판매(data?.id)}>재판매</button> : null}  
+                        <span 
+                        style={{position:'absolute',marginLeft:'12vw',color:'#DC3546',fontSize:'24px'}}>
+                            {품절.filter(a=> a.id == data.id).length == 0 ? '':'품 절 되었어요'}
+                        </span> 
+                        {품절.filter(a=> a.id == data.id).length == 0 ? null : 
+                        <button onClick={() => on재판매(data?.id)}>재판매</button> }  
                     </ItemInfo> 
                     <ItemUD>
                         <button onClick={() => onDelete(data?.id)}>삭제</button> 

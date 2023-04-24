@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 public class LeftoverHistoryDto {
 
     private Long id;
-    private Timestamp date;
+    private String date;
     private Double leftover;
 
     public static LeftoverHistoryDto createLeftoverHistoryDto(LeftoverHistory leftoverHistory) {

@@ -3,6 +3,8 @@ import background from '../image/capstone_background.png';
 import { R_Firstvisit } from '../store';
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 
 const Wrapper = styled.div`
@@ -111,14 +113,29 @@ const Sogae = styled.div`
 `
 
 function FirstLogin(){
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
+    const [marketname, setMarketname] = useState(''),
+        [marketinfo, setMarketinfo] = useState('');
+
+    const dispatch = useDispatch(),
+        navigate = useNavigate();
+    
+    const onMarketname = e => {
+        setMarketname(e.target.value);
+    }
+
+    const onMarketinfo = e => {
+        setMarketinfo(e.target.value);
+    }
 
     const onSubmit = (e) => {
         e.preventDefault();
         alert("저장하시겠습니까?");
+        // let body = {marketname,marketinfo};
+        // axios.post(`api주소`,body);
+        
         dispatch(R_Firstvisit());
         navigate('/home');
+        // R_Firstvisit은 백엔드랑 연동 후 바뀔 수 있음.
     }
 
     return(
@@ -137,11 +154,19 @@ function FirstLogin(){
                 <TW>
                     <Name>
                         <span>단체명</span>
-                        <input style={{marginRight:'20px',width:'300px',height:'30px',borderRadius:'20px',border:'1px solid gray'}}/>
+                        <input 
+                        style={{marginRight:'20px',width:'300px',height:'30px',borderRadius:'20px',border:'1px solid gray',padding:'0px 8px'}}
+                        value={marketname}
+                        onChange={onMarketname}
+                        />
                     </Name>
                     <Sogae>
                         <span>소개</span>
-                        <input style={{marginRight:'10px', width:'300px',height:'120px',borderRadius:'20px',border:'1px solid gray'}}/>
+                        <textarea 
+                        style={{marginRight:'10px', width:'300px',height:'120px',borderRadius:'20px',border:'1px solid gray',padding:'8px 8px'}}
+                        value={marketinfo}
+                        onChange={onMarketinfo}
+                        />
                     </Sogae>
                     <button onClick={onSubmit}>저장</button>
                 </TW>
