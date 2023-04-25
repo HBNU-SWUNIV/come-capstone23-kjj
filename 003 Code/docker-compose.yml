@@ -9,9 +9,11 @@ services:
       MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
       MYSQL_USER: user
       MYSQL_PASSWORD: ${USER_PASSWORD}
-      MYSQL_DATABASE: zanbanzero
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       TZ: Asia/Seoul
+    volumes:
+      - "./backend/mysql/init/:/docker-entrypoint-initdb.d/"
+      - "./backend/mysql/data:/var/lib/mysql"
     ports:
       - "3306:3306"
 
