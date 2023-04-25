@@ -14,6 +14,9 @@ import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,8 @@ public class OrderService {
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
+
+    private int pageSize = 10;
 
     private Order createNewOrder(Long userId, String date, boolean type) {
         UserPolicy userPolicy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
@@ -72,11 +77,34 @@ public class OrderService {
         }
     }
 
+    public int countPages(Long id) {
+        Pageable pageable = PageRequest.of(0, pageSize);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
+
+        return orderPage.getTotalPages();
+    }
+
 
     public List<OrderDto> getOrders(Long id) {
         List<Order> orders = orderRepository.findByUserId(id);
 
         return orders.stream()
+                .map(order -> {
+                    try {
+                        return OrderDto.createOrderDto(order);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<OrderDto> getOrdersPage(Long id, int page) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
+
+        return orderPage.getContent()
+                .stream()
                 .map(order -> {
                     try {
                         return OrderDto.createOrderDto(order);
@@ -96,4 +124,5 @@ public class OrderService {
 
         return LastOrderDto.createOrderDto(order, menu);
     }
+
 }
