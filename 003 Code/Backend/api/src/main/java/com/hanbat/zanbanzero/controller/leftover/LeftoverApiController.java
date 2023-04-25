@@ -28,10 +28,17 @@ public class LeftoverApiController {
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }
 
-    @Operation(summary="count개 만큼의 최근 잔반 감소량 확인", description="")
-    @GetMapping("/api/manager/store/leftovers/{count}")
-    public ResponseEntity<List<LeftoverHistoryDto>> getAlLeftover(@PathVariable Long count) {
-        List<LeftoverHistoryDto> leftoverHistoryDtos = leftoverService.getAllLeftover(count);
-        return ResponseEntity.status(HttpStatus.OK).body(leftoverHistoryDtos);
+    @Operation(summary="전체 잔반 감소량 데이터 페이지 수 조회(페이지 생성용)", description="페이지 사이즈보다 작을 경우 null")
+    @GetMapping("/api/manager/store/leftovers/count")
+    public ResponseEntity<Integer> getAlLeftoverPage() {
+        int result = leftoverService.getAllLeftoverPage();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="특정 페이지 데이터 조회", description="페이지 사이즈 = 5")
+    @GetMapping("/api/manager/store/leftovers/{page}")
+    public ResponseEntity<List<LeftoverHistoryDto>> getAlLeftover(@PathVariable int page) {
+        List<LeftoverHistoryDto> result = leftoverService.getLeftoverPage(page);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

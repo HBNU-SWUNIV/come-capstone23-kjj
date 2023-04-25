@@ -8,6 +8,9 @@ import com.hanbat.zanbanzero.repository.leftover.LeftoverHistoryRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +25,7 @@ public class LeftoverService {
     private final LeftoverHistoryRepository leftoverHistoryRepository;
 
     private Long storeId = 1L;
+    private int pageSize = 5;
 
 
     @Transactional
@@ -36,8 +40,16 @@ public class LeftoverService {
         leftoverHistoryRepository.save(target);
     }
 
-    public List<LeftoverHistoryDto> getAllLeftover(Long count) {
-        List<LeftoverHistory> result = leftoverHistoryRepository.getAllLeftoverCount(count);
+    public int getAllLeftoverPage() {
+        Pageable pageable = PageRequest.of(0, pageSize);
+        Page<LeftoverHistory> result = leftoverHistoryRepository.findAll(pageable);
+
+        return result.getTotalPages();
+    }
+
+    public List<LeftoverHistoryDto> getLeftoverPage(int count) {
+        Pageable pageable = PageRequest.of(count, pageSize);
+        List<LeftoverHistory> result = leftoverHistoryRepository.findAll(pageable).getContent();
 
         return result.stream()
                 .map((history) -> LeftoverHistoryDto.createLeftoverHistoryDto(history))
