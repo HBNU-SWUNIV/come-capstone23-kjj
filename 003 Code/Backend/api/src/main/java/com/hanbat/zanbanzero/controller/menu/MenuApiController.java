@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.controller.menu;
 
+import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
@@ -40,6 +41,13 @@ public class MenuApiController {
     public ResponseEntity<MenuInfoDto> getMenuInfo(@PathVariable Long id) throws CantFindByIdException {
         MenuInfoDto menuDto = menuService.getMenuInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(menuDto);
+    }
+
+    @Operation(summary="전체 메뉴 조회 - 관리자 전용", description="")
+    @GetMapping("/api/manager/menu")
+    public ResponseEntity<List<MenuManagerInfoDto>> getMenusForManager() {
+        List<MenuManagerInfoDto> menus = menuService.getMenusForManager();
+        return ResponseEntity.status(HttpStatus.OK).body(menus);
     }
 
     @Operation(summary="관리자 - 메뉴 추가", description="")

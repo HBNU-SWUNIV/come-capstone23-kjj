@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.service.store;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
+import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.Calculate;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -60,17 +61,14 @@ public class StoreService {
         return StoreStateDto.createStoreStateDto(calculate);
     }
 
-    public List<StoreStateDto> getWeekend() {
-        List<Calculate> calculates = storeStateRepository.findTop7ByOrderByCreatedAtDesc();
+    public List<StoreWeekendDto> getWeekend() {
+        List<Calculate> calculates = storeStateRepository.findTop5ByOrderByCreatedAtDesc();
         return calculates.stream()
-                .map(state -> {
-                    try {
-                        return StoreStateDto.createStoreStateDto(state);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                })
+                .map(state -> StoreWeekendDto.createStoreWeekendDto(state))
                 .collect(Collectors.toList());
+    }
+
+    public int getAllUsers() {
+        return storeStateRepository.getAllUsers();
     }
 }

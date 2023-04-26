@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,18 @@ public class MenuService {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 
         MenuInfoDto result = MenuInfoDto.createMenuDto(menu);
+        return result;
+    }
+
+    public List<MenuManagerInfoDto> getMenusForManager() {
+        List<Menu> menus = menuRepository.findAll();
+        List<MenuInfo> menuInfos = menuInfoRepository.findAll();
+
+        List<MenuManagerInfoDto> result = new ArrayList<>();
+        for (int i = 0; i < menus.size(); i++) {
+            result.add(MenuManagerInfoDto.createMenuManagerInfoDto(menus.get(i), menuInfos.get(i)));
+        }
+
         return result;
     }
 
@@ -106,4 +120,5 @@ public class MenuService {
                 throw new WrongParameter("잘못된 파라미터입니다.");
         }
     }
+
 }

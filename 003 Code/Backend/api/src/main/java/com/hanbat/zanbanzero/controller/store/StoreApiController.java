@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.controller.store;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
+import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.store.StoreService;
@@ -41,11 +42,18 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    @Operation(summary="1주간 총 이용자 수 조회", description="최근 7개 데이터")
+    @Operation(summary="1주간 총 이용자 수 조회", description="최근 5개 데이터")
     @GetMapping("/api/manager/get/state/weekend")
-    public ResponseEntity<List<StoreStateDto>> getWeekend() {
-        List<StoreStateDto> dtos = storeService.getWeekend();
-        return ResponseEntity.status(HttpStatus.OK).body(dtos);
+    public ResponseEntity<List<StoreWeekendDto>> getWeekend() {
+        List<StoreWeekendDto> result = storeService.getWeekend();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="총 누적 이용자 수 조회", description="")
+    @GetMapping("/api/manager/get/state/all")
+    public ResponseEntity<Integer> getAllUsers() {
+        int result = storeService.getAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary="식당 정보 조회", description="")
