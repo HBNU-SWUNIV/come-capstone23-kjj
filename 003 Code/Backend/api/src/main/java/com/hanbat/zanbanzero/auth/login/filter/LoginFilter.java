@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.FilterChain;
@@ -27,7 +28,11 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
-            customUriMapper = new CustomUriMapper(request);
+            try {
+                customUriMapper = new CustomUriMapper(request);
+            } catch (WrongParameter e) {
+                throw new RuntimeException(e);
+            }
             super.doFilter(request, response, chain);
         } else {
             chain.doFilter(request, response);

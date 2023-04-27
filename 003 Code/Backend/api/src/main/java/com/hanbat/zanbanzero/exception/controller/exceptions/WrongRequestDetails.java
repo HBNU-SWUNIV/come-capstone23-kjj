@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.exception.controller.exceptions;
 import lombok.Getter;
 
 @Getter
-public class WrongRequestDetails extends RuntimeException{
+public class WrongRequestDetails extends Exception{
     public WrongRequestDetails() {
     }
 

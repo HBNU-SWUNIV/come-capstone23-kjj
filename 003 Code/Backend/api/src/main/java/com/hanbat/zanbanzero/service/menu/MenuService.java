@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,18 @@ public class MenuService {
         return result;
     }
 
+    public List<MenuManagerInfoDto> getMenusForManager() {
+        List<Menu> menus = menuRepository.findAll();
+        List<MenuInfo> menuInfos = menuInfoRepository.findAll();
+
+        List<MenuManagerInfoDto> result = new ArrayList<>();
+        for (int i = 0; i < menus.size(); i++) {
+            result.add(MenuManagerInfoDto.createMenuManagerInfoDto(menus.get(i), menuInfos.get(i)));
+        }
+
+        return result;
+    }
+
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
@@ -65,7 +79,7 @@ public class MenuService {
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException, SameNameException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
         }
@@ -106,4 +120,5 @@ public class MenuService {
                 throw new WrongParameter("잘못된 파라미터입니다.");
         }
     }
+
 }

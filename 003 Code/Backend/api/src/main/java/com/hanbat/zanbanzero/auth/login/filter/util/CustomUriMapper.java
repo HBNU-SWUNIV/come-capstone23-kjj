@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;
 
-    public CustomUriMapper(ServletRequest request) {
+    public CustomUriMapper(ServletRequest request) throws WrongParameter {
         switch (((HttpServletRequest) request).getRequestURI()) {
             case "/login/user":
                 createTokenInterface = new CreateUserTokenImpl();

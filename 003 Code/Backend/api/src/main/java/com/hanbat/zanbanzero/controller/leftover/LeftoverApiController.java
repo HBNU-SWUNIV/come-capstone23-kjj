@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.controller.leftover;
 
 import com.hanbat.zanbanzero.dto.leftover.LeftoverHistoryDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.leftover.LeftoverService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class LeftoverApiController {
 
     @Operation(summary="잔반 감소량 설정", description="")
     @PostMapping("/api/manager/store/set/leftover")
-    public ResponseEntity<String> setLeftover(@RequestBody LeftoverHistoryDto dto) throws CantFindByIdException {
+    public ResponseEntity<String> setLeftover(@RequestBody LeftoverHistoryDto dto) throws WrongRequestDetails {
         leftoverService.setLeftover(dto);
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }

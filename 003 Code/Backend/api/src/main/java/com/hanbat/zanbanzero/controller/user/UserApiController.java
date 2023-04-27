@@ -5,9 +5,7 @@ import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +21,7 @@ public class UserApiController {
 
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("/join")
-    public ResponseEntity<String> join(@RequestBody UserDto dto) throws SameNameException, JsonProcessingException {
+    public ResponseEntity<String> join(@RequestBody UserDto dto) throws JsonProcessingException, WrongRequestDetails {
         userService.join(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
@@ -31,7 +29,7 @@ public class UserApiController {
 
     @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")
     @PostMapping("/withdraw")
-    public ResponseEntity<String> withdraw(@RequestBody UserDto dto) throws SameNameException {
+    public ResponseEntity<String> withdraw(@RequestBody UserDto dto) throws CantFindByIdException, WrongRequestDetails {
         userService.withdraw(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body("탈퇴되었습니다.");
@@ -62,7 +60,7 @@ public class UserApiController {
 
     @Operation(summary="일반 유저 요일정책 설정", description="유저 요일정책 설정")
     @PatchMapping("/api/user/{id}/set/policy/date")
-    public ResponseEntity<String> setUserDatePolicy(@RequestBody UserPolicyDto dto, @PathVariable Long id) {
+    public ResponseEntity<String> setUserDatePolicy(@RequestBody UserPolicyDto dto, @PathVariable Long id) throws CantFindByIdException {
         userService.setUserDatePolicy(dto, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
@@ -70,7 +68,7 @@ public class UserApiController {
 
     @Operation(summary="일반 유저 메뉴정책 설정", description="유저 메뉴정책 설정")
     @PatchMapping("/api/user/{user_id}/set/policy/menu/{menu_id}")
-    public ResponseEntity<String> setUserMenuPolicy(@PathVariable Long user_id, @PathVariable Long menu_id) {
+    public ResponseEntity<String> setUserMenuPolicy(@PathVariable Long user_id, @PathVariable Long menu_id) throws CantFindByIdException, WrongParameter {
         userService.setUserMenuPolicy(user_id, menu_id);
 
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");

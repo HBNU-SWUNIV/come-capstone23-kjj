@@ -21,7 +21,7 @@ public class OrderApiController {
 
     @Operation(summary="수동으로 이용안함 설정", description="")
     @PostMapping("/api/user/{id}/order/cancel/{year}/{month}/{day}")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long id, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws WrongRequestDetails {
+    public ResponseEntity<String> cancelOrder(@PathVariable Long id, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws WrongRequestDetails, CantFindByIdException {
         orderService.cancelOrder(id, year, month, day);
         return ResponseEntity.status(HttpStatus.OK).body("취소되었습니다.");
     }
@@ -49,7 +49,7 @@ public class OrderApiController {
 
     @Operation(summary="단일 주문내역 조회(QR용)", description="")
     @GetMapping("/api/user/{id}/order/last")
-    public ResponseEntity<LastOrderDto> getLastOrder(@PathVariable Long id) {
+    public ResponseEntity<LastOrderDto> getLastOrder(@PathVariable Long id) throws CantFindByIdException {
         LastOrderDto result = orderService.getLastOrder(id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

@@ -25,4 +25,8 @@ public class Store {
                 dto.getInfo()
         );
     }
+
+    public void setInfo(StoreDto dto) {
+        info = dto.getInfo();
+    }
 }

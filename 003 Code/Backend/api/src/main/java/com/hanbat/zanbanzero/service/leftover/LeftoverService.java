@@ -29,7 +29,7 @@ public class LeftoverService {
 
 
     @Transactional
-    public void setLeftover(LeftoverHistoryDto dto) throws CantFindByIdException {
+    public void setLeftover(LeftoverHistoryDto dto) throws WrongRequestDetails {
         if (dto.getLeftover() == null) {
             throw new WrongRequestDetails("데이터가 부족합니다.");
         }
@@ -49,7 +49,7 @@ public class LeftoverService {
 
     public List<LeftoverHistoryDto> getLeftoverPage(int count) {
         Pageable pageable = PageRequest.of(count, pageSize);
-        List<LeftoverHistory> result = leftoverHistoryRepository.findAll(pageable).getContent();
+        List<LeftoverHistory> result = leftoverHistoryRepository.findAllByOrderByIdDesc(pageable).getContent();
 
         return result.stream()
                 .map((history) -> LeftoverHistoryDto.createLeftoverHistoryDto(history))

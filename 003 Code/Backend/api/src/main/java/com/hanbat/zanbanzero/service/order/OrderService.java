@@ -35,7 +35,7 @@ public class OrderService {
 
     private int pageSize = 10;
 
-    private Order createNewOrder(Long userId, String date, boolean type) {
+    private Order createNewOrder(Long userId, String date, boolean type) throws CantFindByIdException {
         UserPolicy userPolicy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
         Menu menu = menuRepository.findById(userPolicy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
         return new Order(
@@ -49,7 +49,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrder(Long id, int year, int month, int day) {
+    public void cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException {
         String date = DateTools.makeDateString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -63,7 +63,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void addOrder(Long id, Long menuId, int year, int month, int day) {
+    public void addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException {
         String date = DateTools.makeDateString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -116,7 +116,7 @@ public class OrderService {
     }
 
     @Transactional
-    public LastOrderDto getLastOrder(Long id) {
+    public LastOrderDto getLastOrder(Long id) throws CantFindByIdException {
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;

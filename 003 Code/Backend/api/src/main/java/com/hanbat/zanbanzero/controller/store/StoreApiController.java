@@ -3,7 +3,9 @@ package com.hanbat.zanbanzero.controller.store;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
+import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,16 +22,16 @@ public class StoreApiController {
 
     private final StoreService storeService;
 
-    @Operation(summary="식당 정보 세팅 확인", description="관리자 로그인시 세팅 여부 확인")
+    @Operation(summary="식당 정보 세팅 확인", description="관리자 로그인시 세팅 여부 확인 / 없으면 null")
     @GetMapping("/api/manager/isSetting")
-    public ResponseEntity<Boolean> isSetting() {
-        boolean result = storeService.isSetting();
+    public ResponseEntity<StoreDto> isSetting() {
+        StoreDto result = storeService.isSetting();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary="식당 정보 세팅", description="세팅정보 없을 시 세팅")
     @PostMapping("/api/manager/setSetting")
-    public ResponseEntity<String> setSetting(@RequestBody StoreDto dto) {
+    public ResponseEntity<String> setSetting(@RequestBody StoreDto dto) throws SameNameException {
         storeService.setSetting(dto);
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
     }
@@ -41,17 +43,31 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
-    @Operation(summary="1주간 총 이용자 수 조회", description="최근 7개 데이터")
+    @Operation(summary="1주간 총 이용자 수 조회", description="최근 5개 데이터")
     @GetMapping("/api/manager/get/state/weekend")
-    public ResponseEntity<List<StoreStateDto>> getWeekend() {
-        List<StoreStateDto> dtos = storeService.getWeekend();
-        return ResponseEntity.status(HttpStatus.OK).body(dtos);
+    public ResponseEntity<List<StoreWeekendDto>> getWeekend() {
+        List<StoreWeekendDto> result = storeService.getWeekend();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="총 누적 이용자 수 조회", description="")
+    @GetMapping("/api/manager/get/state/all")
+    public ResponseEntity<Integer> getAllUsers() {
+        int result = storeService.getAllUsers();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary="식당 정보 조회", description="")
     @GetMapping("/api/user/store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException, WrongRequestDetails {
         StoreDto result = storeService.getStoreData();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="식당 소개 수정", description="")
+    @PatchMapping("/api/manager/store/set/info")
+    public ResponseEntity<StoreDto> updateStoreInfo(@RequestBody StoreDto dto) throws CantFindByIdException, WrongRequestDetails {
+        StoreDto result = storeService.updateStoreInfo(dto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.controller.planner;
 
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.planner.PlannerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class PlannerApiController {
 
     @Operation(summary="월간 식단표 조회", description="n월 한달의 식단표 조회")
     @GetMapping("/api/user/planner/{year}/{month}")
-    public ResponseEntity<List<PlannerDto>> getPlanner(@PathVariable int year, @PathVariable int month) {
+    public ResponseEntity<List<PlannerDto>> getPlanner(@PathVariable int year, @PathVariable int month) throws WrongParameter {
         List<PlannerDto> result = service.getPlanner(year, month);
         return ResponseEntity.ok().body(result);
     }

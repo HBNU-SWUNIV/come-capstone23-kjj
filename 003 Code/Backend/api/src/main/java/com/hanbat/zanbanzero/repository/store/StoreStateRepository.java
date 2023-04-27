@@ -9,6 +9,9 @@ import java.util.List;
 public interface StoreStateRepository extends JpaRepository<Calculate, Long> {
     Calculate findByDate(String todayDate);
 
-    @Query("SELECT s FROM Calculate s ORDER BY s.date DESC LIMIT 7")
-    List<Calculate> findTop7ByOrderByCreatedAtDesc();
+    @Query("SELECT s FROM Calculate s ORDER BY s.date DESC LIMIT 5")
+    List<Calculate> findTop5ByOrderByCreatedAtDesc();
+
+    @Query("SELECT SUM(c.today) FROM Calculate c")
+    Integer getAllUsers();
 }
