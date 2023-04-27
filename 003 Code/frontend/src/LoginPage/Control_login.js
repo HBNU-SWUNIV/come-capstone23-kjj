@@ -6,11 +6,11 @@ import FirstLogin from "./FirstLogin";
 
 function Control_login(){
     let User = useSelector(state => state.User);
-    console.log(User);
     return(
         <>
-        { User.isLogin? <FirstLogin/> : <Login/> 
-        }
+        {/* { User.isLogin? <FirstLogin/> : <Login/> 
+        } */}
+        <FirstLogin/>
         </>
     )
 }

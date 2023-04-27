@@ -95,16 +95,21 @@ margin-bottom:80px;
 
 function Login(){
     const dispatch = useDispatch();
-    const [ID,setID] = useState(''), [PW,setPW] = useState('');
+    const [username,setID] = useState(''), [password,setPW] = useState('');
     const onSubmit = (event) => {
         event.preventDefault();
-        let body = {ID,PW}
-        axios.get(`http://localhost:3000/users`)
-        .then(res => res.data.filter(res_ID => res_ID.ID === body.ID != '') ?
-        res.data.filter(res_PW => res_PW.ID === body.ID)[0].PW === body.PW?
-        axios.post(`http://localhost:3000/users`,body)
-        .then(res => dispatch(R_login(res.data)))
-        :null:null)
+        let body = {username,password}
+        
+        axios.post(`/login/manager`,body)
+        .then(res => console.log(res))
+        // 명세서 18번 - true/false 값에 따라 초기설정페이지 or home페이지 표시
+        
+        // axios.get(`http://kjj.kjj.r-e.kr:8080/login/manager`)
+        // .then(res => res.data.filter(res_ID => res_ID.ID === body.ID != '') ?
+        // res.data.filter(res_PW => res_PW.ID === body.ID)[0].PW === body.PW?
+        // axios.post(`http://localhost:3000/users`,body)
+        // .then(res => dispatch(R_login(res.data)))
+        // :null:null)
     }
     return(
         <Wrapper>
@@ -117,11 +122,11 @@ function Login(){
                 <LogininputW>
                     <IDD>
                         <span>ID</span>
-                        <input type='text' value={ID} onChange={e => setID(e.target.value)} style={Inputstyle}/>
+                        <input type='text' value={username} onChange={e => setID(e.target.value)} style={Inputstyle}/>
                     </IDD>
                     <PWW>
                         <span>Password</span>
-                        <input type='password' value={PW} onChange={e => setPW(e.target.value)} style={Inputstyle}/>
+                        <input type='password' value={password} onChange={e => setPW(e.target.value)} style={Inputstyle}/>
                     </PWW>
                     <button type='submit'>LOGIN</button>
                 </LogininputW>

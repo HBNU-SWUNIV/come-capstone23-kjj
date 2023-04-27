@@ -2,10 +2,9 @@ import styled from "styled-components";
 import { makeImagePath } from "../api&utils";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useMatch, useNavigate } from "react-router-dom";
+import { Form, json, useMatch, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { AiFillCloseCircle } from "react-icons/ai";
-import man from "../image/man.png";
 import Navtop from "../Components/Navtop";
 
 const Wrapper = styled.div`
@@ -15,7 +14,6 @@ width:85vw;
 height:100vh;
 margin-top:30px;
 `;
-
 const ItemWrapper = styled.div`
     width:85vw;
     height:100vh;
@@ -25,7 +23,6 @@ const ItemWrapper = styled.div`
         font-weight:600;
     }
 `;
-
 const Item = styled.div`
     width:57vw;
     height:18vh;
@@ -35,7 +32,6 @@ const Item = styled.div`
     align-items:center;
     justify-content:center;
 `;
-
 const Itemimg = styled.div`
 width:11vw;
 margin-left:12px;
@@ -44,7 +40,6 @@ background-image:url(${props => props.bgPhoto});
 background-size:cover;
 background-position:center center;
 `;
-
 const ItemInfo = styled.div`
     width:30vw;
     height:15vh;
@@ -88,7 +83,6 @@ const ItemUD = styled.div`
         border:1px solid #DC3546;
     }
 `
-
 const Itemfinal = styled.div`
     width:10vw;
     height:15vh;
@@ -105,7 +99,6 @@ const Itemfinal = styled.div`
         border:1px solid #6F4FF2;
     }
 `
-
 const CheckDelete = styled.div`
     width:24vw;
     height:36vh;
@@ -121,7 +114,6 @@ const CheckDelete = styled.div`
     flex-direction:column;
     align-items:center;
 `
-
 const CheckDelete_img = styled.div`
     width:10vw;
     height:15vh;
@@ -130,7 +122,6 @@ const CheckDelete_img = styled.div`
     background-position:center center;
     
 `
-
 const CheckDelete_btn = styled.div`
     width:12vw;
     height:15vh;
@@ -152,7 +143,6 @@ const CheckDelete_btn = styled.div`
         border:1px solid #6F4FF2;
     }
 `;
-
 const 메뉴추가 = styled.button`
     width:12vw;
     height:5vh;
@@ -164,7 +154,6 @@ const 메뉴추가 = styled.button`
     top:110px;
     margin-right:10vw;
 `;
-
 const UpdateWrapper = styled.div`
     width:30vw;
     height:80vh;
@@ -190,7 +179,6 @@ const UpdateWrapper = styled.div`
         color:white;
     }
 `;
-
 const UpdateTitle = styled.div`
     width:26vw;
     height:10vh;
@@ -202,7 +190,6 @@ const UpdateTitle = styled.div`
         font-weight:600;
     }
 `
-
 const UpdateImg = styled.div`
     width:24vw;
     height:30vh;
@@ -219,7 +206,6 @@ const UpdateImg = styled.div`
         margin-right:60px;
     }
 `;
-
 const UpdateImg_img = styled.div`
     width:10vw;
     height:20vh;
@@ -227,7 +213,6 @@ const UpdateImg_img = styled.div`
     background-size:cover;
     background-position:center center;
 `
-
 const UpdateText = styled.form`
     width:22vw;
     height:25vh;
@@ -265,12 +250,15 @@ function Menu(){
     const [품절, set품절] = useState([]);
 
     useEffect(() => {
-        const getApi = async() => {
-            const {data} = await axios.get('https://api.themoviedb.org/3/movie/top_rated?api_key=505148347d18c10aeac2faa958dbbf5c');
-            return data;
-        }
-        getApi().then(result => setSaveddata(result.results))
-        .then(setIsLoading(false));
+        // const getApi = async() => {
+        //     const {data} = await axios.get('/api/user/menu');
+        //     return data;
+        // }
+        // getApi().then(result => setSaveddata(result))
+        // .then(setIsLoading(false));
+
+        axios.get('/api/manager/menu')
+        .then(res => console.log(res))
     },[]) 
     
     const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
@@ -299,37 +287,70 @@ function Menu(){
         set품절(재판매);
     }
 
+    const [name, setMenu] = useState('');
+    const [cost, setCost] = useState('');
+    const [info, setInfo] = useState('');
+    const [details, setDetails] = useState('');
+
+    const onMenuUpdate = () => {
+        const formdata = new FormData();
+        let body = {name,cost,info,details};
+        const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
+        formdata.append("data",blob);
+        console.log(formdata)
+        axios({
+            method:'POST',
+            url:'/api/manager/menu/add',
+            data:formdata,
+            headers: {
+                "Content-Type": "multipart/form-data", // Content-Type을 반드시 이렇게 하여야 한다.
+              }
+        })
+
+        // axios.post(`/api/manager/menu/add`,data)
+        // .then(res => console.log(res))
+        navigate('/menu');
+        setMenu('');
+    } 
     return(
         <Wrapper>
             <Navtop pages={"메뉴 관리"}/>
             {
                 isLoading? <h1 style={{marginTop:'150px'}}>'Loading..'</h1> : 
-            
             <ItemWrapper>
                 <span>전체 {savedData?.length}종</span>
-            
                 {savedData?.map(data => 
                 <Item 
                 style={{opacity:`${품절.filter(soldout => soldout.id == data.id).length == 1 ? '0.5' : '1' }`}}>
                     <Itemimg bgPhoto={makeImagePath(data?.backdrop_path,'w400'||'')}/>
                     <ItemInfo>
-                        <span>{data?.original_title}</span>  
+                        <span>{data?.name}</span>  
+                        <span>{data?.cost}</span>
+                        {/* 
                         <span>{data?.overview.slice(0,8)+''}</span>  
                         <span>{data?.release_date}</span>  
-                        <span>{data?.vote_count}</span> 
+                        <span>{data?.vote_count}</span>  */}
                         <span 
-                        style={{position:'absolute',marginLeft:'12vw',color:'#DC3546',fontSize:'24px'}}>
+                            style={{position:'absolute',marginLeft:'12vw',color:'#DC3546',fontSize:'24px'}}>
                             {품절.filter(a=> a.id == data.id).length == 0 ? '':'품 절 되었어요'}
                         </span> 
                         {품절.filter(a=> a.id == data.id).length == 0 ? null : 
-                        <button onClick={() => on재판매(data?.id)}>재판매</button> }  
+                        <button onClick={() => on재판매(data?.id)}>
+                            재판매
+                        </button> }  
                     </ItemInfo> 
                     <ItemUD>
-                        <button onClick={() => onDelete(data?.id)}>삭제</button> 
-                        <button onClick={() => on품절(data?.id)}>품절</button>    
+                        <button onClick={() => onDelete(data?.id)}>
+                            삭제
+                        </button> 
+                        <button onClick={() => on품절(data?.id)}>
+                            품절
+                        </button>    
                     </ItemUD>    
                     <Itemfinal>
-                        <button type="submit" onClick={() => onUpdate(data?.id)}>메뉴 수정</button>
+                        <button type="submit" onClick={() => onUpdate(data?.id)}>
+                            메뉴 수정
+                        </button>
                     </Itemfinal>
                 </Item>)}
                 
@@ -338,17 +359,30 @@ function Menu(){
         
         {deletePathMatch?
         <CheckDelete>
-        <div style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
+        <div 
+        style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
             <CheckDelete_img bgPhoto={makeImagePath(DeletePath?.backdrop_path,'w400'||'')}/>
-            <div style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
-                <span style={{fontSize:'22px',fontWeight:'600'}}>{DeletePath?.original_title}</span>
-                <span>{DeletePath?.vote_count}</span>
+            <div 
+            style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
+                <span 
+                style={{fontSize:'22px',fontWeight:'600'}}>
+                    {DeletePath?.original_title}
+                </span>
+                <span>
+                    {DeletePath?.vote_count}
+                </span>
             </div>
         </div>
-        <span style={{marginTop:'30px',fontWeight:'600'}}>정말 삭제하시겠습니까?</span>
+        <span style={{marginTop:'30px',fontWeight:'600'}}>
+            정말 삭제하시겠습니까?
+        </span>
         <CheckDelete_btn>
-            <button onClick={() => onFinalDelete(DeletePath?.id)}>삭제</button>
-            <button onClick={() => navigate('/menu')}>취소</button>
+            <button onClick={() => onFinalDelete(DeletePath?.id)}>
+                삭제
+            </button>
+            <button onClick={() => navigate('/menu')}>
+                취소
+            </button>
         </CheckDelete_btn>
         </CheckDelete>
         :
@@ -357,41 +391,39 @@ function Menu(){
         {UpdatePathMatch?
         <UpdateWrapper>
             <UpdateTitle>
-                <span>메뉴 수정</span>
+                <span>{UpdatePathMatch.params.updateId == 1 ? '메뉴 추가' : '메뉴 수정'}</span>
                 <AiFillCloseCircle onClick={() => navigate('/menu')} style={{fontSize:'20px',fontWeight:600}}/>
             </UpdateTitle>
             <UpdateImg>
                 <UpdateImg_img bgPhoto={makeImagePath(UpdatePath?.backdrop_path,'w400'||'')}/>
-                <button>이미지 수정</button>
+                <button>
+                    {UpdatePathMatch.params.updateId == 1? '이미지 등록' : '이미지 수정'}
+                </button>
             </UpdateImg>
-            <UpdateText>
+            <UpdateText id="data">
                 <div>
                     <span>메뉴명</span>
-                    <input placeholder={UpdatePath?.original_title}/>
+                    <input value={name} onChange={(e) => setMenu(e.target.value)}/>
                 </div>
                 <div>
                     <span>가격</span>
-                    <input placeholder={UpdatePath?.overview.slice(0,8)+''}/>
+                    <input value={cost} onChange={e => setCost(e.target.value)}/>
                 </div>
                 <div>
                     <span>소개</span>
-                    <input placeholder={UpdatePath?.release_date}/>
+                    <input value={info} onChange={e => setInfo(e.target.value)}/>
                 </div>
                 <div>
                     <span>추가정보</span>
-                    <input placeholder={UpdatePath?.vote_count}/>
+                    <input value={details} onChange={e=> setDetails(e.target.value)}/>
                 </div>
             </UpdateText>
-            <button onClick={()=>navigate('/menu')}>저장</button>
+            <button onClick= {onMenuUpdate}>저장</button>
         </UpdateWrapper>
         :
         null}
-
         <메뉴추가 onClick={() => navigate('/menu/update/1')}>메뉴 추가</메뉴추가>
-
-
         </Wrapper>
-    )
-}
+    )}
 
 export default Menu;
