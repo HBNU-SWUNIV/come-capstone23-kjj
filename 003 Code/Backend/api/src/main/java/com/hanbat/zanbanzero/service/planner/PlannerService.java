@@ -56,7 +56,7 @@ public class PlannerService {
         return PlannerDto.createPlannerDto(planner);
     }
 
-    public List<PlannerDto> getPlanner(int year, int month) {
+    public List<PlannerDto> getPlanner(int year, int month) throws WrongParameter {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
 
         String start = DateTools.makeDateString(year, month, 1);

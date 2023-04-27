@@ -79,7 +79,7 @@ public class MenuService {
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException, SameNameException {
         if (menuRepository.existsByName(dto.getName())) {
             throw new SameNameException("데이터 중복입니다.");
         }

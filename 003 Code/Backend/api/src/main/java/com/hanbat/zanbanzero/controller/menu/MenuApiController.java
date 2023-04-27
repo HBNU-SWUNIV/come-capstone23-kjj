@@ -63,7 +63,7 @@ public class MenuApiController {
 
     @Operation(summary="관리자 - 메뉴 수정", description="")
     @PatchMapping("/api/manager/menu/{id}/update")
-    public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException {
+    public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, SameNameException {
         menuService.updateMenu(dto, file, id);
 
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");

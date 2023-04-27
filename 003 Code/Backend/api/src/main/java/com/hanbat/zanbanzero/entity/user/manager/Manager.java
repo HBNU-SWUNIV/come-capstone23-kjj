@@ -15,10 +15,6 @@ public class Manager {
     @Id
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Store store;
-
     private String username;
     private String password;
     private String roles;

@@ -26,7 +26,7 @@ public class ManagerService implements UserDetailsService {
     private final ManagerRepository managerRepository;
     private final Long finalId = 1L;
 
-    public ManagerInfoDto getInfo() throws JwtException {
+    public ManagerInfoDto getInfo() throws JwtException, CantFindByIdException {
         Manager manager = managerRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
 
         return ManagerInfoDto.createManagerInfoDto(manager);
@@ -39,13 +39,13 @@ public class ManagerService implements UserDetailsService {
     }
 
     @Transactional
-    public void setManagerNickname(String username) {
+    public void setManagerNickname(String username) throws CantFindByIdException {
         Manager manager = managerRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         manager.setUsername(username);
     }
 
     @Transactional
-    public void setManagerPassword(ManagerPasswordDto dto) {
+    public void setManagerPassword(ManagerPasswordDto dto) throws CantFindByIdException, WrongParameter {
         Manager manager = managerRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         boolean result = bCryptPasswordEncoder.matches(dto.getOldPass(), manager.getPassword());
         if (!result) throw new WrongParameter("잘못된 비밀번호입니다.");

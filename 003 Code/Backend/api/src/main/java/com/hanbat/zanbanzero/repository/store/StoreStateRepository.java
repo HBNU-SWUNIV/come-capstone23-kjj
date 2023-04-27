@@ -13,5 +13,5 @@ public interface StoreStateRepository extends JpaRepository<Calculate, Long> {
     List<Calculate> findTop5ByOrderByCreatedAtDesc();
 
     @Query("SELECT SUM(c.today) FROM Calculate c")
-    int getAllUsers();
+    Integer getAllUsers();
 }

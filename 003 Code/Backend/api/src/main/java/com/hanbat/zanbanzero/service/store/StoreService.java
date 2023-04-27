@@ -13,6 +13,7 @@ import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.repository.user.ManagerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,18 +37,19 @@ public class StoreService {
         return now.format(formatter);
     }
 
-    public boolean isSetting() {
-        boolean result = storeRepository.existsById(finalId);
-        return result;
+    public StoreDto isSetting() {
+        Store store = storeRepository.findById(finalId).orElse(null);
+        if (store == null) return null;
+        return StoreDto.createStoreDto(store);
     }
 
-    public StoreDto getStoreData() {
+    public StoreDto getStoreData() throws CantFindByIdException {
         Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         return StoreDto.createStoreDto(store);
     }
 
 
-    public void setSetting(StoreDto dto) {
+    public void setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) {
             throw new SameNameException("중복된 요청입니다.");
         }
@@ -69,6 +71,15 @@ public class StoreService {
     }
 
     public int getAllUsers() {
-        return storeStateRepository.getAllUsers();
+        Integer result = storeStateRepository.getAllUsers();
+        return (result != null) ? result : 0;
+    }
+
+    @Transactional
+    public StoreDto updateStoreInfo(StoreDto dto) throws CantFindByIdException {
+        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        store.setInfo(dto);
+
+        return StoreDto.createStoreDto(store);
     }
 }
