@@ -23,4 +23,5 @@ Google Docs - https://docs.google.com/spreadsheets/d/1OK9Lz6OWnOiIdpQcVPsFch9fzm
 1차 코드 리팩토링 : https://jeong-mok.tistory.com/7  
 캐싱을 이용한 성능개선 : https://jeong-mok.tistory.com/8  
 자동 마감 시스템을 위한 Spring Batch 적용 : https://jeong-mok.tistory.com/10  
-HikariCP Connection leak 해결 : https://jeong-mok.tistory.com/11
+HikariCP Connection leak 해결 : https://jeong-mok.tistory.com/11  
+500 에러 모니터링을 위한 Sentry 도입 : https://jeong-mok.tistory.com/12
