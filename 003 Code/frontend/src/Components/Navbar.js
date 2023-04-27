@@ -38,9 +38,6 @@ const Title = styled.div`
         font-family:'Alegreya';
         font-weight:600;
     }
-    span:first-child{
-        font-size:28px;
-    }
 `
 
 const Menus = styled.div`
@@ -87,7 +84,10 @@ function Navbar(){
        <Wrapper>
             <Title>
                 <Image>default Image</Image>
-                <span>ZanBanZero</span>
+                <span
+                style={{marginLeft:'-40px',fontSize:'30px'}}>
+                    잔반제로
+                </span>
                 <span>수요 관리 시스템</span>
             </Title>
             <Menus>

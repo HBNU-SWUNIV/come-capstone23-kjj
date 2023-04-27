@@ -1,7 +1,9 @@
 import styled from "styled-components";
 import Navtop from "../Components/Navtop";
 import Calander2 from "./Calander2";
-
+import axios from "axios";
+import { useEffect } from "react";
+import { useState } from "react";
 
 const Wrapper = styled.div`
 display:flex;
@@ -59,10 +61,11 @@ const Message = styled.div`
         font-weight:600;
         margin-bottom:5px;
     }
-    input{
+    textarea{
         margin:0 4px;
         width:34vw;
         height:15vh;
+        white-space:pre-wrap;
     }
 `;
 
@@ -86,22 +89,45 @@ const MessageDiv = styled.div`
 
 
 function Setting(){
+    const [info, setInfo] = useState('');
+
+    useEffect(() => {
+        axios.get('/api/user/store')
+        .then(res => setInfo(res.data.info))
+    },[])
+
+    const onInfo = (e) => {
+        setInfo(e);
+    }
+
+    const onInfoUpdate = () => {
+        let body = {info};
+        axios.patch('/api/manager/store/set/info',body)
+        .then(res => res.status === 200 && alert('수정되었습니다.'))
+    }
 
     return(
         <Wrapper>
         <Navtop pages={"설정"} isLogin={"한밭대학교"}/>
+
         <FirstWrapper>
             <Message>
                 <span>식당 소개 메시지를 설정할 수 있어요.</span>
-                <input placeholder="백반단가 5000원"/>
-                <MessageDiv><button>수정</button></MessageDiv>
+                <textarea value={info} placeholder={info} onChange={e => onInfo(e.target.value)}/>
+                <MessageDiv>
+                    <button onClick={onInfoUpdate}>
+                        수정
+                    </button>
+                </MessageDiv>
             </Message>     
         </FirstWrapper>
 
         <CalanderWrapper>
             <CalanderHeader>
                 <span>휴일을 설정할 수 있어요.</span>
-                <button>휴일 등록</button>
+                <button>
+                    휴일 등록
+                </button>
             </CalanderHeader>
             <Calander2/>
         </CalanderWrapper>

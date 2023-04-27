@@ -6,6 +6,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navtop from '../Components/Navtop';
 import { format } from 'date-fns';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 const Wrapper = styled.div`
 margin-top:35px;
@@ -207,8 +209,50 @@ const Items = styled.div`
         font-weight:600;
     }
 `
+
     
 function Dashboard(){
+    const mokdata = [{
+        id:'월',
+        value:'90'
+    },
+    {
+        id:'화',
+        value:'90'
+    },
+    {
+        id:'수',
+        value:'100'
+    },
+    {
+        id:'목',
+        value:'10'
+    },{
+        id:'금',
+        value:'50'
+    },
+    {
+        id:'토',
+        value:'30'
+    },
+    {
+        id:'일',
+        value:'30'
+    }
+];
+
+    useEffect(() => {
+        // const getApi = async() => {
+        //     const {data} = await axios.get('/api/manager/get/state/today');
+        //     return data;
+        // }
+        // getApi().then(result => console.log(result))
+        // .then(setIsLoading(false));
+
+        axios.get('/api/manager/store/leftovers/count')
+        .then(res => console.log(res))
+    },[]) 
+
     const [ShowInput, SetShowInput] = useState(false);
 
     const onClick = () => {
@@ -267,7 +311,7 @@ function Dashboard(){
                     },
                     {
                         name:'이번주',
-                        data:[30,30,40,20,10,10,20]
+                        data:mokdata.map(a=>a.value)
                     },
                 ]}
                 options={{
@@ -280,7 +324,7 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
-                        categories:['월','화','수','목','금','토','일']
+                        categories:mokdata.map(a=>a.id)
                     },
                     fill:{
                         colors:'green',
