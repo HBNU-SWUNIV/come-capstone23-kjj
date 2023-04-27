@@ -134,7 +134,6 @@ const WriteInfo = styled.div`
         border:1px solid gray;
         border-radius:10px;
         resize:none;
-        
     }
 `;
 

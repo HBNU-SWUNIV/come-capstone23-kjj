@@ -9,7 +9,7 @@ const User = createSlice({
         S_PW:'',
         isLogin:false,
         isFirst:true,
-        testFirstvisit:true,
+        testFirstvisit:false,
     },
     reducers:{
         R_login(state,action){

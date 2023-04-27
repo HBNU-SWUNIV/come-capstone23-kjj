@@ -1,18 +1,19 @@
 import {Outlet} from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './Components/Navbar';
-import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 const Wrapper = styled.div`
 display:flex;
 `
 
 function App() {
-  const User = useSelector(state => state.User);
-  console.log(User)
+  // 페이지 별 navbar 활성화 여부 구현
+  const location = useLocation();
+  
   return (
     <Wrapper>
-      {User.testFirstvisit == false ? <Navbar/> : null}
+      {location.pathname === '/' ? null : <Navbar/>}
       <Outlet/>
     </Wrapper>         
   );
