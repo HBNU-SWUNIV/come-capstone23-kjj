@@ -1,8 +1,10 @@
 package com.hanbat.zanbanzero.service.planner;
 
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
+import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.planner.Planner;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.planner.PlannerRepository;
 import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,11 @@ import java.util.stream.Collectors;
 public class PlannerService {
 
     private final PlannerRepository repository;
+    private final MenuRepository menuRepository;
+
+    private Menu getPlannerMenu() {
+        return menuRepository.findByUsePlanner(true);
+    }
 
     @Transactional
     public void setPlanner(PlannerDto dto, int year, int month, int day) {
@@ -25,26 +32,11 @@ public class PlannerService {
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
             dto.setDate(dateString);
-            dto.setOff(false);
 
-            repository.save(Planner.createPlanner(dto));
+            repository.save(Planner.createPlanner(dto, getPlannerMenu()));
         }
         else {
             planner.setMenus(dto.getMenus());
-        }
-    }
-
-    @Transactional
-    public void setOff(PlannerDto dto, int year, int month, int day) {
-        String dateString = DateTools.makeDateString(year, month, day);
-
-        Planner planner = repository.findOnePlanner(dateString);
-        if (planner == null) {
-            dto.setDate(dateString);
-            repository.save(Planner.createPlanner(dto));
-        }
-        else {
-            planner.setOff(dto.isOff());
         }
     }
 

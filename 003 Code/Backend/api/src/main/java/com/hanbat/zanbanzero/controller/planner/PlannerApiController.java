@@ -23,13 +23,6 @@ public class PlannerApiController {
         return ResponseEntity.ok().body("저장되었습니다.");
     }
 
-    @Operation(summary="휴무일 설정", description="n월 n일의 휴무일 설정")
-    @PostMapping("/api/user/planner/set/off/{year}/{month}/{day}")
-    public ResponseEntity<String> setOff(@RequestBody PlannerDto dto,@PathVariable int year, @PathVariable int month, @PathVariable int day) {
-        service.setOff(dto, year, month, day);
-        return ResponseEntity.ok().body("저장되었습니다.");
-    }
-
     @Operation(summary="일별 식단표 조회", description="n월 n일 하루의 식단표 조회")
     @GetMapping("/api/user/planner/{year}/{month}/{day}")
     public ResponseEntity<PlannerDto> getOnePlanner(@PathVariable int year, @PathVariable int month, @PathVariable int day) {

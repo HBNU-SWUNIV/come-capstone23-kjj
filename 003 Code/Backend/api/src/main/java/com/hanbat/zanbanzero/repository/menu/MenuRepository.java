@@ -12,4 +12,5 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     Menu findByName(@Param("name") String name);
 
 
+    Menu findByUsePlanner(boolean b);
 }

@@ -72,7 +72,7 @@ public class MenuService {
             throw new SameNameException("데이터 중복입니다.");
         }
 
-        Menu menu = menuRepository.save(Menu.createMenu(dto, storeRepository.getReferenceById(storeId), filePath));
+        Menu menu = menuRepository.save(Menu.createMenu(dto, storeRepository.getReferenceById(storeId), filePath, false));
 
         menuInfoRepository.save(dto.createMenuInfo(menu));
     }

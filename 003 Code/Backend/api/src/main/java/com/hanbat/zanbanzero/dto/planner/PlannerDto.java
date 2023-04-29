@@ -11,13 +11,11 @@ import lombok.NoArgsConstructor;
 public class PlannerDto {
     private String date;
     private String menus;
-    private boolean off;
 
     public static PlannerDto createPlannerDto(Planner planner){
         return new PlannerDto(
                 planner.getDate(),
-                planner.getMenus(),
-                planner.isOff()
+                planner.getMenus()
         );
     }
 }

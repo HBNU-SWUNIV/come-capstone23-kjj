@@ -2,10 +2,12 @@ package com.hanbat.zanbanzero.controller.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
+import com.hanbat.zanbanzero.dto.calculate.CalculateDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,14 +38,14 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
     }
 
-    @Operation(summary="금일 총 정산결과 조회", description="10:30분마다 정산하여 갱신됨")
+    @Operation(summary="금일 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
     @GetMapping("/api/manager/get/state/today")
-    public ResponseEntity<StoreStateDto> getToday() throws JsonProcessingException {
-        StoreStateDto dto = storeService.getToday();
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    public ResponseEntity<Integer> getToday() throws JsonProcessingException {
+        Integer result = storeService.getToday();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary="1주간 총 이용자 수 조회", description="최근 5개 데이터")
+    @Operation(summary="최근 이용자 수 조회", description="최근 5개 데이터")
     @GetMapping("/api/manager/get/state/weekend")
     public ResponseEntity<List<StoreWeekendDto>> getWeekend() {
         List<StoreWeekendDto> result = storeService.getWeekend();
@@ -69,5 +71,19 @@ public class StoreApiController {
     public ResponseEntity<StoreDto> updateStoreInfo(@RequestBody StoreDto dto) throws CantFindByIdException, WrongRequestDetails {
         StoreDto result = storeService.updateStoreInfo(dto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="휴무일 설정", description="n월 n일의 휴무일 설정")
+    @PostMapping("/api/manager/store/set/off/{year}/{month}/{day}")
+    public ResponseEntity<String> setOff(@RequestBody Boolean off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        storeService.setOff(off, year, month, day);
+        return ResponseEntity.ok().body("저장되었습니다.");
+    }
+
+    @Operation(summary="월간 휴무일 조회", description="n월 한달의 휴무일 조회")
+    @GetMapping("/api/manager/store/get/off/{year}/{month}")
+    public ResponseEntity<List<StoreStateDto>> getPlanner(@PathVariable int year, @PathVariable int month) throws WrongParameter {
+        List<StoreStateDto> result = storeService.getOffOfMonth(year, month);
+        return ResponseEntity.ok().body(result);
     }
 }

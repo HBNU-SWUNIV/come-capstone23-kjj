@@ -23,6 +23,7 @@ public class Menu {
     private int cost;
     private String image;
     private Boolean sold;
+    private Boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
         if (dto.getName() != null) {
@@ -33,14 +34,15 @@ public class Menu {
         }
     }
 
-    public static Menu createMenu(MenuUpdateDto dto, Store store, String filePath) {
+    public static Menu createMenu(MenuUpdateDto dto, Store store, String filePath, Boolean usePlanner) {
         return new Menu(
                 null,
                 store,
                 dto.getName(),
                 dto.getCost(),
                 filePath,
-                true
+                true,
+                usePlanner
         );
     }
 

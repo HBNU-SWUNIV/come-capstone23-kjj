@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.entity.store;
+package com.hanbat.zanbanzero.entity.calculate;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +15,4 @@ public class Calculate {
     private Long id;
 
     private String date;
-    private int today;
-    private String allMenus;
-    private int sales;
 }

@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.AuthenticationManagerImpl;
-import com.hanbat.zanbanzero.repository.user.ManagerRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +18,6 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private final UserRepository userRepository;
-    private final ManagerRepository managerRepository;
     private final AuthenticationManagerImpl authenticationManagerImpl;
     private final CorsFilter corsFilter;
 
@@ -40,7 +38,7 @@ public class SecurityConfig {
 //                .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new LoginFilter(customAuthenticationManager), UsernamePasswordAuthenticationFilter.class)
 //                .addFilterBefore(new ExceptionHandlerBeforeBasicAuthentication(), BasicAuthenticationFilter.class)
-//                .addFilter(new JwtAuthFilter(customAuthenticationManager, userRepository, managerRepository))
+//                .addFilter(new JwtAuthFilter(customAuthenticationManager, userRepository))
                 .authorizeHttpRequests()
 //                .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
 //                .requestMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")

@@ -8,15 +8,11 @@ public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;
 
     public CustomUriMapper(ServletRequest request) throws WrongParameter {
-        switch (((HttpServletRequest) request).getRequestURI()) {
-            case "/login/user":
-                createTokenInterface = new CreateUserTokenImpl();
-                break;
-            case "/login/manager":
-                createTokenInterface = new CreateManagerTokenImpl();
-                break;
-            default:
-                throw new WrongParameter("잘못된 주소입니다.");
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/login/")) {
+            createTokenInterface = new CreateUserTokenImpl();
+        }
+        else {
+            throw new WrongParameter("잘못된 주소입니다.");
         }
     }
 
