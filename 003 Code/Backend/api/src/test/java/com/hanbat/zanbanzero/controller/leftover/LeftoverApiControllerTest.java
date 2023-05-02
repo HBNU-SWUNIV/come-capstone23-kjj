@@ -1,14 +1,13 @@
 package com.hanbat.zanbanzero.controller.leftover;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
-import com.hanbat.zanbanzero.dto.leftover.LeftoverHistoryDto;
+import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
 import com.hanbat.zanbanzero.service.leftover.LeftoverService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -70,22 +69,22 @@ class LeftoverApiControllerTest extends ControllerTestClass {
     }
 
     @Test
-    void getAlLeftover() throws Exception{
+    void getAllLeftover() throws Exception{
         // 1. 정상 요청
         {
             // Given
-            Long testCount = 1L;
-            List<LeftoverHistoryDto> expected = new ArrayList<>();
-            Mockito.when(leftoverService.getAllLeftover(testCount)).thenReturn(expected);
+            int testCount = 1;
+            List<LeftoverDto> expected = new ArrayList<>();
+            Mockito.when(leftoverService.getLeftoverPage(testCount)).thenReturn(expected);
 
             // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/store/leftovers/1")).andReturn();
+            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/store/leftover/1")).andReturn();
 
             // Then
             assertEquals(objectMapper.writeValueAsString(expected), result.getResponse().getContentAsString());
             assertEquals(200, result.getResponse().getStatus());
 
-            Mockito.verify(leftoverService, Mockito.times(1)).getAllLeftover(testCount);
+            Mockito.verify(leftoverService, Mockito.times(1)).getLeftoverPage(testCount);
         }
     }
 }

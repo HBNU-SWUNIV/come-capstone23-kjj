@@ -16,8 +16,7 @@ public class CalculateMenu {
     @ManyToOne(fetch = FetchType.LAZY)
     private Calculate calculate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Menu menu;
+    private String menu;
 
     private int count;
     private int sales;

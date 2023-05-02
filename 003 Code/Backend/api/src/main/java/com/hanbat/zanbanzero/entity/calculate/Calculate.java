@@ -15,4 +15,6 @@ public class Calculate {
     private Long id;
 
     private String date;
+    private int today;
+    private int sales;
 }

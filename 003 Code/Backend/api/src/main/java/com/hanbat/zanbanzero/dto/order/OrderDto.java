@@ -15,7 +15,7 @@ public class OrderDto {
 
     private Long id;
 
-    private Long menu;
+    private String menu;
     private int cost;
     private String orderDate;
     private boolean recognize;
@@ -23,7 +23,7 @@ public class OrderDto {
     public static OrderDto createOrderDto(Order order) throws JsonProcessingException {
         return new OrderDto(
                 order.getId(),
-                order.getMenu(),
+                order.getMenu().getName(),
                 order.getCost(),
                 order.getOrderDate(),
                 order.isRecognize()
