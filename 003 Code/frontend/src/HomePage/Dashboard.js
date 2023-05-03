@@ -8,6 +8,8 @@ import Navtop from '../Components/Navtop';
 import { format } from 'date-fns';
 import axios from 'axios';
 import { useEffect } from 'react';
+import Overlay from '../Components/Overlay';
+import {useNavigate} from 'react-router-dom';
 
 const Wrapper = styled.div`
 margin-top:35px;
@@ -168,8 +170,10 @@ const LastChart = styled.div`
 
 const InputW = styled.form`
     width:460px;
+    z-index:1;
     height:300px;
-    border:2px solid #1473E6;
+    border:2px solid white;
+    border-radius: 15px;
     position:absolute;
     left:0;
     right:0;
@@ -193,11 +197,15 @@ const InputW = styled.form`
 
 const Title = styled.div`
     display:flex;
-    width:420px;
+    width:465px;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
     height:70px;
+    background-color:#d9d9d9;
     justify-content:space-between;
     align-items:center;
-    margin-top:-30px;
+    margin-top:-35px;  
+
 `
 const Items = styled.div`
     display:flex;
@@ -209,6 +217,7 @@ const Items = styled.div`
         font-weight:600;
     }
 `
+
 
     
 function Dashboard(){
@@ -239,7 +248,8 @@ function Dashboard(){
         id:'일',
         value:'30'
     }
-];
+];  
+    const navigate = useNavigate();
 
     useEffect(() => {
         // const getApi = async() => {
@@ -252,7 +262,7 @@ function Dashboard(){
         axios.get('/api/manager/store/leftovers/count')
         .then(res => console.log(res))
     },[]) 
-
+    
     const [ShowInput, SetShowInput] = useState(false);
 
     const onClick = () => {
@@ -266,8 +276,9 @@ function Dashboard(){
 
     const [startDate, setStartDate] = useState(new Date());
     
-    return(
+    return(<>
         <Wrapper>
+            
             <Navtop pages={"홈"}/>
 
         <Statistis>
@@ -355,31 +366,7 @@ function Dashboard(){
         </SecondChart>
         </차트2개>
 
-        {ShowInput? 
-        (<>
-            <InputW>
-                <Title>
-                    <span style={{fontSize:'22px',fontWeight:'600',textDecoration: 'underline', textDecorationColor:'#1473E6',textDecorationThickness:'2px'}}>잔반량 등록</span>
-                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'-15px',marginTop:'-40px'}} onClick={()=>SetShowInput(false)}/>
-                </Title>
-
-                <div>
-                    <Items>
-                        <span>날짜선택</span>
-                        <div>                       
-                        <DatePicker selected={startDate} onChange={date => setStartDate(date)}/>
-                        </div>
-                    </Items>
-                    <Items>
-                        <span>총 잔반량</span>
-                        <input type='number' placeholder='kg수를 적으세요.'/>
-                    </Items>
-                </div>
-
-                <button onClick={onsubmit}>등록하기</button>
-            </InputW>
-        </>) 
-        : null}        
+        {/* input         */}
 
         <LastChart>
             <span>이번주 이용자 수</span>          
@@ -411,8 +398,33 @@ function Dashboard(){
 
         </LastChart>
         
-
+        
         </Wrapper>
+        {ShowInput ? <>
+            <InputW>
+                <Title>
+                    <span style={{fontSize:'22px',fontWeight:'600', marginLeft:'20px'}}>잔반량 등록</span>
+                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'20px'}} onClick={()=>SetShowInput(false)}/>
+                </Title>
+
+                <div>
+                    <Items>
+                        <span>날짜선택</span>
+                        <div>                       
+                        <DatePicker selected={startDate} onChange={date => setStartDate(date)}/>
+                        </div>
+                    </Items>
+                    <Items>
+                        <span>총 잔반량</span>
+                        <input type='number' placeholder='kg수를 적으세요.'/>
+                    </Items>
+                </div>
+
+                <button onClick={onsubmit}>등록하기</button>
+            </InputW>
+            <Overlay/>
+        </>:null}
+        </>
     )
 }
 

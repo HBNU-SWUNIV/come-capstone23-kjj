@@ -14,8 +14,8 @@ const Wrapper = styled.div`
 `
 
 const Image = styled.button`
-    width: 100px;
-    height: 100px;
+    width: 90px;
+    height: 90px;
     border-radius:50px;
     margin-bottom:20px;
     margin-top:-40px;

@@ -1,6 +1,8 @@
 import styled from "styled-components";
 import Calander from "./Calander";
 import Navtop from "../Components/Navtop";
+import Overlay from "../Components/Overlay";
+import { useLocation } from "react-router-dom";
 
 const Wrapper = styled.div`
 display:flex;
@@ -19,18 +21,20 @@ const Tip = styled.ul`
     height:10vh;
     position:absolute;
     right:0;
-    margin-top:3vh;
-    margin-right:17vw;
+    margin-top:1vh;
+    margin-right:13vw;
     li{
         font-weight:500;
-        font-size:18px;
+        font-size:15px;
         color:#C63333;
     }
 `;
 
-
 function Backban(){
+    const location = useLocation();
+    console.log(location.pathname);
     return(
+        <>
         <Wrapper>
             <Navtop pages={'백반 관리'}/>
             <span style={{position:'relative',fontWeight:'600',fontSize:'20px',marginLeft:'40px',color:'#7BE457'}}>요일을 클릭해서 식단표를 작성해주세요!</span>
@@ -41,6 +45,8 @@ function Backban(){
             </Tip>
             <Calander/>
         </Wrapper>
+        {location.pathname =='/backban' ? null : <Overlay/>}
+        </>
     )
 }
 
