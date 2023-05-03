@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 import ApexCharts from "react-apexcharts";
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navtop from '../Components/Navtop';
 import { format } from 'date-fns';
 import axios from 'axios';
-import { useEffect } from 'react';
 import Overlay from '../Components/Overlay';
 import {useNavigate} from 'react-router-dom';
 
@@ -221,49 +220,46 @@ const Items = styled.div`
 
     
 function Dashboard(){
-    const mokdata = [{
-        id:'월',
-        value:'90'
-    },
-    {
-        id:'화',
-        value:'90'
-    },
-    {
-        id:'수',
-        value:'100'
-    },
-    {
-        id:'목',
-        value:'10'
-    },{
-        id:'금',
-        value:'50'
-    },
-    {
-        id:'토',
-        value:'30'
-    },
-    {
-        id:'일',
-        value:'30'
-    }
-];  
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // const getApi = async() => {
-        //     const {data} = await axios.get('/api/manager/get/state/today');
-        //     return data;
-        // }
-        // getApi().then(result => console.log(result))
-        // .then(setIsLoading(false));
-
-        axios.get('/api/manager/store/leftovers/count')
-        .then(res => console.log(res))
-    },[]) 
-    
+    const [startDate, setStartDate] = useState(new Date());
+    const [prevLeftover, setPrevLeftover] = useState([]);
+    const [nextLeftover, setNextLeftover] = useState([]);
     const [ShowInput, SetShowInput] = useState(false);
+    const [totalPop, setTotalPop] = useState(0);
+    const [todaypop, setTodaypop] = useState(0);
+    const [Weekpop, setWeekpop] = useState([]);
+
+
+    // 금일, 누적 이용자 수 
+    useEffect(() => {
+        axios.get('/api/manager/get/state/all')
+        .then(res => setTotalPop(res.data))
+
+        axios.get('/api/manager/get/state/today')
+        .then(res => setTodaypop(res.data))
+
+        axios.get('/api/manager/get/state/weekend')
+        .then(res => setWeekpop(res.data))
+
+        axios.get('/api/manager/leftover/get/1')
+        .then(res => setPrevLeftover(res.data))
+
+        axios.get(`/api/manager/leftover/get/0`)
+        .then(res => setNextLeftover(res.data))
+        
+    },[])
+
+    let prevsum = 0;
+    prevLeftover.forEach(n => {
+        prevsum += n.leftover
+    })
+    
+    let nextsum = 0;
+    nextLeftover.forEach(n => {
+        nextsum += n.leftover
+    })
+
+
 
     const onClick = () => {
         SetShowInput(true);
@@ -274,7 +270,7 @@ function Dashboard(){
         SetShowInput(false);
     };
 
-    const [startDate, setStartDate] = useState(new Date());
+    
     
     return(<>
         <Wrapper>
@@ -288,21 +284,21 @@ function Dashboard(){
             </금일>
 
             <Total>
-                <span>140</span>
+                <span>{todaypop}</span>
                 <span>명</span>
             </Total>
             
             <div style={{marginLeft:'-20px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
             
             <누적이용자>
-                <span>4987</span>
+                <span>{totalPop}</span>
                 <span>누적 이용자</span>
             </누적이용자>
 
             <div style={{marginLeft:'30px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
 
             <감소량>
-                <span>3.2Kg</span>
+                <span>{prevsum-nextsum}Kg</span>
                 <span>지난주 대비 음식물 쓰레기 감소량</span>
             </감소량>
         </Statistis>
@@ -310,7 +306,7 @@ function Dashboard(){
         <차트2개>
         <FirstChart>
             <div>
-                <span>지난주 대비 잔반량</span>
+                <span>지난 2주간 잔반량 비교</span>
                 <button onClick={onClick}>등록하러가기</button>
             </div>
             <ApexCharts
@@ -318,11 +314,11 @@ function Dashboard(){
                 series={ [
                     {
                         name:'지난주',
-                        data:[20,30,10,50,60,20,40]
+                        data:prevLeftover.map(prev => prev.leftover)
                     },
                     {
                         name:'이번주',
-                        data:mokdata.map(a=>a.value)
+                        data:nextLeftover.map(next => next.leftover)
                     },
                 ]}
                 options={{
@@ -335,7 +331,7 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
-                        categories:mokdata.map(a=>a.id)
+                        categories:['월','화','수','목','금']
                     },
                     fill:{
                         colors:'green',
@@ -369,12 +365,12 @@ function Dashboard(){
         {/* input         */}
 
         <LastChart>
-            <span>이번주 이용자 수</span>          
+            <span>지난주 이용자 수</span>          
         <ApexCharts
                 type="line"
                 series={ [
                     {
-                        data:[200,130,110,150,160,120,140]
+                        data:Weekpop?.map(week => week.count)
                     }
                 ]}
                 options={{
@@ -387,7 +383,7 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
-                        categories:['월','화','수','목','금','토','일']
+                        categories:['월','화','수','목','금']
                     },
                     fill:{
                         colors:'green',
@@ -403,15 +399,16 @@ function Dashboard(){
         {ShowInput ? <>
             <InputW>
                 <Title>
-                    <span style={{fontSize:'22px',fontWeight:'600', marginLeft:'20px'}}>잔반량 등록</span>
+                    <span style={{fontSize:'22px',fontWeight:'600', marginLeft:'20px'}}>오늘의 잔반량 등록</span>
                     <AiFillCloseCircle style={{fontSize:'22px',marginRight:'20px'}} onClick={()=>SetShowInput(false)}/>
                 </Title>
 
                 <div>
                     <Items>
-                        <span>날짜선택</span>
+                        <span>오늘 날짜</span>
                         <div>                       
-                        <DatePicker selected={startDate} onChange={date => setStartDate(date)}/>
+                        {format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}
+                        {/* <DatePicker selected={startDate} onChange={date => setStartDate(date)}/> */}
                         </div>
                     </Items>
                     <Items>

@@ -64,7 +64,6 @@ const DivDay = styled.div`
     }
     span:last-child{
         font-size:13px;
-        
     }
 `;
 
@@ -150,20 +149,27 @@ const WriteButton = styled.div`
 `;
 
 function Calander2(){
+    const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [startDate1, setStartDate1] = useState(new Date());
     const [offday, setOffday] = useState([]);
-
+    const monthStart = startOfMonth(currentMonth),monthEnd = endOfMonth(monthStart);
+    const startDate = startOfWeek(monthStart),endDate = endOfWeek(monthEnd);
+    let day = startDate,dayss = [],line = [],formattedDate = '';
+    const days = [],date = ['일','월','화','수','목','금','토'];
+    const DayPathMatch = useMatch('/setting/:id'); 
+    
+    const onDay = (id) => {
+        navigate(`/setting/${id}`);
+    }
 
     useEffect(() => {
         axios.get(`api/manager/store/get/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
         .then(res => setOffday(res.data))
     },[currentMonth])
     
-    console.log(offday)
-    const days = [];
-    const date = ['일','월','화','수','목','금','토'];
-    const navigate = useNavigate();
+    console.log(offday.map(a => a.date))
+    
     for (let i=0; i<7; i++){
         days.push(
             <DaysDiv key={shortid.generate()}>
@@ -172,25 +178,11 @@ function Calander2(){
         )
     }
 
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
-    let day = startDate;
-    let dayss = [];
-    let line = [];
-    let formattedDate = '';
-
-    const DayPathMatch = useMatch('/setting/:id'); 
-
-    const onDay = (id) => {
-        navigate(`/setting/${id}`);
-    }
-
     while(day <= endDate){
         for(let i=0; i<7; i++){
             formattedDate = format(day,'d').padStart(2,'0').toString();
             const id = format(day,'yyyyMMdd').toString();
+            
             if(format(monthStart,'M') != format(day,'M')){
                 dayss.push(
                     // 다른달일 경우 회색으로 표시
