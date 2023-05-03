@@ -1,9 +1,10 @@
 import {addMonths, subMonths, format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays} from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
-import { Navigate, useMatch, useNavigate } from 'react-router-dom';
+import {  useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
+import shortid from 'shortid';
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -15,8 +16,7 @@ const Wrapper = styled.div`
     border:1px solid #5B5B5B;
     flex-direction:column;
     align-items:center;
-`
-
+`;
 const HeaderW = styled.div`
     width:60vw;
     height:12vh;
@@ -29,7 +29,6 @@ const HeaderW = styled.div`
         font-weight:600;
     }
 `;
-
 const DaysDiv = styled.div`
     width:9vw;
     height:7vh;
@@ -39,13 +38,11 @@ const DaysDiv = styled.div`
     border:0.1px solid #5B5B5B;
     border-right-style:none;
 `;
-
 const DaysWrapper = styled.div`
     display:flex;
     justify-content:space-between;
     width:63vw;
 `;
-
 const DivDay = styled.div`
     width:9vw;
     height:13vh;
@@ -63,22 +60,21 @@ const DivDay = styled.div`
         white-space:pre-wrap;
     }
 `;
-
 const DivWeek = styled.div`
     display:flex;
     width:63vw;
     height:13vh;
 `;
-
 const DivWrapper = styled.div`
     width:63vw;
     flex-direction:column;
 
 `;
-
 const WriteWrapper = styled.form`
     width:40vw;
+    border-radius:15px;
     height:40vh;
+    z-index:1;
     position:absolute;
     left:0;
     right:0;
@@ -89,7 +85,7 @@ const WriteWrapper = styled.form`
     flex-direction:column;
     align-items:center;
     background-color:white;
-    border:1px solid #1473E6;
+    border:1px solid white;
     button{
         width:15vw;
         height:5vh;
@@ -100,12 +96,16 @@ const WriteWrapper = styled.form`
         color:white;
     }
 `;
-
 const WriteTitle = styled.div`
-    width:38vw;
+    width:40.12vw;
+    margin-top:-1px;
+    margin-bottom:10px;
     height:10vh;
     display:flex;
+    background-color:#d9d9d9;
     justify-content:space-between;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
     align-items:center;
     span:nth-child(2){
         font-size:20px;
@@ -119,7 +119,6 @@ const WriteTitle = styled.div`
         text-decoration:underline;
     }
 `;
-
 const WriteInfo = styled.div`
     width:35vw;
     height:20vh;
@@ -136,7 +135,6 @@ const WriteInfo = styled.div`
         resize:none;
     }
 `;
-
 
 function Calander(){
     const navigate = useNavigate();
@@ -171,13 +169,11 @@ function Calander(){
         setBackbaninfo('');
     }
 
-    console.log(savedBackbaninfo.map(a => a.id));
-
     const days = [];
     const date = ['일','월','화','수','목','금','토'];
     for (let i=0; i<7; i++){
         days.push(
-            <DaysDiv>
+            <DaysDiv key={shortid.generate()}>
                 {date[i]}
             </DaysDiv>
         )
@@ -203,7 +199,9 @@ function Calander(){
             const id = format(day,'yyyyMMdd').toString();
             if(format(monthStart,'M') != format(day,'M')){
                 dayss.push(
-                    <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} key={day+''}>
+                    <DivDay 
+                    style={{backgroundColor:'#383838',opacity:'0.5'}} 
+                    key={shortid.generate()}>
                         <span style={{
                             fontSize:'20px',fontWeight:600,margin:'15px 15px'
                         }}>
@@ -214,7 +212,9 @@ function Calander(){
             }
             else{
                 dayss.push(
-                    <DivDay onClick={() => onDay(id)} key={day+'1'}>
+                    <DivDay 
+                    onClick={() => onDay(id)} 
+                    key={shortid.generate()}>
                         <span>
                             {formattedDate}
                         </span>
@@ -227,7 +227,7 @@ function Calander(){
             day = addDays(day,1);
         }
         line.push(
-            <DivWeek>
+            <DivWeek key={shortid.generate()}>
                 {dayss}
             </DivWeek>
         )
@@ -253,6 +253,8 @@ function Calander(){
             <DivWrapper>
                 {line}
             </DivWrapper>
+
+
             {DayPathMatch ? 
             <WriteWrapper>
                 <WriteTitle>
@@ -275,9 +277,7 @@ function Calander(){
                     저장
                 </button>
             </WriteWrapper>:null}
-
-
-
+            
         </Wrapper>
     )
 }

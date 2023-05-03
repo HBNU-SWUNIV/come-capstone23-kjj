@@ -4,6 +4,9 @@ import Calander2 from "./Calander2";
 import axios from "axios";
 import { useEffect } from "react";
 import { useState } from "react";
+import Overlay from '../Components/Overlay';
+import { useLocation } from "react-router-dom";
+
 
 const Wrapper = styled.div`
 display:flex;
@@ -30,18 +33,25 @@ const CalanderHeader = styled.div`
     display:flex;
     justify-content:space-between;
     align-items:center;
+    position:relative;
     span{
         font-size:20px;
         font-weight:600;
     }
-    button{
-        width:10vw;
-        height:4vh;
-        border-radius:5px;
-        background-color:#C8D5EF;
-        border:1px solid #C8D5EF;
-    }
 `;
+
+const Calandertip = styled.ul`
+width:16vw;
+height:3.5vh;
+position:absolute;
+right:0;
+li{
+    font-weight:500;
+    font-size:15px;
+    color:#C63333;
+}
+`;
+
 
 const FirstWrapper = styled.div`
     display:flex;
@@ -88,8 +98,10 @@ const MessageDiv = styled.div`
 
 
 
+
 function Setting(){
     const [info, setInfo] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
         axios.get('/api/user/store')
@@ -107,6 +119,7 @@ function Setting(){
     }
 
     return(
+        <>
         <Wrapper>
         <Navtop pages={"설정"} isLogin={"한밭대학교"}/>
 
@@ -125,13 +138,15 @@ function Setting(){
         <CalanderWrapper>
             <CalanderHeader>
                 <span>휴일을 설정할 수 있어요.</span>
-                <button>
-                    휴일 등록
-                </button>
+                <Calandertip>
+                <li>요일을 클릭해서 휴일을 설정해보세요!</li>
+                </Calandertip>
             </CalanderHeader>
             <Calander2/>
         </CalanderWrapper>
         </Wrapper>
+        {location.pathname == '/setting' ? null : <Overlay/>}
+        </>
     )
 }
 export default Setting;
