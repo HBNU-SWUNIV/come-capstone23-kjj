@@ -9,6 +9,7 @@ import Navtop from "../Components/Navtop";
 import { BsToggle2Off,BsToggle2On } from "react-icons/bs";
 import Overlay from "../Components/Overlay";
 import { AiFillPlusCircle } from "react-icons/ai";
+import shortid from "shortid";
 
 const Wrapper = styled.div`
 display:flex;
@@ -313,12 +314,16 @@ function Menu(){
         // .then(setIsLoading(false));
 
         axios.get('/api/manager/menu')
-        .then(res => console.log(res))
+        .then(res => setSaveddata(res.data))
+        .then(setIsLoading(false))
     },[]) 
+
     
     const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
     const UpdatePath = UpdatePathMatch?.params.updateId && savedData?.find(data => data.id == UpdatePathMatch.params.updateId);
     
+    console.log(savedData)
+
     const onDelete = (id) => {
         navigate(`/menu/${id}`);
     }
@@ -341,7 +346,7 @@ function Menu(){
         재판매 = 재판매.filter(a => a.id !== id);
         set품절(재판매);
     }
-
+    
     const [name, setMenu] = useState('');
     const [cost, setCost] = useState('');
     const [info, setInfo] = useState('');
@@ -381,10 +386,13 @@ function Menu(){
                 <span>전체 {savedData?.length}종</span>
                 {savedData?.map(data => 
                 <Item 
+                key={shortid.generate()}
                 style={{opacity:`${품절.filter(soldout => soldout.id == data.id).length == 1 ? '0.5' : '1' }`}}>
                     <Itemimg bgPhoto={makeImagePath(data?.backdrop_path,'w400'||'')}/>
                     <ItemInfo>
                         <span>{data?.name}</span>  
+                        <span>{data?.details}</span>
+                        <span>{data?.info}</span>
                         <span>{data?.cost}</span>
                         {/* 
                         <span>{data?.overview.slice(0,8)+''}</span>  
