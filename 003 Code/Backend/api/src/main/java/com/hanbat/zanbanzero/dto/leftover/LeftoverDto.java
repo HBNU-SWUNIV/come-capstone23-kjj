@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.dto.leftover;
 
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ public class LeftoverDto {
 
     public static LeftoverDto createLeftoverDto(Leftover leftover) {
         return new LeftoverDto(
-                leftover.getLeftoverPre().getCalculate().getDate(),
+                DateTools.makeDateString(leftover.getLeftoverPre().getCalculate().getDate()),
                 leftover.getLeftover()
         );
     }

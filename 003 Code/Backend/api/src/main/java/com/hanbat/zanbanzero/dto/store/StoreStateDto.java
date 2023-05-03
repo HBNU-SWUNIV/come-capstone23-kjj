@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.dto.store;
 
 import com.hanbat.zanbanzero.entity.store.StoreState;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ public class StoreStateDto {
 
     public static StoreStateDto of(StoreState state) {
         return new StoreStateDto(
-                state.getDate(),
+                DateTools.makeDateString(state.getDate()),
                 state.getOff()
         );
     }

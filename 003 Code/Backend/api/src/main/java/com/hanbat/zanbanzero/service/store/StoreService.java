@@ -67,11 +67,10 @@ public class StoreService {
     }
 
     @Transactional
-    public Integer getToday() throws JsonProcessingException {
+    public Integer getToday() {
         Calculate calculate = calculateRepository.findByDate(getTodayDate());
         if (calculate == null) return null;
-        Integer result = calculateMenuRepository.sumCountByCalculateId(calculate.getId());
-        return result;
+        return calculate.getToday();
     }
 
     @Transactional
@@ -80,7 +79,7 @@ public class StoreService {
         List<StoreWeekendDto> result = new ArrayList<>();
 
         for (Calculate c : calculateList) {
-            result.add(new StoreWeekendDto(c.getDate(), calculateMenuRepository.sumCountByCalculateId(c.getId())));
+            result.add(new StoreWeekendDto(DateTools.makeDateString(c.getDate()), calculateMenuRepository.sumCountByCalculateId(c.getId())));
         }
 
         return result;
@@ -113,7 +112,7 @@ public class StoreService {
         }
     }
 
-    public List<StoreStateDto> getOffOfMonth(int year, int month) throws WrongParameter {
+    public List<StoreStateDto> getClosedDays(int year, int month) throws WrongParameter {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
 
         String start = DateTools.makeDateString(year, month, 1);

@@ -82,8 +82,8 @@ public class StoreApiController {
 
     @Operation(summary="월간 휴무일 조회", description="n월 한달의 휴무일 조회")
     @GetMapping("/api/manager/store/get/off/{year}/{month}")
-    public ResponseEntity<List<StoreStateDto>> getPlanner(@PathVariable int year, @PathVariable int month) throws WrongParameter {
-        List<StoreStateDto> result = storeService.getOffOfMonth(year, month);
+    public ResponseEntity<List<StoreStateDto>> getClosedDays(@PathVariable int year, @PathVariable int month) throws WrongParameter {
+        List<StoreStateDto> result = storeService.getClosedDays(year, month);
         return ResponseEntity.ok().body(result);
     }
 }

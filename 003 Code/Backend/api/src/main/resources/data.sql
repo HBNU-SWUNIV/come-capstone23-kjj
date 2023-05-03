@@ -80,6 +80,7 @@ INSERT INTO zanbanzero.calculate(date, today, sales) VALUES ('2023-04-14', 120, 
 INSERT INTO zanbanzero.calculate(date, today, sales) VALUES ('2023-04-17', 120, 130000);
 INSERT INTO zanbanzero.calculate(date, today, sales) VALUES ('2023-04-18', 120, 130000);
 INSERT INTO zanbanzero.calculate(date, today, sales) VALUES ('2023-04-29', 120, 130000);
+INSERT INTO zanbanzero.calculate(date, today, sales) VALUES ('2023-05-03', 120, 130000);
 
 INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (1, "백반 정식", 13, 13 * 5000);
 INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (1, "촌돼지 김치찌개", 13, 13 * 6000);
@@ -133,6 +134,10 @@ INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales)VALUES (1
 INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (13, "촌돼지 김치찌개", 13, 13 * 6000);
 INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (13, "가마치통닭", 13, 13 * 8000);
 INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (13, "부대찌개", 13, 13 * 6000);
+INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales)VALUES (14, "백반 정식", 13, 13 * 5000);
+INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (14, "촌돼지 김치찌개", 13, 13 * 6000);
+INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (14, "가마치통닭", 13, 13 * 8000);
+INSERT INTO zanbanzero.calculate_menu(calculate_id, menu, count, sales) VALUES (14, "부대찌개", 13, 13 * 6000);
 
 INSERT INTO zanbanzero.leftover_pre(calculate_id, predict) VALUES (1, 150);
 INSERT INTO zanbanzero.leftover_pre(calculate_id, predict) VALUES (2, 151);

@@ -1,9 +1,13 @@
 package com.hanbat.zanbanzero.dto.planner;
 
 import com.hanbat.zanbanzero.entity.planner.Planner;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +18,7 @@ public class PlannerDto {
 
     public static PlannerDto createPlannerDto(Planner planner){
         return new PlannerDto(
-                planner.getDate(),
+                DateTools.makeDateString(planner.getDate()),
                 planner.getMenus()
         );
     }
