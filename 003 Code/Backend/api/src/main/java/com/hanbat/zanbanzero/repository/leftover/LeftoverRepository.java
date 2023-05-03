@@ -9,4 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface LeftoverRepository extends JpaRepository<Leftover, Long> {
 
     Page<Leftover> findAllByOrderByLeftoverPreIdDesc(Pageable pageable);
+
+    Leftover findByLeftoverPreId(Long id);
 }

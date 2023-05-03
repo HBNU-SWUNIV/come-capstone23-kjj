@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.controller.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
-import com.hanbat.zanbanzero.dto.calculate.CalculateDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -39,16 +38,16 @@ public class StoreApiController {
     }
 
     @Operation(summary="금일 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
-    @GetMapping("/api/manager/get/state/today")
+    @GetMapping("/api/manager/state/get/today")
     public ResponseEntity<Integer> getToday() throws JsonProcessingException {
         Integer result = storeService.getToday();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary="최근 이용자 수 조회", description="최근 5개 데이터")
-    @GetMapping("/api/manager/get/state/weekend")
-    public ResponseEntity<List<StoreWeekendDto>> getWeekend() {
-        List<StoreWeekendDto> result = storeService.getWeekend();
+    @Operation(summary="지난주 이용자 수 조회", description="월~금 5개 데이터")
+    @GetMapping("/api/manager/state/get/lastweek/user")
+    public ResponseEntity<List<StoreWeekendDto>> getLastWeeksUser() throws WrongParameter {
+        List<StoreWeekendDto> result = storeService.getLastWeeksUser();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

@@ -27,7 +27,7 @@ public class PlannerService {
 
     @Transactional
     public void setPlanner(PlannerDto dto, int year, int month, int day) {
-        String dateString = DateTools.makeDateString(year, month, day);
+        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -41,7 +41,7 @@ public class PlannerService {
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        String date = DateTools.makeDateString(year, month, day);
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -51,8 +51,8 @@ public class PlannerService {
     public List<PlannerDto> getPlanner(int year, int month) throws WrongParameter {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
 
-        String start = DateTools.makeDateString(year, month, 1);
-        String end = DateTools.makeDateString(year, month, DateTools.getLastDay(year, month));
+        String start = DateTools.makeResponseDateFormatString(year, month, 1);
+        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         List<Planner> result = repository.findAllByDateBetween(start, end);
         return result.stream()

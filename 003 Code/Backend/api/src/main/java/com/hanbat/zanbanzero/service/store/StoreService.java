@@ -1,8 +1,6 @@
 package com.hanbat.zanbanzero.service.store;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
-import com.hanbat.zanbanzero.dto.calculate.CalculateDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.entity.store.Store;
@@ -23,9 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -74,12 +70,16 @@ public class StoreService {
     }
 
     @Transactional
-    public List<StoreWeekendDto> getWeekend() {
-        List<Calculate> calculateList = calculateRepository.findTop5ByOrderByCreatedAtDesc();
+    public List<StoreWeekendDto> getLastWeeksUser() throws WrongParameter {
+        int weekSize = 5;
         List<StoreWeekendDto> result = new ArrayList<>();
+        LocalDate date = DateTools.getLastWeeksMonday(0);
 
-        for (Calculate c : calculateList) {
-            result.add(new StoreWeekendDto(DateTools.makeDateString(c.getDate()), calculateMenuRepository.sumCountByCalculateId(c.getId())));
+        for (int i = 0; i < weekSize; i ++) {
+            String targetDate = DateTools.toFormatterString(date.plusDays(i));
+            Calculate calculate = calculateRepository.findByDate(targetDate);
+
+            result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), calculate.getToday()));
         }
 
         return result;
@@ -100,7 +100,7 @@ public class StoreService {
 
     @Transactional
     public void setOff(Boolean off, int year, int month, int day) {
-        String dateString = DateTools.makeDateString(year, month, day);
+        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(dateString);
         if (storeState == null) {
@@ -115,8 +115,8 @@ public class StoreService {
     public List<StoreStateDto> getClosedDays(int year, int month) throws WrongParameter {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
 
-        String start = DateTools.makeDateString(year, month, 1);
-        String end = DateTools.makeDateString(year, month, DateTools.getLastDay(year, month));
+        String start = DateTools.makeResponseDateFormatString(year, month, 1);
+        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         List<StoreState> result = storeStateRepository.findAllByDateBetween(start, end);
         return result.stream()

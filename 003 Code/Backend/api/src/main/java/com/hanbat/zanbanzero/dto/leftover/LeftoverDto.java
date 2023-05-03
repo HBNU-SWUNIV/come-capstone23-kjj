@@ -16,7 +16,7 @@ public class LeftoverDto {
 
     public static LeftoverDto createLeftoverDto(Leftover leftover) {
         return new LeftoverDto(
-                DateTools.makeDateString(leftover.getLeftoverPre().getCalculate().getDate()),
+                DateTools.makeResponseDateFormatString(leftover.getLeftoverPre().getCalculate().getDate()),
                 leftover.getLeftover()
         );
     }

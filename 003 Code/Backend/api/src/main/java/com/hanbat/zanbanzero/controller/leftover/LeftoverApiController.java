@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.controller.leftover;
 
 import com.hanbat.zanbanzero.dto.leftover.LeftoverAndPreDto;
 import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
+import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.leftover.LeftoverService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,6 +48,13 @@ public class LeftoverApiController {
     @GetMapping("/api/manager/leftover/get/group/{page}")
     public ResponseEntity<List<LeftoverAndPreDto>> getAllLeftoverAndPre(@PathVariable int page) {
         List<LeftoverAndPreDto> result = leftoverService.getAllLeftoverAndPre(page);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="지난주 잔반량 데이터 조회", description="월~금 5개 데이터")
+    @GetMapping("/api/manager/leftover/get/lastweek/{type}")
+    public ResponseEntity<List<LeftoverDto>> getLastWeeksLeftovers(@PathVariable int type) throws WrongParameter {
+        List<LeftoverDto> result = leftoverService.getLastWeeksLeftovers(type);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 }

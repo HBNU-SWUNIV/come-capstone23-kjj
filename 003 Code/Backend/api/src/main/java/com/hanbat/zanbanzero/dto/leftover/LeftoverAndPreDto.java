@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.dto.leftover;
 
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ public class LeftoverAndPreDto {
 
     public static LeftoverAndPreDto createLeftoverAndPreDto(Leftover leftover, LeftoverPre leftoverPre) {
         return new LeftoverAndPreDto(
-                leftoverPre.getCalculate().getDate(),
+                DateTools.makeResponseDateFormatString(leftoverPre.getCalculate().getDate()),
                 leftover.getLeftover(),
                 leftoverPre.getPredict()
         );

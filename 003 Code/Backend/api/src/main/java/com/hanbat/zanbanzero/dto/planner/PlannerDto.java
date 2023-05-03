@@ -6,9 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +15,7 @@ public class PlannerDto {
 
     public static PlannerDto createPlannerDto(Planner planner){
         return new PlannerDto(
-                DateTools.makeDateString(planner.getDate()),
+                DateTools.makeResponseDateFormatString(planner.getDate()),
                 planner.getMenus()
         );
     }

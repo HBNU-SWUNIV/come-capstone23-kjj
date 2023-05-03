@@ -5,7 +5,6 @@ import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
@@ -55,7 +54,7 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateString(year, month, day);
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
@@ -69,7 +68,7 @@ public class OrderService {
 
     @Transactional
     public void addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateString(year, month, day);
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
