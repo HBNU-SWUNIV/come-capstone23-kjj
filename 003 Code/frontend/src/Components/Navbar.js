@@ -4,8 +4,7 @@ import { TbChartBar } from "react-icons/tb";
 import { BiHomeSmile } from "react-icons/bi";
 import { BsFillBarChartFill } from "react-icons/bs";
 import { AiOutlineSetting, AiTwotoneSetting} from "react-icons/ai";
-import { useState } from 'react';
-import {useNavigate} from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 
 const Wrapper = styled.div`
     width:15vw;
@@ -77,9 +76,10 @@ const Menus = styled.div`
 `
 
 function Navbar(){
-    let [id,setId] = useState(1);
     const navigate = useNavigate();
-    
+    const location = useLocation();
+    const nowPath = location.pathname;
+
     return(
        <Wrapper>
             <Title>
@@ -91,31 +91,27 @@ function Navbar(){
                 <span>수요 관리 시스템</span>
             </Title>
             <Menus>
-                <div onClick={() => {setId(1)
-                                     navigate('/home')}}
-                    style={{backgroundColor:`${id==1?'#DAE9FC':'white'}`}}>
-                    {id==1? <RiHomeSmileFill style={{fontSize:'20px'}}/>:<BiHomeSmile style={{fontSize:'20px'}}/>}
+                <div onClick={() => {navigate('/home')}}
+                     style={{backgroundColor:`${nowPath.startsWith('/home') ?'#DAE9FC':'white'}`}}>
+                    {nowPath.startsWith('/home')? <RiHomeSmileFill style={{fontSize:'20px'}}/>:<BiHomeSmile style={{fontSize:'20px'}}/>}
                     <span>홈</span>
                 </div>
                 
-                <div onClick={() => {setId(2)
-                                     navigate('/Menu')}}
-                    style={{backgroundColor:`${id==2?'#DAE9FC':'white'}`}}>
-                    {id==2? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
+                <div onClick={() => {navigate('/menu')}}
+                     style={{backgroundColor:`${nowPath.startsWith('/menu') ?'#DAE9FC':'white'}`}}>
+                    {nowPath.startsWith('/menu') ? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
                     <span>메뉴 관리</span>
                 </div>
 
-                <div onClick={() => {setId(3)
-                                     navigate('/backban')}}
-                    style={{backgroundColor:`${id==3?'#DAE9FC':'white'}`}}>
-                     {id==3? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
+                <div onClick={() => {navigate('/backban')}}
+                    style={{backgroundColor:`${nowPath.startsWith('/backban')?'#DAE9FC':'white'}`}}>
+                     {nowPath.startsWith('/backban')? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
                     <span>백반 관리</span>
                 </div>
 
-                <div onClick={() => {setId(4)
-                                     navigate('/setting')}}
-                    style={{backgroundColor:`${id==4?'#DAE9FC':'white'}`}}>
-                    {id==4? <AiTwotoneSetting style={{fontSize:'20px'}}/> : <AiOutlineSetting style={{fontSize:'20px'}}/>}        
+                <div onClick={() => {navigate('/setting')}}
+                    style={{backgroundColor:`${nowPath.startsWith('/setting')?'#DAE9FC':'white'}`}}>
+                    {nowPath.startsWith('/setting')? <AiTwotoneSetting style={{fontSize:'20px'}}/> : <AiOutlineSetting style={{fontSize:'20px'}}/>}        
                     <span>설정</span>
                 </div>
             </Menus>

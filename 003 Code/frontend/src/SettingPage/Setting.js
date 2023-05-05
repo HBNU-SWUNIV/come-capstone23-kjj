@@ -45,6 +45,7 @@ width:16vw;
 height:3.5vh;
 position:absolute;
 right:0;
+margin-bottom:5vh;
 li{
     font-weight:500;
     font-size:15px;
@@ -140,6 +141,7 @@ function Setting(){
                 <span>휴일을 설정할 수 있어요.</span>
                 <Calandertip>
                 <li>요일을 클릭해서 휴일을 설정해보세요!</li>
+                <li>휴일은 달력에 빨간색으로 표시됩니다.</li>
                 </Calandertip>
             </CalanderHeader>
             <Calander2/>

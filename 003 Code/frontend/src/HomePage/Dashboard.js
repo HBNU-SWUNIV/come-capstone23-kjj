@@ -228,27 +228,29 @@ function Dashboard(){
     const [totalPop, setTotalPop] = useState(0);
     const [todaypop, setTodaypop] = useState(0);
     const [Weekpop, setWeekpop] = useState([]);
-
+    const [leftover, setLeftover] = useState('');
 
     // 금일, 누적 이용자 수 
     useEffect(() => {
         axios.get('/api/manager/get/state/all')
         .then(res => setTotalPop(res.data))
 
-        axios.get('/api/manager/get/state/today')
+        axios.get('/api/manager/state/get/today')
         .then(res => setTodaypop(res.data))
 
-        axios.get('/api/manager/get/state/weekend')
+        axios.get('/api/manager/state/get/lastweek/user')
         .then(res => setWeekpop(res.data))
 
-        axios.get('/api/manager/leftover/get/1')
+        axios.get('/api/manager/leftover/get/lastweek/1')
         .then(res => setPrevLeftover(res.data))
 
-        axios.get(`/api/manager/leftover/get/0`)
+        axios.get(`/api/manager/leftover/get/lastweek/0`)
         .then(res => setNextLeftover(res.data))
         
     },[])
 
+
+    // 지난주 대비 음식물 쓰레기 감소량
     let prevsum = 0;
     prevLeftover.forEach(n => {
         prevsum += n.leftover
@@ -260,21 +262,23 @@ function Dashboard(){
     })
 
 
-
+    // 오늘의 잔반량 등록 인풋
+    const today = format(startDate,'yyyy-MM-dd').toString();
     const onClick = () => {
         SetShowInput(true);
     };
-
+    
     const onsubmit = (e) => {
         e.preventDefault();
+        let body={leftover}
+        axios.post('/api/manager/leftover/set',body)
+        .then(res => console.log(res))
         SetShowInput(false);
     };
-
-    
+   
     
     return(<>
         <Wrapper>
-            
             <Navtop pages={"홈"}/>
 
         <Statistis>
@@ -348,21 +352,19 @@ function Dashboard(){
             </span>
             <ApexCharts
                 type='pie'
-                series={[100,30,40]}
+                series={[100,30,40,50,60]}
                 options={{
                     chart:{
                         
                         type:'pie',
                         toolbar:{show:false}
                     },
-                    labels:['백반 정식','해물 순두부찌개','촌돼지 부대찌개']
+                    labels:['백반 정식','해물 순두부찌개','촌돼지 부대찌개','김치찌개','제육볶음']
                 }}
                 />
 
         </SecondChart>
         </차트2개>
-
-        {/* input         */}
 
         <LastChart>
             <span>지난주 이용자 수</span>          
@@ -370,9 +372,11 @@ function Dashboard(){
                 type="line"
                 series={ [
                     {
+                        name:'이용자 수',
                         data:Weekpop?.map(week => week.count)
                     }
                 ]}
+            
                 options={{
                     chart:{
                         toolbar:{show:false}
@@ -383,12 +387,14 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
+                        // categories:Weekpop.map(week => week.date)
                         categories:['월','화','수','목','금']
                     },
                     fill:{
                         colors:'green',
                         opacity:0.9
-                    }
+                    },
+                    
                 }}
             />
 
@@ -413,7 +419,11 @@ function Dashboard(){
                     </Items>
                     <Items>
                         <span>총 잔반량</span>
-                        <input type='number' placeholder='kg수를 적으세요.'/>
+                        <input 
+                        value={leftover}
+                        onChange={(e) => setLeftover(e.target.value)}
+                        type='number' 
+                        placeholder='kg수를 적으세요.'/>
                     </Items>
                 </div>
 
