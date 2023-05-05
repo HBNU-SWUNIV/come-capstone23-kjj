@@ -99,18 +99,21 @@ function Login(){
     const onSubmit = (event) => {
         event.preventDefault();
         let body = {username,password}
-        
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
         axios.post(`/login/manager`,body)
         .then(res => console.log(res))
-        // 명세서 18번 - true/false 값에 따라 초기설정페이지 or home페이지 표시
         
-        // axios.get(`http://kjj.kjj.r-e.kr:8080/login/manager`)
-        // .then(res => res.data.filter(res_ID => res_ID.ID === body.ID != '') ?
-        // res.data.filter(res_PW => res_PW.ID === body.ID)[0].PW === body.PW?
-        // axios.post(`http://localhost:3000/users`,body)
-        // .then(res => dispatch(R_login(res.data)))
-        // :null:null)
+        // axios({
+        //     method:'POST',
+        //     url:'/login/manager',
+        //     data:body,
+        //     headers:{
+        //         "Content-Type":"application/x-www-form-urlencoded"
+        //     },
+        // })
     }
+
+    
     return(
         <Wrapper>
             <LoginW onSubmit={onSubmit}>

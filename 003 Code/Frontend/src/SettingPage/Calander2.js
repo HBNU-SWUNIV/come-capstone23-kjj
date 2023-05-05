@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
 import { useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import shortid from 'shortid';
 import axios from 'axios';
@@ -79,7 +78,7 @@ const DivWrapper = styled.div`
 
 `;
 
-const WriteWrapper = styled.form`
+const WriteWrapper = styled.div`
     z-index:1;
     width:34vw;
     height:40vh;
@@ -110,6 +109,7 @@ const WriteTitle = styled.div`
     border-top-right-radius:15px;
     border-top-left-radius:15px;
     margin-top:-1px;
+    margin-bottom:40px;
     height:10vh;
     display:flex;
     justify-content:space-between;
@@ -128,30 +128,17 @@ const WriteTitle = styled.div`
     }
 `;
 
-const WriteInfo = styled.div`
-    width:24vw;
-    height:10vh;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    span{
-        font-weight:600;
-        font-size:20px;
-    }
-`;
-
 const WriteButton = styled.div`
     display:flex;
     align-items:center;
     justify-content:space-evenly;
     width:24vw;
-
+    margin-top:10px;
 `;
 
 function Calander2(){
     const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [startDate1, setStartDate1] = useState(new Date());
     const [offday, setOffday] = useState([]);
     const monthStart = startOfMonth(currentMonth),monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart),endDate = endOfWeek(monthEnd);
@@ -167,8 +154,7 @@ function Calander2(){
         axios.get(`api/manager/store/get/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
         .then(res => setOffday(res.data))
     },[currentMonth])
-    
-    console.log(offday.map(a => a.date))
+    console.log(offday)
     
     for (let i=0; i<7; i++){
         days.push(
@@ -196,7 +182,7 @@ function Calander2(){
             else{
                 dayss.push(
                     <DivDay onClick={() => onDay(id)} key={shortid.generate()}>
-                        <span>
+                        <span style={{color:offday.filter(od => od.date == id)[0]?.off == true ? 'red' : 'black'}}>
                             {formattedDate}
                         </span>
                     </DivDay>
@@ -210,6 +196,7 @@ function Calander2(){
         )
         dayss=[];
     }
+
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
     }
@@ -218,8 +205,15 @@ function Calander2(){
         setCurrentMonth(addMonths(currentMonth,1));
     }
 
-    
-    
+    const onOffday = (date,year,month,day) => {
+        let body = {date,off:true}
+        axios.post(`/api/manager/store/set/off/${year}/${month}/${day}`,body)
+        .then(res => console.log(res))
+        .catch(err => console.log(err))
+
+        navigate('/setting')
+    }
+
 
     return(
         <Wrapper>
@@ -246,17 +240,10 @@ function Calander2(){
                     style={{fontSize:'30px',marginRight:'10px',marginBottom:'10px'}}/>
                 </WriteTitle>
 
-                <WriteInfo>
-                    <span>날짜선택</span>
-                    <div>                       
-                        <DatePicker selected={startDate1} onChange={date => setStartDate1(date)}/>
-                    </div>
-                </WriteInfo>
-
                 <h3>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}일을 휴일로 지정하시겠습니까?</h3>
                 
                 <WriteButton>
-                    <button onClick={() => navigate('/setting')}>
+                    <button onClick={() => onOffday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                         휴일로 지정
                     </button>
                     <button onClick={() => navigate('/setting')}>
