@@ -36,15 +36,7 @@ public class LeftoverService {
 
     @Transactional
     public void setLeftover(LeftoverDto dto) throws WrongRequestDetails {
-        if (dto.getLeftover() == null) {
-            throw new WrongRequestDetails("데이터가 부족합니다.");
-        }
-
-        Calculate target = calculateRepository.findByDate(dto.getDate());
-
-        if (target == null) {
-            throw new WrongRequestDetails("잘못된 날짜 정보입니다.");
-        }
+        Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
 
         Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
 

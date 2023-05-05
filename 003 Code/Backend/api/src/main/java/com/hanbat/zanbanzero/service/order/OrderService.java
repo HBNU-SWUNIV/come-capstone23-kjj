@@ -40,12 +40,13 @@ public class OrderService {
         return menuRepository.findById(policy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
     }
 
-    private Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
+    @Transactional
+    public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
         return new Order(
                 null,
                 userRepository.getReferenceById(userId),
-                menu,
+                menu.getName(),
                 menu.getCost(),
                 date,
                 type

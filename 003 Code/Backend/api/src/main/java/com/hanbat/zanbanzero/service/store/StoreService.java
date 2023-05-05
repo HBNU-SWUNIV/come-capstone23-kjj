@@ -1,8 +1,10 @@
 package com.hanbat.zanbanzero.service.store;
 
+import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
+import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.store.StoreState;
@@ -21,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -91,6 +95,17 @@ public class StoreService {
     }
 
     @Transactional
+    public List<CalculateMenuForGraphDto> getPopularMenus() {
+        List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc()
+                .stream()
+                .map(calculate -> calculate.getId())
+                .collect(Collectors.toList());
+
+        return calculateMenuRepository.getPopularMenus(idList);
+
+    }
+
+    @Transactional
     public StoreDto updateStoreInfo(StoreDto dto) throws CantFindByIdException {
         Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         store.setInfo(dto);
@@ -123,4 +138,5 @@ public class StoreService {
                 .map(state -> StoreStateDto.of(state))
                 .collect(Collectors.toList());
     }
+
 }

@@ -3,9 +3,11 @@ package com.hanbat.zanbanzero.entity.calculate;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class CalculateMenu {

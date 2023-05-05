@@ -25,15 +25,13 @@ public class Order {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menu_id")
-    private Menu menu;
+    private String menu;
 
     private int cost;
     private String orderDate;
     private boolean recognize;
 
-    public void setMenu(Menu menu) {this.menu = menu;}
+    public void setMenu(Menu menu) {this.menu = menu.getName();}
 
     public void setRecognizeToCancel() {
         recognize = false;

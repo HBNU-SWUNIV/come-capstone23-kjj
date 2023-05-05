@@ -9,6 +9,6 @@ import java.util.List;
 public interface CalculateRepository extends JpaRepository<Calculate, Long> {
     Calculate findByDate(String todayDate);
 
-    @Query("SELECT s FROM Calculate s ORDER BY s.date DESC LIMIT 5")
-    List<Calculate> findTop5ByOrderByCreatedAtDesc();
+    @Query("SELECT c FROM Calculate c ORDER BY c.id DESC LIMIT 5")
+    List<Calculate> findTop5ByIdOrderByIdDesc();
 }

@@ -1,9 +1,12 @@
 package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
+import com.hanbat.zanbanzero.entity.planner.Planner;
 import com.hanbat.zanbanzero.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -16,13 +19,21 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Store store;
+    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
+    private List<Planner> planners;
+
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+    private MenuInfo menuInfos;
 
     private String name;
     private int cost;
     private String image;
     private Boolean sold;
+
+    public void setUsePlanner(Boolean usePlanner) {
+        this.usePlanner = usePlanner;
+    }
+
     private Boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
@@ -34,10 +45,11 @@ public class Menu {
         }
     }
 
-    public static Menu createMenu(MenuUpdateDto dto, Store store, String filePath, Boolean usePlanner) {
+    public static Menu createMenu(MenuUpdateDto dto, String filePath, Boolean usePlanner) {
         return new Menu(
                 null,
-                store,
+                null,
+                null,
                 dto.getName(),
                 dto.getCost(),
                 filePath,

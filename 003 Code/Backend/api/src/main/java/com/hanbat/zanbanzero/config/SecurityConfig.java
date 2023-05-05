@@ -30,7 +30,8 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer customizer() {
         return (web) -> web.ignoring().requestMatchers(
-                "swagger-ui/**"
+                "swagger-ui/**",
+                "/favicon.ico"
         );
     }
     @Bean

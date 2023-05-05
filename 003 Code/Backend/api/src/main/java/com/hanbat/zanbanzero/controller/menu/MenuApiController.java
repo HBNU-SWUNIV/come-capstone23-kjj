@@ -50,6 +50,27 @@ public class MenuApiController {
         return ResponseEntity.status(HttpStatus.OK).body(menus);
     }
 
+    @Operation(summary="식단표 사용 메뉴 유무 조회", description="true / false")
+    @GetMapping("/api/manager/menu/get/planner")
+    public ResponseEntity<Boolean> isPlanner() {
+        Boolean result = menuService.isPlanner();
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @Operation(summary="식단표 사용 설정")
+    @GetMapping("/api/manager/menu/{id}/set/planner")
+    public ResponseEntity<String> setPlanner(@PathVariable Long id) throws IllegalAccessException, CantFindByIdException {
+        menuService.setPlanner(id);
+        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+    @Operation(summary="식단표 교체 설정")
+    @GetMapping("/api/manager/menu/{id}/change/planner")
+    public ResponseEntity<String> changePlanner(@PathVariable Long id) throws CantFindByIdException {
+        menuService.changePlanner(id);
+        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
     @Operation(summary="관리자 - 메뉴 추가", description="")
     @PostMapping("/api/manager/menu/add")
     public ResponseEntity<String> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, CantFindByIdException {

@@ -26,6 +26,14 @@ public class LeftoverApiController {
     @Operation(summary="잔반 감소량 설정", description="")
     @PostMapping("/api/manager/leftover/set")
     public ResponseEntity<String> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails {
+        if (dto.getDate() != null) {
+            throw new WrongRequestDetails("날짜값은 생략되어야 합니다.");
+        }
+
+        if (dto.getLeftover() == null) {
+            throw new WrongRequestDetails("데이터가 부족합니다.");
+        }
+
         leftoverService.setLeftover(dto);
         return ResponseEntity.status(HttpStatus.OK).body("저장되었습니다.");
     }

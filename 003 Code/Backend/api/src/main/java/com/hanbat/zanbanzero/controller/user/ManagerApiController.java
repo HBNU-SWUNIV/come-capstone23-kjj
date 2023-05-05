@@ -15,6 +15,12 @@ import org.springframework.web.bind.annotation.*;
 public class ManagerApiController {
     private final ManagerService managerService;
 
+    @Operation(summary="관리자 로그인", description="username과 password를 입력받아 로그인 시도")
+    @PostMapping("/login/manager")
+    public ResponseEntity<String> login() {
+        return ResponseEntity.status(HttpStatus.OK).body("로그인에 성공했습니다.");
+    }
+
     @Operation(summary="매니저 대표정보 조회", description="username만 입력받아 정보조회")
     @GetMapping("/api/manager/info")
     public ResponseEntity<ManagerInfoDto> getInfo() throws JwtException, CantFindByIdException {

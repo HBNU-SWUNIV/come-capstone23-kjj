@@ -23,7 +23,7 @@ public class OrderDto {
     public static OrderDto createOrderDto(Order order) throws JsonProcessingException {
         return new OrderDto(
                 order.getId(),
-                order.getMenu().getName(),
+                order.getMenu(),
                 order.getCost(),
                 order.getOrderDate(),
                 order.isRecognize()

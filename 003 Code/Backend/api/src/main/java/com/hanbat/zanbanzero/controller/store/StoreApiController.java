@@ -1,7 +1,9 @@
 package com.hanbat.zanbanzero.controller.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
+import com.hanbat.zanbanzero.dto.store.StoreOffDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -58,6 +60,13 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
+    @Operation(summary = "최근 5영업일 메뉴별 판매량 조회")
+    @GetMapping("/api/manager/get/state/menu")
+    public ResponseEntity<List<CalculateMenuForGraphDto>> getPopularMenus() {
+        List<CalculateMenuForGraphDto> result = storeService.getPopularMenus();
+        return ResponseEntity.ok(result);
+    }
+
     @Operation(summary="식당 정보 조회", description="")
     @GetMapping("/api/user/store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException, WrongRequestDetails {
@@ -74,8 +83,9 @@ public class StoreApiController {
 
     @Operation(summary="휴무일 설정", description="n월 n일의 휴무일 설정")
     @PostMapping("/api/manager/store/set/off/{year}/{month}/{day}")
-    public ResponseEntity<String> setOff(@RequestBody Boolean off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
-        storeService.setOff(off, year, month, day);
+    public ResponseEntity<String> setOff(@RequestBody StoreOffDto off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        storeService.setOff(off.isOff(), year, month, day);
+        System.out.println(off);
         return ResponseEntity.ok().body("저장되었습니다.");
     }
 
