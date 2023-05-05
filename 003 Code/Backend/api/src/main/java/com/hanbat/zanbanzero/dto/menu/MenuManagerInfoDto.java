@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuManagerInfoDto {
+    private Long id;
     private String name;
     private int cost;
     private String image;
@@ -19,6 +20,7 @@ public class MenuManagerInfoDto {
 
     public static MenuManagerInfoDto createMenuManagerInfoDto(Menu menu, MenuInfo menuInfo) {
         return new MenuManagerInfoDto(
+                menu.getId(),
                 menu.getName(),
                 menu.getCost(),
                 menu.getImage(),

@@ -18,10 +18,10 @@ public class LastOrderDto {
     private String orderDate;
     private boolean recognize;
 
-    public static LastOrderDto createOrderDto(Order order, Menu menu) {
+    public static LastOrderDto createOrderDto(Order order, String menu) {
         return new LastOrderDto(
                 order.getId(),
-                menu.getName(),
+                menu,
                 order.getCost(),
                 order.getOrderDate(),
                 order.isRecognize()

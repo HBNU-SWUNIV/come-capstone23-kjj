@@ -15,7 +15,7 @@ public class OrderDto {
 
     private Long id;
 
-    private Long menu;
+    private String menu;
     private int cost;
     private String orderDate;
     private boolean recognize;

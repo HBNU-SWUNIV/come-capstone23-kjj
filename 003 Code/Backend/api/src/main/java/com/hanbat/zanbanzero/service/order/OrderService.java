@@ -35,13 +35,18 @@ public class OrderService {
 
     private int pageSize = 10;
 
-    private Order createNewOrder(Long userId, String date, boolean type) throws CantFindByIdException {
-        UserPolicy userPolicy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
-        Menu menu = menuRepository.findById(userPolicy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+    private Menu getDefaultMenu(Long userId) throws CantFindByIdException {
+        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        return menuRepository.findById(policy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+    }
+
+    @Transactional
+    public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
+        Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
         return new Order(
                 null,
                 userRepository.getReferenceById(userId),
-                userPolicy.getDefaultMenu(),
+                menu.getName(),
                 menu.getCost(),
                 date,
                 type
@@ -50,11 +55,11 @@ public class OrderService {
 
     @Transactional
     public void cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateString(year, month, day);
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
-            Order data = createNewOrder(id, date, false);
+            Order data = createNewOrder(id, getDefaultMenu(id).getId(), date, false);
             orderRepository.save(data);
         }
         else {
@@ -64,15 +69,15 @@ public class OrderService {
 
     @Transactional
     public void addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateString(year, month, day);
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
-            Order data = createNewOrder(id, date, true);
+            Order data = createNewOrder(id, menuId, date, true);
             orderRepository.save(data);
         }
         else {
-            order.setMenu(menuId);
+            order.setMenu(menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new));
             order.setRecognizeToUse();
         }
     }
@@ -99,6 +104,7 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<OrderDto> getOrdersPage(Long id, int page) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
@@ -116,13 +122,12 @@ public class OrderService {
     }
 
     @Transactional
-    public LastOrderDto getLastOrder(Long id) throws CantFindByIdException {
+    public LastOrderDto getLastOrder(Long id){
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
-        Menu menu = menuRepository.findById(order.getMenu()).orElseThrow(CantFindByIdException::new);
 
-        return LastOrderDto.createOrderDto(order, menu);
+        return LastOrderDto.createOrderDto(order, order.getMenu());
     }
 
 }

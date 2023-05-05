@@ -3,11 +3,8 @@ package com.hanbat.zanbanzero.auth.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.auth.login.userDetails.ManagerDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.repository.user.ManagerRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -24,13 +21,11 @@ import java.io.*;
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
-    private ManagerRepository managerRepository;
 
 
-    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, ManagerRepository managerRepository) {
+    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
         this.userRepository = userRepository;
-        this.managerRepository = managerRepository;
     }
 
     @Override
@@ -52,15 +47,8 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String roles = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("roles").asString();
 
         if (username != null) {
-            UserDetailsInterface userDetails = null;
-            if (roles.equals("ROLE_USER")) {
-                User user = userRepository.findByUsername(username);
-                userDetails = new UserDetailsInterfaceImpl(user);
-            }
-            else if (roles.equals("ROLE_MANAGER")) {
-                Manager manager = managerRepository.findByUsername(username);
-                userDetails = new ManagerDetailsInterfaceImpl(manager);
-            }
+            User user = userRepository.findByUsername(username);
+            UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);
 
             // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
             Authentication authentication =

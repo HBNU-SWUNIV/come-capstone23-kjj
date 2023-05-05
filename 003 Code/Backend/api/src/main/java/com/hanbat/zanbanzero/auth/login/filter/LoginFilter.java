@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
@@ -59,7 +60,7 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
         UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
@@ -68,6 +69,12 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
         response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);
         response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + RefreshToken);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        PrintWriter printWriter = response.getWriter();
+        printWriter.write("");
+        printWriter.flush();
+        printWriter.close();
     }
 
     @Override

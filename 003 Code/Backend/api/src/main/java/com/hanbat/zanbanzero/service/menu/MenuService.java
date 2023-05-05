@@ -53,6 +53,7 @@ public class MenuService {
         return result;
     }
 
+    @Transactional
     public List<MenuManagerInfoDto> getMenusForManager() {
         List<Menu> menus = menuRepository.findAll();
         List<MenuInfo> menuInfos = menuInfoRepository.findAll();
@@ -65,6 +66,10 @@ public class MenuService {
         return result;
     }
 
+    public Boolean isPlanner() {
+        return menuRepository.existsByUsePlannerTrue();
+    }
+
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
@@ -72,7 +77,7 @@ public class MenuService {
             throw new SameNameException("데이터 중복입니다.");
         }
 
-        Menu menu = menuRepository.save(Menu.createMenu(dto, storeRepository.getReferenceById(storeId), filePath));
+        Menu menu = menuRepository.save(Menu.createMenu(dto, filePath, false));
 
         menuInfoRepository.save(dto.createMenuInfo(menu));
     }
@@ -99,9 +104,9 @@ public class MenuService {
 
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void deleteMenu(Long id) throws CantFindByIdException {
-        MenuInfo menu = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        menuInfoRepository.delete(menu);
+        menuRepository.delete(menu);
     }
 
     @Transactional
@@ -121,4 +126,22 @@ public class MenuService {
         }
     }
 
+    @Transactional
+    public void setPlanner(Long id) throws IllegalAccessException, CantFindByIdException {
+        if (menuRepository.existsByUsePlannerTrue()) {
+            throw new IllegalAccessException("이미 식단표를 사용하고 있습니다.");
+        }
+
+        Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        menu.setUsePlanner(true);
+    }
+
+    @Transactional
+    public void changePlanner(Long id) throws CantFindByIdException {
+        Menu old = menuRepository.findByUsePlanner(true);
+        if (old != null) old.setUsePlanner(false);
+
+        Menu n = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        n.setUsePlanner(true);
+    }
 }

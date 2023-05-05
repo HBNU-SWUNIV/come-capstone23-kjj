@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.entity.planner;
 
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
+import com.hanbat.zanbanzero.entity.menu.Menu;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,23 +18,23 @@ public class Planner {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "date")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Menu menu;
+
     @Index(name = "planner_date_index")
     private String date;
     private String menus;
-    private boolean off;
 
-    public static Planner createPlanner(PlannerDto dto){
+    public static Planner createPlanner(PlannerDto dto, Menu menu){
         return new Planner(
                 null,
+                menu,
                 dto.getDate(),
-                dto.getMenus(),
-                dto.isOff()
+                dto.getMenus()
         );
     }
 
     public void setMenus(String menus) {
         this.menus = menus;
     }
-    public void setOff(boolean off) { this.off = off; }
 }
