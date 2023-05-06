@@ -74,7 +74,7 @@ public class MenuApiController {
     @Operation(summary="관리자 - 메뉴 추가", description="")
     @PostMapping("/api/manager/menu/add")
     public ResponseEntity<String> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, CantFindByIdException {
-        if (dto == null) {
+        if (dto == null || !dto.check()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터가 부족합니다.");
         }
         String filePath = (file != null) ? menuImageService.uploadImage(file) : null;

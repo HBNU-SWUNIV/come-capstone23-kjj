@@ -38,9 +38,12 @@ public class Menu {
         if (dto.getCost() != null) {
             this.cost = dto.getCost();
         }
+        if (dto.getUsePlanner() != null) {
+            this.usePlanner = (dto.getUsePlanner() == 1) ? true : false;
+        }
     }
 
-    public static Menu createMenu(MenuUpdateDto dto, String filePath, Boolean usePlanner) {
+    public static Menu createMenu(MenuUpdateDto dto, String filePath) {
         return new Menu(
                 null,
                 null,
@@ -49,7 +52,7 @@ public class Menu {
                 dto.getCost(),
                 filePath,
                 true,
-                usePlanner
+                (dto.getUsePlanner() == 1) ? true : false
         );
     }
 
