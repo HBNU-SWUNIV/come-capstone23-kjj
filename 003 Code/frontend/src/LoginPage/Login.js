@@ -3,7 +3,7 @@ import background from '../image/capstone_background.png';
 import { useState } from 'react';
 import {useDispatch,useSelector} from 'react-redux';
 import axios from 'axios';
-import { R_login } from '../store';
+
 
 const Inputstyle = {width:'320px',height:'30px',borderRadius:'15px',border:'1px solid gray'};
 
@@ -99,18 +99,17 @@ function Login(){
     const onSubmit = (event) => {
         event.preventDefault();
         let body = {username,password}
-        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
         axios.post(`/login/manager`,body)
-        .then(res => console.log(res))
+        .then(res => {
+            const {accessToken} = res.data;
+            console.log(res)
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+        })
+       
+
         
-        // axios({
-        //     method:'POST',
-        //     url:'/login/manager',
-        //     data:body,
-        //     headers:{
-        //         "Content-Type":"application/x-www-form-urlencoded"
-        //     },
-        // })
     }
 
     

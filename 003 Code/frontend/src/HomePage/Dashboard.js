@@ -229,6 +229,8 @@ function Dashboard(){
     const [todaypop, setTodaypop] = useState(0);
     const [Weekpop, setWeekpop] = useState([]);
     const [leftover, setLeftover] = useState('');
+    const [goodmenu, setGoodmenu] = useState([]);
+
 
     // 금일, 누적 이용자 수 
     useEffect(() => {
@@ -247,8 +249,9 @@ function Dashboard(){
         axios.get(`/api/manager/leftover/get/lastweek/0`)
         .then(res => setNextLeftover(res.data))
         
+        axios.get(`/api/manager/get/state/menu`)
+        .then(res => setGoodmenu(res.data))
     },[])
-
 
     // 지난주 대비 음식물 쓰레기 감소량
     let prevsum = 0;
@@ -260,7 +263,6 @@ function Dashboard(){
     nextLeftover.forEach(n => {
         nextsum += n.leftover
     })
-
 
     // 오늘의 잔반량 등록 인풋
     const today = format(startDate,'yyyy-MM-dd').toString();
@@ -352,14 +354,13 @@ function Dashboard(){
             </span>
             <ApexCharts
                 type='pie'
-                series={[100,30,40,50,60]}
+                series={goodmenu.map(menu => menu.count)}
                 options={{
                     chart:{
-                        
                         type:'pie',
                         toolbar:{show:false}
                     },
-                    labels:['백반 정식','해물 순두부찌개','촌돼지 부대찌개','김치찌개','제육볶음']
+                    labels:goodmenu.map(menu => menu.name)
                 }}
                 />
 
