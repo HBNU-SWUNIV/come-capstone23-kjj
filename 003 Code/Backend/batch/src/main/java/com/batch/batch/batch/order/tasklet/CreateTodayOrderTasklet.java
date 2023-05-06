@@ -93,12 +93,13 @@ public class CreateTodayOrderTasklet {
                 }
 
                 if (!exists) {
-                    int cost = nameToCostMap.get(idToNameMap.get(defaultMenu));
+                    String menuName = idToNameMap.get(defaultMenu);
+                    int cost = nameToCostMap.get(menuName);
 
-                    String insertOrderQuery = "insert into orders (user_id, menu_id, cost, order_date, recognize) values (?, ?, ?, ?, ?)";
+                    String insertOrderQuery = "insert into orders (user_id, menu, cost, order_date, recognize) values (?, ?, ?, ?, ?)";
                     try (PreparedStatement insertStatement = connection.prepareStatement(insertOrderQuery);) {
                         insertStatement.setLong(1, userId);
-                        insertStatement.setLong(2, defaultMenu);
+                        insertStatement.setString(2, menuName);
                         insertStatement.setInt(3, cost);
                         insertStatement.setString(4, date);
                         insertStatement.setBoolean(5, true);

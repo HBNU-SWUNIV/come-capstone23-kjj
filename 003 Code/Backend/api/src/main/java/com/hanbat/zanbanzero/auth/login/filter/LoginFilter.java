@@ -69,12 +69,6 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
         response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);
         response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + RefreshToken);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter printWriter = response.getWriter();
-        printWriter.write("");
-        printWriter.flush();
-        printWriter.close();
     }
 
     @Override

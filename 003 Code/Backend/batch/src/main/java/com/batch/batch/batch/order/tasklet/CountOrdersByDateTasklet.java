@@ -1,7 +1,6 @@
 package com.batch.batch.batch.order.tasklet;
 
 import com.batch.batch.tools.DateTools;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -47,17 +46,16 @@ public class CountOrdersByDateTasklet implements Tasklet {
 
     private int countTodayOrders(Connection connection, String date) throws Exception{
         int result = 0;
-        Map<Long, String> idToNameMap = createTodayOrderTasklet.getIdToNameMap();
 
-        String getQuery = "select menu_id, count(*) as count from orders where order_date = ? and recognize = 1 GROUP BY menu_id;";
+        String getQuery = "select menu, count(*) as count from orders where order_date = ? and recognize = 1 GROUP BY menu;";
         try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
             statement.setString(1, date);
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    Long menuId = resultSet.getLong("menu_id");
+                    String menu = resultSet.getString("menu");
                     Integer count = resultSet.getInt("count");
                     result += count;
-                    resultMap.put(idToNameMap.get(menuId), count);
+                    resultMap.put(menu, count);
                 }
             }
         }

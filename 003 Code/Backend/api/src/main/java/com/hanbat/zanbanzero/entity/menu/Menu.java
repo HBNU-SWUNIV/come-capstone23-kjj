@@ -29,11 +29,6 @@ public class Menu {
     private int cost;
     private String image;
     private Boolean sold;
-
-    public void setUsePlanner(Boolean usePlanner) {
-        this.usePlanner = usePlanner;
-    }
-
     private Boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
@@ -61,5 +56,8 @@ public class Menu {
     public void setImage(String path) { image = path; }
     public void setSold(boolean type) {
         sold = type;
+    }
+    public void setUsePlanner(Boolean usePlanner) {
+        this.usePlanner = usePlanner;
     }
 }

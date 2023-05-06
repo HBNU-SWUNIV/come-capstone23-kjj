@@ -127,9 +127,9 @@ public class MenuService {
     }
 
     @Transactional
-    public void setPlanner(Long id) throws IllegalAccessException, CantFindByIdException {
+    public void setPlanner(Long id) throws CantFindByIdException, WrongParameter {
         if (menuRepository.existsByUsePlannerTrue()) {
-            throw new IllegalAccessException("이미 식단표를 사용하고 있습니다.");
+            throw new WrongParameter("이미 식단표를 사용하고 있습니다.");
         }
 
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
