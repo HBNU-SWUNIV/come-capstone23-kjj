@@ -3,7 +3,7 @@ import background from '../image/capstone_background.png';
 import { useState } from 'react';
 import {useDispatch,useSelector} from 'react-redux';
 import axios from 'axios';
-import { R_login } from '../store';
+
 
 const Inputstyle = {width:'320px',height:'30px',borderRadius:'15px',border:'1px solid gray'};
 
@@ -99,18 +99,20 @@ function Login(){
     const onSubmit = (event) => {
         event.preventDefault();
         let body = {username,password}
-        
         axios.post(`/login/manager`,body)
-        .then(res => console.log(res))
-        // 명세서 18번 - true/false 값에 따라 초기설정페이지 or home페이지 표시
+        .then(res => {
+            const {accessToken} = res.data;
+            console.log(res)
+            axios.defaults.headers.common[
+                "Authorization"
+            ] = `Bearer ${accessToken}`;
+        })
+       
+
         
-        // axios.get(`http://kjj.kjj.r-e.kr:8080/login/manager`)
-        // .then(res => res.data.filter(res_ID => res_ID.ID === body.ID != '') ?
-        // res.data.filter(res_PW => res_PW.ID === body.ID)[0].PW === body.PW?
-        // axios.post(`http://localhost:3000/users`,body)
-        // .then(res => dispatch(R_login(res.data)))
-        // :null:null)
     }
+
+    
     return(
         <Wrapper>
             <LoginW onSubmit={onSubmit}>

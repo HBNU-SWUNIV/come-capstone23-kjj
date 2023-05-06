@@ -2,8 +2,10 @@ import {addMonths, subMonths, format, startOfMonth, endOfMonth, startOfWeek, end
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
-import { Navigate, useMatch, useNavigate } from 'react-router-dom';
+import {  useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
+import shortid from 'shortid';
+import axios from 'axios';
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -15,8 +17,7 @@ const Wrapper = styled.div`
     border:1px solid #5B5B5B;
     flex-direction:column;
     align-items:center;
-`
-
+`;
 const HeaderW = styled.div`
     width:60vw;
     height:12vh;
@@ -29,7 +30,6 @@ const HeaderW = styled.div`
         font-weight:600;
     }
 `;
-
 const DaysDiv = styled.div`
     width:9vw;
     height:7vh;
@@ -39,13 +39,11 @@ const DaysDiv = styled.div`
     border:0.1px solid #5B5B5B;
     border-right-style:none;
 `;
-
 const DaysWrapper = styled.div`
     display:flex;
     justify-content:space-between;
     width:63vw;
 `;
-
 const DivDay = styled.div`
     width:9vw;
     height:13vh;
@@ -63,22 +61,21 @@ const DivDay = styled.div`
         white-space:pre-wrap;
     }
 `;
-
 const DivWeek = styled.div`
     display:flex;
     width:63vw;
     height:13vh;
 `;
-
 const DivWrapper = styled.div`
     width:63vw;
     flex-direction:column;
 
 `;
-
 const WriteWrapper = styled.form`
     width:40vw;
+    border-radius:15px;
     height:40vh;
+    z-index:1;
     position:absolute;
     left:0;
     right:0;
@@ -89,7 +86,7 @@ const WriteWrapper = styled.form`
     flex-direction:column;
     align-items:center;
     background-color:white;
-    border:1px solid #1473E6;
+    border:1px solid white;
     button{
         width:15vw;
         height:5vh;
@@ -100,12 +97,16 @@ const WriteWrapper = styled.form`
         color:white;
     }
 `;
-
 const WriteTitle = styled.div`
-    width:38vw;
+    width:40.12vw;
+    margin-top:-1px;
+    margin-bottom:10px;
     height:10vh;
     display:flex;
+    background-color:#d9d9d9;
     justify-content:space-between;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
     align-items:center;
     span:nth-child(2){
         font-size:20px;
@@ -119,7 +120,6 @@ const WriteTitle = styled.div`
         text-decoration:underline;
     }
 `;
-
 const WriteInfo = styled.div`
     width:35vw;
     height:20vh;
@@ -137,60 +137,46 @@ const WriteInfo = styled.div`
     }
 `;
 
-
 function Calander(){
     const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [Backbaninfo, setBackbaninfo] = useState('');
     const [savedBackbaninfo, setSavedBackbaninfo] = useState([]);
 
+    useEffect(() => {
+        axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+        .then(res => setSavedBackbaninfo(res.data))
+        .then(console.log(savedBackbaninfo))
+    },[currentMonth])
+
     const onBackban = event => {
         event.preventDefault();
         setBackbaninfo(event.target.value);
     }
 
-    // const onBackbanTap구현 = (e) => {
-    //     // tap의 keycode는 9다.
-    //     if (e.keyCode === 13) {
-    //         e.preventDefault();
-    //         let val = e.target.value;
-    //         let start = e.target.selectionStart;
-    //         let end = e.target.selectionEnd;
-    //         e.target.value = val.substring(0, start) + "\t" + val.substring(end);
-    //         e.target.selectionStart = e.target.selectionEnd = start + 1;
-    //         onBackban(e);
-    //         return false; 
-    //       }
-    // }
-
-    const onSave = (id) => {
-        setSavedBackbaninfo(prev => [
-            ...prev, {id:id, text:Backbaninfo}
-        ]);
+    const onSave = (year,month,day) => {
+        let body = {menus:Backbaninfo}
+        axios.post(`/api/manager/planner/set/${year}/${month}/${day}`,body)
+        .then(() =>{
+            axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            .then(res => setSavedBackbaninfo(res.data))
+        })
         navigate('/backban');
         setBackbaninfo('');
     }
 
-    console.log(savedBackbaninfo.map(a => a.id));
-
-    const days = [];
-    const date = ['일','월','화','수','목','금','토'];
+    const days = [],date = ['일','월','화','수','목','금','토']; 
     for (let i=0; i<7; i++){
         days.push(
-            <DaysDiv>
+            <DaysDiv key={shortid.generate()}>
                 {date[i]}
             </DaysDiv>
         )
     }
 
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
-    let day = startDate;
-    let dayss = [];
-    let line = [];
-    let formattedDate = '';
+    const monthStart = startOfMonth(currentMonth),monthEnd = endOfMonth(monthStart);
+    const startDate = startOfWeek(monthStart),endDate = endOfWeek(monthEnd);
+    let day = startDate,formattedDate = '',dayss = [],line = [];
     const DayPathMatch = useMatch('/backban/:id'); 
 
     const onDay = (id) => {
@@ -203,7 +189,9 @@ function Calander(){
             const id = format(day,'yyyyMMdd').toString();
             if(format(monthStart,'M') != format(day,'M')){
                 dayss.push(
-                    <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} key={day+''}>
+                    <DivDay 
+                    style={{backgroundColor:'#383838',opacity:'0.5'}} 
+                    key={shortid.generate()}>
                         <span style={{
                             fontSize:'20px',fontWeight:600,margin:'15px 15px'
                         }}>
@@ -214,12 +202,14 @@ function Calander(){
             }
             else{
                 dayss.push(
-                    <DivDay onClick={() => onDay(id)} key={day+'1'}>
+                    <DivDay 
+                    onClick={() => onDay(id)} 
+                    key={shortid.generate()}>
                         <span>
                             {formattedDate}
                         </span>
                         <span>
-                            {savedBackbaninfo.map(savedbackban => savedbackban.id === id ? savedbackban.text : null)}
+                            {savedBackbaninfo.map(savedbackban => savedbackban.date === id ? savedbackban.menus : null)}
                         </span>
                     </DivDay>
                 )
@@ -227,12 +217,14 @@ function Calander(){
             day = addDays(day,1);
         }
         line.push(
-            <DivWeek>
+            <DivWeek key={shortid.generate()}>
                 {dayss}
             </DivWeek>
         )
         dayss=[];
     }
+
+    // 월 넘기기
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
     }
@@ -253,6 +245,8 @@ function Calander(){
             <DivWrapper>
                 {line}
             </DivWrapper>
+
+
             {DayPathMatch ? 
             <WriteWrapper>
                 <WriteTitle>
@@ -268,16 +262,13 @@ function Calander(){
                     placeholder='여기에 백반메뉴를 입력하세요.'
                     value={Backbaninfo}
                     onChange={onBackban}
-                    // onKeyDown={onBackbanTap구현}
                     />
                 </WriteInfo>
-                <button onClick={() => onSave(DayPathMatch.params.id)}>
+                <button onClick={() => onSave(DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                     저장
                 </button>
             </WriteWrapper>:null}
-
-
-
+            
         </Wrapper>
     )
 }

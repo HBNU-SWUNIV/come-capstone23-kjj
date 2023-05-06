@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 import ApexCharts from "react-apexcharts";
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navtop from '../Components/Navtop';
 import { format } from 'date-fns';
 import axios from 'axios';
-import { useEffect } from 'react';
+import Overlay from '../Components/Overlay';
+import {useNavigate} from 'react-router-dom';
 
 const Wrapper = styled.div`
 margin-top:35px;
@@ -168,8 +169,10 @@ const LastChart = styled.div`
 
 const InputW = styled.form`
     width:460px;
+    z-index:1;
     height:300px;
-    border:2px solid #1473E6;
+    border:2px solid white;
+    border-radius: 15px;
     position:absolute;
     left:0;
     right:0;
@@ -193,11 +196,15 @@ const InputW = styled.form`
 
 const Title = styled.div`
     display:flex;
-    width:420px;
+    width:465px;
+    border-top-left-radius:15px;
+    border-top-right-radius:15px;
     height:70px;
+    background-color:#d9d9d9;
     justify-content:space-between;
     align-items:center;
-    margin-top:-30px;
+    margin-top:-35px;  
+
 `
 const Items = styled.div`
     display:flex;
@@ -210,63 +217,69 @@ const Items = styled.div`
     }
 `
 
+
     
 function Dashboard(){
-    const mokdata = [{
-        id:'월',
-        value:'90'
-    },
-    {
-        id:'화',
-        value:'90'
-    },
-    {
-        id:'수',
-        value:'100'
-    },
-    {
-        id:'목',
-        value:'10'
-    },{
-        id:'금',
-        value:'50'
-    },
-    {
-        id:'토',
-        value:'30'
-    },
-    {
-        id:'일',
-        value:'30'
-    }
-];
-
-    useEffect(() => {
-        // const getApi = async() => {
-        //     const {data} = await axios.get('/api/manager/get/state/today');
-        //     return data;
-        // }
-        // getApi().then(result => console.log(result))
-        // .then(setIsLoading(false));
-
-        axios.get('/api/manager/store/leftovers/count')
-        .then(res => console.log(res))
-    },[]) 
-
+    const navigate = useNavigate();
+    const [startDate, setStartDate] = useState(new Date());
+    const [prevLeftover, setPrevLeftover] = useState([]);
+    const [nextLeftover, setNextLeftover] = useState([]);
     const [ShowInput, SetShowInput] = useState(false);
+    const [totalPop, setTotalPop] = useState(0);
+    const [todaypop, setTodaypop] = useState(0);
+    const [Weekpop, setWeekpop] = useState([]);
+    const [leftover, setLeftover] = useState('');
+    const [goodmenu, setGoodmenu] = useState([]);
 
+
+    // 금일, 누적 이용자 수 
+    useEffect(() => {
+        axios.get('/api/manager/get/state/all')
+        .then(res => setTotalPop(res.data))
+
+        axios.get('/api/manager/state/get/today')
+        .then(res => setTodaypop(res.data))
+
+        axios.get('/api/manager/state/get/lastweek/user')
+        .then(res => setWeekpop(res.data))
+
+        axios.get('/api/manager/leftover/get/lastweek/1')
+        .then(res => setPrevLeftover(res.data))
+
+        axios.get(`/api/manager/leftover/get/lastweek/0`)
+        .then(res => setNextLeftover(res.data))
+        
+        axios.get(`/api/manager/get/state/menu`)
+        .then(res => setGoodmenu(res.data))
+    },[])
+
+    // 지난주 대비 음식물 쓰레기 감소량
+    let prevsum = 0;
+    prevLeftover.forEach(n => {
+        prevsum += n.leftover
+    })
+    
+    let nextsum = 0;
+    nextLeftover.forEach(n => {
+        nextsum += n.leftover
+    })
+
+    // 오늘의 잔반량 등록 인풋
+    const today = format(startDate,'yyyy-MM-dd').toString();
     const onClick = () => {
         SetShowInput(true);
     };
-
+    
     const onsubmit = (e) => {
         e.preventDefault();
+        let body={leftover}
+        axios.post('/api/manager/leftover/set',body)
+        .then(res => console.log(res))
         SetShowInput(false);
     };
-
-    const [startDate, setStartDate] = useState(new Date());
+   
     
-    return(
+    return(<>
         <Wrapper>
             <Navtop pages={"홈"}/>
 
@@ -277,21 +290,21 @@ function Dashboard(){
             </금일>
 
             <Total>
-                <span>140</span>
+                <span>{todaypop}</span>
                 <span>명</span>
             </Total>
             
             <div style={{marginLeft:'-20px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
             
             <누적이용자>
-                <span>4987</span>
+                <span>{totalPop}</span>
                 <span>누적 이용자</span>
             </누적이용자>
 
             <div style={{marginLeft:'30px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
 
             <감소량>
-                <span>3.2Kg</span>
+                <span>{prevsum-nextsum}Kg</span>
                 <span>지난주 대비 음식물 쓰레기 감소량</span>
             </감소량>
         </Statistis>
@@ -299,7 +312,7 @@ function Dashboard(){
         <차트2개>
         <FirstChart>
             <div>
-                <span>지난주 대비 잔반량</span>
+                <span>지난 2주간 잔반량 비교</span>
                 <button onClick={onClick}>등록하러가기</button>
             </div>
             <ApexCharts
@@ -307,11 +320,11 @@ function Dashboard(){
                 series={ [
                     {
                         name:'지난주',
-                        data:[20,30,10,50,60,20,40]
+                        data:prevLeftover.map(prev => prev.leftover)
                     },
                     {
                         name:'이번주',
-                        data:mokdata.map(a=>a.value)
+                        data:nextLeftover.map(next => next.leftover)
                     },
                 ]}
                 options={{
@@ -324,7 +337,7 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
-                        categories:mokdata.map(a=>a.id)
+                        categories:['월','화','수','목','금']
                     },
                     fill:{
                         colors:'green',
@@ -341,55 +354,30 @@ function Dashboard(){
             </span>
             <ApexCharts
                 type='pie'
-                series={[100,30,40]}
+                series={goodmenu.map(menu => menu.count)}
                 options={{
                     chart:{
-                        
                         type:'pie',
                         toolbar:{show:false}
                     },
-                    labels:['백반 정식','해물 순두부찌개','촌돼지 부대찌개']
+                    labels:goodmenu.map(menu => menu.name)
                 }}
                 />
 
         </SecondChart>
         </차트2개>
 
-        {ShowInput? 
-        (<>
-            <InputW>
-                <Title>
-                    <span style={{fontSize:'22px',fontWeight:'600',textDecoration: 'underline', textDecorationColor:'#1473E6',textDecorationThickness:'2px'}}>잔반량 등록</span>
-                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'-15px',marginTop:'-40px'}} onClick={()=>SetShowInput(false)}/>
-                </Title>
-
-                <div>
-                    <Items>
-                        <span>날짜선택</span>
-                        <div>                       
-                        <DatePicker selected={startDate} onChange={date => setStartDate(date)}/>
-                        </div>
-                    </Items>
-                    <Items>
-                        <span>총 잔반량</span>
-                        <input type='number' placeholder='kg수를 적으세요.'/>
-                    </Items>
-                </div>
-
-                <button onClick={onsubmit}>등록하기</button>
-            </InputW>
-        </>) 
-        : null}        
-
         <LastChart>
-            <span>이번주 이용자 수</span>          
+            <span>지난주 이용자 수</span>          
         <ApexCharts
                 type="line"
                 series={ [
                     {
-                        data:[200,130,110,150,160,120,140]
+                        name:'이용자 수',
+                        data:Weekpop?.map(week => week.count)
                     }
                 ]}
+            
                 options={{
                     chart:{
                         toolbar:{show:false}
@@ -400,19 +388,51 @@ function Dashboard(){
                     },
                     xaxis:{
                         type:'category',
-                        categories:['월','화','수','목','금','토','일']
+                        // categories:Weekpop.map(week => week.date)
+                        categories:['월','화','수','목','금']
                     },
                     fill:{
                         colors:'green',
                         opacity:0.9
-                    }
+                    },
+                    
                 }}
             />
 
         </LastChart>
         
-
+        
         </Wrapper>
+        {ShowInput ? <>
+            <InputW>
+                <Title>
+                    <span style={{fontSize:'22px',fontWeight:'600', marginLeft:'20px'}}>오늘의 잔반량 등록</span>
+                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'20px'}} onClick={()=>SetShowInput(false)}/>
+                </Title>
+
+                <div>
+                    <Items>
+                        <span>오늘 날짜</span>
+                        <div>                       
+                        {format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}
+                        {/* <DatePicker selected={startDate} onChange={date => setStartDate(date)}/> */}
+                        </div>
+                    </Items>
+                    <Items>
+                        <span>총 잔반량</span>
+                        <input 
+                        value={leftover}
+                        onChange={(e) => setLeftover(e.target.value)}
+                        type='number' 
+                        placeholder='kg수를 적으세요.'/>
+                    </Items>
+                </div>
+
+                <button onClick={onsubmit}>등록하기</button>
+            </InputW>
+            <Overlay/>
+        </>:null}
+        </>
     )
 }
 
