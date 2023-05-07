@@ -27,7 +27,7 @@ public class MenuManagerInfoDto {
                 menu.getCost(),
                 menu.getImage(),
                 menu.getSold(),
-                menu.getUsePlanner(),
+                menu.isUsePlanner(),
                 menuInfo.getInfo(),
                 menuInfo.getDetails()
         );

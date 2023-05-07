@@ -29,7 +29,7 @@ public class Menu {
     private int cost;
     private String image;
     private Boolean sold;
-    private Boolean usePlanner;
+    private boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
         if (dto.getName() != null) {
@@ -39,7 +39,7 @@ public class Menu {
             this.cost = dto.getCost();
         }
         if (dto.getUsePlanner() != null) {
-            this.usePlanner = (dto.getUsePlanner() == 1) ? true : false;
+            this.usePlanner = dto.getUsePlanner();
         }
     }
 
@@ -52,7 +52,7 @@ public class Menu {
                 dto.getCost(),
                 filePath,
                 true,
-                (dto.getUsePlanner() == 1) ? true : false
+                dto.getUsePlanner()
         );
     }
 

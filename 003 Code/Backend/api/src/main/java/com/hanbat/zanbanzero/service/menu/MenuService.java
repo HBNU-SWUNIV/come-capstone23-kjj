@@ -73,7 +73,7 @@ public class MenuService {
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
-        if (menuRepository.existsByName(dto.getName()) || menuRepository.existsByUsePlannerTrue()) {
+        if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) {
             throw new SameNameException("데이터 중복입니다.");
         }
 
@@ -85,9 +85,9 @@ public class MenuService {
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException, SameNameException {
-        if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner() == 1)) {
-            throw new SameNameException("데이터 중복입니다.");
-        }
+//        if ((menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) {
+//            throw new SameNameException("데이터 중복입니다.");
+//        }
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
