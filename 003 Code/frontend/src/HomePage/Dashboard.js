@@ -231,7 +231,7 @@ function Dashboard(){
     const [leftover, setLeftover] = useState('');
     const [goodmenu, setGoodmenu] = useState([]);
 
-
+    
     // 금일, 누적 이용자 수 
     useEffect(() => {
         axios.get('/api/manager/get/state/all')
@@ -278,7 +278,6 @@ function Dashboard(){
         SetShowInput(false);
     };
    
-    
     return(<>
         <Wrapper>
             <Navtop pages={"홈"}/>
