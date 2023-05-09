@@ -6,12 +6,14 @@ import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
+import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuImageService menuImageService;
-    private final StoreRepository storeRepository;
+    private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final CacheManager cacheManager;
@@ -102,9 +104,13 @@ public class MenuService {
         menuInfo.patch(dto);
     }
 
+    @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+
+        List<UserPolicy> policies = userPolicyRepository.findAllByDefaultMenu(id);
+        for (UserPolicy policy : policies) policy.setDefaultMenu(null);
 
         menuRepository.delete(menu);
     }

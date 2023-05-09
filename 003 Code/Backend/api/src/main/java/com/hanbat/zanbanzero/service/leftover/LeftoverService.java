@@ -87,9 +87,13 @@ public class LeftoverService {
         for (int i = 0; i < weekSize; i ++) {
             String targetDate = DateTools.toFormatterString(date.plusDays(i));
 
-            Long targetId = calculateRepository.findByDate(targetDate).getId();
+            Calculate target = calculateRepository.findByDate(targetDate);
+            if (target == null) {
+                result.add(new LeftoverDto(targetDate, 0.0));
+                continue;
+            }
 
-            Leftover leftover = leftoverRepository.findByLeftoverPreId(targetId);
+            Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
             if (leftover == null) {
                 result.add(new LeftoverDto(targetDate, 0.0));
             }

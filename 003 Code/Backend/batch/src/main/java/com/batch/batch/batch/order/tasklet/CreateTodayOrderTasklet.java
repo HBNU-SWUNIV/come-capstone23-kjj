@@ -92,7 +92,7 @@ public class CreateTodayOrderTasklet {
                     }
                 }
 
-                if (!exists) {
+                if (!exists && idToNameMap.containsKey(defaultMenu) && nameToCostMap.containsKey(idToNameMap.get(defaultMenu))) {
                     String menuName = idToNameMap.get(defaultMenu);
                     int cost = nameToCostMap.get(menuName);
 

@@ -102,7 +102,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void setUserDatePolicy(UserPolicyDto dto, Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
-        policy.updatePolicy(dto);
+        policy.setPolicy(dto);
     }
 
     @Transactional
@@ -111,7 +111,7 @@ public class UserService implements UserDetailsService {
             throw new WrongParameter("잘못된 메뉴 ID");
         }
         UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
-        policy.updatePolicy(menuId);
+        policy.setDefaultMenu(menuId);
     }
 
     public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {

@@ -27,7 +27,7 @@ public class UserPolicy {
 
     private Long defaultMenu;
 
-    public void updatePolicy(UserPolicyDto dto) {
+    public void setPolicy(UserPolicyDto dto) {
         monday = dto.isMonday();
         tuesday = dto.isTuesday();
         wednesday = dto.isWednesday();
@@ -35,7 +35,7 @@ public class UserPolicy {
         friday = dto.isFriday();
     }
 
-    public void updatePolicy(Long id) {
+    public void setDefaultMenu(Long id) {
         defaultMenu = id;
     }
 }
