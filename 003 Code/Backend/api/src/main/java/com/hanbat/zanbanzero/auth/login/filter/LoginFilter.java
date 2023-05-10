@@ -18,17 +18,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
-public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
+public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login")) {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {

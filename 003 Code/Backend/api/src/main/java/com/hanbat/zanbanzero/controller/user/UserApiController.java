@@ -19,18 +19,18 @@ public class UserApiController {
 
     private final UserService userService;
 
+    @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
+    @PostMapping("/api/login/user")
+    public ResponseEntity<UserInfoDto> userLogin(@RequestBody UserDto dto) throws JwtException {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getInfo(dto));
+    }
+
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody UserDto dto) throws JsonProcessingException, WrongRequestDetails {
         userService.join(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
-    }
-
-    @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
-    @PostMapping("/login/user")
-    public ResponseEntity<String> login() {
-        return ResponseEntity.status(HttpStatus.OK).body("로그인에 성공했습니다.");
     }
 
     @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")

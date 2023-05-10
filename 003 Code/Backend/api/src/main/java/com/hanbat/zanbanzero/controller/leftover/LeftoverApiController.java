@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.controller.leftover;
 
 import com.hanbat.zanbanzero.dto.leftover.LeftoverAndPreDto;
 import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
+import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.leftover.LeftoverService;
@@ -25,7 +26,7 @@ public class LeftoverApiController {
 
     @Operation(summary="잔반 감소량 설정", description="")
     @PostMapping("/api/manager/leftover/set")
-    public ResponseEntity<String> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails {
+    public ResponseEntity<String> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails, WrongParameter {
         if (dto.getDate() != null) {
             throw new WrongRequestDetails("날짜값은 생략되어야 합니다.");
         }

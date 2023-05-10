@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
+import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
@@ -35,8 +36,9 @@ public class LeftoverService {
 
 
     @Transactional
-    public void setLeftover(LeftoverDto dto) throws WrongRequestDetails {
+    public void setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
+        if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
 
         Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
 

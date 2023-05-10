@@ -13,8 +13,6 @@ public class CreateUserTokenImpl implements CreateTokenInterface {
         UserDto user;
         try {
             user = objectMapper.readValue(request.getInputStream(), UserDto.class);
-            System.out.println(user.getUsername());
-            System.out.println(user.getPassword());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -8,7 +8,7 @@ public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;
 
     public CustomUriMapper(ServletRequest request) throws WrongParameter {
-        if (((HttpServletRequest) request).getRequestURI().startsWith("/login/")) {
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login/")) {
             createTokenInterface = new CreateUserTokenImpl();
         }
         else {

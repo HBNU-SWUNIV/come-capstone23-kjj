@@ -84,7 +84,7 @@ public class UserService implements UserDetailsService {
     public UserInfoDto getInfo(UserDto dto) throws JwtException {
         User user = userRepository.findByUsername(dto.getUsername());
 
-        return new UserInfoDto(user.getId(), user.getUsername());
+        return UserInfoDto.createUserInfoDto(user);
     }
 
     public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
