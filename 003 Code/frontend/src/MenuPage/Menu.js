@@ -6,7 +6,7 @@ import { useMatch, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { AiFillCloseCircle } from "react-icons/ai";
 import Navtop from "../Components/Navtop";
-import { BsToggle2Off,BsToggle2On } from "react-icons/bs";
+import { BsToggle2Off,BsToggle2On ,BsFillCheckCircleFill} from "react-icons/bs";
 import Overlay from "../Components/Overlay";
 import { AiFillPlusCircle } from "react-icons/ai";
 import shortid from "shortid";
@@ -297,18 +297,27 @@ const Updatebackban_text = styled.div`
 function Menu(){
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
-    const [isBackban, setIsbackban] = useState(true);
     const [savedData, setSaveddata] = useState([]);
-    
+    const [백반여부, set백반여부] = useState(false);
+
     const deletePathMatch = useMatch('/menu/:deleteId'),UpdatePathMatch = useMatch('/menu/update/:updateId');
+    
+
+     // 식단표 사용 (백반 지정)
+    const [isSickdan, setIsSickdan] = useState(false);
+    const [isBackban, setIsbackban] = useState(false);
     
     // 메뉴페이지 시작시, 첫 api호출
     useEffect(() => {
         axios.get('/api/manager/menu')
         .then(res => setSaveddata(res.data))
         .then(setIsLoading(false))
+
+        axios.get('/api/manager/menu/get/planner')
+        .then(res => setIsSickdan(res.data))
+
     },[]) 
-    
+
     // 메뉴 삭제 or 수정하기 위해
     const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
     const UpdatePath = UpdatePathMatch?.params.updateId && savedData?.find(data => data.id == UpdatePathMatch.params.updateId);
@@ -328,28 +337,22 @@ function Menu(){
             .then(res => setSaveddata(res.data))
         })
     }
-    
-    // 메뉴 삭제
-    const onDelete = (id) => {
-        navigate(`/menu/${id}`);
-    }
-    const onFinalDelete = (id) => {
-        axios.delete(`/api/manager/menu/${id}/del`)
-        .then(() => {
-            axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
-        })
-        navigate('/menu');
-    }
-    console.log(savedData)
+
     // 메뉴 추가, 수정
-    const [name, setMenu] = useState(''),[cost, setCost] = useState(''),[info, setInfo] = useState(''),[details, setDetails] = useState('');
+    const [name, setName] = useState(''),[cost, setCost] = useState(''),[info, setInfo] = useState(''),[details, setDetails] = useState('');
+   
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
     }
     const onMenuAdd = () => {
         const formdata = new FormData();
-        
-        let body = {name,cost,info,details};
+          let body = {
+            name,
+            cost,
+            info,
+            details,
+            usePlanner: isSickdan ? false : isBackban ? true : false
+          };
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
         
@@ -363,20 +366,46 @@ function Menu(){
         }).then(() => {
             // 새로운 메뉴가 추가되거나 메뉴가 업데이트 되면, 전체 메뉴 목록을 다시 가져옴.
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
+        }).then(() => {
+            axios.get('/api/manager/menu/get/planner').then(res => setIsSickdan(res.data))
+        }).catch(err => {
+            if(err.response.status == 400){
+                alert('메뉴명과 가격은 필수입니다.');
+                return;
+            }
+            else if(err.response.status == 409){
+                alert('중복된 메뉴명이 있습니다.');
+                return;
+            }
         })
+
         setCost('');
         setInfo('');
         setDetails('');
-        setMenu('');
+        setName('');
+        setIsbackban(false);
         navigate('/menu');
     } 
     const onMenuUpdate = (id) => {
         const formdata = new FormData();
+        let 백반여부 = savedData.filter(sd => sd.id ==id)[0].usePlanner;
+        
+        
+        if(savedData.filter(a => a.id != id).filter(n => n.name == name).length != 0){
+            alert("중복된 메뉴명입니다.");
+            return;
+        }
 
-        let body = {name,cost,info,details};
+          let body = {
+            name: name === '' ? UpdatePath.name : name,
+            cost: cost === '' ? UpdatePath.cost : cost,
+            info: info === '' ? UpdatePath.info : info,
+            details: details === '' ? UpdatePath.details : details,
+            usePlanner: 백반여부 ? true : isBackban ? true : false
+          };
+
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
-
         axios({
             method:'PATCH',
             url:`/api/manager/menu/${id}/update`,
@@ -386,13 +415,35 @@ function Menu(){
             }
         }).then(()=>{
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
+        }).then(() => {
+            axios.get('/api/manager/menu/get/planner').then(res => setIsSickdan(res.data))
         })
         setCost('');
         setInfo('');
         setDetails('');
-        setMenu('');
+        setName('');
+        setIsbackban(false);
         navigate('/menu');
     }
+
+
+    // 메뉴 삭제
+    const onDelete = (id) => {
+        navigate(`/menu/${id}`);
+    }
+    const onFinalDelete = (id) => {
+        axios.delete(`/api/manager/menu/${id}/del`)
+        .then(() => {
+            axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
+        })
+        .then(() => {
+            axios.get(`/api/manager/menu/get/planner`).then(res=> setIsSickdan(res.data))
+        })
+        setName('');
+        navigate('/menu');
+    }
+    
+    
 
     return(
         <>
@@ -432,6 +483,16 @@ function Menu(){
                             재판매
                             </button> 
                         </div>}
+
+                        {data?.usePlanner ? 
+                        <div style={{position:'absolute',right:0,marginRight:'-15vw',marginTop:'-90px'}}>
+                            <span style={{fontSize:'13px'}}>
+                                백반으로 지정됨
+                                <BsFillCheckCircleFill style={{marginLeft:'1px',color:'#DC3546',marginBottom:'-1.7px'}}/>
+                            </span>
+                        </div>
+                        :null
+                        }
                        
                     </ItemInfo> 
                     <ItemUD>
@@ -510,7 +571,7 @@ function Menu(){
                     <input 
                         placeholder={UpdatePath?.name}
                         value={name} 
-                        onChange={(e) => setMenu(e.target.value)} required/>
+                        onChange={(e) => setName(e.target.value)}/>
                 </div>
                 <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
                 <div>
@@ -518,7 +579,7 @@ function Menu(){
                     <input 
                         placeholder={UpdatePath?.cost}
                         value={cost} 
-                        onChange={e => setCost(e.target.value)} required/>
+                        onChange={e => setCost(e.target.value)}/>
                 </div>
                 <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
                 <div>
@@ -551,26 +612,44 @@ function Menu(){
 
             <hr style={{width:'34vw'}}/>
             
-                {isBackban ? 
-                <Updatebackban>
-                <Updatebackban_text>
-                    <span>백반으로 지정하시겠습니까?</span>
-                    <span>백반은 최대 1개의 메뉴만 저장가능하며, 요일 별 식단표는 백반관리에서 등록할 수 있습니다.</span>
-                </Updatebackban_text>
-                <BsToggle2Off
-                    onClick={()=> setIsbackban(false)}
-                    style={{fontSize:'30px',marginRight:'20px',color:'#d9d9d9'}}/>
-                </Updatebackban>
-                :
-                <Updatebackban>
-                <Updatebackban_text>
+                {
+                    // 식단이 등록되있는 경우
+                    isSickdan ?
+                    <Updatebackban>
+                    <Updatebackban_text>
                     <span>지정된 백반이 이미 있습니다.</span>
                     <span>백반을 등록하시려면 우선 지정된 백반을 삭제해주세요.</span>
-                </Updatebackban_text>
-                <BsToggle2On
-                    onClick={()=> setIsbackban(true)}
+                    </Updatebackban_text>
+                    <BsToggle2On
+                    // onClick={()=> setIsSickdan(false)}
                     style={{fontSize:'30px',marginRight:'20px',color:'#5856D6'}}/>
-                </Updatebackban>
+                    </Updatebackban> 
+                    :
+
+                    // 식단이 등록되지 않았을 경우
+                    isBackban == false ? 
+                    <Updatebackban>
+                    <Updatebackban_text>
+                        <span>백반으로 지정하시겠습니까?</span>
+                        <span>백반은 최대 1개의 메뉴만 저장가능하며, 요일 별 식단표는 백반관리에서 등록할 수 있습니다.</span>
+                    </Updatebackban_text>
+                    <BsToggle2Off
+                        onClick={()=> setIsbackban(true)}
+                        style={{fontSize:'30px',marginRight:'20px',color:'#d9d9d9'}}/>
+                    </Updatebackban> 
+                    :
+                    <Updatebackban>
+                    <Updatebackban_text>
+                    <span>'
+                        {UpdatePath ? UpdatePath?.name : name}
+                        '을 백반으로 지정함.
+                    </span>
+                    <span>백반으로 등록하시려면 저장을 눌러주세요.</span>
+                    </Updatebackban_text>
+                    <BsToggle2On
+                    onClick={()=> setIsbackban(false)}
+                    style={{fontSize:'30px',marginRight:'20px',color:'#5856D6'}}/>
+                    </Updatebackban> 
                 }
         
             <button onClick={UpdatePathMatch.params.updateId == 0 ? onMenuAdd : () => onMenuUpdate(UpdatePathMatch.params.updateId)}>저장</button>
