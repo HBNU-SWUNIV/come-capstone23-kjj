@@ -8,6 +8,7 @@ import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,18 +20,19 @@ public class UserApiController {
 
     private final UserService userService;
 
+    @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
+    @PostMapping("/api/login/user")
+    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getInfoForUsername(username));
+    }
+
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("/join")
     public ResponseEntity<String> join(@RequestBody UserDto dto) throws JsonProcessingException, WrongRequestDetails {
         userService.join(dto);
 
         return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
-    }
-
-    @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
-    @PostMapping("/login/user")
-    public ResponseEntity<String> login() {
-        return ResponseEntity.status(HttpStatus.OK).body("로그인에 성공했습니다.");
     }
 
     @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")

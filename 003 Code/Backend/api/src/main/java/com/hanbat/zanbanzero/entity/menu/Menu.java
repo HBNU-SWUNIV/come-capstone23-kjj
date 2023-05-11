@@ -29,12 +29,7 @@ public class Menu {
     private int cost;
     private String image;
     private Boolean sold;
-
-    public void setUsePlanner(Boolean usePlanner) {
-        this.usePlanner = usePlanner;
-    }
-
-    private Boolean usePlanner;
+    private boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
         if (dto.getName() != null) {
@@ -43,9 +38,12 @@ public class Menu {
         if (dto.getCost() != null) {
             this.cost = dto.getCost();
         }
+        if (dto.getUsePlanner() != null) {
+            this.usePlanner = dto.getUsePlanner();
+        }
     }
 
-    public static Menu createMenu(MenuUpdateDto dto, String filePath, Boolean usePlanner) {
+    public static Menu createMenu(MenuUpdateDto dto, String filePath) {
         return new Menu(
                 null,
                 null,
@@ -54,12 +52,15 @@ public class Menu {
                 dto.getCost(),
                 filePath,
                 true,
-                usePlanner
+                dto.getUsePlanner()
         );
     }
 
     public void setImage(String path) { image = path; }
     public void setSold(boolean type) {
         sold = type;
+    }
+    public void setUsePlanner(Boolean usePlanner) {
+        this.usePlanner = usePlanner;
     }
 }

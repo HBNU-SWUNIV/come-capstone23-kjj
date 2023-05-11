@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
+import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
@@ -35,12 +36,17 @@ public class LeftoverService {
 
 
     @Transactional
-    public void setLeftover(LeftoverDto dto) throws WrongRequestDetails {
+    public void setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
+        if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
+        Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
+        if (leftover != null) leftover.setLeftover(dto.getLeftover());
 
-        Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
+        else {
+            Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
 
-        leftoverRepository.save(result);
+            leftoverRepository.save(result);
+        }
     }
 
     public int getAllLeftoverPage() {
@@ -87,9 +93,13 @@ public class LeftoverService {
         for (int i = 0; i < weekSize; i ++) {
             String targetDate = DateTools.toFormatterString(date.plusDays(i));
 
-            Long targetId = calculateRepository.findByDate(targetDate).getId();
+            Calculate target = calculateRepository.findByDate(targetDate);
+            if (target == null) {
+                result.add(new LeftoverDto(targetDate, 0.0));
+                continue;
+            }
 
-            Leftover leftover = leftoverRepository.findByLeftoverPreId(targetId);
+            Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
             if (leftover == null) {
                 result.add(new LeftoverDto(targetDate, 0.0));
             }

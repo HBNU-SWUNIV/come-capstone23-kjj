@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.auth.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC256(JwtTemplate.SECRET));
     }
 
-    public String getUsernameFromToken(String token) {
+    public static String getUsernameFromToken(String token) {
         token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
 
         String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("username").asString();

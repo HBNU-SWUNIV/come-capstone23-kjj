@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -15,8 +16,8 @@ import java.util.Date;
 public class DateTools {
 
     public static String makeTodayDateString() {
-        LocalDate date = LocalDate.now().plus(9, ChronoUnit.HOURS);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        ZonedDateTime date = ZonedDateTime.now().plusHours(9).truncatedTo(ChronoUnit.HOURS);
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return format.format(date);
     }
 

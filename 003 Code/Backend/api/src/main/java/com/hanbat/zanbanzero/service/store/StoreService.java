@@ -69,7 +69,7 @@ public class StoreService {
     @Transactional
     public Integer getToday() {
         Calculate calculate = calculateRepository.findByDate(getTodayDate());
-        if (calculate == null) return null;
+        if (calculate == null) return 0;
         return calculate.getToday();
     }
 
@@ -83,7 +83,8 @@ public class StoreService {
             String targetDate = DateTools.toFormatterString(date.plusDays(i));
             Calculate calculate = calculateRepository.findByDate(targetDate);
 
-            result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), calculate.getToday()));
+            if (calculate == null) result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), 0));
+            else result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), calculate.getToday()));
         }
 
         return result;

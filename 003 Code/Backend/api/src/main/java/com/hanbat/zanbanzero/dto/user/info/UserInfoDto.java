@@ -1,11 +1,10 @@
 package com.hanbat.zanbanzero.dto.user.info;
 
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
+import com.hanbat.zanbanzero.entity.user.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.modelmapper.ModelMapper;
 
 @Data
 @AllArgsConstructor
@@ -15,8 +14,10 @@ public class UserInfoDto {
     private Long id;
     private String username;
 
-    public static UserInfoDto createUserInfoDto(UserDto dto) {
-        ModelMapper modelMapper = new ModelMapper();
-        return modelMapper.map(dto, UserInfoDto.class);
+    public static UserInfoDto createUserInfoDto(User user) {
+        return new UserInfoDto(
+                user.getId(),
+                user.getUsername()
+        );
     }
 }

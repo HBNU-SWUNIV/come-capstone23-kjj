@@ -1,66 +1,61 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
+import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
-import com.hanbat.zanbanzero.exception.filter.SetFilterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
+import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 
-public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
+public class LoginFilter implements Filter {
     private AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (((HttpServletRequest) request).getRequestURI().startsWith("/login")) {
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login")) {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {
                 throw new RuntimeException(e);
             }
-            super.doFilter(request, response, chain);
+            attemptAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
+            chain.doFilter(request, response);
         } else {
             chain.doFilter(request, response);
         }
     }
 
     public LoginFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-
         this.authenticationManager = authenticationManager;
     }
 
 
-    @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
+    public void attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
         CreateTokenInterface createTokenInterface = customUriMapper.getLoginFilter();
 
         UsernamePasswordAuthenticationToken token = createTokenInterface.createToken(request);
         token.setDetails(request.getRequestURI());
 
         Authentication authentication = authenticationManager.authenticate(token);
-        // Spring의 권한 관리를 위해 return을 통해 세션에 저장
-        return authentication;
+
+        successfulAuthentication(response, authentication);
     }
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException {
+    public void successfulAuthentication(HttpServletResponse response, Authentication authResult){
         UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
@@ -69,16 +64,5 @@ public class LoginFilter extends CustomUsernamePasswordAuthenticationFilter {
 
         response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);
         response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + RefreshToken);
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        PrintWriter printWriter = response.getWriter();
-        printWriter.write("");
-        printWriter.flush();
-        printWriter.close();
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED, "인증에 실패하였습니다.");;
     }
 }

@@ -15,6 +15,8 @@ public class MenuManagerInfoDto {
     private int cost;
     private String image;
     private Boolean sold;
+    private Boolean usePlanner;
+
     private String info;
     private String details;
 
@@ -25,6 +27,7 @@ public class MenuManagerInfoDto {
                 menu.getCost(),
                 menu.getImage(),
                 menu.getSold(),
+                menu.isUsePlanner(),
                 menuInfo.getInfo(),
                 menuInfo.getDetails()
         );
