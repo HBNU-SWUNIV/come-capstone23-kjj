@@ -118,4 +118,8 @@ public class UserService implements UserDetailsService {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         return UserPolicyDto.createUserPolicyDto(policy);
     }
+
+    public UserInfoDto getInfoForUsername(String username) {
+        return UserInfoDto.createUserInfoDto(userRepository.findByUsername(username));
+    }
 }

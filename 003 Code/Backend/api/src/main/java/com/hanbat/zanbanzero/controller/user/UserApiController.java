@@ -8,6 +8,7 @@ import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +22,9 @@ public class UserApiController {
 
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("/api/login/user")
-    public ResponseEntity<UserInfoDto> userLogin(@RequestBody UserDto dto) throws JwtException {
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getInfo(dto));
+    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
+        String username = (String) request.getAttribute("username");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getInfoForUsername(username));
     }
 
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")

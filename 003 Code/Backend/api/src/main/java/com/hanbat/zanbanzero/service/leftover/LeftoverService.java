@@ -39,10 +39,14 @@ public class LeftoverService {
     public void setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
         if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
+        Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
+        if (leftover != null) leftover.setLeftover(dto.getLeftover());
 
-        Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
+        else {
+            Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
 
-        leftoverRepository.save(result);
+            leftoverRepository.save(result);
+        }
     }
 
     public int getAllLeftoverPage() {
