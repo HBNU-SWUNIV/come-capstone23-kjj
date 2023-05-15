@@ -115,7 +115,7 @@ function Setting(){
 
     const onInfoUpdate = () => {
         let body = {info};
-        axios.patch('/api/manager/store/set/info',body)
+        axios.patch('/api/manager/store/info',body)
         .then(res => res.status === 200 && alert('수정되었습니다.'))
     }
 

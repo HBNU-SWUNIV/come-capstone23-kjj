@@ -22,7 +22,7 @@ const Tip = styled.ul`
     position:absolute;
     right:0;
     margin-top:1vh;
-    margin-right:13vw;
+    margin-right:20vw;
     li{
         font-weight:500;
         font-size:15px;

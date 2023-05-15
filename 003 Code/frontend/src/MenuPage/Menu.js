@@ -16,8 +16,8 @@ display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
-margin-top:30px;
 position:relative;
+margin-top:8px;
 `;
 const Tip = styled.ul`
     display:flex;
@@ -28,8 +28,8 @@ const Tip = styled.ul`
     height:10vh;
     position:absolute;
     right:0;
-    margin-top:-2vh;
-    margin-right:12vw;
+    margin-top:1vh;
+    margin-right:26vw;
     li{
         font-weight:500;
         font-size:15px;
@@ -240,15 +240,9 @@ const UpdateImg = styled.div`
     display:flex;
     justify-content:space-between;
     align-items:center;
-    button{
-        background-color:#1473E6;
-        border:1px solid #1473E6;
-        border-radius:15px;
-        width:6vw;
+    input{
+        width:15vw;
         height:5vh;
-        color:white;
-        margin-right:60px;
-        margin-top:20px;
     }
 `;
 const UpdateImg_defaultimg = styled.div`
@@ -298,11 +292,12 @@ function Menu(){
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [savedData, setSaveddata] = useState([]);
-    const [백반여부, set백반여부] = useState(false);
+
+    // 이미지 조회
+    const [getimage, setgetimage] = useState(null)
 
     const deletePathMatch = useMatch('/menu/:deleteId'),UpdatePathMatch = useMatch('/menu/update/:updateId');
     
-
      // 식단표 사용 (백반 지정)
     const [isSickdan, setIsSickdan] = useState(false);
     const [isBackban, setIsbackban] = useState(false);
@@ -313,8 +308,10 @@ function Menu(){
         .then(res => setSaveddata(res.data))
         .then(setIsLoading(false))
 
-        axios.get('/api/manager/menu/get/planner')
+        axios.get('/api/manager/menu/planner')
         .then(res => setIsSickdan(res.data))
+
+        axios.get('/api/image').then(res => console.log(res))
 
     },[]) 
 
@@ -340,7 +337,8 @@ function Menu(){
 
     // 메뉴 추가, 수정
     const [name, setName] = useState(''),[cost, setCost] = useState(''),[info, setInfo] = useState(''),[details, setDetails] = useState('');
-   
+    const [image, setImage] = useState(null);
+
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
     }
@@ -349,13 +347,14 @@ function Menu(){
           let body = {
             name,
             cost,
-            info,
+            info : '알레르기 정보: '+info,
             details,
             usePlanner: isSickdan ? false : isBackban ? true : false
           };
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
-        
+        formdata.append("file",image);
+
         axios({
             method:'POST',
             url:'/api/manager/menu/add',
@@ -383,13 +382,13 @@ function Menu(){
         setInfo('');
         setDetails('');
         setName('');
+        setImage(null);
         setIsbackban(false);
         navigate('/menu');
     } 
     const onMenuUpdate = (id) => {
         const formdata = new FormData();
         let 백반여부 = savedData.filter(sd => sd.id ==id)[0].usePlanner;
-        
         
         if(savedData.filter(a => a.id != id).filter(n => n.name == name).length != 0){
             alert("중복된 메뉴명입니다.");
@@ -399,13 +398,14 @@ function Menu(){
           let body = {
             name: name === '' ? UpdatePath.name : name,
             cost: cost === '' ? UpdatePath.cost : cost,
-            info: info === '' ? UpdatePath.info : info,
+            info: info === '' ? UpdatePath.info : '알레르기 정보: '+info,
             details: details === '' ? UpdatePath.details : details,
             usePlanner: 백반여부 ? true : isBackban ? true : false
           };
 
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
+        image != null && formdata.append("file",image);
         axios({
             method:'PATCH',
             url:`/api/manager/menu/${id}/update`,
@@ -426,24 +426,21 @@ function Menu(){
         navigate('/menu');
     }
 
-
     // 메뉴 삭제
     const onDelete = (id) => {
         navigate(`/menu/${id}`);
     }
     const onFinalDelete = (id) => {
-        axios.delete(`/api/manager/menu/${id}/del`)
+        axios.delete(`/api/manager/menu/${id}`)
         .then(() => {
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
         })
         .then(() => {
-            axios.get(`/api/manager/menu/get/planner`).then(res=> setIsSickdan(res.data))
+            axios.get(`/api/manager/menu/planner`).then(res=> setIsSickdan(res.data))
         })
         setName('');
         navigate('/menu');
     }
-    
-    
 
     return(
         <>
@@ -455,23 +452,24 @@ function Menu(){
             </Tip>
 
             {isLoading ? 
-                <h1 style={{marginTop:'100px',marginLeft:'20px'}}>
-                    Loading...
-                </h1> : 
+                <h1 style={{marginTop:'100px',marginLeft:'20px'}}>Loading...</h1> 
+                : 
                 <ItemWrapper>
                 <span>전체 {savedData?.length}종</span>
                 {savedData?.map(data => 
-                <Item 
-                    style={{backgroundColor: data?.sold == true ? '#C8D5EF': 'rgba(0,0,0,0.4)'}}
-                    key={shortid.generate()}>
-                    <Itemimg bgPhoto={makeImagePath(data?.image,'w400'||'')}/>
+                <Item style={{backgroundColor: data?.sold == true ? '#C8D5EF': 'rgba(0,0,0,0.4)'}}
+                        key={shortid.generate()}>
+                    {/* <Itemimg bgPhoto={makeImagePath(data?.image,'w400'||'')}/> */}
+                    <div>
+                        <img src={data.image} alt="이미지 없음"/>
+                    </div>
                     <ItemInfo>
                         <span>{data?.name}</span>  
                         <span>{data?.details}</span>
                         <span>{data?.info}</span>
                         <span>{data?.cost}</span>
-                        
-                        {data?.sold == true ? null :
+                        {data?.sold == true ? null 
+                        :
                         <div style={{position:'absolute'}}>
                             <span 
                                 style={{marginLeft:'12vw',color:'#DC3546',fontSize:'24px',marginTop:'-2vh'}}>
@@ -480,7 +478,7 @@ function Menu(){
                             <button 
                                 style={{marginTop:'1vh'}}
                                 onClick={() => on재판매(data?.id)}>
-                            재판매
+                                재판매
                             </button> 
                         </div>}
 
@@ -493,7 +491,6 @@ function Menu(){
                         </div>
                         :null
                         }
-                       
                     </ItemInfo> 
                     <ItemUD>
                         <button onClick={() => onDelete(data?.id)}>
@@ -509,25 +506,20 @@ function Menu(){
                         </button>
                     </Itemfinal>
                 </Item>)}
-                
                 </ItemWrapper>}
         
             <AiFillPlusCircle
-                style={{position:'absolute',right:0,top:'75px',marginRight:'20vw',fontSize:'30px'}}
+                style={{position:'absolute',right:0,top:'85px',marginRight:'25.2vw',fontSize:'30px'}}
                 onClick={() => navigate('/menu/update/0')}/>
-
         </Wrapper>
 
         {deletePathMatch?
             <>
             <CheckDelete>
-            <div 
-            style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
+            <div style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
             <CheckDelete_img bgPhoto={makeImagePath(DeletePath?.image,'w400'||'')}/>
-            <div 
-            style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
-                <span 
-                style={{fontSize:'22px',fontWeight:'600'}}>
+            <div style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
+                <span style={{fontSize:'22px',fontWeight:'600'}}>
                     {DeletePath?.name}
                 </span>
                 <span>
@@ -554,12 +546,10 @@ function Menu(){
         {UpdatePathMatch?
             <>
             <UpdateWrapper>
-
             <UpdateTitle>
                 <span>
                     {UpdatePathMatch.params.updateId == 0 ? '메뉴 추가' : '메뉴 수정'}
                 </span>
-
                 <AiFillCloseCircle 
                     onClick={() => navigate('/menu')} 
                     style={{fontSize:'20px',fontWeight:600,marginRight:'20px'}}/>
@@ -604,14 +594,10 @@ function Menu(){
                 <UpdateImg_defaultimg>
                     이미지없음
                 </UpdateImg_defaultimg>
-
-                <button>
-                    이미지 첨부
-                </button>
+                <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])}/>
             </UpdateImg>
-
             <hr style={{width:'34vw'}}/>
-            
+
                 {
                     // 식단이 등록되있는 경우
                     isSickdan ?

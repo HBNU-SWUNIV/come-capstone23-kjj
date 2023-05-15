@@ -52,12 +52,14 @@ const DivDay = styled.div`
     border:0.1px solid #5B5B5B;
     border-right-style:none;
     span:first-child{
-        font-size:20px;
+        font-size:13px;
         font-weight:600;
-        margin:15px 15px;
+        margin:5px 5px;
     }
     span:last-child{
-        font-size:13px;
+        margin-top:0.2vh;
+        margin-right:0.2vw;
+        font-size:12px;
         white-space:pre-wrap;
     }
 `;
@@ -146,7 +148,6 @@ function Calander(){
     useEffect(() => {
         axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
         .then(res => setSavedBackbaninfo(res.data))
-        .then(console.log(savedBackbaninfo))
     },[currentMonth])
 
     const onBackban = event => {
@@ -156,7 +157,7 @@ function Calander(){
 
     const onSave = (year,month,day) => {
         let body = {menus:Backbaninfo}
-        axios.post(`/api/manager/planner/set/${year}/${month}/${day}`,body)
+        axios.post(`/api/manager/planner/${year}/${month}/${day}`,body)
         .then(() =>{
             axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
             .then(res => setSavedBackbaninfo(res.data))
@@ -189,11 +190,10 @@ function Calander(){
             const id = format(day,'yyyyMMdd').toString();
             if(format(monthStart,'M') != format(day,'M')){
                 dayss.push(
-                    <DivDay 
-                    style={{backgroundColor:'#383838',opacity:'0.5'}} 
-                    key={shortid.generate()}>
+                    <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} 
+                            key={shortid.generate()}>
                         <span style={{
-                            fontSize:'20px',fontWeight:600,margin:'15px 15px'
+                            fontSize:'13px',fontWeight:600,margin:'5px 5px'
                         }}>
                             {formattedDate}
                         </span>
