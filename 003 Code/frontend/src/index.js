@@ -9,7 +9,7 @@ import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import persistReducer from './store';
 import { createSlice } from '@reduxjs/toolkit';
-import store from './store';
+import {store,persistor} from './store';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 
 const client = new QueryClient();
@@ -22,9 +22,9 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={client}>
       <Provider store={store}>
-        {/* <PersistGate persistor={persistor}> */}
+        <PersistGate loading={null} persistor={persistor}>
           <RouterProvider router={router}/>
-        {/* </PersistGate> */}
+        </PersistGate>
       </Provider>
     </QueryClientProvider>
   </React.StrictMode>

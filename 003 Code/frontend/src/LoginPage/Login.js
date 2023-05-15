@@ -3,7 +3,8 @@ import background from '../image/capstone_background.png';
 import { useState } from 'react';
 import {useDispatch,useSelector} from 'react-redux';
 import axios from 'axios';
-
+import { R_login } from '../store';
+import {useNavigate} from 'react-router-dom';
 
 const Inputstyle = {width:'320px',height:'30px',borderRadius:'15px',border:'1px solid gray'};
 
@@ -95,21 +96,22 @@ margin-bottom:80px;
 
 function Login(){
     const dispatch = useDispatch();
-    const [username,setID] = useState(''), [password,setPW] = useState('');
-    const onSubmit = (event) => {
-        event.preventDefault();
-        let body = {username,password}
-        axios.post(`/login/manager`,body)
-        .then(res => {
-            const {accessToken} = res.data;
-            console.log(res)
-            axios.defaults.headers.common[
-                "Authorization"
-            ] = `Bearer ${accessToken}`;
-        })
-       
+    const navigate = useNavigate();
+    const [username,setUsername] = useState(''), [password,setPassword] = useState('');
+    
+    const test = useSelector(User => User)
 
-        
+    const onSubmit = (e) => {
+        e.preventDefault()
+        let body = {username,password}
+        axios.post(`/api/login/manager`,body,)
+        .then(res => {
+            res.status == 200 && 
+            axios.get('/api/manager/setting').then(res => {
+                res.data != null ? navigate('/home') : navigate('/notSetting')
+            })
+            .then(dispatch(R_login()))
+        })
     }
 
     
@@ -124,11 +126,11 @@ function Login(){
                 <LogininputW>
                     <IDD>
                         <span>ID</span>
-                        <input type='text' value={username} onChange={e => setID(e.target.value)} style={Inputstyle}/>
+                        <input type='text' value={username} onChange={e => setUsername(e.target.value)} style={Inputstyle}/>
                     </IDD>
                     <PWW>
                         <span>Password</span>
-                        <input type='password' value={password} onChange={e => setPW(e.target.value)} style={Inputstyle}/>
+                        <input type='password' value={password} onChange={e => setPassword(e.target.value)} style={Inputstyle}/>
                     </PWW>
                     <button type='submit'>LOGIN</button>
                 </LogininputW>

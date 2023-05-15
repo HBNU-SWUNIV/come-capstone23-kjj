@@ -13,7 +13,7 @@ function App() {
   
   return (
     <Wrapper>
-      {location.pathname === '/' ? null : <Navbar/>}
+      {location.pathname === '/' || location.pathname === '/notSetting' ? null : <Navbar/>}
       <Outlet/>
     </Wrapper>         
   );
