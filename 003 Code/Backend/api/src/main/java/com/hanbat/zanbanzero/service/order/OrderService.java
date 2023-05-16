@@ -43,14 +43,7 @@ public class OrderService {
     @Transactional
     public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
-        return new Order(
-                null,
-                userRepository.getReferenceById(userId),
-                menu.getName(),
-                menu.getCost(),
-                date,
-                type
-        );
+        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
     @Transactional
@@ -58,13 +51,8 @@ public class OrderService {
         String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
-        if (order == null) {
-            Order data = createNewOrder(id, getDefaultMenu(id).getId(), date, false);
-            orderRepository.save(data);
-        }
-        else {
-            order.setRecognizeToCancel();
-        }
+        if (order == null) orderRepository.save(createNewOrder(id, getDefaultMenu(id).getId(), date, false));
+        else order.setRecognizeToCancel();
     }
 
     @Transactional
@@ -72,10 +60,7 @@ public class OrderService {
         String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
-        if (order == null) {
-            Order data = createNewOrder(id, menuId, date, true);
-            orderRepository.save(data);
-        }
+        if (order == null) orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
             order.setMenu(menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new));
             order.setRecognizeToUse();
@@ -94,13 +79,7 @@ public class OrderService {
         List<Order> orders = orderRepository.findByUserId(id);
 
         return orders.stream()
-                .map(order -> {
-                    try {
-                        return OrderDto.createOrderDto(order);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(order -> OrderDto.createOrderDto(order))
                 .collect(Collectors.toList());
     }
 
@@ -111,13 +90,7 @@ public class OrderService {
 
         return orderPage.getContent()
                 .stream()
-                .map(order -> {
-                    try {
-                        return OrderDto.createOrderDto(order);
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
+                .map(order -> OrderDto.createOrderDto(order))
                 .collect(Collectors.toList());
     }
 
@@ -126,7 +99,6 @@ public class OrderService {
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
-
         return LastOrderDto.createOrderDto(order, order.getMenu());
     }
 

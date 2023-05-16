@@ -27,4 +27,10 @@ public class UserDto {
     public void setEncodePassword(BCryptPasswordEncoder bCryptPasswordEncoder) {
         password = bCryptPasswordEncoder.encode(password);
     }
+
+    public boolean checkForm() {
+        if (id == null || password == null) return false;
+        else if (id.equals("") || password.equals("")) return false;
+        return true;
+    }
 }

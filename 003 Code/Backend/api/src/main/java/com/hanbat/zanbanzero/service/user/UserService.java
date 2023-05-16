@@ -38,36 +38,15 @@ public class UserService implements UserDetailsService {
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private boolean checkForm(UserDto dto) {
-        if (dto.getId() == null || dto.getPassword() == null) {
-            return false;
-        }
-
-        else if (dto.getId().equals("") || dto.getPassword().equals("")) {
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
     public void join(UserDto dto) throws JsonProcessingException, WrongRequestDetails {
-        if (checkForm(dto)) {
-            throw new WrongRequestDetails("잘못된 정보입니다.");
-        }
-
         dto.setEncodePassword(bCryptPasswordEncoder);
-
         User user = userRepository.save(User.createUser(dto));
-
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
     }
 
     @Transactional
     public void withdraw(UserDto dto) throws CantFindByIdException, WrongRequestDetails {
-        if (checkForm(dto)) {
-            throw new WrongRequestDetails("잘못된 정보입니다.");
-        }
-
         User user = userRepository.findByUsername(dto.getUsername());
         UserMypage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
 
@@ -76,9 +55,8 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean check(UserDto dto) {
-        if (userRepository.existsByUsername(dto.getUsername()))
-            return true;
-        else return false;
+        if (userRepository.existsByUsername(dto.getUsername())) return true;
+        return false;
     }
 
     public UserInfoDto getInfo(UserDto dto) throws JwtException {
@@ -107,9 +85,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void setUserMenuPolicy(Long userId, Long menuId) throws CantFindByIdException, WrongParameter {
-        if (!menuRepository.existsById(menuId)) {
-            throw new WrongParameter("잘못된 메뉴 ID");
-        }
+        if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
+
         UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
         policy.setDefaultMenu(menuId);
     }

@@ -26,7 +26,7 @@ public class LoginFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login")) {
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login/")) {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {

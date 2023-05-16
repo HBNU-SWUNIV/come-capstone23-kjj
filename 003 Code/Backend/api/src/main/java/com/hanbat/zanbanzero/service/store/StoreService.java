@@ -39,12 +39,7 @@ public class StoreService {
     private final StoreStateRepository storeStateRepository;
 
     private final Long finalId = 1L;
-
-    private String getTodayDate() {
-        LocalDate now = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return now.format(formatter);
-    }
+    private int dataSize = 5;
 
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
@@ -53,38 +48,34 @@ public class StoreService {
     }
 
     public StoreDto getStoreData() throws CantFindByIdException {
-        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
-        return StoreDto.createStoreDto(store);
+        return StoreDto.createStoreDto(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
     }
 
-
     public void setSetting(StoreDto dto) throws SameNameException {
-        if (storeRepository.existsById(finalId)) {
-            throw new SameNameException("중복된 요청입니다.");
-        }
+        if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
+
         Store store = Store.createStore(finalId, dto);
         storeRepository.save(store);
     }
 
     @Transactional
     public Integer getToday() {
-        Calculate calculate = calculateRepository.findByDate(getTodayDate());
+        Calculate calculate = calculateRepository.findByDate(DateTools.makeTodayDateString());
         if (calculate == null) return 0;
         return calculate.getToday();
     }
 
     @Transactional
     public List<StoreWeekendDto> getLastWeeksUser() throws WrongParameter {
-        int weekSize = 5;
         List<StoreWeekendDto> result = new ArrayList<>();
         LocalDate date = DateTools.getLastWeeksMonday(0);
 
-        for (int i = 0; i < weekSize; i ++) {
+        for (int i = 0; i < dataSize; i ++) {
             String targetDate = DateTools.toFormatterString(date.plusDays(i));
             Calculate calculate = calculateRepository.findByDate(targetDate);
 
-            if (calculate == null) result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), 0));
-            else result.add(new StoreWeekendDto(DateTools.makeResponseDateFormatString(targetDate), calculate.getToday()));
+            if (calculate == null) result.add(StoreWeekendDto.createZeroStoreWeekendDto(targetDate));
+            else result.add(StoreWeekendDto.createStoreWeekendDto(targetDate, calculate.getToday()));
         }
 
         return result;
@@ -103,7 +94,14 @@ public class StoreService {
                 .collect(Collectors.toList());
 
         return calculateMenuRepository.getPopularMenus(idList);
+    }
 
+    @Transactional
+    public StoreDto updateStoreTitle(StoreDto dto) throws CantFindByIdException {
+        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        store.setName(dto);
+
+        return StoreDto.createStoreDto(store);
     }
 
     @Transactional
@@ -119,25 +117,16 @@ public class StoreService {
         String dateString = DateTools.makeResponseDateFormatString(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(dateString);
-        if (storeState == null) {
-            StoreState state = new StoreState(null, storeRepository.getReferenceById(finalId), dateString, off);
-            storeStateRepository.save(state);
-        }
-        else {
-            storeState.setOff(off);
-        }
+        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), dateString));
+        else storeState.setOff(off);
     }
 
     public List<StoreStateDto> getClosedDays(int year, int month) throws WrongParameter {
-        if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
-
         String start = DateTools.makeResponseDateFormatString(year, month, 1);
         String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
-        List<StoreState> result = storeStateRepository.findAllByDateBetween(start, end);
-        return result.stream()
+        return storeStateRepository.findAllByDateBetween(start, end).stream()
                 .map(state -> StoreStateDto.of(state))
                 .collect(Collectors.toList());
     }
-
 }

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ManagerInfoDto {
     private Long id;
-    private String username;
+    private String loginId;
 
     public static ManagerInfoDto createManagerInfoDto(User manager) {
         return new ManagerInfoDto(

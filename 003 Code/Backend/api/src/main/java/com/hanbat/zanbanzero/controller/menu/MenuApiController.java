@@ -51,14 +51,14 @@ public class MenuApiController {
     }
 
     @Operation(summary="식단표 사용 메뉴 유무 조회", description="true / false")
-    @GetMapping("/api/manager/menu/get/planner")
+    @GetMapping("/api/manager/menu/planner")
     public ResponseEntity<Boolean> isPlanner() {
         Boolean result = menuService.isPlanner();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary="식단표 사용 설정")
-    @PatchMapping("/api/manager/menu/{id}/set/planner")
+    @PostMapping("/api/manager/menu/{id}/planner")
     public ResponseEntity<String> setPlanner(@PathVariable Long id) throws CantFindByIdException, WrongParameter {
         menuService.setPlanner(id);
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
@@ -74,9 +74,8 @@ public class MenuApiController {
     @Operation(summary="관리자 - 메뉴 추가", description="")
     @PostMapping("/api/manager/menu/add")
     public ResponseEntity<String> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, CantFindByIdException {
-        if (dto == null || !dto.check()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터가 부족합니다.");
-        }
+        if (dto == null || !dto.check()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터가 부족합니다.");
+
         String filePath = (file != null) ? menuImageService.uploadImage(file) : null;
         menuService.addMenu(dto, filePath);
         return ResponseEntity.status(HttpStatus.OK).body("등록되었습니다.");
@@ -91,7 +90,7 @@ public class MenuApiController {
     }
 
     @Operation(summary="관리자 - 메뉴 삭제", description="")
-    @DeleteMapping("/api/manager/menu/{id}/del")
+    @DeleteMapping("/api/manager/menu/{id}")
     public ResponseEntity<String> deleteMenu(@PathVariable Long id) throws CantFindByIdException {
         menuService.deleteMenu(id);
         return ResponseEntity.status(HttpStatus.OK).body("삭제되었습니다.");
