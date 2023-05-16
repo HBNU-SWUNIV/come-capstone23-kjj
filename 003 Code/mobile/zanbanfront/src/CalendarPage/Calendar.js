@@ -1,7 +1,7 @@
 import React from "react";
 
-const My = () => {
-    return <h1>일정 예약 화면</h1>
+const Calendar = () => {
+    return <h1>일정 화면</h1>
 }
 
-export default My;
+export default Calendar;
