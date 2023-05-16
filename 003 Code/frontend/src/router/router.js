@@ -5,6 +5,7 @@ import Dashboard from "../HomePage/Dashboard";
 import Menu from '../MenuPage/Menu';
 import Backban from "../BackbanPage/Backban";
 import Setting from "../SettingPage/Setting";
+import NotSetting from "../LoginPage/NotSetting";
 
 
 
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
             {
                 path:'',
                 element:<Control_login/>
+            },
+            {
+                path:'/notSetting',
+                element:<NotSetting/>
             },
             {
                 path:'/home',

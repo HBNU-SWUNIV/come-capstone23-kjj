@@ -57,12 +57,9 @@ const DivDay = styled.div`
     border:0.1px solid #5B5B5B;
     border-right-style:none;
     span:first-child{
-        font-size:20px;
-        font-weight:600;
-        margin:15px 15px;
-    }
-    span:last-child{
         font-size:13px;
+        font-weight:600;
+        margin:5px 5px;
     }
 `;
 
@@ -151,11 +148,11 @@ function Calander2(){
     }
 
     useEffect(() => {
-        axios.get(`api/manager/store/get/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+        axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
         .then(res => setOffday(res.data))
     },[currentMonth])
     
-    console.log(offday)
+    
     for (let i=0; i<7; i++){
         days.push(
             <DaysDiv key={shortid.generate()}>
@@ -174,7 +171,7 @@ function Calander2(){
                     // 다른달일 경우 회색으로 표시
                     <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} key={shortid.generate()}>
                         <span style={{
-                            fontSize:'20px',fontWeight:600,margin:'15px 15px'}}>
+                            fontSize:'13px',fontWeight:600,margin:'5px 5px'}}>
                             {formattedDate}
                         </span>
                     </DivDay>
@@ -207,10 +204,10 @@ function Calander2(){
 
     const onOffday = (date,year,month,day) => {
         let body = {date,off:true}
-        axios.post(`/api/manager/store/set/off/${year}/${month}/${day}`,body)
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
         .then(res => {
             res.status == 200 &&
-            axios.get(`api/manager/store/get/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
             .then(re => setOffday(re.data))
         })
         navigate('/setting')
@@ -218,10 +215,10 @@ function Calander2(){
 
     const onOnday = (date,year,month,day) => {
         let body = {date,off:false}
-        axios.post(`/api/manager/store/set/off/${year}/${month}/${day}`,body)
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
         .then(res => {
             res.status == 200 &&
-            axios.get(`api/manager/store/get/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
             .then(re => setOffday(re.data))
         })
         navigate('/setting')

@@ -49,8 +49,13 @@ class HomeScreen extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: Color.fromARGB(255, 247, 203, 146),
-            title: Text('잔반제로'),
+            backgroundColor: Color.fromARGB(255, 246, 239, 232),
+            title: Text(
+              '잔반제로',
+              style: TextStyle(
+                color: Color.fromARGB(255, 169, 53, 40),
+              ),
+            ),
             centerTitle: true,
           ),
           body: WebViewWidget(controller: controller),

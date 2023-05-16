@@ -11,7 +11,7 @@ import Overlay from '../Components/Overlay';
 import {useNavigate} from 'react-router-dom';
 
 const Wrapper = styled.div`
-margin-top:35px;
+margin-top:5vh;
 display:flex;
 flex-direction:column;
 width:85vw;
@@ -24,6 +24,7 @@ const Statistis = styled.div`
     display:flex;
     justify-content:flex-start;
     align-items:center;
+    margin-top:2vh;
 `;
 
 const 금일 = styled.div`
@@ -220,8 +221,6 @@ const Items = styled.div`
 
     
 function Dashboard(){
-    const navigate = useNavigate();
-    const [startDate, setStartDate] = useState(new Date());
     const [prevLeftover, setPrevLeftover] = useState([]);
     const [nextLeftover, setNextLeftover] = useState([]);
     const [ShowInput, SetShowInput] = useState(false);
@@ -230,26 +229,26 @@ function Dashboard(){
     const [Weekpop, setWeekpop] = useState([]);
     const [leftover, setLeftover] = useState('');
     const [goodmenu, setGoodmenu] = useState([]);
-
+    const startDate = new Date();
     
     // 금일, 누적 이용자 수 
     useEffect(() => {
-        axios.get('/api/manager/get/state/all')
+        axios.get('/api/manager/state/all')
         .then(res => setTotalPop(res.data))
 
-        axios.get('/api/manager/state/get/today')
+        axios.get('/api/manager/state/today')
         .then(res => setTodaypop(res.data))
 
-        axios.get('/api/manager/state/get/lastweek/user')
+        axios.get('/api/manager/state/last-week/user')
         .then(res => setWeekpop(res.data))
 
-        axios.get('/api/manager/leftover/get/lastweek/1')
+        axios.get('/api/manager/leftover/1')
         .then(res => setPrevLeftover(res.data))
 
-        axios.get(`/api/manager/leftover/get/lastweek/0`)
+        axios.get(`/api/manager/leftover/0`)
         .then(res => setNextLeftover(res.data))
         
-        axios.get(`/api/manager/get/state/menu`)
+        axios.get(`/api/manager/state/menu`)
         .then(res => setGoodmenu(res.data))
     },[])
 
@@ -265,7 +264,6 @@ function Dashboard(){
     })
 
     // 오늘의 잔반량 등록 인풋
-    const today = format(startDate,'yyyy-MM-dd').toString();
     const onClick = () => {
         SetShowInput(true);
     };
@@ -273,11 +271,12 @@ function Dashboard(){
     const onsubmit = (e) => {
         e.preventDefault();
         let body={leftover}
-        axios.post('/api/manager/leftover/set',body)
+        axios.post('/api/manager/leftover',body)
         .then(res => console.log(res))
+        .catch(err=>console.log(err))
         SetShowInput(false);
     };
-   
+    
     return(<>
         <Wrapper>
             <Navtop pages={"홈"}/>

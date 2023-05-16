@@ -111,7 +111,7 @@ const Sogae = styled.div`
     }
 `
 
-function FirstLogin(){
+function NotSetting(){
     const [name, setName] = useState(''),
         [info, setInfo] = useState('');
 
@@ -131,6 +131,7 @@ function FirstLogin(){
         let body = {name,info};
         axios.post(`/api/manager/setSetting`,body)
         .then(res => res.status == 200 ? navigate('/home') : null)
+        .then(f => console.log(f))
     }
 
     return(
@@ -170,4 +171,4 @@ function FirstLogin(){
     )
 }
 
-export default FirstLogin;
+export default NotSetting;
