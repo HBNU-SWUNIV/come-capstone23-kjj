@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.entity.store;
 
 import com.hanbat.zanbanzero.dto.store.StoreDto;
-import com.hanbat.zanbanzero.entity.user.manager.Manager;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,5 +23,9 @@ public class Store {
                 dto.getName(),
                 dto.getInfo()
         );
+    }
+
+    public void setInfo(StoreDto dto) {
+        info = dto.getInfo();
     }
 }

@@ -1,16 +1,19 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
+import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +32,7 @@ import java.util.stream.Collectors;
 public class MenuService {
 
     private final MenuImageService menuImageService;
-    private final StoreRepository storeRepository;
+    private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final CacheManager cacheManager;
@@ -52,23 +56,40 @@ public class MenuService {
     }
 
     @Transactional
+    public List<MenuManagerInfoDto> getMenusForManager() {
+        List<Menu> menus = menuRepository.findAll();
+        List<MenuInfo> menuInfos = menuInfoRepository.findAll();
+
+        List<MenuManagerInfoDto> result = new ArrayList<>();
+        for (int i = 0; i < menus.size(); i++) {
+            result.add(MenuManagerInfoDto.createMenuManagerInfoDto(menus.get(i), menuInfos.get(i)));
+        }
+
+        return result;
+    }
+
+    public Boolean isPlanner() {
+        return menuRepository.existsByUsePlannerTrue();
+    }
+
+    @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
-        if (menuRepository.existsByName(dto.getName())) {
+        if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) {
             throw new SameNameException("데이터 중복입니다.");
         }
 
-        Menu menu = menuRepository.save(Menu.createMenu(dto, storeRepository.getReferenceById(storeId), filePath));
+        Menu menu = menuRepository.save(Menu.createMenu(dto, filePath));
 
         menuInfoRepository.save(dto.createMenuInfo(menu));
     }
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
-        if (menuRepository.existsByName(dto.getName())) {
-            throw new SameNameException("데이터 중복입니다.");
-        }
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException, SameNameException {
+//        if ((menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) {
+//            throw new SameNameException("데이터 중복입니다.");
+//        }
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
@@ -83,11 +104,15 @@ public class MenuService {
         menuInfo.patch(dto);
     }
 
+    @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public void deleteMenu(Long id) throws CantFindByIdException {
-        MenuInfo menu = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        menuInfoRepository.delete(menu);
+        List<UserPolicy> policies = userPolicyRepository.findAllByDefaultMenu(id);
+        for (UserPolicy policy : policies) policy.setDefaultMenu(null);
+
+        menuRepository.delete(menu);
     }
 
     @Transactional
@@ -105,5 +130,24 @@ public class MenuService {
             default:
                 throw new WrongParameter("잘못된 파라미터입니다.");
         }
+    }
+
+    @Transactional
+    public void setPlanner(Long id) throws CantFindByIdException, WrongParameter {
+        if (menuRepository.existsByUsePlannerTrue()) {
+            throw new WrongParameter("이미 식단표를 사용하고 있습니다.");
+        }
+
+        Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        menu.setUsePlanner(true);
+    }
+
+    @Transactional
+    public void changePlanner(Long id) throws CantFindByIdException {
+        Menu old = menuRepository.findByUsePlanner(true);
+        if (old != null) old.setUsePlanner(false);
+
+        Menu n = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        n.setUsePlanner(true);
     }
 }

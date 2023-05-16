@@ -24,11 +24,12 @@ public class OrderJob {
     private final OrderJobExecutionDecider orderJobExecutionDecider;
 
     @Bean
-    public Job countOrdersByDateJob(@Qualifier("createTodayOrderStep") Step step, @Qualifier("countOrdersByDateStep") Step step2)  {
+    public Job countOrdersByDateJob(@Qualifier("createTodayOrderStep") Step step, @Qualifier("countOrdersByDateStep") Step step2, @Qualifier("createLeftoverPre") Step step3)  {
         return new JobBuilder("OrdersJob")
                 .repository(jobRepository)
                 .start(step)
                 .next(orderJobExecutionDecider).on(FlowExecutionStatus.COMPLETED.getName()).to(step2)
+                .next(step3)
                 .end()
                 .build();
     }

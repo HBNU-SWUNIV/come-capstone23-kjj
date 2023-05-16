@@ -5,16 +5,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
 
-//    @Query(value =
-//            "SELECT EXISTS(" +
-//                    "SELECT * " +
-//                    "FROM user " +
-//                    "WHERE username = :username)",
-//        nativeQuery = true)
+public interface UserRepository extends JpaRepository<User, Long> {
     Boolean existsByUsername(String username);
 
     User findByUsername(@Param("username") String username);
 
+    Optional<User> findByRoles(String role);
 }

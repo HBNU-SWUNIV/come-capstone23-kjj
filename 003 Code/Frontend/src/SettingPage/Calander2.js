@@ -1,12 +1,12 @@
 import {addMonths, subMonths, format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays} from 'date-fns';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
 import { useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import shortid from 'shortid';
+import axios from 'axios';
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -18,7 +18,7 @@ const Wrapper = styled.div`
     border:1px solid #5B5B5B;
     flex-direction:column;
     align-items:center;
-`
+`;
 
 const HeaderW = styled.div`
     width:60vw;
@@ -57,13 +57,9 @@ const DivDay = styled.div`
     border:0.1px solid #5B5B5B;
     border-right-style:none;
     span:first-child{
-        font-size:20px;
-        font-weight:600;
-        margin:15px 15px;
-    }
-    span:last-child{
         font-size:13px;
-        
+        font-weight:600;
+        margin:5px 5px;
     }
 `;
 
@@ -79,7 +75,8 @@ const DivWrapper = styled.div`
 
 `;
 
-const WriteWrapper = styled.form`
+const WriteWrapper = styled.div`
+    z-index:1;
     width:34vw;
     height:40vh;
     position:absolute;
@@ -90,7 +87,8 @@ const WriteWrapper = styled.form`
     flex-direction:column;
     align-items:center;
     background-color:white;
-    border:1px solid #1473E6;
+    border:1px solid white;
+    border-radius:15px;
     button{
         width:9vw;
         height:5vh;
@@ -103,7 +101,12 @@ const WriteWrapper = styled.form`
 `;
 
 const WriteTitle = styled.div`
-    width:33vw;
+    background-color:#d9d9d9;
+    width:34.1vw;
+    border-top-right-radius:15px;
+    border-top-left-radius:15px;
+    margin-top:-1px;
+    margin-bottom:40px;
     height:10vh;
     display:flex;
     justify-content:space-between;
@@ -122,96 +125,74 @@ const WriteTitle = styled.div`
     }
 `;
 
-const WriteInfo = styled.div`
-    width:24vw;
-    height:10vh;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    span{
-        font-weight:600;
-        font-size:20px;
-    }
-`;
-
 const WriteButton = styled.div`
     display:flex;
     align-items:center;
     justify-content:space-evenly;
     width:24vw;
-
+    margin-top:10px;
 `;
 
 function Calander2(){
-    const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [Text, setText] = useState([]);
-    const [startDate1, setStartDate1] = useState(new Date());
-    const days = [];
-    const date = ['일','월','화','수','목','금','토'];
     const navigate = useNavigate();
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [offday, setOffday] = useState([]);
+    const monthStart = startOfMonth(currentMonth),monthEnd = endOfMonth(monthStart);
+    const startDate = startOfWeek(monthStart),endDate = endOfWeek(monthEnd);
+    let day = startDate,dayss = [],line = [],formattedDate = '';
+    const days = [],date = ['일','월','화','수','목','금','토'];
+    const DayPathMatch = useMatch('/setting/:id'); 
+    
+    const onDay = (id) => {
+        navigate(`/setting/${id}`);
+    }
+
+    useEffect(() => {
+        axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+        .then(res => setOffday(res.data))
+    },[currentMonth])
+    
+    
     for (let i=0; i<7; i++){
         days.push(
-            <DaysDiv>
+            <DaysDiv key={shortid.generate()}>
                 {date[i]}
             </DaysDiv>
         )
     }
 
-    const monthStart = startOfMonth(currentMonth);
-    const monthEnd = endOfMonth(monthStart);
-    const startDate = startOfWeek(monthStart);
-    const endDate = endOfWeek(monthEnd);
-    let day = startDate;
-    let dayss = [];
-    let line = [];
-    let formattedDate = '';
-
-    const DayPathMatch = useMatch('/setting/:id'); 
-
-
-    const onDay = (id) => {
-        navigate(`/setting/${id}`);
-    }
-
-
-
     while(day <= endDate){
         for(let i=0; i<7; i++){
             formattedDate = format(day,'d').padStart(2,'0').toString();
             const id = format(day,'yyyyMMdd').toString();
+            
             if(format(monthStart,'M') != format(day,'M')){
                 dayss.push(
-                    <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} key={day+''}>
+                    // 다른달일 경우 회색으로 표시
+                    <DivDay style={{backgroundColor:'#383838',opacity:'0.5'}} key={shortid.generate()}>
                         <span style={{
-                            fontSize:'20px',fontWeight:600,margin:'15px 15px'
-                        }}>
+                            fontSize:'13px',fontWeight:600,margin:'5px 5px'}}>
                             {formattedDate}
                         </span>
                     </DivDay>
-                )
-            }
+                )}
             else{
                 dayss.push(
-                    <DivDay onClick={() => onDay(id)} key={day+'1'}>
-                        <span>
+                    <DivDay onClick={() => onDay(id)} key={shortid.generate()}>
+                        <span style={{color:offday.filter(od => od.date == id)[0]?.off == true ? 'red' : 'black'}}>
                             {formattedDate}
                         </span>
-                        <span>
-                            { }
-                        </span>
                     </DivDay>
-                )
-            }
+                )}
             day = addDays(day,1);
         }
         line.push(
-            <DivWeek>
+            <DivWeek key={shortid.generate()}>
                 {dayss}
             </DivWeek>
         )
         dayss=[];
     }
-
 
     const prevMonth = () => {
         setCurrentMonth(subMonths(currentMonth, 1));
@@ -221,7 +202,30 @@ function Calander2(){
         setCurrentMonth(addMonths(currentMonth,1));
     }
 
-    
+    const onOffday = (date,year,month,day) => {
+        let body = {date,off:true}
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
+        .then(res => {
+            res.status == 200 &&
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            .then(re => setOffday(re.data))
+        })
+        navigate('/setting')
+    }
+
+    const onOnday = (date,year,month,day) => {
+        let body = {date,off:false}
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
+        .then(res => {
+            res.status == 200 &&
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            .then(re => setOffday(re.data))
+        })
+        navigate('/setting')
+    }
+
+
+
     return(
         <Wrapper>
             <HeaderW>
@@ -229,12 +233,15 @@ function Calander2(){
                 <span>{format(currentMonth,'yyyy')}. {format(currentMonth,'MM')}</span>
                 <AiOutlineRight style={{...ArrowCSS, marginRight:'20px'}} onClick={nextMonth}/>
             </HeaderW>
+
             <DaysWrapper>
                 {days}
             </DaysWrapper>
+
             <DivWrapper>
                 {line}
             </DivWrapper>
+
             {DayPathMatch ? 
             <WriteWrapper>
                 <WriteTitle>
@@ -243,25 +250,19 @@ function Calander2(){
                     onClick={() => navigate('/setting')}
                     style={{fontSize:'30px',marginRight:'10px',marginBottom:'10px'}}/>
                 </WriteTitle>
-                <WriteInfo>
-                        <span>날짜선택</span>
-                        <div>                       
-                        <DatePicker selected={startDate1} onChange={date => setStartDate1(date)}/>
-                        </div>
-                </WriteInfo>
+
                 <h3>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}일을 휴일로 지정하시겠습니까?</h3>
+                
                 <WriteButton>
-                    <button onClick={() => navigate('/setting')}>
+                    <button onClick={() => onOffday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                         휴일로 지정
                     </button>
-                    <button onClick={() => navigate('/setting')}>
+                    <button onClick={() => onOnday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                         영업일로 지정
                     </button>
                 </WriteButton>
+
             </WriteWrapper>:null}
-
-
-                
         </Wrapper>
     )// 
 }

@@ -16,6 +16,8 @@ public class MenuUpdateDto {
     private String info;
     private String details;
 
+    private Boolean usePlanner;
+
     public MenuInfo createMenuInfo(Menu menu) {
         return new MenuInfo(
                 null,
@@ -23,5 +25,12 @@ public class MenuUpdateDto {
                 info,
                 details
         );
+    }
+
+    public boolean check() {
+        if (name == null || cost == null || info == null || details == null || usePlanner == null) {
+            return false;
+        }
+        return true;
     }
 }

@@ -7,16 +7,12 @@ import jakarta.servlet.http.HttpServletRequest;
 public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;
 
-    public CustomUriMapper(ServletRequest request) {
-        switch (((HttpServletRequest) request).getRequestURI()) {
-            case "/login/user":
-                createTokenInterface = new CreateUserTokenImpl();
-                break;
-            case "/login/manager":
-                createTokenInterface = new CreateManagerTokenImpl();
-                break;
-            default:
-                throw new WrongParameter("잘못된 주소입니다.");
+    public CustomUriMapper(ServletRequest request) throws WrongParameter {
+        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login/")) {
+            createTokenInterface = new CreateUserTokenImpl();
+        }
+        else {
+            throw new WrongParameter("잘못된 주소입니다.");
         }
     }
 

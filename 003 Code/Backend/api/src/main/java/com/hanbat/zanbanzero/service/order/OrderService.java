@@ -14,6 +14,9 @@ import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,13 +33,20 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
 
-    private Order createNewOrder(Long userId, String date, boolean type) {
-        UserPolicy userPolicy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
-        Menu menu = menuRepository.findById(userPolicy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+    private int pageSize = 10;
+
+    private Menu getDefaultMenu(Long userId) throws CantFindByIdException {
+        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        return menuRepository.findById(policy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+    }
+
+    @Transactional
+    public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
+        Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
         return new Order(
                 null,
                 userRepository.getReferenceById(userId),
-                userPolicy.getDefaultMenu(),
+                menu.getName(),
                 menu.getCost(),
                 date,
                 type
@@ -44,12 +54,12 @@ public class OrderService {
     }
 
     @Transactional
-    public void cancelOrder(Long id, int year, int month, int day) {
-        String date = DateTools.makeDateString(year, month, day);
+    public void cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException {
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
-            Order data = createNewOrder(id, date, false);
+            Order data = createNewOrder(id, getDefaultMenu(id).getId(), date, false);
             orderRepository.save(data);
         }
         else {
@@ -58,18 +68,25 @@ public class OrderService {
     }
 
     @Transactional
-    public void addOrder(Long id, Long menuId, int year, int month, int day) {
-        String date = DateTools.makeDateString(year, month, day);
+    public void addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException {
+        String date = DateTools.makeResponseDateFormatString(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) {
-            Order data = createNewOrder(id, date, true);
+            Order data = createNewOrder(id, menuId, date, true);
             orderRepository.save(data);
         }
         else {
-            order.setMenu(menuId);
+            order.setMenu(menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new));
             order.setRecognizeToUse();
         }
+    }
+
+    public int countPages(Long id) {
+        Pageable pageable = PageRequest.of(0, pageSize);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
+
+        return orderPage.getTotalPages();
     }
 
 
@@ -88,12 +105,29 @@ public class OrderService {
     }
 
     @Transactional
-    public LastOrderDto getLastOrder(Long id) {
+    public List<OrderDto> getOrdersPage(Long id, int page) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
+
+        return orderPage.getContent()
+                .stream()
+                .map(order -> {
+                    try {
+                        return OrderDto.createOrderDto(order);
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public LastOrderDto getLastOrder(Long id){
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
-        Menu menu = menuRepository.findById(order.getMenu()).orElseThrow(CantFindByIdException::new);
 
-        return LastOrderDto.createOrderDto(order, menu);
+        return LastOrderDto.createOrderDto(order, order.getMenu());
     }
+
 }

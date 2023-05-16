@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void join(UserDto dto) throws JsonProcessingException {
+    public void join(UserDto dto) throws JsonProcessingException, WrongRequestDetails {
         if (checkForm(dto)) {
             throw new WrongRequestDetails("잘못된 정보입니다.");
         }
@@ -63,7 +63,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void withdraw(UserDto dto) {
+    public void withdraw(UserDto dto) throws CantFindByIdException, WrongRequestDetails {
         if (checkForm(dto)) {
             throw new WrongRequestDetails("잘못된 정보입니다.");
         }
@@ -84,7 +84,7 @@ public class UserService implements UserDetailsService {
     public UserInfoDto getInfo(UserDto dto) throws JwtException {
         User user = userRepository.findByUsername(dto.getUsername());
 
-        return new UserInfoDto(user.getId(), user.getUsername());
+        return UserInfoDto.createUserInfoDto(user);
     }
 
     public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
@@ -100,22 +100,26 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void setUserDatePolicy(UserPolicyDto dto, Long id) {
+    public void setUserDatePolicy(UserPolicyDto dto, Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
-        policy.updatePolicy(dto);
+        policy.setPolicy(dto);
     }
 
     @Transactional
-    public void setUserMenuPolicy(Long userId, Long menuId) {
+    public void setUserMenuPolicy(Long userId, Long menuId) throws CantFindByIdException, WrongParameter {
         if (!menuRepository.existsById(menuId)) {
             throw new WrongParameter("잘못된 메뉴 ID");
         }
         UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
-        policy.updatePolicy(menuId);
+        policy.setDefaultMenu(menuId);
     }
 
-    public UserPolicyDto getUserPolicy(Long id) {
+    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         return UserPolicyDto.createUserPolicyDto(policy);
+    }
+
+    public UserInfoDto getInfoForUsername(String username) {
+        return UserInfoDto.createUserInfoDto(userRepository.findByUsername(username));
     }
 }

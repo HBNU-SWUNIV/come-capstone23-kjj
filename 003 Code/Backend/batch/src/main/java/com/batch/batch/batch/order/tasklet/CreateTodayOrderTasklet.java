@@ -35,9 +35,7 @@ public class CreateTodayOrderTasklet {
         this.dataSource = dataSource;
     }
 
-    public static Map<Long, String> getIdToNameMap() {
-        return idToNameMap;
-    }
+    public static Map<Long, String> getIdToNameMap() { return idToNameMap; }
 
     public static Map<String, Integer> getNameToCostMap() {
         return nameToCostMap;
@@ -57,7 +55,6 @@ public class CreateTodayOrderTasklet {
                 }
             }
         }
-        log.info("initMenu() 완료");
     }
 
     @Bean
@@ -83,7 +80,6 @@ public class CreateTodayOrderTasklet {
             Long userId = item.getUser_id();
             Long defaultMenu = item.getDefault_menu();
             String date = DateTools.getDate();
-            log.info("오더 생성 Processor run : " + date);
 
             try (Connection connection = dataSource.getConnection()) {
                 String findOrderQuery = "select * from orders where user_id = ? and order_date = ?";
@@ -96,14 +92,15 @@ public class CreateTodayOrderTasklet {
                     }
                 }
 
-                if (!exists) {
-                    int cost = nameToCostMap.get(idToNameMap.get(defaultMenu));
+                if (!exists && idToNameMap.containsKey(defaultMenu) && nameToCostMap.containsKey(idToNameMap.get(defaultMenu))) {
+                    String menuName = idToNameMap.get(defaultMenu);
+                    int cost = nameToCostMap.get(menuName);
 
-                    String insertOrderQuery = "insert into orders (user_id, cost, menu, order_date, recognize) values (?, ?, ?, ?, ?)";
+                    String insertOrderQuery = "insert into orders (user_id, menu, cost, order_date, recognize) values (?, ?, ?, ?, ?)";
                     try (PreparedStatement insertStatement = connection.prepareStatement(insertOrderQuery);) {
                         insertStatement.setLong(1, userId);
-                        insertStatement.setInt(2, cost);
-                        insertStatement.setLong(3, defaultMenu);
+                        insertStatement.setString(2, menuName);
+                        insertStatement.setInt(3, cost);
                         insertStatement.setString(4, date);
                         insertStatement.setBoolean(5, true);
 

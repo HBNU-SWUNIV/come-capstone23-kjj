@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.tasklet.CountOrdersByDateTasklet;
+import com.batch.batch.batch.order.tasklet.CreateLeftoverPre;
 import com.batch.batch.batch.order.tasklet.CreateTodayOrderTasklet;
 import com.batch.batch.pojo.Order;
 import com.batch.batch.pojo.UserPolicy;
@@ -49,6 +50,15 @@ public class OrderStep {
     public Step countOrdersByDateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         Tasklet tasklet = new CountOrdersByDateTasklet(dataDataSource, createTodayOrderTasklet);
         return new StepBuilder("countOrdersByDateStep", jobRepository)
+                .tasklet(tasklet, transactionManager)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean
+    public Step createLeftoverPre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        Tasklet tasklet = new CreateLeftoverPre(dataDataSource);
+        return new StepBuilder("createLeftoverPre", jobRepository)
                 .tasklet(tasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();

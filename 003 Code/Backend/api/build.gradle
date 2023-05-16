@@ -46,6 +46,9 @@ dependencies {
 
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// sentry
+	implementation 'io.sentry:sentry-spring-boot-starter:6.17.0'
+	implementation 'io.sentry:sentry-spring-boot-starter-jakarta:6.17.0'
 
 	// test
 	testImplementation 'org.projectlombok:lombok:1.18.22'
