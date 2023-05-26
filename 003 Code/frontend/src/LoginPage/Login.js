@@ -5,6 +5,7 @@ import {useDispatch,useSelector} from 'react-redux';
 import axios from 'axios';
 import { R_login } from '../store';
 import {useNavigate} from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 const Inputstyle = {width:'320px',height:'30px',borderRadius:'15px',border:'1px solid gray'};
 
@@ -62,12 +63,14 @@ align-items:center;
 width:450px;
 height:270px;
 button{
-    width:100px;
-    height:30px;
+    width:5.5vw;
+    height:4vh;
     border-radius:15px;
-    background-color:#1473E6;
+    display:flex;
+    jusitfy-content:center;
+    align-items:center;
     color:white;
-    font-size:20px;
+    font-size:18px;
     margin-bottom:50px;
     border:1px solid #1473E6;
 }
@@ -132,7 +135,8 @@ function Login(){
                         <span>Password</span>
                         <input type='password' value={password} onChange={e => setPassword(e.target.value)} style={Inputstyle}/>
                     </PWW>
-                    <button type='submit'>LOGIN</button>
+                    <Button type="submit" variant="primary">LOGIN</Button>
+                    {/* <button type='submit'>LOGIN</button> */}
                 </LogininputW>
 
             </LoginW>

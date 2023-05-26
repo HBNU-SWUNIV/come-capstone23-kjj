@@ -5,6 +5,8 @@ import { BiHomeSmile } from "react-icons/bi";
 import { BsFillBarChartFill } from "react-icons/bs";
 import { AiOutlineSetting, AiTwotoneSetting} from "react-icons/ai";
 import {useLocation, useNavigate} from 'react-router-dom';
+import { IoCalendarNumberOutline,IoCalendarNumber,IoFastFoodOutline,IoFastFoodSharp } from "react-icons/io5";
+
 
 const Wrapper = styled.div`
     width:15vw;
@@ -34,8 +36,8 @@ const Title = styled.div`
     span{
         font-size:22px;
         color:#0A376E;
-        font-family:'Alegreya';
-        font-weight:600;
+        font-family:'DeliveryFont';
+        font-weight:500;
     }
 `
 
@@ -57,6 +59,9 @@ const Menus = styled.div`
         border-radius:15px;
         font-size:17px;
         color:#0C4284;
+        span{
+            font-family:'DeliveryFont';
+        }
     }
     span{
         margin-left:20px;
@@ -99,13 +104,13 @@ function Navbar(){
                 
                 <div onClick={() => {navigate('/menu')}}
                      style={{backgroundColor:`${nowPath.startsWith('/menu') ?'#DAE9FC':'white'}`}}>
-                    {nowPath.startsWith('/menu') ? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
+                    {nowPath.startsWith('/menu') ? <IoFastFoodSharp style={{fontSize:'20px'}}/> : <IoFastFoodOutline style={{fontSize:'20px'}}/>}
                     <span>메뉴 관리</span>
                 </div>
 
                 <div onClick={() => {navigate('/backban')}}
                     style={{backgroundColor:`${nowPath.startsWith('/backban')?'#DAE9FC':'white'}`}}>
-                     {nowPath.startsWith('/backban')? <BsFillBarChartFill style={{fontSize:'20px'}}/> : <TbChartBar style={{fontSize:'20px'}}/>}
+                     {nowPath.startsWith('/backban')? <IoCalendarNumber style={{fontSize:'20px'}}/> : <IoCalendarNumberOutline style={{fontSize:'20px'}}/>}
                     <span>백반 관리</span>
                 </div>
 

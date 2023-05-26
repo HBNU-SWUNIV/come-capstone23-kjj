@@ -10,25 +10,29 @@ import { BsToggle2Off,BsToggle2On ,BsFillCheckCircleFill} from "react-icons/bs";
 import Overlay from "../Components/Overlay";
 import { AiFillPlusCircle } from "react-icons/ai";
 import shortid from "shortid";
+import { useSelector } from "react-redux";
+import Button from 'react-bootstrap/Button';
+
+const hr_style = {color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'};
 
 const Wrapper = styled.div`
 display:flex;
+font-family:'DeliveryFont';
 flex-direction:column;
 width:85vw;
 height:100vh;
 position:relative;
-margin-top:8px;
+margin-top:5vh;
 `;
 const Tip = styled.ul`
     display:flex;
     flex-direction:column;
     align-items:space-evenly;
     justify-content:center;
-    width:33vw;
+    width:35vw;
     height:10vh;
     position:absolute;
     right:0;
-    margin-top:1vh;
     margin-right:26vw;
     li{
         font-weight:500;
@@ -39,6 +43,7 @@ const Tip = styled.ul`
 const ItemWrapper = styled.div`
     width:85vw;
     height:100vh;
+    margin-top:7vh;
     span{
         margin-left:30px;
         font-weight:600;
@@ -73,18 +78,9 @@ const ItemInfo = styled.div`
         font-size:13px;
     }
     span:first-child{
-        margin-left:28px;
-        font-size:24px;
-        font-weight:600;
-    }
-    button{
-        margin-left:14vw;
-        background-color:#6F4FF2;
-        width:5vw;
-        height:4vh;
-        color:white;
-        border:1px solid #6F4FF2;
-        border-radius:5px;
+        font-size:20px;
+        font-weight:500;
+        margin-right:1vw;
     }
 `;
 const ItemUD = styled.div`
@@ -114,10 +110,8 @@ const Itemfinal = styled.div`
         width:7vw;
         height:4vh;
         margin-bottom:5px;
-        background-color:#6F4FF2;
         color:white;
         border-radius:5px;
-        border:1px solid #6F4FF2;
     }
 `;
 const CheckDelete = styled.div`
@@ -155,14 +149,9 @@ const CheckDelete_btn = styled.div`
         height:4vh;
         border-radius:5px;
         color:white;
-    }
-    button:first-child{
-        background-color:#DC3546;
-        border:1px solid #DC3546;
-    }
-    button:last-child{
-        background-color:#6F4FF2;
-        border:1px solid #6F4FF2;
+        display:flex;
+        justify-content:center;
+        align-items:center;
     }
 `;
 const UpdateWrapper = styled.div`
@@ -185,15 +174,16 @@ const UpdateWrapper = styled.div`
     button{
         width:6vw;
         height:5vh;
-        background-color:#6F4FF2;
-        border:1px solid #6F4FF2;
+        display:flex;
+        justify-content:center;
+        align-items:center;
         border-radius:15px;
         margin-bottom:25px;
         color:white;
     }
 `;
 const UpdateTitle = styled.div`
-    width:34.2vw;
+    width:34vw;
     margin-top:-1.2px;
     height:10vh;
     border-top-left-radius:15px;
@@ -215,6 +205,7 @@ const UpdateText = styled.form`
     flex-direction:column;
     justify-content:space-between;
     align-items:center;
+    margin-top:2vh;
     div{
         width:28vw;
         height:10vh;
@@ -240,6 +231,7 @@ const UpdateImg = styled.div`
     display:flex;
     justify-content:space-between;
     align-items:center;
+    margin-top:5vh;
     input{
         width:15vw;
         height:5vh;
@@ -256,14 +248,6 @@ align-items:center;
 color:#979797;
 border:1px solid #979797;
 margin-left:20px;
-`;
-const UpdateImg_img = styled.div`
-    width:10vw;
-    height:20vh;
-    background-image:url(${props => props.bgPhoto});
-    background-size:cover;
-    background-position:center center;
-    margin-left:20px;
 `;
 const Updatebackban = styled.div`
     width:32vw;
@@ -288,21 +272,23 @@ const Updatebackban_text = styled.div`
 `;
 
 
+
 function Menu(){
+    const User = useSelector(state => state.User)
+
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
     const [savedData, setSaveddata] = useState([]);
-
-    // 이미지 조회
-    const [getimage, setgetimage] = useState(null)
-
+    
     const deletePathMatch = useMatch('/menu/:deleteId'),UpdatePathMatch = useMatch('/menu/update/:updateId');
     
-     // 식단표 사용 (백반 지정)
     const [isSickdan, setIsSickdan] = useState(false);
     const [isBackban, setIsbackban] = useState(false);
     
-    // 메뉴페이지 시작시, 첫 api호출
+    // 메뉴수정,추가할때 리렌더링 되는거 고쳐야함
+
+    const [image, setImage] = useState([]);
+
     useEffect(() => {
         axios.get('/api/manager/menu')
         .then(res => setSaveddata(res.data))
@@ -310,16 +296,11 @@ function Menu(){
 
         axios.get('/api/manager/menu/planner')
         .then(res => setIsSickdan(res.data))
-
-        axios.get('/api/image').then(res => console.log(res))
-
     },[]) 
 
-    // 메뉴 삭제 or 수정하기 위해
     const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
     const UpdatePath = UpdatePathMatch?.params.updateId && savedData?.find(data => data.id == UpdatePathMatch.params.updateId);
     
-    // 메뉴 품절
     const on품절 = (id) => {
         axios.patch(`/api/manager/menu/${id}/sold/n`)
         .then(()=>{
@@ -333,11 +314,13 @@ function Menu(){
             axios.get(`/api/manager/menu`)
             .then(res => setSaveddata(res.data))
         })
-    }
+    };
 
-    // 메뉴 추가, 수정
-    const [name, setName] = useState(''),[cost, setCost] = useState(''),[info, setInfo] = useState(''),[details, setDetails] = useState('');
-    const [image, setImage] = useState(null);
+    const [name, setName] = useState('');
+    const [cost, setCost] = useState('');
+    const [info, setInfo] = useState('');
+    const [details, setDetails] = useState('');
+    
 
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
@@ -366,7 +349,7 @@ function Menu(){
             // 새로운 메뉴가 추가되거나 메뉴가 업데이트 되면, 전체 메뉴 목록을 다시 가져옴.
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
         }).then(() => {
-            axios.get('/api/manager/menu/get/planner').then(res => setIsSickdan(res.data))
+            axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))
         }).catch(err => {
             if(err.response.status == 400){
                 alert('메뉴명과 가격은 필수입니다.');
@@ -416,17 +399,17 @@ function Menu(){
         }).then(()=>{
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
         }).then(() => {
-            axios.get('/api/manager/menu/get/planner').then(res => setIsSickdan(res.data))
+            axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))
         })
         setCost('');
         setInfo('');
         setDetails('');
         setName('');
+        setImage('');
         setIsbackban(false);
         navigate('/menu');
     }
-
-    // 메뉴 삭제
+    
     const onDelete = (id) => {
         navigate(`/menu/${id}`);
     }
@@ -442,6 +425,7 @@ function Menu(){
         navigate('/menu');
     }
 
+    
     return(
         <>
         <Wrapper>
@@ -459,9 +443,11 @@ function Menu(){
                 {savedData?.map(data => 
                 <Item style={{backgroundColor: data?.sold == true ? '#C8D5EF': 'rgba(0,0,0,0.4)'}}
                         key={shortid.generate()}>
-                    {/* <Itemimg bgPhoto={makeImagePath(data?.image,'w400'||'')}/> */}
                     <div>
-                        <img src={data.image} alt="이미지 없음"/>
+                        <img 
+                        width="180"
+                        height="120"
+                        src={"http://kjj.kjj.r-e.kr:8080/api/image?dir="+data?.image} alt="이미지 없음"/>
                     </div>
                     <ItemInfo>
                         <span>{data?.name}</span>  
@@ -475,11 +461,11 @@ function Menu(){
                                 style={{marginLeft:'12vw',color:'#DC3546',fontSize:'24px',marginTop:'-2vh'}}>
                                 품 절 되었어요.
                             </span> 
-                            <button 
-                                style={{marginTop:'1vh'}}
-                                onClick={() => on재판매(data?.id)}>
-                                재판매
-                            </button> 
+
+                            <Button 
+                            style={{marginBottom:'1vh'}}
+                            onClick={() => on재판매(data?.id)}
+                            variant="secondary">재판매</Button>
                         </div>}
 
                         {data?.usePlanner ? 
@@ -493,17 +479,31 @@ function Menu(){
                         }
                     </ItemInfo> 
                     <ItemUD>
-                        <button onClick={() => onDelete(data?.id)}>
-                            삭제
-                        </button> 
-                        <button onClick={() => on품절(data?.id)}>
-                            품절
-                        </button>    
+                        <Button
+                        className="custom-warning-button" 
+                        onClick={() => onDelete(data?.id)}
+                        variant="danger">삭제</Button>
+                        {data.sold == true ? 
+                        <Button
+                        className="custom-warning-button" 
+                        onClick={() => on품절(data?.id)}
+                        variant="danger">품절</Button>
+                    :
+                        <Button
+                        disabled
+                        className="custom-warning-button" 
+                        onClick={() => on품절(data?.id)}
+                        variant="danger">품절</Button>}
+
                     </ItemUD>    
                     <Itemfinal>
-                        <button type="submit" onClick={() => onUpdate(data?.id)}>
+                        <Button 
+                        className="custom-info-button"
+                        onClick={() => onUpdate(data?.id)}
+                        variant="secondary">메뉴 수정</Button>
+                        {/* <button type="submit" onClick={() => onUpdate(data?.id)}>
                             메뉴 수정
-                        </button>
+                        </button> */}
                     </Itemfinal>
                 </Item>)}
                 </ItemWrapper>}
@@ -531,12 +531,12 @@ function Menu(){
             정말 삭제하시겠습니까?
             </span>
             <CheckDelete_btn>
-            <button onClick={() => onFinalDelete(DeletePath?.id)}>
-                삭제
-            </button>
-            <button onClick={() => navigate('/menu')}>
-                취소
-            </button>
+            <Button 
+            onClick={() => onFinalDelete(DeletePath?.id)}
+            variant="danger">삭제</Button>
+            <Button 
+            onClick={() => navigate('/menu')}
+            variant="dark">취소</Button>
             </CheckDelete_btn>
             </CheckDelete>
             <Overlay/>
@@ -563,7 +563,7 @@ function Menu(){
                         value={name} 
                         onChange={(e) => setName(e.target.value)}/>
                 </div>
-                <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
+                <hr style={hr_style}/>
                 <div>
                     <span>가격</span>
                     <input 
@@ -571,15 +571,16 @@ function Menu(){
                         value={cost} 
                         onChange={e => setCost(e.target.value)}/>
                 </div>
-                <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
+                <hr style={hr_style}/>
+                
                 <div>
                     <span>소개</span>
                     <input 
                         placeholder={UpdatePath?.details}
                         value={details} 
-                        onChange={e=> setDetails(e.target.value)}/>
+                        onChange={e => setDetails(e.target.value)}/>
                 </div>
-                <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
+                <hr style={hr_style}/>                
                 <div>
                     <span>알레르기 정보</span>
                     <input 
@@ -587,8 +588,8 @@ function Menu(){
                         value={info} 
                         onChange={e => setInfo(e.target.value)}/>
                 </div>
-                <hr style={{color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'}}/>
-            </UpdateText>
+                <hr style={hr_style}/>            
+                </UpdateText>
 
             <UpdateImg>
                 <UpdateImg_defaultimg>
@@ -637,12 +638,14 @@ function Menu(){
                     style={{fontSize:'30px',marginRight:'20px',color:'#5856D6'}}/>
                     </Updatebackban> 
                 }
-        
-            <button onClick={UpdatePathMatch.params.updateId == 0 ? onMenuAdd : () => onMenuUpdate(UpdatePathMatch.params.updateId)}>저장</button>
+
+             <Button variant="primary"
+             onClick={UpdatePathMatch.params.updateId == 0 ? onMenuAdd : () => onMenuUpdate(UpdatePathMatch.params.updateId)}>
+                저장</Button>
 
         </UpdateWrapper>
         <Overlay/>
-            </>:null}
+        </>:null}
             </>
     )}
 

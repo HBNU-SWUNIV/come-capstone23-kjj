@@ -9,6 +9,7 @@ display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
+font-family:'DeliveryFont';
 margin-top:30px;
 `;
 
@@ -17,7 +18,7 @@ const Tip = styled.ul`
     flex-direction:column;
     align-items:space-evenly;
     justify-content:center;
-    width:25vw;
+    width:30vw;
     height:10vh;
     position:absolute;
     right:0;
@@ -37,7 +38,7 @@ function Backban(){
         <>
         <Wrapper>
             <Navtop pages={'백반 관리'}/>
-            <span style={{position:'relative',fontWeight:'600',fontSize:'20px',marginLeft:'40px',color:'#7BE457'}}>요일을 클릭해서 식단표를 작성해주세요!</span>
+            <span style={{position:'relative',fontWeight:'400',fontSize:'22px',marginLeft:'30px',color:'#7BE457'}}>요일을 클릭해서 식단표를 작성해주세요!</span>
             <Tip>
                 <li>식단을 등록하면 소비자가 확인할 수 있어요!</li>
                 <li>식단을 지우고 싶으시면 내용을 비운뒤 저장버튼을 누르면 됩니다!</li>

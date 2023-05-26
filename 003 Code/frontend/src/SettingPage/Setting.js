@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import Overlay from '../Components/Overlay';
 import { useLocation } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
 
 
 const Wrapper = styled.div`
@@ -13,6 +14,7 @@ display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
+font-family:'DeliveryFont';
 margin-top:30px;
 `;
 
@@ -41,7 +43,7 @@ const CalanderHeader = styled.div`
 `;
 
 const Calandertip = styled.ul`
-width:16vw;
+width:20vw;
 height:3.5vh;
 position:absolute;
 right:0;
@@ -77,6 +79,7 @@ const Message = styled.div`
         width:34vw;
         height:15vh;
         white-space:pre-wrap;
+        resize:none;
     }
 `;
 
@@ -91,13 +94,13 @@ const MessageDiv = styled.div`
         margin-right:10px;
         width:5vw;
         height:4vh;
-        background-color:#C8D5EF;
+        display:flex;
+        align-items:center;
+        justify-content:center;
         border: 1px solid #C8D5EF;
         border-radius:5px;
     }
 `;
-
-
 
 
 function Setting(){
@@ -129,9 +132,9 @@ function Setting(){
                 <span>식당 소개 메시지를 설정할 수 있어요.</span>
                 <textarea value={info} placeholder={info} onChange={e => onInfo(e.target.value)}/>
                 <MessageDiv>
-                    <button onClick={onInfoUpdate}>
-                        수정
-                    </button>
+                    <Button 
+                    onClick={onInfoUpdate}
+                    variant="primary">수정</Button>
                 </MessageDiv>
             </Message>     
         </FirstWrapper>

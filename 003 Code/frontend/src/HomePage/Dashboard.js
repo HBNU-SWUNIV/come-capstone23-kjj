@@ -2,13 +2,14 @@ import styled from 'styled-components';
 import ApexCharts from "react-apexcharts";
 import { useState,useEffect } from 'react';
 import { AiFillCloseCircle } from "react-icons/ai";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Navtop from '../Components/Navtop';
 import { format } from 'date-fns';
 import axios from 'axios';
 import Overlay from '../Components/Overlay';
-import {useNavigate} from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
+
+
 
 const Wrapper = styled.div`
 margin-top:5vh;
@@ -16,6 +17,7 @@ display:flex;
 flex-direction:column;
 width:85vw;
 height:100vh;
+font-family:'DeliveryFont';
 `;
 
 const Statistis = styled.div`
@@ -38,7 +40,7 @@ const 금일 = styled.div`
     margin-left:30px;
     border-radius:5px;
     span{
-        font-weight:600;
+        font-weight:500;
         font-size:20px;
         margin-left:10px;
     }
@@ -59,15 +61,16 @@ const Total = styled.div`
     margin-left:-20px;
     span{
         font-size:25px;
-        font-weight:600;
+        font-weight:400;
         margin-bottom:10px;
     }
     span:first-child{
         font-size:65px;
         margin-right:5px;
-        text-decoration:underline;
-        text-decoration-thickness:3px;
+        // text-decoration:underline;
+        // text-decoration-thickness:3px;
         font-weight:400;
+        margin-bottom:-0.5vh;
     }
 `;
 
@@ -86,7 +89,7 @@ const 누적이용자 = styled.div`
     }
     span:first-child{
         font-size:30px;
-        font-weight:600;
+        font-weight:400;
         margin-bottom:5px;
     }
 `;
@@ -106,7 +109,7 @@ const 감소량 = styled.div`
     }
     span:first-child{
         font-size:30px;
-        font-weight:600;
+        font-weight:400;
         margin-bottom:7px;
     }
     span:last-child{
@@ -128,14 +131,14 @@ const FirstChart = styled.div`
     margin:20px 10px;
     span:first-child{
         font-size:20px;
-        font-weight:600;
+        font-weight:500;
         margin-left:20px;
+        font-family:'DeliveryFont';
     }
     button{
-        background-color:#C8D5EF;
         border-radius:5px;
         border:1px solid #C8D5EF;
-        height:22px;
+        font-family:'DeliveryFont';
     }
     div{
         display:flex;
@@ -153,9 +156,12 @@ const FirstChartGradient = styled.div`
 
 const SecondChart = styled.div`
     width:38vw;
-    height:55vh;
+    height:60vh;
     margin:20px 20px;
     background-color:#C8D5EF;
+    span{
+        font-family:'DeliveryFont';
+    }
 `;
 
 const LastChart = styled.div`
@@ -165,11 +171,13 @@ const LastChart = styled.div`
         margin-left:20px;
         font-size:18px;
         font-weight:600;
+        font-family:'DeliveryFont';
     }
 `;
 
 const InputW = styled.form`
     width:460px;
+    font-family:'DeliveryFont';
     z-index:1;
     height:300px;
     border:2px solid white;
@@ -187,17 +195,18 @@ const InputW = styled.form`
     button:last-child{
         width:140px;
         height:35px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
         border-radius:20px;
         border:1px solid #1473E6;
-        background-color:#1473E6;
-        font-size:18px;
         color:white;
     }
 `;
 
 const Title = styled.div`
     display:flex;
-    width:465px;
+    width:460px;
     border-top-left-radius:15px;
     border-top-right-radius:15px;
     height:70px;
@@ -214,7 +223,7 @@ const Items = styled.div`
     justify-content:space-between;
     align-items:center;
     span{
-        font-weight:600;
+        font-weight:500;
     }
 `
 
@@ -311,7 +320,7 @@ function Dashboard(){
         <FirstChart>
             <div>
                 <span>지난 2주간 잔반량 비교</span>
-                <button onClick={onClick}>등록하러가기</button>
+                <Button className='custom-secondary-button' onClick={onClick} variant="secondary">등록하러가기</Button>{' '}
             </div>
             <ApexCharts
                 type="line"
@@ -347,7 +356,7 @@ function Dashboard(){
         </FirstChart>
         
         <SecondChart>
-            <span style={{fontSize:'20px',fontWeight:'600',margin:'40px 20px'}}>
+            <span style={{fontSize:'20px',fontWeight:'600',margin:'20px 20px',marginBottom:'20px'}}>
                 최근 인기있는 메뉴는?
             </span>
             <ApexCharts
@@ -426,7 +435,7 @@ function Dashboard(){
                     </Items>
                 </div>
 
-                <button onClick={onsubmit}>등록하기</button>
+                <Button variant="primary" onClick={onsubmit}>등록하기</Button>
             </InputW>
             <Overlay/>
         </>:null}

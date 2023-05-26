@@ -5,12 +5,11 @@ import reportWebVitals from './reportWebVitals';
 import { RouterProvider} from 'react-router-dom';
 import router from '../src/router/router';
 import { Provider } from 'react-redux';
-import { persistStore } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import persistReducer from './store';
-import { createSlice } from '@reduxjs/toolkit';
 import {store,persistor} from './store';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
+import 'bootstrap/dist/css/bootstrap.css';
+import './Components/bootstrap_css.css';
 
 const client = new QueryClient();
 

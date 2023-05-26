@@ -6,6 +6,7 @@ import {  useMatch, useNavigate } from 'react-router-dom';
 import { AiFillCloseCircle } from "react-icons/ai";
 import shortid from 'shortid';
 import axios from 'axios';
+import Button from 'react-bootstrap/Button';
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -100,7 +101,7 @@ const WriteWrapper = styled.form`
     }
 `;
 const WriteTitle = styled.div`
-    width:40.12vw;
+    width:40vw;
     margin-top:-1px;
     margin-bottom:10px;
     height:10vh;
@@ -264,9 +265,12 @@ function Calander(){
                     onChange={onBackban}
                     />
                 </WriteInfo>
-                <button onClick={() => onSave(DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
+                <Button variant="primary"
+                onClick={() => onSave(DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
+                    저장</Button>
+                {/* <button onClick={() => onSave(DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                     저장
-                </button>
+                </button> */}
             </WriteWrapper>:null}
             
         </Wrapper>

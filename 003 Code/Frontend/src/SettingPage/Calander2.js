@@ -7,6 +7,8 @@ import { AiFillCloseCircle } from "react-icons/ai";
 import "react-datepicker/dist/react-datepicker.css";
 import shortid from 'shortid';
 import axios from 'axios';
+import Button from 'react-bootstrap/Button';
+
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
@@ -92,17 +94,22 @@ const WriteWrapper = styled.div`
     button{
         width:9vw;
         height:5vh;
-        border:1px solid #1473E6;
-        background-color:#1473E6;
         border-radius:15px;
         font-size:18px;
         color:white;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
+    h3{
+        font-size:24px;
+        margin-bottom:5vh;
     }
 `;
 
 const WriteTitle = styled.div`
     background-color:#d9d9d9;
-    width:34.1vw;
+    width:34vw;
     border-top-right-radius:15px;
     border-top-left-radius:15px;
     margin-top:-1px;
@@ -254,12 +261,18 @@ function Calander2(){
                 <h3>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}일을 휴일로 지정하시겠습니까?</h3>
                 
                 <WriteButton>
-                    <button onClick={() => onOffday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
+                <Button 
+                onClick={() => onOffday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}
+                variant="danger">휴일 지정</Button>
+                    {/* <button onClick={() => onOffday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                         휴일로 지정
-                    </button>
-                    <button onClick={() => onOnday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
+                    </button> */}
+                <Button 
+                onClick={() => onOnday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}
+                variant="primary">영업일 지정</Button>
+                    {/* <button onClick={() => onOnday(DayPathMatch.params.id,DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
                         영업일로 지정
-                    </button>
+                    </button> */}
                 </WriteButton>
 
             </WriteWrapper>:null}

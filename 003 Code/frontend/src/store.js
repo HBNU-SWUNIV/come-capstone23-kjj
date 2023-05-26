@@ -1,47 +1,42 @@
-import {combineReducers,  configureStore,  createSlice} from '@reduxjs/toolkit';
-import {persistReducer, persistStore} from 'redux-persist';
+import { combineReducers, configureStore, createSlice } from '@reduxjs/toolkit';
+import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
+const REGISTER = 'REGISTER';
+
 const User = createSlice({
-    name: 'User',
-    initialState:{
-        isLogin:false,
+  name: 'User',
+  initialState: {
+    isLogin: false,
+  },
+  reducers: {
+    R_login(state) {
+      state.isLogin = true;
     },
-    reducers:{
-        R_login(state){
-            state.isLogin = true;
-        },
-        R_logout(state){
-            state.isLogin = false;
-        },
-    }
-})
+    R_logout(state) {
+      state.isLogin = false;
+    },
+  },
+});
 
 const persistConfig = {
-    key:'root',
-    storage,
+  key: 'root',
+  storage,
 };
 
 const rootReducer = combineReducers({
-    User : User.reducer,
-})
+  User: User.reducer,
+});
 
-const persistedReducer = persistReducer(persistConfig,rootReducer);
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 const store = configureStore({
-    reducer: persistedReducer,
+  reducer: persistedReducer,
 });
 
 const persistor = persistStore(store);
 
-export{store,persistor};
+export { store, persistor, REGISTER };
 
+export const { R_login, R_logout } = User.actions;
 
-// export default configureStore({
-//     reducer:{
-//         User : User.reducer
-//     }
-// })
-    
-
-export const {R_login, R_logout} = User.actions;
