@@ -12,6 +12,7 @@ import { AiFillPlusCircle } from "react-icons/ai";
 import shortid from "shortid";
 import { useSelector } from "react-redux";
 import Button from 'react-bootstrap/Button';
+import { useRef } from "react";
 
 const hr_style = {color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'};
 
@@ -285,7 +286,6 @@ function Menu(){
     const [isSickdan, setIsSickdan] = useState(false);
     const [isBackban, setIsbackban] = useState(false);
     
-    // 메뉴수정,추가할때 리렌더링 되는거 고쳐야함
 
     const [image, setImage] = useState([]);
 
@@ -316,11 +316,11 @@ function Menu(){
         })
     };
 
-    const [name, setName] = useState('');
-    const [cost, setCost] = useState('');
-    const [info, setInfo] = useState('');
-    const [details, setDetails] = useState('');
     
+    const nameRef = useRef('');
+    const costRef = useRef('');
+    const infoRef = useRef('');
+    const detailsRef = useRef('');
 
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
@@ -328,10 +328,10 @@ function Menu(){
     const onMenuAdd = () => {
         const formdata = new FormData();
           let body = {
-            name,
-            cost,
-            info : '알레르기 정보: '+info,
-            details,
+            name : nameRef.current.value,
+            cost : costRef.current.value,
+            info : '알레르기 정보: '+infoRef.current.value,
+            details : detailsRef.current.value,
             usePlanner: isSickdan ? false : isBackban ? true : false
           };
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
@@ -361,10 +361,10 @@ function Menu(){
             }
         })
 
-        setCost('');
-        setInfo('');
-        setDetails('');
-        setName('');
+        // setCost('');
+        // setInfo('');
+        // setDetails('');
+        // setName('');
         setImage(null);
         setIsbackban(false);
         navigate('/menu');
@@ -373,16 +373,16 @@ function Menu(){
         const formdata = new FormData();
         let 백반여부 = savedData.filter(sd => sd.id ==id)[0].usePlanner;
         
-        if(savedData.filter(a => a.id != id).filter(n => n.name == name).length != 0){
+        if(savedData.filter(a => a.id != id).filter(n => n.name == nameRef.current.value).length != 0){
             alert("중복된 메뉴명입니다.");
             return;
         }
 
           let body = {
-            name: name === '' ? UpdatePath.name : name,
-            cost: cost === '' ? UpdatePath.cost : cost,
-            info: info === '' ? UpdatePath.info : '알레르기 정보: '+info,
-            details: details === '' ? UpdatePath.details : details,
+            name: nameRef.current.value === '' ? UpdatePath.name : nameRef.current.value,
+            cost: costRef.current.value === '' ? UpdatePath.cost : costRef.current.value,
+            info: infoRef.current.value === '' ? UpdatePath.info : '알레르기 정보: '+infoRef.current.value,
+            details: detailsRef.current.value === '' ? UpdatePath.details : detailsRef.current.value,
             usePlanner: 백반여부 ? true : isBackban ? true : false
           };
 
@@ -401,10 +401,6 @@ function Menu(){
         }).then(() => {
             axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))
         })
-        setCost('');
-        setInfo('');
-        setDetails('');
-        setName('');
         setImage('');
         setIsbackban(false);
         navigate('/menu');
@@ -421,7 +417,6 @@ function Menu(){
         .then(() => {
             axios.get(`/api/manager/menu/planner`).then(res=> setIsSickdan(res.data))
         })
-        setName('');
         navigate('/menu');
     }
 
@@ -501,9 +496,6 @@ function Menu(){
                         className="custom-info-button"
                         onClick={() => onUpdate(data?.id)}
                         variant="secondary">메뉴 수정</Button>
-                        {/* <button type="submit" onClick={() => onUpdate(data?.id)}>
-                            메뉴 수정
-                        </button> */}
                     </Itemfinal>
                 </Item>)}
                 </ItemWrapper>}
@@ -558,18 +550,16 @@ function Menu(){
             <UpdateText id="data">
                 <div>
                     <span>메뉴명</span>
-                    <input 
-                        placeholder={UpdatePath?.name}
-                        value={name} 
-                        onChange={(e) => setName(e.target.value)}/>
+                    <input
+                    placeholder={UpdatePath?.name}
+                    ref={nameRef}/>
                 </div>
                 <hr style={hr_style}/>
                 <div>
                     <span>가격</span>
                     <input 
                         placeholder={UpdatePath?.cost}
-                        value={cost} 
-                        onChange={e => setCost(e.target.value)}/>
+                        ref={costRef}/>
                 </div>
                 <hr style={hr_style}/>
                 
@@ -577,16 +567,14 @@ function Menu(){
                     <span>소개</span>
                     <input 
                         placeholder={UpdatePath?.details}
-                        value={details} 
-                        onChange={e => setDetails(e.target.value)}/>
+                        ref={detailsRef}/>
                 </div>
                 <hr style={hr_style}/>                
                 <div>
                     <span>알레르기 정보</span>
                     <input 
                         placeholder={UpdatePath?.info}
-                        value={info} 
-                        onChange={e => setInfo(e.target.value)}/>
+                        ref={infoRef}/>
                 </div>
                 <hr style={hr_style}/>            
                 </UpdateText>
@@ -608,7 +596,6 @@ function Menu(){
                     <span>백반을 등록하시려면 우선 지정된 백반을 삭제해주세요.</span>
                     </Updatebackban_text>
                     <BsToggle2On
-                    // onClick={()=> setIsSickdan(false)}
                     style={{fontSize:'30px',marginRight:'20px',color:'#5856D6'}}/>
                     </Updatebackban> 
                     :
@@ -628,7 +615,7 @@ function Menu(){
                     <Updatebackban>
                     <Updatebackban_text>
                     <span>'
-                        {UpdatePath ? UpdatePath?.name : name}
+                        {UpdatePath ? UpdatePath?.name : nameRef.current.value}
                         '을 백반으로 지정함.
                     </span>
                     <span>백반으로 등록하시려면 저장을 눌러주세요.</span>
