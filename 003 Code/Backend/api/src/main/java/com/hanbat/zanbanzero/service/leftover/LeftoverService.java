@@ -42,7 +42,7 @@ public class LeftoverService {
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
         if (leftover != null) leftover.setLeftover(dto.getLeftover());
         else {
-            Leftover result = Leftover.createLeftover(leftoverPreRepository.getReferenceById(target.getId()), dto);
+            Leftover result = Leftover.of(leftoverPreRepository.getReferenceById(target.getId()), dto);
             leftoverRepository.save(result);
         }
     }
@@ -60,7 +60,7 @@ public class LeftoverService {
         List<Leftover> result = leftoverRepository.findAllByOrderByLeftoverPreIdDesc(pageable).getContent();
 
         return result.stream()
-                .map((history) -> LeftoverDto.createLeftoverDto(history))
+                .map((history) -> LeftoverDto.of(history))
                 .collect(Collectors.toList());
     }
 
@@ -74,7 +74,7 @@ public class LeftoverService {
             Leftover leftover = leftoverRepository.findById(id).orElse(new Leftover(null, null, 0));
             LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-            result.add(LeftoverAndPreDto.createLeftoverAndPreDto(leftover, leftoverPre));
+            result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
         }
 
         return result;
@@ -96,7 +96,7 @@ public class LeftoverService {
 
             Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
             if (leftover == null) result.add(new LeftoverDto(targetDate, 0.0));
-            else result.add(LeftoverDto.createLeftoverDto(leftover));
+            else result.add(LeftoverDto.of(leftover));
 
         }
 

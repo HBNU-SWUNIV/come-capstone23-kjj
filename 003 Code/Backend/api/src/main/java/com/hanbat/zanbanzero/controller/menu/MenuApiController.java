@@ -29,21 +29,21 @@ public class MenuApiController {
     private final MenuService menuService;
     private final MenuImageService menuImageService;
 
-    @Operation(summary="전체 메뉴 조회", description="")
+    @Operation(summary="전체 메뉴 조회")
     @GetMapping("/api/user/menu")
     public ResponseEntity<List<MenuDto>> getMenus() {
         List<MenuDto> menus = menuService.getMenus();
         return ResponseEntity.status(HttpStatus.OK).body(menus);
     }
 
-    @Operation(summary="특정 메뉴 상세정보 조회", description="")
+    @Operation(summary="특정 메뉴 상세정보 조회")
     @GetMapping("/api/user/menu/{id}")
     public ResponseEntity<MenuInfoDto> getMenuInfo(@PathVariable Long id) throws CantFindByIdException {
         MenuInfoDto menuDto = menuService.getMenuInfo(id);
         return ResponseEntity.status(HttpStatus.OK).body(menuDto);
     }
 
-    @Operation(summary="전체 메뉴 조회 - 관리자 전용", description="")
+    @Operation(summary="전체 메뉴 조회 - 관리자 전용")
     @GetMapping("/api/manager/menu")
     public ResponseEntity<List<MenuManagerInfoDto>> getMenusForManager() {
         List<MenuManagerInfoDto> menus = menuService.getMenusForManager();
@@ -71,7 +71,7 @@ public class MenuApiController {
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
     }
 
-    @Operation(summary="관리자 - 메뉴 추가", description="")
+    @Operation(summary="관리자 - 메뉴 추가")
     @PostMapping("/api/manager/menu/add")
     public ResponseEntity<String> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, CantFindByIdException {
         if (dto == null || !dto.check()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터가 부족합니다.");
@@ -81,7 +81,7 @@ public class MenuApiController {
         return ResponseEntity.status(HttpStatus.OK).body("등록되었습니다.");
     }
 
-    @Operation(summary="관리자 - 메뉴 수정", description="")
+    @Operation(summary="관리자 - 메뉴 수정")
     @PatchMapping("/api/manager/menu/{id}/update")
     public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, SameNameException {
         menuService.updateMenu(dto, file, id);
@@ -89,14 +89,14 @@ public class MenuApiController {
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }
 
-    @Operation(summary="관리자 - 메뉴 삭제", description="")
+    @Operation(summary="관리자 - 메뉴 삭제")
     @DeleteMapping("/api/manager/menu/{id}")
     public ResponseEntity<String> deleteMenu(@PathVariable Long id) throws CantFindByIdException {
         menuService.deleteMenu(id);
         return ResponseEntity.status(HttpStatus.OK).body("삭제되었습니다.");
     }
 
-    @Operation(summary="관리자 - 품절 지정", description="")
+    @Operation(summary="관리자 - 품절 지정")
     @PatchMapping("/api/manager/menu/{id}/sold/{type}")
     public ResponseEntity<String> setSoldOut(@PathVariable Long id, @PathVariable char type) throws CantFindByIdException, WrongParameter {
         menuService.setSoldOut(id, type);

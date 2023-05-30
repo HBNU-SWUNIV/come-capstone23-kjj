@@ -53,7 +53,7 @@ public class StoreApiController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary="총 누적 이용자 수 조회", description="")
+    @Operation(summary="총 누적 이용자 수 조회")
     @GetMapping("/api/manager/state/all")
     public ResponseEntity<Integer> getAllUsers() {
         int result = storeService.getAllUsers();
@@ -67,21 +67,21 @@ public class StoreApiController {
         return ResponseEntity.ok(result);
     }
 
-    @Operation(summary="식당 정보 조회", description="")
+    @Operation(summary="식당 정보 조회")
     @GetMapping("/api/user/store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException {
         StoreDto result = storeService.getStoreData();
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary="단체명 수정", description="")
+    @Operation(summary="단체명 수정")
     @PatchMapping("/api/manager/store/title")
     public ResponseEntity<StoreDto> updateStoreTitle(@RequestBody StoreDto dto) throws CantFindByIdException{
         StoreDto result = storeService.updateStoreTitle(dto);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary="식당 소개 수정", description="")
+    @Operation(summary="식당 소개 수정")
     @PatchMapping("/api/manager/store/info")
     public ResponseEntity<StoreDto> updateStoreInfo(@RequestBody StoreDto dto) throws CantFindByIdException, WrongRequestDetails {
         StoreDto result = storeService.updateStoreInfo(dto);

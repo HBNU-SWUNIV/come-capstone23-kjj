@@ -18,7 +18,7 @@ public class MenuUpdateDto {
 
     private Boolean usePlanner;
 
-    public MenuInfo createMenuInfo(Menu menu) {
+    public MenuInfo of(Menu menu) {
         return new MenuInfo(
                 null,
                 menu,

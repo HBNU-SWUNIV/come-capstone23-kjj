@@ -4,7 +4,6 @@ import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
-import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.store.StoreState;
@@ -21,11 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -44,17 +40,17 @@ public class StoreService {
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
         if (store == null) return null;
-        return StoreDto.createStoreDto(store);
+        return StoreDto.of(store);
     }
 
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.createStoreDto(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
+        return StoreDto.of(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
     }
 
     public void setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
-        Store store = Store.createStore(finalId, dto);
+        Store store = Store.of(finalId, dto);
         storeRepository.save(store);
     }
 
@@ -101,7 +97,7 @@ public class StoreService {
         Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         store.setName(dto);
 
-        return StoreDto.createStoreDto(store);
+        return StoreDto.of(store);
     }
 
     @Transactional
@@ -109,7 +105,7 @@ public class StoreService {
         Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         store.setInfo(dto);
 
-        return StoreDto.createStoreDto(store);
+        return StoreDto.of(store);
     }
 
     @Transactional

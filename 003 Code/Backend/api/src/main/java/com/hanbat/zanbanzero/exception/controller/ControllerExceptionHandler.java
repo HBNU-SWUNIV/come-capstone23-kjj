@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.exception.controller;
 
 import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.exception.filter.ExceptionTemplate;
-import io.sentry.Sentry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,12 +20,6 @@ import java.util.Date;
 @ControllerAdvice
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
      HttpStatus status;
-
-     @ExceptionHandler(Exception.class)
-     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-     public void handleToSentry(Exception ex) {
-         Sentry.captureException(ex);
-     }
 
     @ExceptionHandler(SameNameException.class)
     public final ResponseEntity<Object> sameName(Exception ex, WebRequest request){

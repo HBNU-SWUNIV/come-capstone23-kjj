@@ -12,10 +12,8 @@ import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
-import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -41,7 +39,7 @@ public class MenuService {
         List<Menu> menus = menuRepository.findAll();
 
         return menus.stream()
-                .map((menu) -> MenuDto.createMenuDto(menu))
+                .map((menu) -> MenuDto.of(menu))
                 .collect(Collectors.toList());
     }
 
@@ -49,7 +47,7 @@ public class MenuService {
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 
-        return MenuInfoDto.createMenuDto(menu);
+        return MenuInfoDto.of(menu);
     }
 
     @Transactional
@@ -58,7 +56,7 @@ public class MenuService {
         List<MenuInfo> menuInfos = menuInfoRepository.findAll();
 
         List<MenuManagerInfoDto> result = new ArrayList<>();
-        for (int i = 0; i < menus.size(); i++) result.add(MenuManagerInfoDto.createMenuManagerInfoDto(menus.get(i), menuInfos.get(i)));
+        for (int i = 0; i < menus.size(); i++) result.add(MenuManagerInfoDto.of(menus.get(i), menuInfos.get(i)));
 
         return result;
     }
@@ -70,8 +68,8 @@ public class MenuService {
     public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
-        Menu menu = menuRepository.save(Menu.createMenu(dto, filePath));
-        menuInfoRepository.save(dto.createMenuInfo(menu));
+        Menu menu = menuRepository.save(Menu.of(dto, filePath));
+        menuInfoRepository.save(dto.of(menu));
     }
 
     @Transactional

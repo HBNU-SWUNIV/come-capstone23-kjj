@@ -1,6 +1,9 @@
 package com.hanbat.zanbanzero.service.order;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
@@ -12,6 +15,7 @@ import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateTools;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +24,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,7 +85,7 @@ public class OrderService {
         List<Order> orders = orderRepository.findByUserId(id);
 
         return orders.stream()
-                .map(order -> OrderDto.createOrderDto(order))
+                .map(order -> OrderDto.of(order))
                 .collect(Collectors.toList());
     }
 
@@ -90,7 +96,7 @@ public class OrderService {
 
         return orderPage.getContent()
                 .stream()
-                .map(order -> OrderDto.createOrderDto(order))
+                .map(order -> OrderDto.of(order))
                 .collect(Collectors.toList());
     }
 
@@ -99,7 +105,28 @@ public class OrderService {
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
-        return LastOrderDto.createOrderDto(order, order.getMenu());
+        return LastOrderDto.of(order);
     }
 
+    public LastOrderDto getOrderById(Long id) throws CantFindByIdException {
+        Order order = orderRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        return LastOrderDto.of(order);
+    }
+
+    public void getOrderQr(HttpServletResponse response, Long id) throws Exception {
+        String domain = "http://kjj.kjj.r-e.kr:8080";
+        String endPoint = "/api/user/order/" + id;
+        BufferedImage qrCode = createQRCode(domain + endPoint);
+
+        response.setContentType("image/png");
+        response.setHeader("Content-Disposition", "inline; filename=qrcode.png");
+        ImageIO.write(qrCode, "png", response.getOutputStream());
+
+    }
+
+    private BufferedImage createQRCode(String data) throws Exception{
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 100, 100);
+        return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
 }

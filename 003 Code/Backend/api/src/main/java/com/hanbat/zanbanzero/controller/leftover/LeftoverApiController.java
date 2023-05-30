@@ -24,7 +24,7 @@ public class LeftoverApiController {
 
     private final LeftoverService leftoverService;
 
-    @Operation(summary="잔반 감소량 설정", description="")
+    @Operation(summary="잔반 감소량 설정")
     @PostMapping("/api/manager/leftover")
     public ResponseEntity<String> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails, WrongParameter {
         if (dto.getDate() != null) throw new WrongRequestDetails("날짜값은 생략되어야 합니다.");

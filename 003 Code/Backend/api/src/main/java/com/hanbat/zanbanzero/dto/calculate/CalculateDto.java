@@ -13,11 +13,4 @@ import lombok.NoArgsConstructor;
 public class CalculateDto {
 
     private String date;
-
-    public static CalculateDto createStoreStateDto(Calculate calculate) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return new CalculateDto(
-                calculate.getDate()
-        );
-    }
 }

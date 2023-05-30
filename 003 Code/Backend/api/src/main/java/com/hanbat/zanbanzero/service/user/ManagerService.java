@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,13 +21,13 @@ public class ManagerService implements UserDetailsService {
     private final String role = "ROLE_MANAGER";
 
     public ManagerInfoDto getInfoForUsername(String username) {
-        return ManagerInfoDto.createManagerInfoDto(repository.findByUsername(username));
+        return ManagerInfoDto.of(repository.findByUsername(username));
     }
 
     public ManagerInfoDto getInfo() throws JwtException, CantFindByIdException {
         User manager = repository.findByRoles(role).orElseThrow(CantFindByIdException::new);
 
-        return ManagerInfoDto.createManagerInfoDto(manager);
+        return ManagerInfoDto.of(manager);
     }
 
     @Override

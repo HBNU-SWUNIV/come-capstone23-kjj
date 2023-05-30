@@ -41,7 +41,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public void join(UserDto dto) throws JsonProcessingException, WrongRequestDetails {
         dto.setEncodePassword(bCryptPasswordEncoder);
-        User user = userRepository.save(User.createUser(dto));
+        User user = userRepository.save(User.of(dto));
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
     }
 
@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
     public UserInfoDto getInfo(UserDto dto) throws JwtException {
         User user = userRepository.findByUsername(dto.getUsername());
 
-        return UserInfoDto.createUserInfoDto(user);
+        return UserInfoDto.of(user);
     }
 
     public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
@@ -97,6 +97,6 @@ public class UserService implements UserDetailsService {
     }
 
     public UserInfoDto getInfoForUsername(String username) {
-        return UserInfoDto.createUserInfoDto(userRepository.findByUsername(username));
+        return UserInfoDto.of(userRepository.findByUsername(username));
     }
 }

@@ -18,7 +18,7 @@ public class User {
     private String password;
     private String roles;
 
-    public static User createUser(UserDto dto) {
+    public static User of(UserDto dto) {
         return new User(
                 dto.getId(),
                 dto.getUsername(),
@@ -29,9 +29,5 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

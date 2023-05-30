@@ -15,7 +15,7 @@ public class MenuDto {
     private String image;
     private Boolean sold;
 
-    public static MenuDto createMenuDto(Menu menu) {
+    public static MenuDto of(Menu menu) {
         return new MenuDto(
                 menu.getId(),
                 menu.getName(),

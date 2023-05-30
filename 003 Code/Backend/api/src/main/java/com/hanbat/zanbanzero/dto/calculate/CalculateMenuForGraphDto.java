@@ -14,10 +14,4 @@ public class CalculateMenuForGraphDto {
     private String name;
     private long count;
 
-    public static CalculateMenuForGraphDto createCalculateMenuForGraphDto(CalculateMenu menu) {
-        return new CalculateMenuForGraphDto(
-                menu.getMenu(),
-                menu.getCount()
-        );
-    }
 }

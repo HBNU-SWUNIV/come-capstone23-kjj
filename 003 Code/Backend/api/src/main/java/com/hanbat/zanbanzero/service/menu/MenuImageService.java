@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,8 @@ public class MenuImageService {
 
     public String uploadImage(MultipartFile file) {
         // cleanPath() 메소드는 악성코드 삽입을 방지하기 위해 파일이름 정리 목적
-        String filePath = makeFilePath(StringUtils.cleanPath(file.getOriginalFilename()));
+        String fileName = RandomStringUtils.randomAlphanumeric(10);
+        String filePath = makeFilePath(fileName + ".png");
         try {
             Files.createDirectories(Paths.get(uploadDir));
             Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);

@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.dto.order;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.entity.order.Order;
 import lombok.*;
 
@@ -17,7 +16,7 @@ public class OrderDto {
     private String orderDate;
     private boolean recognize;
 
-    public static OrderDto createOrderDto(Order order) {
+    public static OrderDto of(Order order) {
         return new OrderDto(
                 order.getId(),
                 order.getMenu(),

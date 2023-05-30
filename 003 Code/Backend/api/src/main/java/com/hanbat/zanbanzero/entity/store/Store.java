@@ -17,7 +17,7 @@ public class Store {
     private String name;
     private String info;
 
-    public static Store createStore(Long id, StoreDto dto) {
+    public static Store of(Long id, StoreDto dto) {
         return new Store(
                 id,
                 dto.getName(),

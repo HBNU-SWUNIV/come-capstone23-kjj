@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.entity.planner.Planner;
-import com.hanbat.zanbanzero.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,7 +42,7 @@ public class Menu {
         }
     }
 
-    public static Menu createMenu(MenuUpdateDto dto, String filePath) {
+    public static Menu of(MenuUpdateDto dto, String filePath) {
         return new Menu(
                 null,
                 null,
