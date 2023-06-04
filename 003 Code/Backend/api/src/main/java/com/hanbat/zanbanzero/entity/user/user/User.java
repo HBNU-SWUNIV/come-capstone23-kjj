@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
+import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,15 @@ public class User {
                 dto.getUsername(),
                 dto.getPassword(),
                 dto.getRoles()
+        );
+    }
+
+    public static User of(UserJoinDto dto) {
+        return new User(
+                null,
+                dto.getUsername(),
+                dto.getPassword(),
+                "ROLE_USER"
         );
     }
 

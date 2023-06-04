@@ -1,12 +1,9 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.*;
@@ -15,18 +12,22 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.util.ContentCachingRequestWrapper;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class LoginFilter implements Filter {
     private AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
 
+    private String loginEndPath = "/login";
+
+    public LoginFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        if (((HttpServletRequest) request).getRequestURI().startsWith("/api/login/")) {
+        if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {
@@ -38,11 +39,6 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
         }
     }
-
-    public LoginFilter(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
-    }
-
 
     public void attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
         CreateTokenInterface createTokenInterface = customUriMapper.getLoginFilter();

@@ -22,9 +22,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@WebMvcTest(MenuApiController.class)
+@WebMvcTest(MenuManagerApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class MenuApiControllerTest extends ControllerTestClass {
+class MenuManagerApiControllerTest extends ControllerTestClass {
 
     @MockBean
     MenuService menuService;

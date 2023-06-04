@@ -33,6 +33,7 @@ public class ManagerService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User manager = repository.findByUsername(username);
+        if (!manager.getRoles().equals("ROLE_MANAGER")) throw new UsernameNotFoundException("ManagerService - loadUserByUsername() : 잘못된 유저네임");
         return new UserDetailsInterfaceImpl(manager);
     }
 

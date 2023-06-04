@@ -2,27 +2,23 @@ package com.hanbat.zanbanzero.controller.order;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@WebMvcTest(OrderApiController.class) //클래스 지정하여 스캔
+@WebMvcTest(OrderUserApiController.class) //클래스 지정하여 스캔
 @AutoConfigureMockMvc(addFilters = false) // Security 설정 무시
-class OrderApiControllerTest extends ControllerTestClass {
+class OrderUserApiControllerTest extends ControllerTestClass {
 
     @MockBean
     OrderService orderService;

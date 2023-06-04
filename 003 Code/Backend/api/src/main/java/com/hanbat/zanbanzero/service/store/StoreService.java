@@ -4,15 +4,15 @@ import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
-import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
+import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
-import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
+import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateTools;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,6 @@ public class StoreService {
     private final StoreStateRepository storeStateRepository;
 
     private final Long finalId = 1L;
-    private int dataSize = 5;
 
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
@@ -66,6 +66,7 @@ public class StoreService {
         List<StoreWeekendDto> result = new ArrayList<>();
         LocalDate date = DateTools.getLastWeeksMonday(0);
 
+        int dataSize = 5;
         for (int i = 0; i < dataSize; i ++) {
             String targetDate = DateTools.toFormatterString(date.plusDays(i));
             Calculate calculate = calculateRepository.findByDate(targetDate);
@@ -86,10 +87,13 @@ public class StoreService {
     public List<CalculateMenuForGraphDto> getPopularMenus() {
         List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc()
                 .stream()
-                .map(calculate -> calculate.getId())
+                .map(Calculate::getId)
                 .collect(Collectors.toList());
 
-        return calculateMenuRepository.getPopularMenus(idList);
+        List<CalculateMenuForGraphDto> result = calculateMenuRepository.getPopularMenus(idList);
+        result.sort(Comparator.comparingLong(CalculateMenuForGraphDto::getCount).reversed());
+
+        return result.subList(0, 3);
     }
 
     @Transactional
@@ -122,7 +126,7 @@ public class StoreService {
         String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
-                .map(state -> StoreStateDto.of(state))
+                .map(StoreStateDto::of)
                 .collect(Collectors.toList());
     }
 }

@@ -25,6 +25,8 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    private String loginEndPath = "/login";
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
@@ -33,10 +35,10 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 
         UserDetails principalDetails = null;
 
-        if (uri.endsWith("/user")) {
+        if (uri.endsWith("/user" + loginEndPath)) {
             principalDetails = userService.loadUserByUsername(username);
         }
-        else if (uri.endsWith("/manager")) {
+        else if (uri.endsWith("/manager" + loginEndPath)) {
             principalDetails = managerService.loadUserByUsername(username);
         }
 

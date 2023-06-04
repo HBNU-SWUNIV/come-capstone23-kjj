@@ -2,11 +2,9 @@ package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
-import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -39,14 +37,14 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public void join(UserDto dto) throws JsonProcessingException, WrongRequestDetails {
+    public void join(UserJoinDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
     }
 
     @Transactional
-    public void withdraw(UserDto dto) throws CantFindByIdException, WrongRequestDetails {
+    public void withdraw(UserDto dto) throws CantFindByIdException {
         User user = userRepository.findByUsername(dto.getUsername());
         UserMypage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
 
@@ -54,13 +52,14 @@ public class UserService implements UserDetailsService {
         userRepository.delete(user);
     }
 
-    public boolean check(UserDto dto) {
-        if (userRepository.existsByUsername(dto.getUsername())) return true;
+    public boolean check(String username) {
+        if (userRepository.existsByUsername(username)) return true;
         return false;
     }
 
-    public UserInfoDto getInfo(UserDto dto) throws JwtException {
-        User user = userRepository.findByUsername(dto.getUsername());
+    public UserInfoDto getInfo(String username) throws CantFindByIdException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new CantFindByIdException();
 
         return UserInfoDto.of(user);
     }
@@ -74,6 +73,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
+        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저 닉네임");
         return new UserDetailsInterfaceImpl(user);
     }
 

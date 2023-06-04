@@ -10,6 +10,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +23,8 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
 
+    private String loginEndPath = "/login";
+    private String joinEndPath = "/join";
 
     public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
@@ -33,7 +36,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String jwtHeader = request.getHeader(JwtTemplate.HEADER_STRING);
         // JWT(Header)가 있는지 확인
         if ((jwtHeader == null || !jwtHeader.startsWith(JwtTemplate.TOKEN_PREFIX))) {
-            if (request.getRequestURI().startsWith("/join") || request.getRequestURI().startsWith("/api/login/")){
+            if (request.getRequestURI().endsWith(joinEndPath) || request.getRequestURI().endsWith(loginEndPath)){
                 chain.doFilter(request, response);
                 return;
             }

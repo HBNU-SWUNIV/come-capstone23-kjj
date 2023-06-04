@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-@WebMvcTest(StoreApiController.class) //클래스 지정하여 스캔
+@WebMvcTest(StoreManagerApiController.class) //클래스 지정하여 스캔
 @AutoConfigureMockMvc(addFilters = false) // Security 설정 무시
-class StoreApiControllerTest extends ControllerTestClass {
+class StoreManagerApiControllerTest extends ControllerTestClass {
 
     @MockBean
     private StoreService storeService;
