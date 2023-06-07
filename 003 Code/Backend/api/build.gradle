@@ -44,11 +44,11 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:2.4.2'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+	// validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-	// sentry
-	implementation 'io.sentry:sentry-spring-boot-starter:6.17.0'
-	implementation 'io.sentry:sentry-spring-boot-starter-jakarta:6.17.0'
+	// QRCode
+	implementation 'com.google.zxing:javase:3.4.1'
 
 	// test
 	testImplementation 'org.projectlombok:lombok:1.18.22'

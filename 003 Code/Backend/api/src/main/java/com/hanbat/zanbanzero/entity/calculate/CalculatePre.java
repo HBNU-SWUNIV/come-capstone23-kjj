@@ -9,16 +9,15 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CalculateMenu {
+public class CalculatePre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     private Calculate calculate;
 
-    private String menu;
-
-    private int count;
-    private int sales;
+    private Integer predictUser;
+    private String predictFood;
 }

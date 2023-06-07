@@ -12,7 +12,7 @@ public class StoreDto {
     private String name;
     private String info;
 
-    public static StoreDto createStoreDto(Store store) {
+    public static StoreDto of(Store store) {
         return new StoreDto(
                 store.getName(),
                 store.getInfo()

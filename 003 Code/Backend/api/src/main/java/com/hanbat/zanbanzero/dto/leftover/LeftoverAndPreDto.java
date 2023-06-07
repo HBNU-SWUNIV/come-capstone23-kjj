@@ -15,7 +15,7 @@ public class LeftoverAndPreDto {
     private double real;
     private double predict;
 
-    public static LeftoverAndPreDto createLeftoverAndPreDto(Leftover leftover, LeftoverPre leftoverPre) {
+    public static LeftoverAndPreDto of(Leftover leftover, LeftoverPre leftoverPre) {
         return new LeftoverAndPreDto(
                 DateTools.makeResponseDateFormatString(leftoverPre.getCalculate().getDate()),
                 leftover.getLeftover(),

@@ -37,6 +37,16 @@ public class Order {
         recognize = false;
     }
 
-    public void setRecognizeToUse() { recognize = true;
+    public void setRecognizeToUse() { recognize = true; }
+
+    public static Order createNewOrder(User user, String menu, int cost, String date, boolean type) {
+        return new Order(
+                null,
+                user,
+                menu,
+                cost,
+                date,
+                type
+        );
     }
 }

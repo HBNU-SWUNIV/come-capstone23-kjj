@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.tasklet;
+package com.batch.batch.batch.order.task;
 
 import com.batch.batch.pojo.Order;
 import com.batch.batch.pojo.UserPolicy;
@@ -24,14 +24,14 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class CreateTodayOrderTasklet {
+public class CreateTodayOrder {
 
     private final DataSource dataSource;
 
     private static Map<Long, String> idToNameMap = new HashMap<>();
     private static Map<String, Integer> nameToCostMap = new HashMap<>();
 
-    public CreateTodayOrderTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+    public CreateTodayOrder(@Qualifier("dataDataSource") DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

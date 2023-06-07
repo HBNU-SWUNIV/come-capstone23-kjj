@@ -14,7 +14,7 @@ public class UserInfoDto {
     private Long id;
     private String username;
 
-    public static UserInfoDto createUserInfoDto(User user) {
+    public static UserInfoDto of(User user) {
         return new UserInfoDto(
                 user.getId(),
                 user.getUsername()

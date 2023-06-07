@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.service.user;
 
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,7 @@ class UserServiceTest {
         User user = userRepository.findByUsername(username);
 
         UserInfoDto expected = new UserInfoDto(user.getId(), user.getUsername());
-        UserInfoDto result = UserInfoDto.createUserInfoDto(user);
+        UserInfoDto result = UserInfoDto.of(user);
 
         assertEquals(expected.toString(), result.toString());
     }

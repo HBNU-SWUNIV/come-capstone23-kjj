@@ -1,16 +1,12 @@
 package com.hanbat.zanbanzero.dto.order;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.entity.order.Order;
 import lombok.*;
-
-import java.sql.Timestamp;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Builder(builderMethodName = "OrderDtoBuilder")
 public class OrderDto {
 
     private Long id;
@@ -20,7 +16,7 @@ public class OrderDto {
     private String orderDate;
     private boolean recognize;
 
-    public static OrderDto createOrderDto(Order order) throws JsonProcessingException {
+    public static OrderDto of(Order order) {
         return new OrderDto(
                 order.getId(),
                 order.getMenu(),
@@ -28,9 +24,5 @@ public class OrderDto {
                 order.getOrderDate(),
                 order.isRecognize()
         );
-    }
-
-    public static OrderDtoBuilder builder() {
-        return OrderDtoBuilder();
     }
 }

@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.exception.controller;
 
 import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.exception.filter.ExceptionTemplate;
-import io.sentry.Sentry;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,12 +21,6 @@ import java.util.Date;
 public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
      HttpStatus status;
 
-     @ExceptionHandler(Exception.class)
-     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-     public void handleToSentry(Exception ex) {
-         Sentry.captureException(ex);
-     }
-
     @ExceptionHandler(SameNameException.class)
     public final ResponseEntity<Object> sameName(Exception ex, WebRequest request){
         status = HttpStatus.CONFLICT;
@@ -44,7 +37,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CantFindByIdException.class)
     public final ResponseEntity<Object> cantFindById(Exception ex, WebRequest request){
-        status = HttpStatus.NOT_FOUND;
+        status = HttpStatus.BAD_REQUEST;
         ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), "잘못된 id 입니다.", ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
         return new ResponseEntity<>(exceptionResponse, status);
     }
