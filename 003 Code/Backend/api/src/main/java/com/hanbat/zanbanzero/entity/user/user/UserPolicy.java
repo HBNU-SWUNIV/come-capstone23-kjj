@@ -27,6 +27,19 @@ public class UserPolicy {
 
     private Long defaultMenu;
 
+    public static UserPolicy createNewUserPolicy(User user) {
+        return new UserPolicy(
+                null,
+                user,
+                false,
+                false,
+                false,
+                false,
+                false,
+                null
+        );
+    }
+
     public void setPolicy(UserPolicyDto dto) {
         monday = dto.isMonday();
         tuesday = dto.isTuesday();

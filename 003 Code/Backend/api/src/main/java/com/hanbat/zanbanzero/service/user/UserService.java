@@ -41,15 +41,16 @@ public class UserService implements UserDetailsService {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
+        userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
     }
 
     @Transactional
-    public void withdraw(UserDto dto) throws CantFindByIdException {
+    public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
         User user = userRepository.findByUsername(dto.getUsername());
-        UserMypage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
-
-        userMyPageRepository.delete(userMyPage);
-        userRepository.delete(user);
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            userRepository.delete(user);
+        }
+        else throw new WrongRequestDetails("비밀번호 틀림");
     }
 
     public boolean check(String username) {

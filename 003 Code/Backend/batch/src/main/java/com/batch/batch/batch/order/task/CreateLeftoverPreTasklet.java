@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.tasklet;
+package com.batch.batch.batch.order.task;
 
 import com.batch.batch.tools.DateTools;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
-public class CreateLeftoverPre implements Tasklet {
+public class CreateLeftoverPreTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final double aver = 120;

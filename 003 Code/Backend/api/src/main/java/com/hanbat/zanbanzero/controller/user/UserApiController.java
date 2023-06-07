@@ -37,7 +37,7 @@ public class UserApiController {
 
     @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")
     @DeleteMapping("withdraw")
-    public ResponseEntity<String> withdraw(@RequestBody UserDto dto) throws CantFindByIdException, WrongRequestDetails {
+    public ResponseEntity<String> withdraw(@RequestBody UserJoinDto dto) throws WrongRequestDetails {
         if (!dto.checkForm()) throw new WrongRequestDetails("잘못된 정보입니다.");
         userService.withdraw(dto);
 

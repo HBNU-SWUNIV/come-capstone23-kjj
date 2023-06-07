@@ -22,7 +22,10 @@ public class Menu {
     private List<Planner> planners;
 
     @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
-    private MenuInfo menuInfos;
+    private MenuInfo menuInfo;
+
+    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+    private MenuFood menuFood;
 
     private String name;
     private int cost;
@@ -44,6 +47,7 @@ public class Menu {
 
     public static Menu of(MenuUpdateDto dto, String filePath) {
         return new Menu(
+                null,
                 null,
                 null,
                 null,

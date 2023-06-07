@@ -5,11 +5,13 @@ import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
+import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
@@ -33,6 +35,7 @@ public class MenuService {
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
+    private final MenuFoodRepository menuFoodRepository;
 
     @Cacheable(value = "MenuDto", key = "1", cacheManager = "cacheManager")
     public List<MenuDto> getMenus() {
@@ -65,11 +68,18 @@ public class MenuService {
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
+    public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
         Menu menu = menuRepository.save(Menu.of(dto, filePath));
         menuInfoRepository.save(dto.of(menu));
+        return MenuDto.of(menu);
+    }
+
+    @Transactional
+    public void addFood(Long id, String data) throws CantFindByIdException {
+        Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        menuFoodRepository.save(MenuFood.of(menu, data));
     }
 
     @Transactional

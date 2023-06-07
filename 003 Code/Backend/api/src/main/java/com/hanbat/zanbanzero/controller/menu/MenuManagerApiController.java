@@ -1,9 +1,11 @@
 package com.hanbat.zanbanzero.controller.menu;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.dto.menu.MenuDto;
-import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -56,17 +60,25 @@ public class MenuManagerApiController {
     }
 
     @Operation(summary="관리자 - 메뉴 추가")
-    @PostMapping("menu/add")
-    public ResponseEntity<String> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, CantFindByIdException {
-        if (dto == null || !dto.check()) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("데이터가 부족합니다.");
+    @PostMapping("menu")
+    public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter {
+        if (dto == null || !dto.check()) throw new WrongParameter("잘못된 데이터 정보입니다.");
 
         String filePath = (file != null) ? menuImageService.uploadImage(file) : null;
-        menuService.addMenu(dto, filePath);
+        return ResponseEntity.status(HttpStatus.OK).body(menuService.addMenu(dto, filePath));
+    }
+
+    @Operation(summary="관리자 - 식자재 정보 추가")
+    @PostMapping("menu/{id}/food")
+    public ResponseEntity<String> addFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        menuService.addFood(id, objectMapper.writeValueAsString(data));
+
         return ResponseEntity.status(HttpStatus.OK).body("등록되었습니다.");
     }
 
     @Operation(summary="관리자 - 메뉴 수정")
-    @PatchMapping("menu/{id}/update")
+    @PatchMapping("menu/{id}")
     public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, SameNameException {
         menuService.updateMenu(dto, file, id);
 
