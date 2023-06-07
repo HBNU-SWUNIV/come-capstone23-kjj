@@ -1,8 +1,9 @@
 import { BrowserView, MobileView, isMobileOnly } from 'react-device-detect'
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Nav from './Nav/Nav';
 
 function App() {
+  const location = useLocation();
 
   return (
     <div className="App">
@@ -11,7 +12,7 @@ function App() {
         <h1>모바일 환경에서 접속해주세요.</h1>
       </BrowserView>
       <MobileView>
-        {isMobileOnly && <Nav />}
+        {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse', '/Graph'].includes(location.pathname) && <Nav />}
         <Outlet />
       </MobileView>
     </div>

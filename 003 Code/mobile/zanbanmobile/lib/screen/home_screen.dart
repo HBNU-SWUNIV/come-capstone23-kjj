@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-final uri = Uri.parse('https://m.naver.com');
+final uri = Uri.parse('http://kjj.kjj.r-e.kr:81/');
 
 class HomeScreen extends StatelessWidget {
   WebViewController controller = WebViewController()
@@ -48,16 +48,7 @@ class HomeScreen extends StatelessWidget {
       },
       child: SafeArea(
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Color.fromARGB(255, 246, 239, 232),
-            title: Text(
-              '잔반제로',
-              style: TextStyle(
-                color: Color.fromARGB(255, 169, 53, 40),
-              ),
-            ),
-            centerTitle: true,
-          ),
+          appBar: null,
           body: WebViewWidget(controller: controller),
         ),
       ),
