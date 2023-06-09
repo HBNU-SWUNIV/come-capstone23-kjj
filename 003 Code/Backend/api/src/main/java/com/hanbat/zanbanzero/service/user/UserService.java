@@ -2,11 +2,9 @@ package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
-import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
@@ -38,53 +36,33 @@ public class UserService implements UserDetailsService {
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private boolean checkForm(UserDto dto) {
-        if (dto.getId() == null || dto.getPassword() == null) {
-            return false;
-        }
-
-        else if (dto.getId().equals("") || dto.getPassword().equals("")) {
-            return false;
-        }
-        return true;
-    }
-
     @Transactional
-    public void join(UserDto dto) throws JsonProcessingException, WrongRequestDetails {
-        if (checkForm(dto)) {
-            throw new WrongRequestDetails("잘못된 정보입니다.");
-        }
-
+    public void join(UserJoinDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
-
-        User user = userRepository.save(User.createUser(dto));
-
+        User user = userRepository.save(User.of(dto));
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
+        userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
     }
 
     @Transactional
-    public void withdraw(UserDto dto) throws CantFindByIdException, WrongRequestDetails {
-        if (checkForm(dto)) {
-            throw new WrongRequestDetails("잘못된 정보입니다.");
+    public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
+        User user = userRepository.findByUsername(dto.getUsername());
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
+            userRepository.delete(user);
         }
-
-        User user = userRepository.findByUsername(dto.getUsername());
-        UserMypage userMyPage = userMyPageRepository.findById(user).orElseThrow(CantFindByIdException::new);
-
-        userMyPageRepository.delete(userMyPage);
-        userRepository.delete(user);
+        else throw new WrongRequestDetails("비밀번호 틀림");
     }
 
-    public boolean check(UserDto dto) {
-        if (userRepository.existsByUsername(dto.getUsername()))
-            return true;
-        else return false;
+    public boolean check(String username) {
+        if (userRepository.existsByUsername(username)) return true;
+        return false;
     }
 
-    public UserInfoDto getInfo(UserDto dto) throws JwtException {
-        User user = userRepository.findByUsername(dto.getUsername());
+    public UserInfoDto getInfo(String username) throws CantFindByIdException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) throw new CantFindByIdException();
 
-        return UserInfoDto.createUserInfoDto(user);
+        return UserInfoDto.of(user);
     }
 
     public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
@@ -96,6 +74,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
+        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저 닉네임");
         return new UserDetailsInterfaceImpl(user);
     }
 
@@ -107,9 +86,8 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void setUserMenuPolicy(Long userId, Long menuId) throws CantFindByIdException, WrongParameter {
-        if (!menuRepository.existsById(menuId)) {
-            throw new WrongParameter("잘못된 메뉴 ID");
-        }
+        if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
+
         UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
         policy.setDefaultMenu(menuId);
     }
@@ -120,6 +98,6 @@ public class UserService implements UserDetailsService {
     }
 
     public UserInfoDto getInfoForUsername(String username) {
-        return UserInfoDto.createUserInfoDto(userRepository.findByUsername(username));
+        return UserInfoDto.of(userRepository.findByUsername(username));
     }
 }

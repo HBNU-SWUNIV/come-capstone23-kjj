@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.tasklet;
+package com.batch.batch.batch.order.task;
 
 import com.batch.batch.tools.DateTools;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class CountOrdersByDateTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final CreateTodayOrderTasklet createTodayOrderTasklet;
+    private final CreateTodayOrder createTodayOrder;
     private Map<String, Integer> resultMap = new HashMap<>();
 
     private Long initOrder(Connection connection, String date, int today, int sales) throws Exception{
@@ -64,7 +64,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
 
     private int getSales() {
         int sales = 0;
-        Map<String, Integer> nameToCostMap = createTodayOrderTasklet.getNameToCostMap();
+        Map<String, Integer> nameToCostMap = createTodayOrder.getNameToCostMap();
         for (String keys : resultMap.keySet()) {
             sales += nameToCostMap.get(keys) * resultMap.get(keys);
         }
@@ -78,7 +78,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String date = DateTools.getDate();
-        Map<String, Integer> nameToCostMap = createTodayOrderTasklet.getNameToCostMap();
+        Map<String, Integer> nameToCostMap = createTodayOrder.getNameToCostMap();
         Connection connection = dataSource.getConnection();
 
         int count = countTodayOrders(connection, date);

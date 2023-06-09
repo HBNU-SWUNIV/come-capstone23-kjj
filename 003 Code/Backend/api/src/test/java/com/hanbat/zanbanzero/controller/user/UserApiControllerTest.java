@@ -3,7 +3,9 @@ package com.hanbat.zanbanzero.controller.user;
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
+import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
+import com.hanbat.zanbanzero.dto.user.user.UsernameDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.UserService;
@@ -28,17 +30,19 @@ class UserApiControllerTest extends ControllerTestClass {
     private UserService userService;
 
     private final UserDto dto = new UserDto(1L, "test username", "1234", null);
+    private final UserJoinDto dto2 = new UserJoinDto("test username", "1234");
+    private final UsernameDto dto3 = new UsernameDto("test username");
 
     @Test
     void join() throws Exception {
         // 1. 정상 가입
         {
             // Given
-            Mockito.doNothing().when(userService).join(dto);
+            Mockito.doNothing().when(userService).join(dto2);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/join")
-                            .content(objectMapper.writeValueAsString(dto))
+                            .content(objectMapper.writeValueAsString(dto2))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andReturn();
 
@@ -48,13 +52,13 @@ class UserApiControllerTest extends ControllerTestClass {
             assertEquals(expected, result.getResponse().getContentAsString());
             assertEquals(200, result.getResponse().getStatus());
 
-            Mockito.verify(userService, Mockito.times(1)).join(dto);
+            Mockito.verify(userService, Mockito.times(1)).join(dto2);
         }
 
         // 2. null 데이터
         {
             // Given
-            UserDto nullDto = new UserDto(1L, null, "1234", null);
+            UserJoinDto nullDto = new UserJoinDto(null, "1234");
             Mockito.doThrow(WrongRequestDetails.class).when(userService).join(nullDto);
 
             // When
@@ -72,7 +76,7 @@ class UserApiControllerTest extends ControllerTestClass {
         // 3. empty 데이터
         {
             // Given
-            UserDto emptyDto = new UserDto(1L, "", "1234", null);
+            UserJoinDto emptyDto = new UserJoinDto("", "1234");
             Mockito.doThrow(WrongRequestDetails.class).when(userService).join(emptyDto);
 
             // When
@@ -93,11 +97,11 @@ class UserApiControllerTest extends ControllerTestClass {
         // 1. 아이디 중복 x
         {
             // Given
-            Mockito.when(userService.check(dto)).thenReturn(false);
+            Mockito.when(userService.check(dto3.getUsername())).thenReturn(false);
 
             // When
             mockMvc.perform(MockMvcRequestBuilders.post("/join/check")
-                            .content(objectMapper.writeValueAsString(dto))
+                            .content(objectMapper.writeValueAsString(dto3.getUsername()))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(MockMvcResultMatchers.content().string("사용 가능한 아이디입니다."));
@@ -106,16 +110,16 @@ class UserApiControllerTest extends ControllerTestClass {
         // 2. 아이디 중복
         {
             // Given
-            Mockito.when(userService.check(dto)).thenReturn(true);
+            Mockito.when(userService.check(dto3.getUsername())).thenReturn(true);
 
             // When
             mockMvc.perform(MockMvcRequestBuilders.post("/join/check")
-                            .content(objectMapper.writeValueAsString(dto))
+                            .content(objectMapper.writeValueAsString(dto3.getUsername()))
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().is(409))
                     .andExpect(MockMvcResultMatchers.content().string("중복된 아이디입니다."));
         }
-        Mockito.verify(userService, Mockito.times(2)).check(dto);
+        Mockito.verify(userService, Mockito.times(2)).check(dto3.getUsername());
     }
 
     @Test

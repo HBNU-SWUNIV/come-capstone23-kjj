@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ManagerInfoDto {
     private Long id;
-    private String username;
+    private String loginId;
 
-    public static ManagerInfoDto createManagerInfoDto(User manager) {
+    public static ManagerInfoDto of(User manager) {
         return new ManagerInfoDto(
                 manager.getId(),
                 manager.getUsername()

@@ -23,4 +23,13 @@ public class StoreState {
     public void setOff(Boolean off) {
         this.off = off;
     }
+
+    public static StoreState createNewOffStoreState(Store store, String date) {
+        return new StoreState(
+                null,
+                store,
+                date,
+                false
+        );
+    }
 }

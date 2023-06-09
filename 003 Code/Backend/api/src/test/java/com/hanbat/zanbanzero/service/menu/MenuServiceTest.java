@@ -19,7 +19,7 @@ class MenuServiceTest {
 
     @BeforeEach
     void setup() {
-        final Menu menu = new Menu(null, new Store(), name, 2000, "두유", null);
+        final Menu menu = new Menu(null, null, null, name, 2000, "imageURI", true, false);
         menuRepository.save(menu);
     }
 }

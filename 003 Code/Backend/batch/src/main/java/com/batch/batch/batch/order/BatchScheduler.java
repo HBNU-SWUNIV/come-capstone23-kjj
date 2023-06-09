@@ -1,7 +1,6 @@
 package com.batch.batch.batch.order;
 
 import com.batch.batch.tools.DateTools;
-import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -22,12 +21,14 @@ import java.sql.SQLException;
 public class BatchScheduler {
 
     private final JobLauncher jobLauncher;
-    private final Job job;
+    private final Job firstJob;
+    private final Job secondJob;
     private final DataSource dataSource;
 
-    public BatchScheduler(JobLauncher jobLauncher, Job job, @Qualifier("dataDataSource") DataSource dataSource) {
+    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource) {
         this.jobLauncher = jobLauncher;
-        this.job = job;
+        this.firstJob = firstJob;
+        this.secondJob = secondJob;
         this.dataSource = dataSource;
     }
 
@@ -42,10 +43,29 @@ public class BatchScheduler {
             JobParameters jobParameters = new JobParametersBuilder()
                     .addString("date", date)
                     //.addString("today", "friday")
-                    //.addString("time", String.valueOf(System.currentTimeMillis()))
+                    .addString("time", String.valueOf(System.currentTimeMillis()))
                     .addString("today", day.toLowerCase())
                     .toJobParameters();
-            jobLauncher.run(job, jobParameters);
+            jobLauncher.run(firstJob, jobParameters);
+        }
+    }
+
+    @Scheduled(cron = "30 30 1 * * ?")
+    public void runCalculateJob() throws Exception {
+        String day = DateTools.getTodayPlusOneDay();
+        String date = DateTools.getDatePlusOneDay();
+        String today = DateTools.getDate();
+        boolean off = isOffDay(date);
+        if (!day.equals("SATURDAY") && !day.equals("SUNDAY") && !off) {
+            //if (!off) {
+            JobParameters jobParameters = new JobParametersBuilder()
+                    .addString("date", date)
+                    .addString("today", today)
+                    //.addString("today", "friday")
+                    .addString("time", String.valueOf(System.currentTimeMillis()))
+                    .addString("day", day.toLowerCase())
+                    .toJobParameters();
+            jobLauncher.run(secondJob, jobParameters);
         }
     }
 

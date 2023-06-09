@@ -3,6 +3,7 @@ package com.batch.batch.tools;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 public class DateTools {
@@ -12,9 +13,23 @@ public class DateTools {
         return dayOfWeek.toString();
     }
 
+    public static String getTodayPlusOneDay() {
+        LocalDate date = LocalDate.now().plusDays(1);
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        return dayOfWeek.toString();
+    }
+
     public static String getDate() {
         Date date = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         return format.format(date);
+    }
+
+    public static String getDatePlusOneDay() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(calendar.getTime());
     }
 }

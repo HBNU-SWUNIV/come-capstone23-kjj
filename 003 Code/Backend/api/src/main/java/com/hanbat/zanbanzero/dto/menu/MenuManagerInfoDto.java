@@ -20,7 +20,7 @@ public class MenuManagerInfoDto {
     private String info;
     private String details;
 
-    public static MenuManagerInfoDto createMenuManagerInfoDto(Menu menu, MenuInfo menuInfo) {
+    public static MenuManagerInfoDto of(Menu menu, MenuInfo menuInfo) {
         return new MenuManagerInfoDto(
                 menu.getId(),
                 menu.getName(),

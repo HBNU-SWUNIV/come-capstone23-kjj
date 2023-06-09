@@ -20,7 +20,7 @@ public class UserMypage {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    private User users;
+    private User user;
 
     private String coupon;
     private int point;

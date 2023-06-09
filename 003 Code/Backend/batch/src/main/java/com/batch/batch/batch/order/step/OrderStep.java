@@ -1,8 +1,8 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.tasklet.CountOrdersByDateTasklet;
-import com.batch.batch.batch.order.tasklet.CreateLeftoverPre;
-import com.batch.batch.batch.order.tasklet.CreateTodayOrderTasklet;
+import com.batch.batch.batch.order.task.CountOrdersByDateTasklet;
+import com.batch.batch.batch.order.task.CreateLeftoverPreTasklet;
+import com.batch.batch.batch.order.task.CreateTodayOrder;
 import com.batch.batch.pojo.Order;
 import com.batch.batch.pojo.UserPolicy;
 import org.springframework.batch.core.Step;
@@ -23,14 +23,14 @@ import javax.sql.DataSource;
 public class OrderStep {
 
     private final DataSource dataDataSource;
-    private final CreateTodayOrderTasklet createTodayOrderTasklet;
+    private final CreateTodayOrder createTodayOrder;
     private final JdbcCursorItemReader<UserPolicy> itemReader;
     private final ItemProcessor<UserPolicy, Order> itemProcessor;
     private final ItemWriter<Order> itemWriter;
 
-    public OrderStep(@Qualifier("dataDataSource") DataSource dataDataSource, CreateTodayOrderTasklet createTodayOrderTasklet, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
+    public OrderStep(@Qualifier("dataDataSource") DataSource dataDataSource, CreateTodayOrder createTodayOrder, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
         this.dataDataSource = dataDataSource;
-        this.createTodayOrderTasklet = createTodayOrderTasklet;
+        this.createTodayOrder = createTodayOrder;
         this.itemReader = itemReader;
         this.itemProcessor = itemProcessor;
         this.itemWriter = itemWriter;
@@ -48,7 +48,7 @@ public class OrderStep {
 
     @Bean
     public Step countOrdersByDateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CountOrdersByDateTasklet(dataDataSource, createTodayOrderTasklet);
+        Tasklet tasklet = new CountOrdersByDateTasklet(dataDataSource, createTodayOrder);
         return new StepBuilder("countOrdersByDateStep", jobRepository)
                 .tasklet(tasklet, transactionManager)
                 .allowStartIfComplete(true)
@@ -57,7 +57,7 @@ public class OrderStep {
 
     @Bean
     public Step createLeftoverPre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreateLeftoverPre(dataDataSource);
+        Tasklet tasklet = new CreateLeftoverPreTasklet(dataDataSource);
         return new StepBuilder("createLeftoverPre", jobRepository)
                 .tasklet(tasklet, transactionManager)
                 .allowStartIfComplete(true)

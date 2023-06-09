@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.entity.leftover;
 
 import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
-import com.hanbat.zanbanzero.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,7 +22,7 @@ public class Leftover {
 
     private double leftover;
 
-    public static Leftover createLeftover(LeftoverPre leftoverPre, LeftoverDto dto) {
+    public static Leftover of(LeftoverPre leftoverPre, LeftoverDto dto) {
         return new Leftover(null, leftoverPre, dto.getLeftover());
     }
 

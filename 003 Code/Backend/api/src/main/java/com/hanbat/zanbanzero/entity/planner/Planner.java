@@ -25,7 +25,7 @@ public class Planner {
     private String date;
     private String menus;
 
-    public static Planner createPlanner(PlannerDto dto, Menu menu){
+    public static Planner of(PlannerDto dto, Menu menu){
         return new Planner(
                 null,
                 menu,

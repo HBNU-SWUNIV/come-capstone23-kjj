@@ -13,7 +13,7 @@ public class PlannerDto {
     private String date;
     private String menus;
 
-    public static PlannerDto createPlannerDto(Planner planner){
+    public static PlannerDto of(Planner planner){
         return new PlannerDto(
                 DateTools.makeResponseDateFormatString(planner.getDate()),
                 planner.getMenus()

@@ -23,7 +23,6 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserRepository userRepository;
     private final CorsFilter corsFilter;
     private final AuthenticationManagerImpl authenticationManager;
 

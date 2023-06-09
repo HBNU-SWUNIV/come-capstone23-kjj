@@ -18,10 +18,10 @@ public class ExceptionHandlerBeforeBasicAuthentication extends OncePerRequestFil
             filterChain.doFilter(request, response);
         }
         catch (IOException e) {
-            SetFilterException.setResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR, "토큰이 없거나 잘못되었습니다.");
+            SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED, "토큰이 없거나 잘못되었습니다.");
         }
         catch (TokenExpiredException e) {
-            SetFilterException.setResponse(request, response, HttpStatus.INTERNAL_SERVER_ERROR, "만료된 토큰입니다.");
+            SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
         }
     }
 }

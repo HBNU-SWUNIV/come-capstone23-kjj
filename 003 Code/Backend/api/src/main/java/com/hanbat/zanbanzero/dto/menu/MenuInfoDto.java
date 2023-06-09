@@ -19,7 +19,7 @@ public class MenuInfoDto {
     private String info;
     private String details;
 
-    public static MenuInfoDto createMenuDto(MenuInfo menu) {
+    public static MenuInfoDto of(MenuInfo menu) {
         return new MenuInfoDto(
                 menu.getId(),
                 menu.getMenu().getName(),
