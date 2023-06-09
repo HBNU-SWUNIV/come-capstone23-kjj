@@ -1,10 +1,12 @@
 import { addMonths, subMonths, format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays } from 'date-fns';
 import React, { useState, useEffect } from "react";
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
-import { useMatch, useNavigate, useParams } from 'react-router-dom';
+import { useMatch, useNavigate } from 'react-router-dom';
 import shortid from 'shortid';
 import Switch from 'react-switch';
 import axios from "axios";
+import { useSelector } from "react-redux";
+import Select from 'react-select';
 
 
 const ArrowCSS = { color: '#969696', fontSize: '20px' };
@@ -123,7 +125,7 @@ const infoBox = {
 const WriteWrapper = {
     width: '70%',
     borderRadius: '15px',
-    height: '25vh',
+    height: 'auto',
     margin: '0 auto',
     position: 'fixed',
     marginTop: '40%',
@@ -144,15 +146,81 @@ const WriteTitle = {
 
 const WriteInfo = {
     width: '70%',
-    height: '15vh',
-    display: 'flex',
+    height: 'auto',
+    marginBottom: '10px',
+    marginTop: '5px',
     justifyContent: 'center',
     whiteSpace: 'pre-wrap',
     textAlign: 'center',
 };
 
+const saveButton = {
+    marginTop: '10px',
+    marginRight: '10px',
+    marginBottom: '20px',
+    background: '#6782e0',
+    color: 'white',
+    borderRadius: '10px'
+};
+
+const aquaticCreatures = [
+    { label: '백반', value: '0' },
+    { label: '촌돼지 김치찌개', value: '1' },
+    { label: '가마치통닭', value: '2' },
+    { label: '부대찌개', value: '3' },
+];
+
+const selectStyles = {
+    control: (provided, state) => ({
+        ...provided,
+        width: '200px',
+        marginBottom: '10px',
+    }),
+};
 
 function Calendar() {
+    const userid = useSelector(state => state.username.userid);
+    const [activeDays, setActiveDays] = useState([]);
+    const [menus, setMenus] = useState([]);
+
+    const daysOfWeek = {
+        monday: '월',
+        tuesday: '화',
+        wednesday: '수',
+        thursday: '목',
+        friday: '금',
+    };
+
+    const ActiveDays = ({ activeDays }) => {
+        const activeDayLabels = Object.entries(activeDays)
+            .filter(([_, isActive]) => isActive)
+            .map(([day]) => daysOfWeek[day]);
+
+        return (
+            <p style={{ fontSize: '12px', marginBottom: '2px' }}>
+                현재 이용일: {activeDayLabels.join(' ')}
+            </p>
+        );
+    };
+
+
+
+    useEffect(() => {
+        axios
+            .get(`/api/user/${userid}/policy/date`)
+            .then(res => {
+                setActiveDays(res.data);
+            })
+            .catch(error => {
+                console.error("Failed to get user policy date:", error);
+            });
+
+        axios.get(`/api/manager/menu`)
+            .then(res => setMenus(res.data))
+    }, []);
+
+
+    //메뉴 조희
     const [todayMenu, setTodayMenu] = useState([]);
     const DayPathMatch = useMatch('/calendar/:id');
 
@@ -213,10 +281,26 @@ function Calendar() {
     let dayss = [];
     let line = [];
 
-    //const DayPathMatch = useMatch('/calendar/:id');
     const onDay = (id) => {
         navigate(`/calendar/${id}`);
     }
+
+
+    //휴무일 조회
+    const [storeoff, setStoreoff] = useState([]);
+
+    useEffect(() => {
+        axios.get(`/api/manager/store/off/${format(currentMonth, 'yyyy')}/${format(currentMonth, 'MM')}`)
+            .then(res => setStoreoff(res.data))
+    }, [])
+
+    function isHoliday(day) {
+        const holidayDates = storeoff.filter(item => item.off).map(item => item.date);
+        const formattedDay = format(day, 'yyyyMMdd');
+
+        return holidayDates.includes(formattedDay);
+    }
+
 
     while (day <= endDate) {
         for (let i = 0; i < 7; i++) {
@@ -224,13 +308,43 @@ function Calendar() {
             const id = format(day, 'yyyyMMdd').toString();
             if (format(monthStart, 'M') !== format(day, 'M')) {
                 dayss.push(
-                    <div style={{ ...DivDay, backgroundColor: '#c2bebe' }} key={shortid.generate()}>
+                    <div style={{ ...DivDay, backgroundColor: '#c2bebe' }} key={shortid.generate()} >
                         <span style={{ fontSize: '13px', color: '#666464', margin: '5px 5px' }}>{formattedDate}</span>
                     </div>
                 );
             } else {
+                let backgroundColor = '#f7dfc8'; //기본 배경색
+
+                if (i >= 1 && i <= 5) {
+                    const dayIndex = i - 1;
+                    if (Object.values(activeDays)[dayIndex] || checkedStates[id]) {  //이용일 배경색
+                        backgroundColor = '#e0f7c8';
+                        //checkedStates[id] = true;
+                    }
+
+                    // const activeDayValue = Object.values(activeDays)[dayIndex];
+                    // checkedStates[id] = activeDayValue;
+
+                    // if (checkedStates[id]) {
+                    //     backgroundColor = '#e0f7c8';
+                    // }
+
+
+                } if ((i === 0 || i === 6) || isHoliday(day)) {  //휴무 배경색
+                    backgroundColor = '#dec8f7';
+                }
+
                 dayss.push(
-                    <div style={{ ...DivDay, backgroundColor: checkedStates[id] ? '#e0f7c8' : (i === 0 || i === 6 ? '#dec8f7' : '#f7dfc8') }} onClick={() => onDay(id)} key={shortid.generate()}>
+                    //<div style={{ ...DivDay, backgroundColor: checkedStates[id] ? '#e0f7c8' : (i === 0 || i === 6 ? '#dec8f7' : '#f7dfc8') }} onClick={() => onDay(id)} key={shortid.generate()}>
+                    <div
+                        style={{
+                            ...DivDay,
+                            backgroundColor: backgroundColor,
+                            pointerEvents: isHoliday(day) || (i === 0 || i === 6) ? 'none' : 'auto'
+                        }}
+                        onClick={() => (!isHoliday(day) && !(i === 0 || i === 6)) && onDay(id)}
+                        key={shortid.generate()}
+                    >
                         <span>{formattedDate}</span>
                     </div>
                 );
@@ -253,11 +367,35 @@ function Calendar() {
         setCurrentMonth(addMonths(currentMonth, 1));
     };
 
+
+    //리스트
+    const [selectedOption, setSelectedOption] = useState(aquaticCreatures[0]);
+
+    const handleListChange = (selectedOption) => {
+        setSelectedOption(selectedOption);
+    };
+
+    const WriteInfo0 = {
+        display: selectedOption.value === '0' ? 'block' : 'none',
+    };
+
+    const WriteInfo1 = {
+        display: selectedOption.value === '1' ? 'block' : 'none',
+    };
+
+    const WriteInfo2 = {
+        display: selectedOption.value === '2' ? 'block' : 'none',
+    };
+
+    const WriteInfo3 = {
+        display: selectedOption.value === '3' ? 'block' : 'none',
+    };
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <p style={{ fontWeight: 'bold', marginBottom: '20px' }}>요일을 클릭하여 이용일을 수정할 수 있어요.</p>
             <div>
-                <p style={{ fontSize: '12px', marginBottom: '2px' }}>현재 이용일:</p>
+                <ActiveDays activeDays={activeDays} />
                 <div style={Wrapper}>
                     <div style={{ ...HeaderW, fontSize: '20px' }}>
                         <AiOutlineLeft style={{ ...ArrowCSS, marginLeft: '20px' }} onClick={prevMonth} />
@@ -284,14 +422,49 @@ function Calendar() {
                             uncheckedIcon={false}
                         />
                     </div>
+                    <div>
+                        <Select
+                            options={aquaticCreatures}
+                            value={selectedOption}
+                            onChange={handleListChange}
+                            styles={selectStyles}
+                        />
+                    </div>
                     <div style={WriteInfo}>
-                        <p style={{margin: 0}}>{todayMenu}</p>
+                        <div style={WriteInfo0}>
+                            <p style={{ margin: 0, fontWeight: 'bold' }}>식단표</p>
+                            <p style={{ margin: 0 }}>{todayMenu}</p>
+                        </div>
+                        <div style={WriteInfo1}>
+                            <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[1]?.name}</p>
+                            <p style={{ marginTop: 0 }}>{menus[1]?.cost}원</p>
+                            <div style={{ textAlign: 'left' }}>
+                                <p style={{ margin: 0 }}>{menus[1]?.details}</p>
+                                <p style={{ margin: 0 }}>{menus[1]?.info}</p>
+                            </div>
+                        </div>
+                        <div style={WriteInfo2}>
+                            <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[2]?.name}</p>
+                            <p style={{ marginTop: 0 }}>{menus[2]?.cost}원</p>
+                            <div style={{ textAlign: 'left' }}>
+                                <p style={{ margin: 0 }}>{menus[2]?.details}</p>
+                                <p style={{ margin: 0 }}>{menus[2]?.info}</p>
+                            </div>
+                        </div>
+                        <div style={WriteInfo3}>
+                        <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[3]?.name}</p>
+                            <p style={{ marginTop: 0 }}>{menus[3]?.cost}원</p>
+                            <div style={{ textAlign: 'left' }}>
+                                <p style={{ margin: 0 }}>{menus[3]?.details}</p>
+                                <p style={{ margin: 0 }}>{menus[3]?.info}</p>
+                            </div>
+                        </div>
                     </div>
                     <div>
-                        <button style={{ marginRight: '10px' }} onClick={() => { setOriginalCheckedStates(checkedStates); navigate('/calendar'); }}>
+                        <button style={saveButton} onClick={() => { setOriginalCheckedStates(checkedStates); navigate('/calendar'); }}>
                             저장
                         </button>
-                        <button onClick={() => { handleCancel(); navigate('/calendar') }}>
+                        <button style={{ background: '#e07967', color: 'white', borderRadius: '10px' }} onClick={() => { handleCancel(); navigate('/calendar') }}>
                             취소
                         </button>
                     </div>

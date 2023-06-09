@@ -29,8 +29,6 @@ const Home = () => {
     const DetailPathMatch = useMatch('/home/:id');
     const DetailPath = DetailPathMatch?.params.id && menus.find(data => data.id == DetailPathMatch.params.id)
 
-    const [test, setTest] = useState([]);
-
     useEffect(() => {
         axios.get(`/api/user/planner/${t_year}/${t_month}/${t_day}`)
             .then(res => setTodayMenu(res.data.menus))
@@ -42,7 +40,6 @@ const Home = () => {
             .get(`/api/user/${userid}/policy/date`)
             .then(res => {
                 console.log("요청이 발생했습니다:", res.data);
-                setTest(res.data)
                 // 받아온 데이터를 사용하여 상태를 업데이트
                 const receivedActiveDays = Object.values(res.data);
                 setActiveDays(receivedActiveDays);
@@ -184,6 +181,7 @@ const Home = () => {
         const menuDiv = document.getElementById('menu');
         const weekDays = [...document.querySelectorAll('.weekday')];
 
+        //receivedActiveDays이걸 추가해야될거 같은데
         const updatedActiveDays = [];
         weekDays.forEach((day) => {
             updatedActiveDays.push(day.classList.contains('active'));
@@ -195,69 +193,49 @@ const Home = () => {
         nextusedateDiv.style.display = 'block';
         menuDiv.style.display = 'block';
 
-        
-        axios.patch(`/api/user/${userid}/date`, { setActiveDays: updatedActiveDays }, {
+        const activeDaysObject = {
+            monday: updatedActiveDays[0],
+            tuesday: updatedActiveDays[1],
+            wednesday: updatedActiveDays[2],
+            thursday: updatedActiveDays[3],
+            friday: updatedActiveDays[4],
+        };
+
+        axios.patch(`/api/user/${userid}/policy/date`, activeDaysObject, {
             headers: {
                 "Content-Type": "application/json",
             },
         })
             .then(() => {
+                console.log("패치 성공");
                 axios.get(`/api/user/${userid}/policy/date`)
                     .then(res => {
+                        console.log("겟 성공");
                         const receivedActiveDays = Object.values(res.data);
                         setActiveDays(receivedActiveDays);
                     })
                     .catch(error => {
-                        console.error("사용자 정책 날짜 가져오기 실패:", error);
+                        console.error("겟 실패:", error);
                     });
             })
             .catch(error => {
-                console.error("사용자 날짜 업데이트 실패:", error);
+                console.error("패치 실패:", error);
             });
     };
 
-    // //이용일 수정
-    // const [isMonday, setIsMonday] = useState(false);
-    // const [isTuesday, setIsTuesday] = useState(false);
-    // const [isWednesday, setIsWednesday] = useState(false);
-    // const [isThursday, setIsThursday] = useState(false);
-    // const [isFriday, setIsFriday] = useState(false);
 
-    // const onUsedate = () => {
-    //     const data = savedData.find(sd => sd.id === id) || {}; // 주어진 id에 해당하는 데이터 가져오기
+    const handleUsedatesetCancleClick = () => {
+        const usedatesetDiv = document.getElementById('usedateset');
+        const usedateDiv = document.getElementById('usedate');
+        const nextusedateDiv = document.getElementById('nextusedate');
+        const menuDiv = document.getElementById('menu');
 
-    //     let monday = data.monday || false; // 값이 있으면 사용하고, 없으면 false로 기본값 설정
-    //     let tuesday = data.tuesday || false;
-    //     let wednesday = data.wednesday || false;
-    //     let thursday = data.thursday || false;
-    //     let friday = data.friday || false;
+        usedatesetDiv.style.display = 'none';
+        usedateDiv.style.display = 'block';
+        nextusedateDiv.style.display = 'block';
+        menuDiv.style.display = 'block';
 
-    //     const requestData = {
-    //         monday: monday ? true : isMonday,
-    //         tuesday: tuesday ? true : isTuesday,
-    //         wednesday: wednesday ? true : isWednesday,
-    //         thursday: thursday ? true : isThursday,
-    //         friday: friday ? true : isFriday,
-    //       };
-
-    // axios
-    //     .patch(`/api/user/${id}/date`,requestData , {
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     })
-    //     .then(() => {
-    //         axios
-    //             .get(`/api/user/${userid}/policy/date`)
-    //             .then(res => { const receivedActiveDays = res.data.activeDays; })
-    //             .catch(error => {
-    //                 console.error("사용자 정책 날짜 가져오기 실패:", error);
-    //             });
-    //     })
-    //     .catch(error => {
-    //         console.error("사용자 날짜 업데이트 실패:", error);
-    //     });
-    // }
+    };
 
     const weekstyle = active => ({
         borderRadius: '50%',
@@ -346,8 +324,8 @@ const Home = () => {
                         <div key="friday" style={weekstyle(activeDays[4])} className="weekday" onClick={() => toggleDay(4)}>금</div>
                     </div>
                     <div>
-                        <button id="save" style={{ ...savecancelbtn, marginRight: '10px', backgroundColor: '#7b92e0' }} onClick={handleUsedatesetSaveClick}>저장</button>
-                        <button id="cancel" style={{ ...savecancelbtn, backgroundColor: '#F16A1D' }} onClick={handleUsedatesetSaveClick}>취소</button>
+                        <button id="save" style={{ ...savecancelbtn, marginRight: '10px', backgroundColor: '#6782e0', color: 'white' }} onClick={handleUsedatesetSaveClick}>저장</button>
+                        <button id="cancel" style={{ ...savecancelbtn, backgroundColor: '#e07967', color: 'white' }} onClick={handleUsedatesetCancleClick}>취소</button>
                     </div>
                 </div>
             </div>
@@ -375,7 +353,7 @@ const Home = () => {
                                 >
                                     <img
                                         style={{ maxWidth: '100%', height: 'auto' }}
-                                        src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=${s_menu.image}`}
+                                        src={s_menu.image ? `http://kjj.kjj.r-e.kr:8080/api/image?dir=${s_menu.image}` : food_icon}
                                         alt="이미지 없음"
                                     />
                                     <p style={{ fontSize: '15px', fontWeight: 'bold' }}>{s_menu.name}</p>

@@ -143,9 +143,9 @@ function My() {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            {/* <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Link to='/MyUse' style={buttonStyle}>이용내역 상세조회</Link>
-            </div>
+            </div> */}
 
         </div>
     );
