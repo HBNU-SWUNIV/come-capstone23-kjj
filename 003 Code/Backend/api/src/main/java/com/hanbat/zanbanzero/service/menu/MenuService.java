@@ -1,5 +1,7 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
@@ -25,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,6 +83,23 @@ public class MenuService {
     public void addFood(Long id, String data) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         menuFoodRepository.save(MenuFood.of(menu, data));
+    }
+
+    public Map<String, Integer> getFood(Long id) throws CantFindByIdException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        String result = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new).getFood();
+        return objectMapper.readValue(result, Map.class);
+    }
+
+    @Transactional
+    public Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        Map<String, Integer> old = objectMapper.readValue(menuFood.getFood(), Map.class);
+        old.putAll(map);
+
+        menuFood.setFood(objectMapper.writeValueAsString(old));
+        return old;
     }
 
     @Transactional

@@ -104,12 +104,13 @@ public class CreateCalculatePreTasklet implements Tasklet {
         return result;
     }
 
-    private void savePredictData(Connection connection, Long id, int predictUser, String predictFood) throws SQLException {
-        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food) value(?, ?, ?)";
+    private void savePredictData(Connection connection, Long id, int predictUser, String predictFood, String predictMenu) throws SQLException {
+        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food, predict_menu) value(?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             statement.setInt(2, predictUser);
             statement.setString(3, predictFood);
+            statement.setString(4, predictMenu);
             statement.executeUpdate();
         }
     }
@@ -135,7 +136,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Integer> predict = getPredictFood(connection, result);
         log.info("execute - getPredictFood END: " + predict);
-        savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict));
+        savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict), objectMapper.writeValueAsString(result));
 
         connection.close();
         clear();

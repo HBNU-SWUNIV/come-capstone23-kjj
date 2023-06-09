@@ -20,6 +20,10 @@ public class MenuFood {
 
     private String food;
 
+    public void setFood(String food) {
+        this.food = food;
+    }
+
     public static MenuFood of(Menu menu, String food) {
         return new MenuFood(
                 null,

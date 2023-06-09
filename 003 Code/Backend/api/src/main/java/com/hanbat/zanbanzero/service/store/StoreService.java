@@ -1,16 +1,20 @@
 package com.hanbat.zanbanzero.service.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
+import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
+import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
@@ -23,6 +27,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -33,6 +38,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final CalculateRepository calculateRepository;
     private final CalculateMenuRepository calculateMenuRepository;
+    private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
 
     private final Long finalId = 1L;
@@ -128,5 +134,31 @@ public class StoreService {
         return storeStateRepository.findAllByDateBetween(start, end).stream()
                 .map(StoreStateDto::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Integer getCalculatePreUser() {
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        Integer result = calculatePre.getPredictUser();
+
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Integer> getCalculatePreFood() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        Map<String, Integer> result = objectMapper.readValue(calculatePre.getPredictFood(), Map.class);
+
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Integer> getCalculatePreMenu() throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        Map<String, Integer> result = objectMapper.readValue(calculatePre.getPredictMenu(), Map.class);
+
+        return result;
     }
 }

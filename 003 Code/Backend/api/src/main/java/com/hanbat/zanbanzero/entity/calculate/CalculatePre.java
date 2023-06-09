@@ -20,4 +20,5 @@ public class CalculatePre {
 
     private Integer predictUser;
     private String predictFood;
+    private String predictMenu;
 }

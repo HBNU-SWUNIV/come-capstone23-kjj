@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.controller.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreOffDto;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -95,5 +97,23 @@ public class StoreManagerApiController {
         if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
         List<StoreStateDto> result = storeService.getClosedDays(year, month);
         return ResponseEntity.ok().body(result);
+    }
+
+    @Operation(summary="익일 예측 이용자 수", description = "10시 30분 10초마다 갱신")
+    @GetMapping("state/predict/user")
+    public ResponseEntity<Integer> getCalculatePreUser() {
+        return ResponseEntity.ok().body(storeService.getCalculatePreUser());
+    }
+
+    @Operation(summary="익일 예측 식쟤료 소비량 데이터 조회", description = "10시 30분 10초마다 갱신")
+    @GetMapping("state/predict/food")
+    public ResponseEntity<Map<String, Integer>> getCalculatePreFood() throws JsonProcessingException {
+        return ResponseEntity.ok().body(storeService.getCalculatePreFood());
+    }
+
+    @Operation(summary="익일 예측 메뉴별 판매량 조회", description = "10시 30분 10초마다 갱신")
+    @GetMapping("state/predict/menu")
+    public ResponseEntity<Map<String, Integer>> getCalculatePreMenu() throws JsonProcessingException {
+        return ResponseEntity.ok().body(storeService.getCalculatePreMenu());
     }
 }

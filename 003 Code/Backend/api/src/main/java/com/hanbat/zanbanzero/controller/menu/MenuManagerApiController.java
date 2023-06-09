@@ -77,6 +77,18 @@ public class MenuManagerApiController {
         return ResponseEntity.status(HttpStatus.OK).body("등록되었습니다.");
     }
 
+    @Operation(summary="관리자 - 식자재 정보 조회")
+    @GetMapping("menu/{id}/food")
+    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
+        return ResponseEntity.status(HttpStatus.OK).body(menuService.getFood(id));
+    }
+
+    @Operation(summary="관리자 - 식자재 정보 수정")
+    @PatchMapping("menu/{id}/food")
+    public ResponseEntity<Map<String, Integer>> updateFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
+        return ResponseEntity.status(HttpStatus.OK).body(menuService.updateFood(id, data));
+    }
+
     @Operation(summary="관리자 - 메뉴 수정")
     @PatchMapping("menu/{id}")
     public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, SameNameException {
