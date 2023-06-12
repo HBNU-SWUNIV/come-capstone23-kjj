@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.service.order;
 
-import com.hanbat.zanbanzero.repository.order.OrderDetailsRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,6 @@ class OrderServiceTest {
 
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    OrderDetailsRepository orderDetailsRepository;
 
     @BeforeEach
     void setup() {

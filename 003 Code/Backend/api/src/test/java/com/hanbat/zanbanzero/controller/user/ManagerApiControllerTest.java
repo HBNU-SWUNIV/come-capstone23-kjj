@@ -2,7 +2,6 @@ package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.dto.user.manager.ManagerDto;
 import com.hanbat.zanbanzero.service.user.ManagerService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -23,15 +22,13 @@ class ManagerApiControllerTest extends ControllerTestClass {
     @MockBean
     private ManagerService managerService;
 
-    private final ManagerDto dto = new ManagerDto(1L,"test manager", "1234", null);
-
     @Test
     void getInfo() throws Exception{
         ManagerInfoDto managerInfoDto = new ManagerInfoDto();
         Mockito.when(managerService.getInfo()).thenReturn(managerInfoDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/info")
-                        .content(objectMapper.writeValueAsString(dto))
+                        .content(objectMapper.writeValueAsString(null))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(managerInfoDto)));

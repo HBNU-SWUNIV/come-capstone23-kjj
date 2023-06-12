@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Index;
 
 @Entity
 @Getter
@@ -17,6 +18,7 @@ public class StoreState {
     @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
 
+    @Index(name = "store_state_date_index")
     private String date;
     private Boolean off;
 

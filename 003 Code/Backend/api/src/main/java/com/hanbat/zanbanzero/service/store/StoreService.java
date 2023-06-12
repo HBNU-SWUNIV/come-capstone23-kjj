@@ -127,7 +127,7 @@ public class StoreService {
         else storeState.setOff(off);
     }
 
-    public List<StoreStateDto> getClosedDays(int year, int month) throws WrongParameter {
+    public List<StoreStateDto> getClosedDays(int year, int month) {
         String start = DateTools.makeResponseDateFormatString(year, month, 1);
         String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 

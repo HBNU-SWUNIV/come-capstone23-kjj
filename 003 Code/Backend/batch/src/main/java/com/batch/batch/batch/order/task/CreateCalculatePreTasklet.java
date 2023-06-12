@@ -26,7 +26,16 @@ public class CreateCalculatePreTasklet implements Tasklet {
     private static Map<Long, String> menuIdToNameMap = new HashMap<>();
     private static Map<String, Long> menuNameToIdMap = new HashMap<>();
 
-    private Long calculateCheck(Connection connection, String today) throws Exception {
+    private Long calculateCheck(Connection connection, String today, String day) throws Exception {
+        if (day.equals("monday")) {
+            String query = "insert into calculate(date, today, sales) values(?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, today);
+                statement.setInt(2, 0);
+                statement.setInt(3, 0);
+                statement.executeUpdate();
+            }
+        }
         String query = "select id from calculate where date = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, today);
@@ -105,7 +114,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
     }
 
     private void savePredictData(Connection connection, Long id, int predictUser, String predictFood, String predictMenu) throws SQLException {
-        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food, predict_menu) value(?, ?, ?, ?)";
+        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food, predict_menu) values(?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             statement.setInt(2, predictUser);
@@ -120,7 +129,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         Connection connection = dataSource.getConnection();
         JobParameters jobParameters = contribution.getStepExecution().getJobParameters();
 
-        Long calculateId = calculateCheck(connection, jobParameters.getString("today"));
+        Long calculateId = calculateCheck(connection, jobParameters.getString("today"), jobParameters.getString("day"));
         if (calculateId == null) {
             log.error("CreateCalculatePreTasklet - No calculate Data!");
             return null;
