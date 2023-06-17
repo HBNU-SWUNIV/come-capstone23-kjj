@@ -37,7 +37,7 @@ function Backban(){
     return(
         <>
         <Wrapper>
-            <Navtop pages={'백반 관리'}/>
+            <Navtop pages={'오늘의 메뉴'}/>
             <span style={{position:'relative',fontWeight:'400',fontSize:'22px',marginLeft:'30px',color:'#7BE457'}}>요일을 클릭해서 식단표를 작성해주세요!</span>
             <Tip>
                 <li>식단을 등록하면 소비자가 확인할 수 있어요!</li>

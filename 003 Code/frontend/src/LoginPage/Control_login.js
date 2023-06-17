@@ -1,4 +1,5 @@
 import Login from "./Login";
+import NotSetting from "./NotSetting";
 
 function Control_login(){
     return(

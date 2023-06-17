@@ -138,7 +138,7 @@ function NotSetting(){
         <Wrapper>
             <LoginW>
                 <Title>
-                    <span>잔반제로</span>
+                    <span>식재료 절약단</span>
                     <span>초기 설정</span>
                 </Title>
                 <Text>

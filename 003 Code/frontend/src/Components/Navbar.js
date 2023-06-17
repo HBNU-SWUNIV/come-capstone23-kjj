@@ -6,12 +6,18 @@ import { BsFillBarChartFill } from "react-icons/bs";
 import { AiOutlineSetting, AiTwotoneSetting} from "react-icons/ai";
 import {useLocation, useNavigate} from 'react-router-dom';
 import { IoCalendarNumberOutline,IoCalendarNumber,IoFastFoodOutline,IoFastFoodSharp } from "react-icons/io5";
-
+import imagesrc from '../image/icon.png'
 
 const Wrapper = styled.div`
     width:15vw;
     height:170vh;
     border:1px solid #DDDDDD;
+    position:fixed;
+`
+
+const PWrapper = styled.div`
+    width:15vw;
+    height:170vh;
 `
 
 const Image = styled.button`
@@ -50,12 +56,11 @@ const Menus = styled.div`
     justify-content:space-evenly;
     align-items:center;
     div{
-        margin-left:40px;
         display:flex;
         justify-content:flex-between;
         align-items:center;
-        width:10vw;
-        height:4vh;
+        width:20vw;
+        height:7vh;
         border-radius:15px;
         font-size:17px;
         color:#0C4284;
@@ -67,16 +72,16 @@ const Menus = styled.div`
         margin-left:20px;
     }
     div:first-child{
-        width:4vw;
-        margin-left:-45px;
+        width:10vw;
+        // margin-left:-45px;
     }
     div:nth-child(2),div:nth-child(3){
-        width:8vw;
-        margin-left:10px;
+        width:10vw;
+        // margin-left:10px;
     }
     div:last-child{
-        width:5vw;
-        margin-left:-32px;
+        width:10vw;
+        // margin-left:-32px;
     }
 `
 
@@ -86,14 +91,16 @@ function Navbar(){
     const nowPath = location.pathname;
 
     return(
-       <Wrapper>
+        <>
+         <Wrapper>
             <Title>
-                <Image>default Image</Image>
+                {/* <Image>default Image</Image> */}
+                <img src={imagesrc} />
                 <span
-                style={{marginLeft:'-40px',fontSize:'30px'}}>
-                    잔반제로
+                style={{fontSize:'30px'}}>
+                    식재료 절약단
                 </span>
-                <span>수요 관리 시스템</span>
+                {/* <span>수요 관리 시스템</span> */}
             </Title>
             <Menus>
                 <div onClick={() => {navigate('/home')}}
@@ -105,13 +112,13 @@ function Navbar(){
                 <div onClick={() => {navigate('/menu')}}
                      style={{backgroundColor:`${nowPath.startsWith('/menu') ?'#DAE9FC':'white'}`}}>
                     {nowPath.startsWith('/menu') ? <IoFastFoodSharp style={{fontSize:'20px'}}/> : <IoFastFoodOutline style={{fontSize:'20px'}}/>}
-                    <span>메뉴 관리</span>
+                    <span>사이드 메뉴</span>
                 </div>
 
                 <div onClick={() => {navigate('/backban')}}
                     style={{backgroundColor:`${nowPath.startsWith('/backban')?'#DAE9FC':'white'}`}}>
                      {nowPath.startsWith('/backban')? <IoCalendarNumber style={{fontSize:'20px'}}/> : <IoCalendarNumberOutline style={{fontSize:'20px'}}/>}
-                    <span>백반 관리</span>
+                    <span>오늘의 메뉴</span>
                 </div>
 
                 <div onClick={() => {navigate('/setting')}}
@@ -121,6 +128,9 @@ function Navbar(){
                 </div>
             </Menus>
        </Wrapper>
+        <PWrapper/>
+        </>
+      
     )
 }
 

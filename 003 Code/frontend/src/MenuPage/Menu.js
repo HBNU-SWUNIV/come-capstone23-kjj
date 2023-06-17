@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import Button from 'react-bootstrap/Button';
 import { useRef } from "react";
 
-const hr_style = {color:'#a9a9a9',width:'34vw', marginLeft:'-1vw'};
+const hr_style = {color:'#a9a9a9',width:'60vw', marginLeft:'-1vw'};
 
 const Wrapper = styled.div`
 display:flex;
@@ -105,12 +105,16 @@ const Itemfinal = styled.div`
     width:10vw;
     height:15vh;
     display:flex;
-    justify-content:center;
-    align-items:flex-end;
+    flex-direction:column;
+    justify-content:flex-end;
+    align-items:center;
     button{
         width:7vw;
         height:4vh;
         margin-bottom:5px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
         color:white;
         border-radius:5px;
     }
@@ -157,7 +161,7 @@ const CheckDelete_btn = styled.div`
 `;
 const UpdateWrapper = styled.div`
     z-index:1;
-    width:34vw;
+    width:40vw;
     height:80vh;
     border-radius:15px;
     background-color:white;
@@ -184,7 +188,7 @@ const UpdateWrapper = styled.div`
     }
 `;
 const UpdateTitle = styled.div`
-    width:34vw;
+    width:40vw;
     margin-top:-1.2px;
     height:10vh;
     border-top-left-radius:15px;
@@ -200,7 +204,7 @@ const UpdateTitle = styled.div`
     }
 `;
 const UpdateText = styled.form`
-    width:32vw;
+    width:40vw;
     height:25vh;
     display:flex;
     flex-direction:column;
@@ -208,7 +212,7 @@ const UpdateText = styled.form`
     align-items:center;
     margin-top:2vh;
     div{
-        width:28vw;
+        width:38vw;
         height:10vh;
         display:flex;
         justify-content:space-between;
@@ -226,13 +230,38 @@ const UpdateText = styled.form`
         }
     }
 `;
+const 식재료Wrapper = styled.div`
+    width:38vw;
+    height:20vh;
+    display:flex;
+    margin-top:-30vh;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+    div{
+        width:38vw;
+        height:10vh;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        span{
+            font-size:15px;
+            font-weight:600;
+            color:#A5A5A5;
+        }
+        input{
+            width:12vw;
+            height:5vh;
+        }
+    }
+
+`
 const UpdateImg = styled.div`
-    width:32vw;
-    height:17vh;
+    width:38vw;
+    height:13vh;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    margin-top:5vh;
     input{
         width:15vw;
         height:5vh;
@@ -251,7 +280,7 @@ border:1px solid #979797;
 margin-left:20px;
 `;
 const Updatebackban = styled.div`
-    width:32vw;
+    width:35vw;
     height:10vh;
     display:flex;
     justify-content:space-between;
@@ -272,8 +301,6 @@ const Updatebackban_text = styled.div`
     }
 `;
 
-
-
 function Menu(){
     const User = useSelector(state => state.User)
 
@@ -281,12 +308,13 @@ function Menu(){
     const [isLoading, setIsLoading] = useState(true);
     const [savedData, setSaveddata] = useState([]);
     
-    const deletePathMatch = useMatch('/menu/:deleteId'),UpdatePathMatch = useMatch('/menu/update/:updateId');
+    const deletePathMatch = useMatch('/menu/:deleteId'),
+    UpdatePathMatch = useMatch('/menu/update/:updateId'),
+    식재료PathMatch = useMatch('/menu/sick/:sickId');
     
     const [isSickdan, setIsSickdan] = useState(false);
     const [isBackban, setIsbackban] = useState(false);
     
-
     const [image, setImage] = useState([]);
 
     useEffect(() => {
@@ -300,7 +328,9 @@ function Menu(){
 
     const DeletePath = deletePathMatch?.params.deleteId && savedData?.find(data => data.id == deletePathMatch.params.deleteId);
     const UpdatePath = UpdatePathMatch?.params.updateId && savedData?.find(data => data.id == UpdatePathMatch.params.updateId);
-    
+    const 식재료Path = 식재료PathMatch?.params.sickId && savedData?.find(data => data.id == 식재료PathMatch.params.sickId);
+
+
     const on품절 = (id) => {
         axios.patch(`/api/manager/menu/${id}/sold/n`)
         .then(()=>{
@@ -316,41 +346,80 @@ function Menu(){
         })
     };
 
-    
     const nameRef = useRef('');
     const costRef = useRef('');
-    const infoRef = useRef('');
     const detailsRef = useRef('');
+
+    const [inputfields, setInputfields] = useState([{key:'', value:''}])
+    
+    const handleInputChange = (index, e) => {
+        const { name, value } = e.target;
+        const fields = [...inputfields];
+        fields[index][name] = value;
+        setInputfields(fields);
+      };
+    
+      const handleAddFields = (e) => {
+        e.preventDefault();
+        setInputfields([...inputfields, { key: '', value: '' }]);
+      };
+    
+      const handleRemoveFields = (index) => {
+        
+        const fields = [...inputfields];
+        fields.splice(index, 1);
+        setInputfields(fields);
+      };
+
+      
+
+      const handleSubmit = (id) => {
+        const body = {};
+    
+        inputfields.forEach((field) => {
+          const { key, value } = field;
+          if (key && value) {
+            body[key] = value;
+          }
+        });
+        
+        axios.post(`/api/manager/menu/${id}/food`,body)
+        .then(navigate('/menu'))
+        
+      };
+
 
     const onUpdate = (id) => {
         navigate(`/menu/update/${id}`);
     }
+
+    const on식재료 = (id) => {
+        navigate(`/menu/sick/${id}`)
+    }
+
     const onMenuAdd = () => {
         const formdata = new FormData();
           let body = {
             name : nameRef.current.value,
             cost : costRef.current.value,
-            info : '알레르기 정보: '+infoRef.current.value,
             details : detailsRef.current.value,
             usePlanner: isSickdan ? false : isBackban ? true : false
           };
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
         formdata.append("file",image);
-
+          
         axios({
             method:'POST',
-            url:'/api/manager/menu/add',
+            url:'/api/manager/menu',
             data:formdata,
             headers: {
-                "Content-Type": "multipart/form-data", // Content-Type을 반드시 이렇게 하여야 한다.
+                "Content-Type": "multipart/form-data",
               }
-        }).then(() => {
-            // 새로운 메뉴가 추가되거나 메뉴가 업데이트 되면, 전체 메뉴 목록을 다시 가져옴.
-            axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
-        }).then(() => {
-            axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))
-        }).catch(err => {
+        })
+        .then(() => {axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))})
+        .then(() => {axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))})
+        .catch(err => {
             if(err.response.status == 400){
                 alert('메뉴명과 가격은 필수입니다.');
                 return;
@@ -361,14 +430,11 @@ function Menu(){
             }
         })
 
-        // setCost('');
-        // setInfo('');
-        // setDetails('');
-        // setName('');
         setImage(null);
         setIsbackban(false);
         navigate('/menu');
     } 
+
     const onMenuUpdate = (id) => {
         const formdata = new FormData();
         let 백반여부 = savedData.filter(sd => sd.id ==id)[0].usePlanner;
@@ -381,7 +447,6 @@ function Menu(){
           let body = {
             name: nameRef.current.value === '' ? UpdatePath.name : nameRef.current.value,
             cost: costRef.current.value === '' ? UpdatePath.cost : costRef.current.value,
-            info: infoRef.current.value === '' ? UpdatePath.info : '알레르기 정보: '+infoRef.current.value,
             details: detailsRef.current.value === '' ? UpdatePath.details : detailsRef.current.value,
             usePlanner: 백반여부 ? true : isBackban ? true : false
           };
@@ -389,14 +454,17 @@ function Menu(){
         const blob = new Blob([JSON.stringify(body)], {type:"application/json"})
         formdata.append("data",blob);
         image != null && formdata.append("file",image);
+
         axios({
             method:'PATCH',
-            url:`/api/manager/menu/${id}/update`,
+            url:`/api/manager/menu/${id}`,
             data:formdata,
             headers:{
                 "Content-Type": "multipart/form-data",
             }
-        }).then(()=>{
+        })
+        
+        .then(()=>{
             axios.get(`/api/manager/menu`).then(res=>setSaveddata(res.data))
         }).then(() => {
             axios.get('/api/manager/menu/planner').then(res => setIsSickdan(res.data))
@@ -405,7 +473,7 @@ function Menu(){
         setIsbackban(false);
         navigate('/menu');
     }
-    
+
     const onDelete = (id) => {
         navigate(`/menu/${id}`);
     }
@@ -420,17 +488,19 @@ function Menu(){
         navigate('/menu');
     }
 
-    
+    console.log(savedData)
+
+
     return(
         <>
         <Wrapper>
-            <Navtop pages={"메뉴 관리"}/>
+            <Navtop pages={"사이드 메뉴"}/>
             <Tip>
                 <li>요일별 다른 메뉴가 있다면 백반으로 지정해보세요!</li>
                 <li>백반으로 지정된 메뉴는 백반관리 페이지에서 요일별 식단표를 추가할 수 있어요!</li>
             </Tip>
 
-            {isLoading ? 
+            {!savedData ? 
                 <h1 style={{marginTop:'100px',marginLeft:'20px'}}>Loading...</h1> 
                 : 
                 <ItemWrapper>
@@ -447,8 +517,8 @@ function Menu(){
                     <ItemInfo>
                         <span>{data?.name}</span>  
                         <span>{data?.details}</span>
-                        <span>{data?.info}</span>
-                        <span>{data?.cost}</span>
+                        {/* <span>{data?.info}</span> */}
+                        <span>{data?.cost}원</span>
                         {data?.sold == true ? null 
                         :
                         <div style={{position:'absolute'}}>
@@ -492,6 +562,11 @@ function Menu(){
 
                     </ItemUD>    
                     <Itemfinal>
+                        <Button
+                        className="custom-info-button"
+                        variant="secondary"
+                        onClick={() => on식재료(data?.id)}
+                        >식재료 등록</Button>
                         <Button 
                         className="custom-info-button"
                         onClick={() => onUpdate(data?.id)}
@@ -509,7 +584,11 @@ function Menu(){
             <>
             <CheckDelete>
             <div style={{display:'flex',justifyContent:'center',marginTop:'10px'}}>
-            <CheckDelete_img bgPhoto={makeImagePath(DeletePath?.image,'w400'||'')}/>
+            {/* <CheckDelete_img bgPhoto={makeImagePath(DeletePath?.image,'w400'||'')}/> */}
+            <img 
+            width="180"
+            height="120"
+            src={"http://kjj.kjj.r-e.kr:8080/api/image?dir="+DeletePath.image}/>
             <div style={{display:'flex',flexDirection:'column',width:'10vw',height:'15vh',alignItems:'center',justifyContent:'center',marginLeft:'10px'}}>
                 <span style={{fontSize:'22px',fontWeight:'600'}}>
                     {DeletePath?.name}
@@ -570,22 +649,28 @@ function Menu(){
                         ref={detailsRef}/>
                 </div>
                 <hr style={hr_style}/>                
-                <div>
-                    <span>알레르기 정보</span>
+                {/* <div>
+                    <span>식재료 정보</span>
                     <input 
                         placeholder={UpdatePath?.info}
-                        ref={infoRef}/>
-                </div>
-                <hr style={hr_style}/>            
+                        ref={식자재정보ref}/>
+                </div> */}
+                
                 </UpdateText>
 
             <UpdateImg>
+                {UpdatePath?.image ? 
+                <img 
+                width='180'
+                height='120'
+                src={"http://kjj.kjj.r-e.kr:8080/api/image?dir="+UpdatePath.image}/>
+                :
                 <UpdateImg_defaultimg>
                     이미지없음
-                </UpdateImg_defaultimg>
+                </UpdateImg_defaultimg>}
                 <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])}/>
             </UpdateImg>
-            <hr style={{width:'34vw'}}/>
+            <hr style={{width:'60vw'}}/>
 
                 {
                     // 식단이 등록되있는 경우
@@ -633,7 +718,59 @@ function Menu(){
         </UpdateWrapper>
         <Overlay/>
         </>:null}
-            </>
+
+        {식재료PathMatch?
+        <>
+        <UpdateWrapper>
+        <UpdateTitle>
+                <span>
+                    식재료 등록
+                </span>
+                <AiFillCloseCircle 
+                    onClick={() => navigate('/menu')} 
+                    style={{fontSize:'20px',fontWeight:600,marginRight:'20px'}}/>
+        </UpdateTitle>
+            <식재료Wrapper>
+            {inputfields.map((field, index) => (
+        <div 
+        style={{marginTop:'-2vh',width:'35vw',height:'8vh'}}
+        key={index}>
+          <input
+            name="key"
+            value={field.key}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder="식재료명"
+          />
+          <input
+            name="value"
+            value={field.value}
+            onChange={(e) => handleInputChange(index, e)}
+            placeholder="kg"
+          />
+          <button
+          style={{width:'5vw',height:'4vh',marginTop:'3vh',color:'black'}}
+          onClick={() => handleRemoveFields(index)}>삭제</button>
+        </div>
+      ))}
+      
+            </식재료Wrapper>
+            <div style={{
+                display:'flex', justifyContent:'center', alignItems:'center'
+            }}>
+            <button
+            style={{width:'10vw',height:'5vh',color:'black'}}
+            onClick={handleAddFields}>식재료 추가</button>
+            <button 
+            style={{width:'10vw',height:'5vh',color:'black'}}
+            onClick={() => handleSubmit(식재료PathMatch.params.sickId)}>저장</button>
+            </div>
+            
+        
+        </UpdateWrapper>
+        <Overlay/>
+        </>
+        :null}
+        </>
     )}
 
 export default Menu;

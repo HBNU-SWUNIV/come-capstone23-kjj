@@ -2,6 +2,7 @@ import {Outlet} from 'react-router-dom';
 import styled from 'styled-components';
 import Navbar from './Components/Navbar';
 import { useLocation } from 'react-router-dom';
+import './Components/reset.css';
 
 const Wrapper = styled.div`
 display:flex;

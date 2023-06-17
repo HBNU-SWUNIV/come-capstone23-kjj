@@ -101,13 +101,13 @@ function Login(){
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [username,setUsername] = useState(''), [password,setPassword] = useState('');
-    
+
     const test = useSelector(User => User)
 
     const onSubmit = (e) => {
         e.preventDefault()
         let body = {username,password}
-        axios.post(`/api/login/manager`,body,)
+        axios.post(`/api/manager/login`,body)
         .then(res => {
             res.status == 200 && 
             axios.get('/api/manager/setting').then(res => {
@@ -122,7 +122,7 @@ function Login(){
         <Wrapper>
             <LoginW onSubmit={onSubmit}>
                 <Title>
-                    <span>잔반제로</span>
+                    <span>식재료 절약단</span>
                     <span>관리자</span>
                 </Title>
                 

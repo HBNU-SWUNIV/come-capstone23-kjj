@@ -210,7 +210,7 @@ function Calander2(){
     }
 
     const onOffday = (date,year,month,day) => {
-        let body = {date,off:true}
+        let body = {off:true}
         axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
         .then(res => {
             res.status == 200 &&
@@ -221,7 +221,7 @@ function Calander2(){
     }
 
     const onOnday = (date,year,month,day) => {
-        let body = {date,off:false}
+        let body = {off:false}
         axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
         .then(res => {
             res.status == 200 &&

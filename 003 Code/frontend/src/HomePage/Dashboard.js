@@ -12,7 +12,6 @@ import Button from 'react-bootstrap/Button';
 
 
 const Wrapper = styled.div`
-margin-top:5vh;
 display:flex;
 flex-direction:column;
 width:85vw;
@@ -27,28 +26,22 @@ const Statistis = styled.div`
     justify-content:flex-start;
     align-items:center;
     margin-top:2vh;
+    margin-left:6vw;
 `;
 
 const 금일 = styled.div`
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    align-items:flex-start;
-    width:15vw;
+    justify-content:center;
+    align-items:center;
+    width:14vw;
     height:14vh;
     background-color:#C8D5EF;
     margin-left:30px;
     border-radius:5px;
     span{
         font-weight:500;
-        font-size:20px;
-        margin-left:10px;
-    }
-    span:first-child{
-        margin-top:10px;
-    }
-    span:last-child{
-        margin-bottom:10px;
+        font-size:23px;
     }
 `;
 
@@ -80,7 +73,7 @@ const 누적이용자 = styled.div`
     justify-content:center;
     align-items:flex-start;
     width:13vw;
-    height:12vh;
+    height:13vh;
     background-color:#C8D5EF;
     margin-left:30px;
     span{
@@ -100,7 +93,7 @@ const 감소량 = styled.div`
     justify-content:center;
     align-items:flex-start;
     width:16vw;
-    height:11vh;
+    height:13vh;
     background-color:#C8D5EF;
     border-radius:5px;
     margin-left:30px;
@@ -118,11 +111,20 @@ const 감소량 = styled.div`
 `;
 
 const 차트2개 = styled.div`
-    width:80vw;
+    margin-top:5vh;
+    margin-left:15vw;
+    width:45vw;
     height:60vh;
-    display:flex;
-    justify-content:space-between;
     position:relative;
+    display:flex;
+    flex-direction:column;
+    span{
+        margin-top:5vh;
+        font-size:20px;
+        font-weight:600;
+        margin-left:20px;
+        font-family:'DeliveryFont';
+    }
 `
 
 const FirstChart = styled.div`
@@ -157,8 +159,7 @@ const FirstChartGradient = styled.div`
 const SecondChart = styled.div`
     width:38vw;
     height:60vh;
-    margin:20px 20px;
-    background-color:#C8D5EF;
+    margin:30px 20px;
     span{
         font-family:'DeliveryFont';
     }
@@ -230,61 +231,39 @@ const Items = styled.div`
 
     
 function Dashboard(){
-    const [prevLeftover, setPrevLeftover] = useState([]);
-    const [nextLeftover, setNextLeftover] = useState([]);
-    const [ShowInput, SetShowInput] = useState(false);
     const [totalPop, setTotalPop] = useState(0);
     const [todaypop, setTodaypop] = useState(0);
-    const [Weekpop, setWeekpop] = useState([]);
-    const [leftover, setLeftover] = useState('');
     const [goodmenu, setGoodmenu] = useState([]);
+    const [predictitems, setPredictItems] = useState([]);
+    const [predictUser, setPredictUser] = useState(0);
+    const [predictMenus, setPredictMenus] = useState([]);
+
+
     const startDate = new Date();
     
-    // 금일, 누적 이용자 수 
     useEffect(() => {
         axios.get('/api/manager/state/all')
         .then(res => setTotalPop(res.data))
 
         axios.get('/api/manager/state/today')
         .then(res => setTodaypop(res.data))
-
-        axios.get('/api/manager/state/last-week/user')
-        .then(res => setWeekpop(res.data))
-
-        axios.get('/api/manager/leftover/1')
-        .then(res => setPrevLeftover(res.data))
-
-        axios.get(`/api/manager/leftover/0`)
-        .then(res => setNextLeftover(res.data))
         
         axios.get(`/api/manager/state/menu`)
         .then(res => setGoodmenu(res.data))
+
+        axios.get(`/api/manager/state/predict/food`)
+        .then(res => setPredictItems(res.data))
+
+        axios.get('/api/manager/state/predict/user')
+        .then(res => setPredictUser(res.data))
+
+        axios.get('/api/manager/state/predict/menu')
+        .then(res=> setPredictMenus(res.data))
     },[])
 
-    // 지난주 대비 음식물 쓰레기 감소량
-    let prevsum = 0;
-    prevLeftover.forEach(n => {
-        prevsum += n.leftover
-    })
-    
-    let nextsum = 0;
-    nextLeftover.forEach(n => {
-        nextsum += n.leftover
-    })
-
-    // 오늘의 잔반량 등록 인풋
-    const onClick = () => {
-        SetShowInput(true);
-    };
-    
-    const onsubmit = (e) => {
-        e.preventDefault();
-        let body={leftover}
-        axios.post('/api/manager/leftover',body)
-        .then(res => console.log(res))
-        .catch(err=>console.log(err))
-        SetShowInput(false);
-    };
+    // Object 형식을 배열로 변환하는 이유 => apexchart에 반영하기 위해
+    const predictItemsArray = Object.entries(predictitems);
+    const predictMenusArray = Object.entries(predictMenus);
     
     return(<>
         <Wrapper>
@@ -292,47 +271,40 @@ function Dashboard(){
 
         <Statistis>
             <금일>
-                <span>{format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}</span>
-                <span>금일 이용자 수</span>
+                {/* <span>오늘의 날짜 {format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}</span> */}
+                <span>내일 예약자 수</span>
             </금일>
 
             <Total>
-                <span>{todaypop}</span>
+                {/* <span>{predict_user.length > 0 ? predict_user[0][1] : 'Loading...'}</span> */}
+                <span>{predictUser ? predictUser : 'Loading...'}</span>
                 <span>명</span>
             </Total>
             
             <div style={{marginLeft:'-20px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
             
             <누적이용자>
-                <span>{totalPop}</span>
-                <span>누적 이용자</span>
+                <span>{totalPop}명</span>
+                <span>누적 이용자 수</span>
             </누적이용자>
 
             <div style={{marginLeft:'30px',borderRight:'thin solid #DDDDDD',height:'15vh'}}></div>
 
             <감소량>
-                <span>{prevsum-nextsum}Kg</span>
-                <span>지난주 대비 음식물 쓰레기 감소량</span>
+                <span>{todaypop}명</span>
+                <span>오늘 이용자 수 </span>
             </감소량>
         </Statistis>
         
         <차트2개>
-        <FirstChart>
-            <div>
-                <span>지난 2주간 잔반량 비교</span>
-                <Button className='custom-secondary-button' onClick={onClick} variant="secondary">등록하러가기</Button>{' '}
-            </div>
+            <span>내일에는 다음과 같은 식재료 예측이 있습니다.</span>
             <ApexCharts
-                type="line"
+                type="bar"
                 series={ [
                     {
-                        name:'지난주',
-                        data:prevLeftover.map(prev => prev.leftover)
-                    },
-                    {
-                        name:'이번주',
-                        data:nextLeftover.map(next => next.leftover)
-                    },
+                        name:'',
+                        data:predictItemsArray.map(items => items[1])
+                    }
                 ]}
                 options={{
                     chart:{
@@ -340,25 +312,58 @@ function Dashboard(){
                     },
                     stroke:{
                         curve:'smooth',
-                        width:2.5
+                        width:1
                     },
                     xaxis:{
                         type:'category',
-                        categories:['월','화','수','목','금']
+                        categories:predictItemsArray.map(items => items[0])
                     },
                     fill:{
-                        colors:'green',
-                        opacity:0.9
+                        colors:'black',
+                        opacity:1
                     }
                 }}
             />
-            <FirstChartGradient/>
-        </FirstChart>
-        
-        <SecondChart>
+            
+            <span>내일의 일정에는 다음과 같은 메뉴 예약이 있습니다.</span>
+            <ApexCharts
+                type="bar"
+                series={ [
+                    {
+                        name:'',
+                        data:predictMenusArray.map(items => items[1])
+                    }
+                ]}
+                options={{
+                    chart:{
+                        toolbar:{show:false}
+                    },
+                    plotOptions:{
+                        bar:{
+                            borderRadius:4,
+                            horizontal:true,
+                        }
+                    },
+                    stroke:{
+                        curve:'smooth',
+                        width:1
+                    },
+                    xaxis:{
+                        type:'category',
+                        categories:predictMenusArray.map(items => items[0])
+                    },
+                    fill:{
+                        colors:'green',
+                        opacity:1
+                    }
+                }}
+            />
+
+
+            <SecondChart>
             <span style={{fontSize:'20px',fontWeight:'600',margin:'20px 20px',marginBottom:'20px'}}>
-                최근 인기있는 메뉴는?
-            </span>
+            요즘 가장 인기 있는 메뉴는 다음과 같습니다.
+            </span>   
             <ApexCharts
                 type='pie'
                 series={goodmenu.map(menu => menu.count)}
@@ -371,74 +376,11 @@ function Dashboard(){
                 }}
                 />
 
-        </SecondChart>
+            </SecondChart>
+                
         </차트2개>
-
-        <LastChart>
-            <span>지난주 이용자 수</span>          
-        <ApexCharts
-                type="line"
-                series={ [
-                    {
-                        name:'이용자 수',
-                        data:Weekpop?.map(week => week.count)
-                    }
-                ]}
-            
-                options={{
-                    chart:{
-                        toolbar:{show:false}
-                    },
-                    stroke:{
-                        curve:'smooth',
-                        width:2.5
-                    },
-                    xaxis:{
-                        type:'category',
-                        // categories:Weekpop.map(week => week.date)
-                        categories:['월','화','수','목','금']
-                    },
-                    fill:{
-                        colors:'green',
-                        opacity:0.9
-                    },
-                    
-                }}
-            />
-
-        </LastChart>
-        
         
         </Wrapper>
-        {ShowInput ? <>
-            <InputW>
-                <Title>
-                    <span style={{fontSize:'22px',fontWeight:'600', marginLeft:'20px'}}>오늘의 잔반량 등록</span>
-                    <AiFillCloseCircle style={{fontSize:'22px',marginRight:'20px'}} onClick={()=>SetShowInput(false)}/>
-                </Title>
-
-                <div>
-                    <Items>
-                        <span>오늘 날짜</span>
-                        <div>                       
-                        {format(startDate,'yy')}-{format(startDate,'MM')}-{format(startDate,'dd')}
-                        {/* <DatePicker selected={startDate} onChange={date => setStartDate(date)}/> */}
-                        </div>
-                    </Items>
-                    <Items>
-                        <span>총 잔반량</span>
-                        <input 
-                        value={leftover}
-                        onChange={(e) => setLeftover(e.target.value)}
-                        type='number' 
-                        placeholder='kg수를 적으세요.'/>
-                    </Items>
-                </div>
-
-                <Button variant="primary" onClick={onsubmit}>등록하기</Button>
-            </InputW>
-            <Overlay/>
-        </>:null}
         </>
     )
 }
