@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -39,6 +41,13 @@ public class StoreManagerApiController {
     public ResponseEntity<String> setSetting(@RequestBody StoreDto dto) throws SameNameException {
         storeService.setSetting(dto);
         return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    }
+
+    @Operation(summary = "식당 이미지 등록, 수정")
+    @PostMapping("image")
+    public ResponseEntity<String> setStoreImage(@RequestPart(value = "file") MultipartFile file) throws CantFindByIdException, IOException {
+        storeService.setStoreImage(file);
+        return ResponseEntity.ok("반영되었습니다.");
     }
 
     @Operation(summary="금일 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")

@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.controller.menu;
+package com.hanbat.zanbanzero.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.FileSystemResource;
@@ -15,7 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Controller
-public class MenuImageController {
+public class ImageController {
 
     private String localPath = "/";
 

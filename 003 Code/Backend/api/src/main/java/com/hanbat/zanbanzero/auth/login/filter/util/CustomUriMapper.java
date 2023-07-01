@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;
 
-    private String loginEndPath = "/login";
+    private String loginEndPath = "/login/id";
 
     public CustomUriMapper(ServletRequest request) throws WrongParameter {
         if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {

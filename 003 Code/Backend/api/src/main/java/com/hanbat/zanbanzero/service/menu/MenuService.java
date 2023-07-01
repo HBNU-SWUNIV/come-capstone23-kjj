@@ -17,6 +17,7 @@ import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
+import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -34,13 +35,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MenuService {
 
-    private final MenuImageService menuImageService;
+    private final ImageService menuImageService;
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
 
-    @Cacheable(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    private final String menuCacheKey = "1";
+    private final String cacheManager = "cacheManager";
+
+    @Cacheable(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public List<MenuDto> getMenus() {
         List<Menu> menus = menuRepository.findAll();
 
@@ -49,7 +53,7 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
+    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = cacheManager)
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
 
@@ -70,7 +74,7 @@ public class MenuService {
     public Boolean isPlanner() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
@@ -103,13 +107,13 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         if (file != null) {
-            if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file));
+            if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file, uploadDir));
             else menuImageService.updateImage(file, menu.getImage());
         }
 
@@ -118,7 +122,7 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public void deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
@@ -129,7 +133,7 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public void setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 

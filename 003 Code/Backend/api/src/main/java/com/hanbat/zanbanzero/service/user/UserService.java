@@ -45,6 +45,14 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public void loginFromKeycloak(User u) throws JsonProcessingException {
+        User user = userRepository.findByUsername(u.getUsername());
+        if (user == null) {
+            join(UserJoinDto.of(u));
+        }
+    }
+
+    @Transactional
     public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
         User user = userRepository.findByUsername(dto.getUsername());
         if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) {

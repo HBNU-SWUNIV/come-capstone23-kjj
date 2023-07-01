@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.controller.menu;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
@@ -9,7 +8,7 @@ import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
-import com.hanbat.zanbanzero.service.menu.MenuImageService;
+import com.hanbat.zanbanzero.service.image.ImageService;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +27,9 @@ import java.util.Map;
 public class MenuManagerApiController {
 
     private final MenuService menuService;
-    private final MenuImageService menuImageService;
+    private final ImageService menuImageService;
+
+    private String uploadDir = "img/menu";
 
     @Operation(summary="전체 메뉴 조회 - 관리자 전용")
     @GetMapping("menu")
@@ -64,7 +64,7 @@ public class MenuManagerApiController {
     public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter {
         if (dto == null || !dto.check()) throw new WrongParameter("잘못된 데이터 정보입니다.");
 
-        String filePath = (file != null) ? menuImageService.uploadImage(file) : null;
+        String filePath = (file != null) ? menuImageService.uploadImage(file, uploadDir) : null;
         return ResponseEntity.status(HttpStatus.OK).body(menuService.addMenu(dto, filePath));
     }
 
@@ -92,7 +92,7 @@ public class MenuManagerApiController {
     @Operation(summary="관리자 - 메뉴 수정")
     @PatchMapping("menu/{id}")
     public ResponseEntity<String> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, SameNameException {
-        menuService.updateMenu(dto, file, id);
+        menuService.updateMenu(dto, file, id, uploadDir);
 
         return ResponseEntity.status(HttpStatus.OK).body("수정되었습니다.");
     }

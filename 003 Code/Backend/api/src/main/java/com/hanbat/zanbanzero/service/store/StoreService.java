@@ -19,10 +19,13 @@ import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -35,6 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StoreService {
 
+    private final ImageService imageService;
     private final StoreRepository storeRepository;
     private final CalculateRepository calculateRepository;
     private final CalculateMenuRepository calculateMenuRepository;
@@ -42,6 +46,7 @@ public class StoreService {
     private final StoreStateRepository storeStateRepository;
 
     private final Long finalId = 1L;
+    private String uploadDir = "img/store";
 
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
@@ -58,6 +63,12 @@ public class StoreService {
 
         Store store = Store.of(finalId, dto);
         storeRepository.save(store);
+    }
+
+    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException {
+        String path = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new).getImage();
+        if (path == null) imageService.uploadImage(file, uploadDir);
+        else imageService.updateImage(file, path);
     }
 
     @Transactional

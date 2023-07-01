@@ -22,7 +22,7 @@ public class JwtUtil {
                 .sign(Algorithm.HMAC256(JwtTemplate.SECRET));
     }
 
-    public static String createRefreshToken(UserDetails userDetails) {
+    public static String createRefreshToken(UserDetailsInterface userDetails) {
         return JWT.create()
                 .withSubject(JwtTemplate.TOKEN_PREFIX)
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtTemplate.EXPIRATION_TIME_REFRESH))
