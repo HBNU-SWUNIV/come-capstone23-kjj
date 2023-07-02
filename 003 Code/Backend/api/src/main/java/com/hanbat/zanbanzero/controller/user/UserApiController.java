@@ -31,7 +31,6 @@ public class UserApiController {
     @PostMapping("login/keycloak")
     public ResponseEntity<String> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
         User user = (User) request.getAttribute("user");
-        System.out.println(user.toString());
         userService.loginFromKeycloak(user);
         return ResponseEntity.status(HttpStatus.OK).body("로그인 되었습니다.");
     }

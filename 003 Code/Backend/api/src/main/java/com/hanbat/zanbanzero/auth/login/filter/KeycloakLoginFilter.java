@@ -75,7 +75,7 @@ public class KeycloakLoginFilter implements Filter {
     }
 
     private boolean checkFromKeycloak(LoginDto dto) {
-        String url = "http://" + domain + "/realms/" + realmName + "/protocol/openid-connect/token";
+        String url = "http://" + domain + "/auth/realms/" + realmName + "/protocol/openid-connect/token";
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Content-type", "application/x-www-form-urlencoded");

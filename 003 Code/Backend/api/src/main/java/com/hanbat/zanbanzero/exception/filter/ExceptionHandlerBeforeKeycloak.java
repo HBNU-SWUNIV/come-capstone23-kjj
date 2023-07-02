@@ -19,6 +19,7 @@ public class ExceptionHandlerBeforeKeycloak extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         catch (HttpClientErrorException e) {
+            System.out.println(e);
             SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED,"Keycloak 인증에 실패하였습니다.");
         }
     }
