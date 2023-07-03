@@ -29,10 +29,9 @@ public class UserApiController {
 
     @Operation(summary="Keycloak 로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("login/keycloak")
-    public ResponseEntity<String> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
+    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
         User user = (User) request.getAttribute("user");
-        userService.loginFromKeycloak(user);
-        return ResponseEntity.status(HttpStatus.OK).body("로그인 되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.loginFromKeycloak(user));
     }
 
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")

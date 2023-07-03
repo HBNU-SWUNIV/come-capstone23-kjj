@@ -37,19 +37,21 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public void join(UserJoinDto dto) throws JsonProcessingException {
+    public User join(UserJoinDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
         userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
         userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
+        return user;
     }
 
     @Transactional
-    public void loginFromKeycloak(User u) throws JsonProcessingException {
+    public UserInfoDto loginFromKeycloak(User u) throws JsonProcessingException {
         User user = userRepository.findByUsername(u.getUsername());
         if (user == null) {
-            join(UserJoinDto.of(u));
+            user = join(UserJoinDto.of(u));
         }
+        return UserInfoDto.of(user);
     }
 
     @Transactional

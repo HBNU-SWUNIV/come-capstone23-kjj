@@ -58,6 +58,7 @@ public class StoreService {
         return StoreDto.of(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
     }
 
+    @Transactional
     public void setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
