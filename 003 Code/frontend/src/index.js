@@ -3,29 +3,12 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { RouterProvider} from 'react-router-dom';
-import router from '../src/router/router';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import {store,persistor} from './store';
-import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
-import 'bootstrap/dist/css/bootstrap.css';
-import './Components/bootstrap_css.css';
-
-const client = new QueryClient();
-
-// const store = createSlice(persistReducer);
-// const persistor = persistStore(store);
+import router from './router';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <QueryClientProvider client={client}>
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <RouterProvider router={router}/>
-        </PersistGate>
-      </Provider>
-    </QueryClientProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );
 
