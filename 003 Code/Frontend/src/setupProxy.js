@@ -8,11 +8,11 @@ module.exports = function (app) {
       changeOrigin: true,
     }),
   );
-  app.use(
-    '/login/manager',
-    createProxyMiddleware({
-      target: 'http://kjj.kjj.r-e.kr:8080',
-      changeOrigin: true,
-    }),
-  );
+  // app.use(
+  //   '/login/manager',
+  //   createProxyMiddleware({
+  //     target: 'http://kjj.kjj.r-e.kr:8080',
+  //     changeOrigin: true,
+  //   }),
+  // );
 };
