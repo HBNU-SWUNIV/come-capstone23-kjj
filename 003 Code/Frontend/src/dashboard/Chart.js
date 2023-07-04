@@ -16,8 +16,6 @@ export default function Chart() {
   
   const predictItemsArray = Object.entries(predictitems);
 
-
-
   return (
     <React.Fragment>
       <Title>내일 식재료 예측</Title>
