@@ -31,9 +31,23 @@ const navigate = useNavigate();
 
 const onSubmit = (e) => {
     e.preventDefault();
-    let body={name,info};
-    axios.post('/api/manager/setting',body).then(res=>console.log(res))
+    let body={info};
+    const formdata = new FormData();
+    image != null && formdata.append("file",image)
+
+    axios.patch('/api/manager/store/info',body).then(res=>console.log(res))
+    navigate('/home ')
+
+    if(image.length !== 0){
+      axios({
+        method:'POST',
+        url:'/api/manager/image',
+        data:formdata,
+        headers:{"Content-Type": "multipart/form-data",}
+      }).then(res => console.log(res))
+    }
 }
+
 
 
   return (

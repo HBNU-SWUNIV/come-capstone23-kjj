@@ -23,6 +23,13 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import { useState } from 'react';
+import Skeleton from '@mui/material/Skeleton';
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
@@ -71,14 +78,27 @@ const AppBar = styled(MuiAppBar, {
 const drawerWidth = 240;
 
 function Drawerheader(props){
+  const [success, setSuccess] = useState(false);
+
+  const handleSuccessOpen = () =>{
+    setSuccess(true);
+  }
+  const handleSuccessClose = (event,reason) =>{
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccess(false);
+  }
   const [info, setMarketInfo] = React.useState('');
+  const [image,setImage] = useState('');
+  const [newImage,setNewImage] = useState([]);
   const onInfo = (e) => {
     setMarketInfo(e);
   }
   React.useEffect(() => {
     axios.get('/api/user/store').then(res=>setMarketInfo(res.data.info))
+    axios.get('/api/manager/setting').then(res => setImage(res.data.image))
   },[])
-
   const onChangeMarketInfo = () => {
     let body = {
       info
@@ -108,6 +128,34 @@ function Drawerheader(props){
     const handleCloseModal = () => {
     setOpenModal(false);
     };
+    const [openModal2, setOpenModal2] = useState(false);
+    const handleClickOpenModal2 = () => {
+      setOpenModal2(true);
+      handleClose();
+    }
+    const handleCloseModal2 = () => {
+      setOpenModal2(false);
+    }
+
+    const onUpdateImage = () => {
+      const formdata = new FormData();
+      newImage !== null && formdata.append("file", newImage)
+
+      axios({
+        method:"POST",
+        url:'/api/manager/image',
+        data:formdata,
+        headers:{"Content-Type": "multipart/form-data",}
+      }).then(res => {
+        if(res.status ===200){
+          axios.get('/api/manager/setting').then(res => setImage(res.data.image))
+        }
+      })
+      handleSuccessOpen();
+      handleCloseModal2();
+    }
+   
+
     return(
         <>
         <AppBar position="absolute" open={open1}>
@@ -184,8 +232,8 @@ function Drawerheader(props){
               flexDirection:'column',alignItems:'center',justifyContent:'center',marginTop:'-20px'
             }}>
                 <img style={{
-                  width:'10vw'
-                }} src={"이미지주소"} alt="이미지없음" />
+                  width:'5vw'
+                }} src={"http://kjj.kjj.r-e.kr:8080/api/image?dir="+image} alt="이미지없음" />
                 <span
                 style={{
                   fontSize:'25px', color:'#0a376e', fontWeight:'500'
@@ -209,6 +257,7 @@ function Drawerheader(props){
         TransitionComponent={Fade}
       >
         <MenuItem onClick={handleClickOpenModal}>식당 소개메시지</MenuItem>
+        <MenuItem onClick={handleClickOpenModal2}>식당 이미지 변경</MenuItem>
         <MenuItem onClick={() => navigate('/')}>로그아웃</MenuItem>
       </Menu>
           
@@ -222,7 +271,7 @@ function Drawerheader(props){
           <div>
           <TextField
           id="outlined-multiline-static"
-          label="기존 식당 소개 메시지"
+          label="현재 식당 소개 메시지"
           multiline
           disabled
           rows={5}
@@ -246,6 +295,37 @@ function Drawerheader(props){
           <Button color='error' onClick={handleCloseModal}>닫기</Button>
         </DialogActions>
       </Dialog>
+
+
+      <Dialog open={openModal2} onClose={handleCloseModal2}>
+        <DialogTitle>식당 이미지 변경</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{mb:'2vh'}}>
+               현재 이미지
+          </DialogContentText>
+          <div>
+          <div style={{display:'flex',alignItems:'center'}}>
+          {image !== null ? <img style={{
+                  width:'7vw'
+                }} src={"http://kjj.kjj.r-e.kr:8080/api/image?dir="+image} alt="이미지없음" />
+              :<Skeleton variant="rectangular" width={210} height={118} />
+              }
+          <input style={{marginLeft:'2vw'}} type="file" accept="image/*" onChange={e => setNewImage(e.target.files[0])}/>
+          </div>
+
+          </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onUpdateImage}>등록</Button>
+          <Button color='error' onClick={handleCloseModal2}>닫기</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
+        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
         </Drawer>
         </>
     )
