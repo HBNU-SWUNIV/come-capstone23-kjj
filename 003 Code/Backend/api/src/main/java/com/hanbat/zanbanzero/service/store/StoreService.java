@@ -66,10 +66,11 @@ public class StoreService {
         storeRepository.save(store);
     }
 
+    @Transactional
     public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException {
-        String path = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new).getImage();
-        if (path == null) imageService.uploadImage(file, uploadDir);
-        else imageService.updateImage(file, path);
+        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
+        else imageService.updateImage(file, store.getImage());
     }
 
     @Transactional

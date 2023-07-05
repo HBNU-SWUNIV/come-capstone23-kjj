@@ -31,4 +31,5 @@ public class Store {
         info = dto.getInfo();
     }
     public void setName(StoreDto dto) { name = dto.getName(); }
+    public void setImage(String path) { image = path; }
 }
