@@ -28,6 +28,9 @@ dependencies {
 
 	// tools
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.3'
+
+	// slack
+	implementation 'com.slack.api:slack-api-client:1.29.0'
 }
 
 tasks.named('test') {

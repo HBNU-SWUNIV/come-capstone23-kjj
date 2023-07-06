@@ -62,7 +62,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
 
     private Map<String, Integer> getUserPolicy(Connection connection, String day) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
-        String query = "select default_menu, COUNT(*) as count from user_policy where " + day + " = 1 group by default_menu";
+        String query = "select default_menu, COUNT(*) as count from user_policy where " + day + " = 1 and default_menu group by default_menu";
 
         try (ResultSet resultSet = connection.prepareStatement(query).executeQuery()) {
             while (resultSet.next()) {

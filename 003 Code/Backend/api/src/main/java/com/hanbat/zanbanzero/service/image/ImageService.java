@@ -17,7 +17,6 @@ public class ImageService {
     }
 
     public String uploadImage(MultipartFile file, String uploadDir) {
-        // cleanPath() 메소드는 악성코드 삽입을 방지하기 위해 파일이름 정리 목적
         String fileName = RandomStringUtils.randomAlphanumeric(10);
         String filePath = makeFilePath(fileName + ".png", uploadDir);
         try {

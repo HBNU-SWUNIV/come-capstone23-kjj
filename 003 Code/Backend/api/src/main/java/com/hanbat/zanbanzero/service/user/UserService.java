@@ -48,18 +48,14 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserInfoDto loginFromKeycloak(User u) throws JsonProcessingException {
         User user = userRepository.findByUsername(u.getUsername());
-        if (user == null) {
-            user = join(UserJoinDto.of(u));
-        }
+        if (user == null) user = join(UserJoinDto.of(u));
         return UserInfoDto.of(user);
     }
 
     @Transactional
     public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
         User user = userRepository.findByUsername(dto.getUsername());
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) {
-            userRepository.delete(user);
-        }
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
         else throw new WrongRequestDetails("비밀번호 틀림");
     }
 

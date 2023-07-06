@@ -9,6 +9,7 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.menu.MenuWithInfo;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
@@ -44,34 +45,28 @@ public class MenuService {
     private final String menuCacheKey = "1";
     private final String cacheManager = "cacheManager";
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     @Cacheable(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public List<MenuDto> getMenus() {
-        List<Menu> menus = menuRepository.findAll();
-
-        return menus.stream()
+        return menuRepository.findAll().stream()
                 .map((menu) -> MenuDto.of(menu))
                 .collect(Collectors.toList());
     }
 
     @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = cacheManager)
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
-        MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
-
-        return MenuInfoDto.of(menu);
+        return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new));
     }
 
     @Transactional
     public List<MenuManagerInfoDto> getMenusForManager() {
-        List<Menu> menus = menuRepository.findAll();
-        List<MenuInfo> menuInfos = menuInfoRepository.findAll();
-
-        List<MenuManagerInfoDto> result = new ArrayList<>();
-        for (int i = 0; i < menus.size(); i++) result.add(MenuManagerInfoDto.of(menus.get(i), menuInfos.get(i)));
-
-        return result;
+        return menuRepository.findAllWithMenuInfo().stream()
+                .map(menu -> MenuManagerInfoDto.of(menu))
+                .collect(Collectors.toList());
     }
 
-    public Boolean isPlanner() { return menuRepository.existsByUsePlannerTrue(); }
+    public Boolean isPlanned() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Transactional
     @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
@@ -90,14 +85,12 @@ public class MenuService {
     }
 
     public Map<String, Integer> getFood(Long id) throws CantFindByIdException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         String result = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new).getFood();
         return objectMapper.readValue(result, Map.class);
     }
 
     @Transactional
     public Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new);
         Map<String, Integer> old = objectMapper.readValue(menuFood.getFood(), Map.class);
         old.putAll(map);
@@ -126,9 +119,9 @@ public class MenuService {
     public void deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        List<UserPolicy> policies = userPolicyRepository.findAllByDefaultMenu(id);
-        for (UserPolicy policy : policies) policy.setDefaultMenu(null);
-
+        userPolicyRepository.saveAll(userPolicyRepository.findAllByDefaultMenu(id).stream()
+                .peek(policy -> policy.setDefaultMenu(null))
+                .collect(Collectors.toList()));
         menuRepository.delete(menu);
     }
 

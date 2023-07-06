@@ -48,6 +48,8 @@ public class StoreService {
     private final Long finalId = 1L;
     private String uploadDir = "img/store";
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
         if (store == null) return null;
@@ -62,8 +64,7 @@ public class StoreService {
     public void setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
-        Store store = Store.of(finalId, dto);
-        storeRepository.save(store);
+        storeRepository.save(Store.of(finalId, dto));
     }
 
     @Transactional
@@ -159,19 +160,15 @@ public class StoreService {
 
     @Transactional
     public Map<String, Integer> getCalculatePreFood() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
-        Map<String, Integer> result = objectMapper.readValue(calculatePre.getPredictFood(), Map.class);
 
-        return result;
+        return objectMapper.readValue(calculatePre.getPredictFood(), Map.class);
     }
 
     @Transactional
     public Map<String, Integer> getCalculatePreMenu() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
-        Map<String, Integer> result = objectMapper.readValue(calculatePre.getPredictMenu(), Map.class);
 
-        return result;
+        return objectMapper.readValue(calculatePre.getPredictMenu(), Map.class);
     }
 }

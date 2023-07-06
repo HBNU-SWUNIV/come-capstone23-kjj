@@ -32,7 +32,6 @@ public class PlannerService {
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
             dto.setDate(dateString);
-
             repository.save(Planner.of(dto, getPlannerMenu()));
         }
         else planner.setMenus(dto.getMenus());
@@ -47,12 +46,11 @@ public class PlannerService {
         return PlannerDto.of(planner);
     }
 
-    public List<PlannerDto> getPlanner(int year, int month) throws WrongParameter {
+    public List<PlannerDto> getPlanner(int year, int month) {
         String start = DateTools.makeResponseDateFormatString(year, month, 1);
         String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
-        List<Planner> result = repository.findAllByDateBetween(start, end);
-        return result.stream()
+        return repository.findAllByDateBetween(start, end).stream()
                 .map(planner -> PlannerDto.of(planner))
                 .collect(Collectors.toList());
     }

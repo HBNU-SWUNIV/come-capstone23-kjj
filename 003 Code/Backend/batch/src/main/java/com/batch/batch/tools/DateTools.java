@@ -3,6 +3,8 @@ package com.batch.batch.tools;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -31,5 +33,9 @@ public class DateTools {
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         return format.format(calendar.getTime());
+    }
+
+    public static String getDateAndTime() {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
     }
 }

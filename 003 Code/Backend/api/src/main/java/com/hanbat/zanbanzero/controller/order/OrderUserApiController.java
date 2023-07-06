@@ -51,7 +51,7 @@ public class OrderUserApiController {
 
     @Operation(summary="id 유저의 가장 최근 주문내역 조회")
     @GetMapping("{id}/order/last")
-    public ResponseEntity<LastOrderDto> getLastOrder(@PathVariable Long id) throws CantFindByIdException {
+    public ResponseEntity<LastOrderDto> getLastOrder(@PathVariable Long id) {
         LastOrderDto result = orderService.getLastOrder(id);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
