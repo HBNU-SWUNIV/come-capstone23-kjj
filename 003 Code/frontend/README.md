@@ -1,70 +1,16 @@
-# Getting Started with Create React App
+# 식재료 절약단
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+2023 한밭대학교 컴퓨터공학과 캡스톤디자인 KJJ팀 프론트엔드  
 
-## Available Scripts
+## 화면설계(pigma)
+- https://www.figma.com/file/1TXgMLkO1WfMEP4cU8Xw5C/%EC%9D%8C%EC%8B%9D%EB%AC%BC-%EC%93%B0%EB%A0%88%EA%B8%B0-%EA%B0%90%EC%86%8C%EB%A5%BC-%EC%9C%84%ED%95%9C-%EA%B5%AC%EB%82%B4%EC%8B%9D%EB%8B%B9-%EC%98%88%EC%95%BD-%EC%8B%9C%EC%8A%A4%ED%85%9C---%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84?node-id=38%3A1794&t=uMUVZ6fB2tUtXnPO-1
 
-In the project directory, you can run:
+## 언어
+<img src="https://i.ibb.co/PcyMMQv/2023-04-01-8-56-40.png" alt="2023-04-01-8-56-40"/>
 
-### `npm start`
+<img src="https://i.ibb.co/LtGTBT0/2023-04-01-8-56-53.png" alt="2023-04-01-8-56-53" />
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<img src="https://i.ibb.co/mNWsWFV/2023-04-01-8-59-26.png"/>
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 프레임워크
+<img src="https://i.ibb.co/GVL5CjW/2023-04-01-8-58-07.png"/>
