@@ -3,18 +3,26 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import {AiOutlineLeft,AiOutlineRight} from "react-icons/ai";
 import {  useMatch, useNavigate } from 'react-router-dom';
-import { AiFillCloseCircle } from "react-icons/ai";
 import shortid from 'shortid';
 import axios from 'axios';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const ArrowCSS = {color:'#969696', fontSize:'20px'}
 
 const Wrapper = styled.div`
     display:flex;
     width:63vw;
-    margin-left:30px;
-    margin-top:60px;
     border:1px solid #5B5B5B;
+    margin-left:-1vw;
+    margin-top:-4vh;
     flex-direction:column;
     align-items:center;
 `;
@@ -100,7 +108,7 @@ const WriteWrapper = styled.form`
     }
 `;
 const WriteTitle = styled.div`
-    width:40.12vw;
+    width:40vw;
     margin-top:-1px;
     margin-bottom:10px;
     height:10vh;
@@ -139,32 +147,58 @@ const WriteInfo = styled.div`
     }
 `;
 
-function Calander(){
+function Calander2(){
     const navigate = useNavigate();
+    const [offday, setOffday] = useState([]);
     const [currentMonth, setCurrentMonth] = useState(new Date());
-    const [Backbaninfo, setBackbaninfo] = useState('');
-    const [savedBackbaninfo, setSavedBackbaninfo] = useState([]);
+    const [dayId, setDayId] = useState(0);
+    const [open, setOpen] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const handleSuccessOpen = () => {
+    setSuccess(true)
+    }
+    const handleSuccessClose = () => {
+    setSuccess(false)
+    }
 
-    useEffect(() => {
-        axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
-        .then(res => setSavedBackbaninfo(res.data))
+    const handleClickOpen = (id) => {
+        setOpen(true);
+        setDayId(id);
+      };
+    
+      const handleClose = () => {
+        setOpen(false);
+      };
+
+      useEffect(() => {
+        axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+        .then(res => setOffday(res.data))
     },[currentMonth])
 
-    const onBackban = event => {
-        event.preventDefault();
-        setBackbaninfo(event.target.value);
+    const onOffday = (year,month,day) => {
+        let body = {off:true}
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
+        .then(res => {
+            res.status == 200 &&
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            .then(re => setOffday(re.data))
+        })
+        handleClose();
+        handleSuccessOpen();
     }
 
-    const onSave = (year,month,day) => {
-        let body = {menus:Backbaninfo}
-        axios.post(`/api/manager/planner/${year}/${month}/${day}`,body)
-        .then(() =>{
-            axios.get(`/api/user/planner/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
-            .then(res => setSavedBackbaninfo(res.data))
+    const onOnday = (year,month,day) => {
+        let body = {off:false}
+        axios.post(`/api/manager/store/off/${year}/${month}/${day}`,body)
+        .then(res => {
+            res.status == 200 &&
+            axios.get(`api/manager/store/off/${format(currentMonth,'yyyy')}/${format(currentMonth,'MM')}`)
+            .then(re => setOffday(re.data))
         })
-        navigate('/backban');
-        setBackbaninfo('');
+        handleClose();
+        handleSuccessOpen();
     }
+
 
     const days = [],date = ['일','월','화','수','목','금','토']; 
     for (let i=0; i<7; i++){
@@ -179,10 +213,6 @@ function Calander(){
     const startDate = startOfWeek(monthStart),endDate = endOfWeek(monthEnd);
     let day = startDate,formattedDate = '',dayss = [],line = [];
     const DayPathMatch = useMatch('/backban/:id'); 
-
-    const onDay = (id) => {
-        navigate(`/backban/${id}`);
-    }
 
     while(day <= endDate){
         for(let i=0; i<7; i++){
@@ -203,13 +233,10 @@ function Calander(){
             else{
                 dayss.push(
                     <DivDay 
-                    onClick={() => onDay(id)} 
+                    onClick={() => handleClickOpen(id)} 
                     key={shortid.generate()}>
-                        <span>
+                        <span style={{color:offday.filter(od => od.date == id)[0]?.off == true ? 'red' : 'black'}}>
                             {formattedDate}
-                        </span>
-                        <span>
-                            {savedBackbaninfo.map(savedbackban => savedbackban.date === id ? savedbackban.menus : null)}
                         </span>
                     </DivDay>
                 )
@@ -247,30 +274,28 @@ function Calander(){
             </DivWrapper>
 
 
-            {DayPathMatch ? 
-            <WriteWrapper>
-                <WriteTitle>
-                    <span>{DayPathMatch.params.id.slice(0,4)}-{DayPathMatch.params.id.slice(4,6)}-{DayPathMatch.params.id.slice(6,8)}</span>
-                    <span>백반 식단 관리</span>
-                    <AiFillCloseCircle 
-                    onClick={() => navigate('/backban')}
-                    style={{fontSize:'30px',marginRight:'10px',marginBottom:'10px'}}/>
-                </WriteTitle>
-                <WriteInfo>
-                    <span>Menu</span>
-                    <textarea
-                    placeholder='여기에 백반메뉴를 입력하세요.'
-                    value={Backbaninfo}
-                    onChange={onBackban}
-                    />
-                </WriteInfo>
-                <button onClick={() => onSave(DayPathMatch.params.id.slice(0,4),DayPathMatch.params.id.slice(4,6),DayPathMatch.params.id.slice(6,8))}>
-                    저장
-                </button>
-            </WriteWrapper>:null}
+        <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>{dayId}을 휴일로 지정하시겠습니까?</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{marginBottom:'1vh'}}>
+            휴일을 설정해주세요.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => onOffday(dayId.slice(0,4), dayId.slice(4,6), dayId.slice(6,8))}>휴일 등록</Button>
+          <Button onClick={() => onOnday(dayId.slice(0,4), dayId.slice(4,6), dayId.slice(6,8))}>영업일 등록</Button>
+          <Button color='error' onClick={handleClose}>닫기</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
+        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
+          This is a success message!
+        </Alert>
+      </Snackbar>
             
         </Wrapper>
     )
 }
 
-export default Calander;
+export default Calander2;
