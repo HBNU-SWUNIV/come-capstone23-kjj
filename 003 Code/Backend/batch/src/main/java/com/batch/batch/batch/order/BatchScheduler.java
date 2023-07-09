@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order;
 
 import com.batch.batch.tools.DateTools;
+import com.batch.batch.tools.SlackTools;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
@@ -24,12 +25,14 @@ public class BatchScheduler {
     private final Job firstJob;
     private final Job secondJob;
     private final DataSource dataSource;
+    private final SlackTools slackTools;
 
-    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource) {
+    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource, SlackTools slackTools) {
         this.jobLauncher = jobLauncher;
         this.firstJob = firstJob;
         this.secondJob = secondJob;
         this.dataSource = dataSource;
+        this.slackTools = slackTools;
     }
 
     // Docker image(openjdk:17) 기준 한국이 9시간 느림
@@ -46,7 +49,11 @@ public class BatchScheduler {
                     .addString("time", String.valueOf(System.currentTimeMillis()))
                     .addString("today", day.toLowerCase())
                     .toJobParameters();
-            jobLauncher.run(firstJob, jobParameters);
+            try {
+                jobLauncher.run(firstJob, jobParameters);
+            } catch (Exception e) {
+                slackTools.sendSlackMessage(e, new Object(){}.getClass().getEnclosingClass().getName());
+            }
         }
     }
 
@@ -65,7 +72,11 @@ public class BatchScheduler {
                     .addString("time", String.valueOf(System.currentTimeMillis()))
                     .addString("day", day.toLowerCase())
                     .toJobParameters();
-            jobLauncher.run(secondJob, jobParameters);
+            try {
+                jobLauncher.run(secondJob, jobParameters);
+            } catch (Exception e) {
+                slackTools.sendSlackMessage(e, new Object(){}.getClass().getEnclosingClass().getName());
+            }
         }
     }
 

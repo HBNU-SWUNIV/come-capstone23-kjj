@@ -1,28 +1,36 @@
 package com.hanbat.zanbanzero.service.store;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
+import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
+import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -30,12 +38,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StoreService {
 
+    private final ImageService imageService;
     private final StoreRepository storeRepository;
     private final CalculateRepository calculateRepository;
     private final CalculateMenuRepository calculateMenuRepository;
+    private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
 
     private final Long finalId = 1L;
+    private String uploadDir = "img/store";
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public StoreDto isSetting() {
         Store store = storeRepository.findById(finalId).orElse(null);
@@ -47,11 +60,18 @@ public class StoreService {
         return StoreDto.of(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
     }
 
+    @Transactional
     public void setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
-        Store store = Store.of(finalId, dto);
-        storeRepository.save(store);
+        storeRepository.save(Store.of(finalId, dto));
+    }
+
+    @Transactional
+    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException {
+        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
+        else imageService.updateImage(file, store.getImage());
     }
 
     @Transactional
@@ -114,19 +134,41 @@ public class StoreService {
 
     @Transactional
     public void setOff(Boolean off, int year, int month, int day) {
-        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
+        LocalDate date = DateTools.makeResponseDateFormatLocalDate(year, month, day);
 
-        StoreState storeState = storeStateRepository.findByDate(dateString);
-        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), dateString));
+        StoreState storeState = storeStateRepository.findByDate(date);
+        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
         else storeState.setOff(off);
     }
 
-    public List<StoreStateDto> getClosedDays(int year, int month) throws WrongParameter {
+    public List<StoreStateDto> getClosedDays(int year, int month) {
         String start = DateTools.makeResponseDateFormatString(year, month, 1);
         String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
                 .map(StoreStateDto::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Integer getCalculatePreUser() {
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        Integer result = calculatePre.getPredictUser();
+
+        return result;
+    }
+
+    @Transactional
+    public Map<String, Integer> getCalculatePreFood() throws JsonProcessingException {
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+
+        return objectMapper.readValue(calculatePre.getPredictFood(), Map.class);
+    }
+
+    @Transactional
+    public Map<String, Integer> getCalculatePreMenu() throws JsonProcessingException {
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+
+        return objectMapper.readValue(calculatePre.getPredictMenu(), Map.class);
     }
 }

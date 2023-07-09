@@ -128,7 +128,7 @@ class UserApiControllerTest extends ControllerTestClass {
         {
             // Given
             UserInfoDto userInfoDto = new UserInfoDto();
-            Mockito.when(userService.getInfo(dto)).thenReturn(userInfoDto);
+            Mockito.when(userService.getInfo(null)).thenReturn(userInfoDto);
 
             // When
             mockMvc.perform(MockMvcRequestBuilders.get("/api/user/info")
@@ -138,7 +138,7 @@ class UserApiControllerTest extends ControllerTestClass {
                     .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userInfoDto)));
 
             // Then
-            Mockito.verify(userService, Mockito.times(1)).getInfo(dto);
+            Mockito.verify(userService, Mockito.times(1)).getInfo(null);
         }
     }
 

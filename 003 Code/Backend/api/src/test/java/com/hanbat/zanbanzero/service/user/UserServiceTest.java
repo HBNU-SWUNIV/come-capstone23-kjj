@@ -21,7 +21,7 @@ class UserServiceTest {
     private String username = "test";
     @BeforeEach
     void setup() {
-        final User user = new User(null, username, "1234", "ROLE_USER");
+        final User user = new User(null, null, null, null, username, "1234", "ROLE_USER");
 
         userRepository.save(user);
     }

@@ -1,5 +1,0 @@
-FROM openjdk:17-jdk
-
-COPY . .
-
-ENTRYPOINT ["java", "-jar", "build/libs/zanbanzero-0.0.1-SNAPSHOT.jar"]

@@ -19,7 +19,7 @@ public class LoginFilter implements Filter {
     private AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
 
-    private String loginEndPath = "/login";
+    private String loginEndPath = "/login/id";
 
     public LoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -55,10 +55,10 @@ public class LoginFilter implements Filter {
         UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
-        String JwtToken = JwtUtil.createToken(principalDetails);
-        String RefreshToken = JwtUtil.createRefreshToken(principalDetails);
+        String jwtToken = JwtUtil.createToken(principalDetails);
+        String refreshToken = JwtUtil.createRefreshToken(principalDetails);
 
-        response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + JwtToken);
-        response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + RefreshToken);
+        response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + jwtToken);
+        response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
     }
 }

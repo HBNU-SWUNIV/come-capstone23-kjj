@@ -75,9 +75,8 @@ public class OrderService {
 
     public int countPages(Long id) {
         Pageable pageable = PageRequest.of(0, pageSize);
-        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
 
-        return orderPage.getTotalPages();
+        return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
     }
 
 
@@ -91,8 +90,7 @@ public class OrderService {
 
     @Transactional
     public List<OrderDto> getOrdersPage(Long id, int page) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, pageable);
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, pageSize));
 
         return orderPage.getContent()
                 .stream()
@@ -121,7 +119,6 @@ public class OrderService {
         response.setContentType("image/png");
         response.setHeader("Content-Disposition", "inline; filename=qrcode.png");
         ImageIO.write(qrCode, "png", response.getOutputStream());
-
     }
 
     private BufferedImage createQRCode(String data) throws Exception{

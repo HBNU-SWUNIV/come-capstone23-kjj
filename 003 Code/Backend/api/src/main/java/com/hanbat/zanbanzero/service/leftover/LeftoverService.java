@@ -33,7 +33,6 @@ public class LeftoverService {
 
     private int dataSize = 5;
 
-
     @Transactional
     public void setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
@@ -67,7 +66,10 @@ public class LeftoverService {
     @Transactional
     public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) throws CantFindByIdException {
         Pageable pageable = PageRequest.of(page, dataSize);
-        List<Long> calculates = calculateRepository.findAllByOrderByIdDesc(pageable).getContent().stream().map(calculate -> calculate.getId()).collect(Collectors.toList());
+        List<Long> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
+                .getContent().stream()
+                .map(calculate -> calculate.getId())
+                .collect(Collectors.toList());
 
         List<LeftoverAndPreDto> result = new ArrayList<>();
         for (Long id : calculates) {
@@ -97,9 +99,7 @@ public class LeftoverService {
             Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
             if (leftover == null) result.add(new LeftoverDto(targetDate, 0.0));
             else result.add(LeftoverDto.of(leftover));
-
         }
-
         return result;
     }
 }

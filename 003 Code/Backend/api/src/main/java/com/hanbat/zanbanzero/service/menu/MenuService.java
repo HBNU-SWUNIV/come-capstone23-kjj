@@ -1,5 +1,7 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.MenuManagerInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
@@ -7,6 +9,7 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.menu.MenuWithInfo;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
@@ -15,6 +18,7 @@ import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
+import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,49 +29,47 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class MenuService {
 
-    private final MenuImageService menuImageService;
+    private final ImageService menuImageService;
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
 
-    @Cacheable(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public List<MenuDto> getMenus() {
-        List<Menu> menus = menuRepository.findAll();
+    private final String menuCacheKey = "1";
+    private final String cacheManager = "cacheManager";
 
-        return menus.stream()
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Cacheable(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    public List<MenuDto> getMenus() {
+        return menuRepository.findAll().stream()
                 .map((menu) -> MenuDto.of(menu))
                 .collect(Collectors.toList());
     }
 
-    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = "cacheManager")
+    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = cacheManager)
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
-        MenuInfo menu = menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new);
-
-        return MenuInfoDto.of(menu);
+        return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new));
     }
 
     @Transactional
     public List<MenuManagerInfoDto> getMenusForManager() {
-        List<Menu> menus = menuRepository.findAll();
-        List<MenuInfo> menuInfos = menuInfoRepository.findAll();
-
-        List<MenuManagerInfoDto> result = new ArrayList<>();
-        for (int i = 0; i < menus.size(); i++) result.add(MenuManagerInfoDto.of(menus.get(i), menuInfos.get(i)));
-
-        return result;
+        return menuRepository.findAllWithMenuInfo().stream()
+                .map(menu -> MenuManagerInfoDto.of(menu))
+                .collect(Collectors.toList());
     }
 
-    public Boolean isPlanner() { return menuRepository.existsByUsePlannerTrue(); }
+    public Boolean isPlanned() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
@@ -82,14 +84,29 @@ public class MenuService {
         menuFoodRepository.save(MenuFood.of(menu, data));
     }
 
+    public Map<String, Integer> getFood(Long id) throws CantFindByIdException, JsonProcessingException {
+        String result = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new).getFood();
+        return objectMapper.readValue(result, Map.class);
+    }
+
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
-    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id) throws CantFindByIdException, IOException {
+    public Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, JsonProcessingException {
+        MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        Map<String, Integer> old = objectMapper.readValue(menuFood.getFood(), Map.class);
+        old.putAll(map);
+
+        menuFood.setFood(objectMapper.writeValueAsString(old));
+        return old;
+    }
+
+    @Transactional
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    public void updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         if (file != null) {
-            if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file));
+            if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file, uploadDir));
             else menuImageService.updateImage(file, menu.getImage());
         }
 
@@ -98,18 +115,18 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public void deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        List<UserPolicy> policies = userPolicyRepository.findAllByDefaultMenu(id);
-        for (UserPolicy policy : policies) policy.setDefaultMenu(null);
-
+        userPolicyRepository.saveAll(userPolicyRepository.findAllByDefaultMenu(id).stream()
+                .peek(policy -> policy.setDefaultMenu(null))
+                .collect(Collectors.toList()));
         menuRepository.delete(menu);
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = "1", cacheManager = "cacheManager")
+    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
     public void setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 

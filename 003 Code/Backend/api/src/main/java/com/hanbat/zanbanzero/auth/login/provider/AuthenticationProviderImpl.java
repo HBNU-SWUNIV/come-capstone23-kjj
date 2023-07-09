@@ -25,7 +25,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    private String loginEndPath = "/login";
+    private String loginEndPath = "/login/id";
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {

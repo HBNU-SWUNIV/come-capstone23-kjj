@@ -61,7 +61,7 @@ public class CreateTodayOrder {
     @StepScope
     public JdbcCursorItemReader<UserPolicy> todayUserReader(@Value("#{jobParameters['today']}") String today) throws SQLException {
         initMenu();
-        String query = "select default_menu, user_id from user_policy where " + today + " = 1";
+        String query = "select default_menu, user_id from user_policy where " + today + " = 1 and default_menu";
         return new JdbcCursorItemReaderBuilder<UserPolicy>()
                 .name("jdbcCursorItemReader")
                 .sql(query)

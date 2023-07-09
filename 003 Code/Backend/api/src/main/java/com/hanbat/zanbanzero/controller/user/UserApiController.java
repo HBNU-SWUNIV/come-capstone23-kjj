@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.controller.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
+import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.exception.controller.exceptions.*;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,10 +21,17 @@ public class UserApiController {
     private final UserService userService;
 
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
-    @PostMapping("login")
+    @PostMapping("login/id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.status(HttpStatus.OK).body(userService.getInfoForUsername(username));
+    }
+
+    @Operation(summary="Keycloak 로그인", description="username과 password를 입력받아 로그인 시도")
+    @PostMapping("login/keycloak")
+    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
+        User user = (User) request.getAttribute("user");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.loginFromKeycloak(user));
     }
 
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")

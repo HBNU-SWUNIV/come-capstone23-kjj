@@ -26,7 +26,16 @@ public class CreateCalculatePreTasklet implements Tasklet {
     private static Map<Long, String> menuIdToNameMap = new HashMap<>();
     private static Map<String, Long> menuNameToIdMap = new HashMap<>();
 
-    private Long calculateCheck(Connection connection, String today) throws Exception {
+    private Long calculateCheck(Connection connection, String today, String day) throws Exception {
+        if (day.equals("monday")) {
+            String query = "insert into calculate(date, today, sales) values(?, ?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setString(1, today);
+                statement.setInt(2, 0);
+                statement.setInt(3, 0);
+                statement.executeUpdate();
+            }
+        }
         String query = "select id from calculate where date = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, today);
@@ -53,7 +62,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
 
     private Map<String, Integer> getUserPolicy(Connection connection, String day) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
-        String query = "select default_menu, COUNT(*) as count from user_policy where " + day + " = 1 group by default_menu";
+        String query = "select default_menu, COUNT(*) as count from user_policy where " + day + " = 1 and default_menu group by default_menu";
 
         try (ResultSet resultSet = connection.prepareStatement(query).executeQuery()) {
             while (resultSet.next()) {
@@ -104,12 +113,13 @@ public class CreateCalculatePreTasklet implements Tasklet {
         return result;
     }
 
-    private void savePredictData(Connection connection, Long id, int predictUser, String predictFood) throws SQLException {
-        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food) value(?, ?, ?)";
+    private void savePredictData(Connection connection, Long id, int predictUser, String predictFood, String predictMenu) throws SQLException {
+        String query = "insert into calculate_pre(calculate_id, predict_user, predict_food, predict_menu) values(?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
             statement.setInt(2, predictUser);
             statement.setString(3, predictFood);
+            statement.setString(4, predictMenu);
             statement.executeUpdate();
         }
     }
@@ -119,7 +129,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         Connection connection = dataSource.getConnection();
         JobParameters jobParameters = contribution.getStepExecution().getJobParameters();
 
-        Long calculateId = calculateCheck(connection, jobParameters.getString("today"));
+        Long calculateId = calculateCheck(connection, jobParameters.getString("today"), jobParameters.getString("day"));
         if (calculateId == null) {
             log.error("CreateCalculatePreTasklet - No calculate Data!");
             return null;
@@ -135,7 +145,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, Integer> predict = getPredictFood(connection, result);
         log.info("execute - getPredictFood END: " + predict);
-        savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict));
+        savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict), objectMapper.writeValueAsString(result));
 
         connection.close();
         clear();

@@ -30,6 +30,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
     MenuService menuService;
 
     private final Long testId = 1L;
+    private final String uploadDir = "img/menu";
 
     @Test
     void getMenus() throws Exception{
@@ -120,7 +121,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             // Given
             String expectedMsg = "수정되었습니다.";
             MenuUpdateDto expected = new MenuUpdateDto();
-            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId);
+            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId, uploadDir);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/update")
@@ -132,7 +133,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             assertEquals(expectedMsg, result.getResponse().getContentAsString());
             assertEquals(200, result.getResponse().getStatus());
 
-            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId);
+            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId, uploadDir);
         }
 
         // 2. 중복 상품명 등록
@@ -140,7 +141,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             // Given
             String expectedMsg = "데이터 중복입니다.";
             MenuUpdateDto expected = new MenuUpdateDto();
-            Mockito.doThrow(new SameNameException(expectedMsg)).when(menuService).updateMenu(expected,  null, testId);
+            Mockito.doThrow(new SameNameException(expectedMsg)).when(menuService).updateMenu(expected,  null, testId, uploadDir);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/update")
@@ -152,7 +153,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             assertEquals(expectedMsg, result.getResolvedException().getMessage());
             assertEquals(409, result.getResponse().getStatus());
 
-            Mockito.verify(menuService, Mockito.times(2)).updateMenu(expected, null, testId);
+            Mockito.verify(menuService, Mockito.times(2)).updateMenu(expected, null, testId, uploadDir);
         }
     }
 
@@ -163,7 +164,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             // Given
             String expectedMsg = "수정되었습니다.";
             MenuUpdateDto expected = new MenuUpdateDto();
-            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId);
+            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId, uploadDir);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/info/update")
@@ -175,7 +176,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             assertEquals(expectedMsg, result.getResponse().getContentAsString());
             assertEquals(200, result.getResponse().getStatus());
 
-            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId);
+            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId, uploadDir);
         }
     }
 

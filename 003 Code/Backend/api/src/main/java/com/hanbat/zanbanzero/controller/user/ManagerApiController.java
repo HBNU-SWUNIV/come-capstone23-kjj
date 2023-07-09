@@ -18,7 +18,7 @@ public class ManagerApiController {
     private final ManagerService managerService;
 
     @Operation(summary="관리자 로그인", description="username과 password를 입력받아 로그인 시도")
-    @PostMapping("login")
+    @PostMapping("login/id")
     public ResponseEntity<ManagerInfoDto> managerLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.status(HttpStatus.OK).body(managerService.getInfoForUsername(username));

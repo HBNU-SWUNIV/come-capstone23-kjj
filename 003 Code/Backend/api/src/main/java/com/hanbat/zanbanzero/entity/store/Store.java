@@ -16,12 +16,14 @@ public class Store {
 
     private String name;
     private String info;
+    private String image;
 
     public static Store of(Long id, StoreDto dto) {
         return new Store(
                 id,
                 dto.getName(),
-                dto.getInfo()
+                dto.getInfo(),
+                dto.getImage()
         );
     }
 
@@ -29,4 +31,5 @@ public class Store {
         info = dto.getInfo();
     }
     public void setName(StoreDto dto) { name = dto.getName(); }
+    public void setImage(String path) { image = path; }
 }

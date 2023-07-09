@@ -24,12 +24,7 @@ public class MenuInfo {
     private String details;
 
     public void patch(MenuUpdateDto dto) {
-        if (dto.getInfo() != null) {
-            this.info = dto.getInfo();
-        }
-
-        if (dto.getDetails() != null) {
-            this.details = dto.getDetails();
-        }
+        if (dto.getInfo() != null) this.info = dto.getInfo();
+        if (dto.getDetails() != null) this.details = dto.getDetails();
     }
 }

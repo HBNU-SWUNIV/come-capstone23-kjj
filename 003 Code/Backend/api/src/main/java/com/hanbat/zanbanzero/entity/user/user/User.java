@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
+import com.hanbat.zanbanzero.dto.user.LoginDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.order.Order;
@@ -48,6 +49,18 @@ public class User {
                 null,
                 null,
                 dto.getUsername(),
+                dto.getPassword(),
+                "ROLE_USER"
+        );
+    }
+
+    public static User of(LoginDto dto) {
+        return new User(
+                null,
+                null,
+                null,
+                null,
+                dto.getUsername() + "sso",
                 dto.getPassword(),
                 "ROLE_USER"
         );

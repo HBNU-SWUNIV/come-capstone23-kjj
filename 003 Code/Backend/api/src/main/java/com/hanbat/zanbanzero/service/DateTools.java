@@ -27,18 +27,28 @@ public class DateTools {
         return format.format(date);
     }
 
+    public static LocalDate makeResponseDateFormatLocalDate(int year, int month, int day) {
+        return LocalDate.of(year, month, day);
+    }
+
     public static int getLastDay(int year, int month) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(year, month - 1, 1);
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
-    public static String makeResponseDateFormatString(String origin_date) {
+    public static String makeResponseDateFormatString(String date) {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate result = LocalDate.parse(origin_date, inputFormatter);
+        LocalDate result = LocalDate.parse(date, inputFormatter);
 
         return result.format(formatter);
+    }
+
+    public static String makeResponseDateFormatString(LocalDate date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+
+        return date.format(formatter);
     }
 
     public static LocalDate getLastWeeksMonday(int type) throws WrongParameter {
