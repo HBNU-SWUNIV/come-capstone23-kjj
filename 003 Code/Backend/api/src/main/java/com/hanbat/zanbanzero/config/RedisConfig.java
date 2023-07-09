@@ -32,8 +32,6 @@ public class RedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
-    // 디폴트 : JdkSerializationRedisSerializer
-    // Json 데이터 직렬화 불가 -> GenericJackson2JsonRedisSerializer 변경
     @Bean
     public CacheManager cacheManager() {
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());

@@ -134,10 +134,10 @@ public class StoreService {
 
     @Transactional
     public void setOff(Boolean off, int year, int month, int day) {
-        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
+        LocalDate date = DateTools.makeResponseDateFormatLocalDate(year, month, day);
 
-        StoreState storeState = storeStateRepository.findByDate(dateString);
-        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), dateString));
+        StoreState storeState = storeStateRepository.findByDate(date);
+        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
         else storeState.setOff(off);
     }
 

@@ -96,7 +96,6 @@ public class StoreManagerApiController {
     @PostMapping("store/off/{year}/{month}/{day}")
     public ResponseEntity<String> setOff(@RequestBody StoreOffDto off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
         storeService.setOff(off.isOff(), year, month, day);
-        System.out.println(off);
         return ResponseEntity.ok().body("저장되었습니다.");
     }
 
