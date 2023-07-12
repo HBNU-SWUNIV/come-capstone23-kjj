@@ -35,8 +35,6 @@ public class CreateTodayOrder {
         this.dataSource = dataSource;
     }
 
-    public static Map<Long, String> getIdToNameMap() { return idToNameMap; }
-
     public static Map<String, Integer> getNameToCostMap() {
         return nameToCostMap;
     }
@@ -75,6 +73,7 @@ public class CreateTodayOrder {
 
     @Bean
     public ItemProcessor<UserPolicy, Order> createOrderProcessor() {
+
         return item -> {
             boolean exists;
             Long userId = item.getUser_id();
@@ -97,6 +96,7 @@ public class CreateTodayOrder {
                     int cost = nameToCostMap.get(menuName);
 
                     String insertOrderQuery = "insert into orders (user_id, menu, cost, order_date, recognize) values (?, ?, ?, ?, ?)";
+
                     try (PreparedStatement insertStatement = connection.prepareStatement(insertOrderQuery);) {
                         insertStatement.setLong(1, userId);
                         insertStatement.setString(2, menuName);

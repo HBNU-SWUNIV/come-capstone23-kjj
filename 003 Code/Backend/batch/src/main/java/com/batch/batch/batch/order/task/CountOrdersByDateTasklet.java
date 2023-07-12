@@ -1,6 +1,8 @@
 package com.batch.batch.batch.order.task;
 
+import com.batch.batch.tools.ConnectionHandler;
 import com.batch.batch.tools.DateTools;
+import com.batch.batch.tools.SlackTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -12,6 +14,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +22,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CountOrdersByDateTasklet implements Tasklet {
 
+    private final ConnectionHandler connectionHandler;
     private final DataSource dataSource;
     private final CreateTodayOrder createTodayOrder;
     private Map<String, Integer> resultMap = new HashMap<>();
 
-    private Long initOrder(Connection connection, String date, int today, int sales) throws Exception{
+    private Long initOrder(Connection connection, String date, int today, int sales) throws SQLException{
         Long id;
 
         String initQuery = "insert into calculate(date, today, sales) value(?, ?, ?)";
@@ -44,7 +48,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
         return id;
     }
 
-    private int countTodayOrders(Connection connection, String date) throws Exception{
+    private int countTodayOrders(Connection connection, String date) throws SQLException {
         int result = 0;
 
         String getQuery = "select menu, count(*) as count from orders where order_date = ? and recognize = 1 GROUP BY menu;";
@@ -81,24 +85,23 @@ public class CountOrdersByDateTasklet implements Tasklet {
         Map<String, Integer> nameToCostMap = createTodayOrder.getNameToCostMap();
         Connection connection = dataSource.getConnection();
 
-        int count = countTodayOrders(connection, date);
-        int sales = getSales();
-        Long id = initOrder(connection, date, count, sales);
-
-        for (String key : resultMap.keySet()) {
-            log.info(key);
-            String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setLong(1, id);
-                insertStatement.setString(2, key);
-                insertStatement.setInt(3, resultMap.get(key));
-                insertStatement.setInt(4, resultMap.get(key) * nameToCostMap.get(key));
-                insertStatement.executeUpdate();
+        connectionHandler.execute(connection, () -> {
+            int count = countTodayOrders(connection, date);
+            int sales = getSales();
+            Long id = initOrder(connection, date, count, sales);
+            for (String key : resultMap.keySet()) {
+                String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
+                try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                    insertStatement.setLong(1, id);
+                    insertStatement.setString(2, key);
+                    insertStatement.setInt(3, resultMap.get(key));
+                    insertStatement.setInt(4, resultMap.get(key) * nameToCostMap.get(key));
+                    insertStatement.executeUpdate();
+                }
             }
-        }
+            clear();
+        });
 
-        connection.close();
-        clear();
         return RepeatStatus.FINISHED;
     }
 }
