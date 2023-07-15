@@ -3,7 +3,6 @@ package com.hanbat.zanbanzero.service.planner;
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.planner.Planner;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.planner.PlannerRepository;
 import com.hanbat.zanbanzero.service.DateTools;

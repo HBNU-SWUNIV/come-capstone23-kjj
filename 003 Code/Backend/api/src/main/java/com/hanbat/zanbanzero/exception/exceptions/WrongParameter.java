@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.exception.controller.exceptions;
+package com.hanbat.zanbanzero.exception.exceptions;
 
 public class WrongParameter extends  Exception{
 

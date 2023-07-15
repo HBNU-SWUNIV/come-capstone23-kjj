@@ -4,14 +4,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.exception.controller.exceptions.*;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 @RequiredArgsConstructor
 @RestController
@@ -20,6 +27,11 @@ public class UserApiController {
 
     private final UserService userService;
 
+    @Value("${my.keycloak.host}") private String keycloakHost;
+    @Value("${my.keycloak.realm_name}") private String realmName;
+    @Value("${my.keycloak.client_id}") private String clientId;
+    @Value("${my.keycloak.redirect_uri}") private String redirectUri;
+
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("login/id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
@@ -27,11 +39,40 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.getInfoForUsername(username));
     }
 
-    @Operation(summary="Keycloak 로그인", description="username과 password를 입력받아 로그인 시도")
+    @Operation(summary="Keycloak 로그인 페이지")
+    @GetMapping("login/keycloak/page")
+    public RedirectView redirectKeycloakLoginPage() {
+        RedirectView redirectView = new RedirectView();
+        String uri = keycloakHost +
+                "/auth/realms/" +
+                realmName +
+                "/protocol/openid-connect/auth" +
+                "?response_type=code" +
+                "&client_id=" + clientId +
+                "&scope=profile email roles openid" +
+                "&redirect_uri=" + redirectUri;
+        redirectView.setUrl(uri);
+        return redirectView;
+    }
+
+    @GetMapping("login/keycloak/redirect")
+    public ResponseEntity<String> redirectAfterKeycloakLoginPage() {
+        return ResponseEntity.status(HttpStatus.OK).body("keycloak login success");
+    }
+
+    @Operation(summary="Keycloak 로그인")
+    @Parameters({
+            @Parameter(name = "code", description = "Keycloak에서 발급받은 code", required = true, in = ParameterIn.QUERY)})
     @PostMapping("login/keycloak")
     public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
         User user = (User) request.getAttribute("user");
         return ResponseEntity.status(HttpStatus.OK).body(userService.loginFromKeycloak(user));
+    }
+
+    @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
+    @PostMapping("login/refresh")
+    public ResponseEntity<String> refreshToken() {
+        return ResponseEntity.ok("refresh success");
     }
 
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")

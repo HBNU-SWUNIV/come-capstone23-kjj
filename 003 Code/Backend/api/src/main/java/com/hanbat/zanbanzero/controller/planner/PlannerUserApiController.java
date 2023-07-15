@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.controller.planner;
 
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.planner.PlannerService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

@@ -1,9 +1,8 @@
 package com.hanbat.zanbanzero.auth.login.filter.util;
 
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Value;
 
 public class CustomUriMapper {
     private CreateTokenInterface createTokenInterface;

@@ -1,8 +1,8 @@
 package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.JwtException;
 import com.hanbat.zanbanzero.service.user.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;

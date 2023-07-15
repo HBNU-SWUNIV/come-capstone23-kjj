@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.auth.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,8 @@ public class JwtUtil {
         return JWT.create()
                 .withSubject(JwtTemplate.TOKEN_PREFIX)
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtTemplate.EXPIRATION_TIME_REFRESH))
-                .withClaim("hash", userDetails.getUsername().hashCode())
+                .withClaim("username", userDetails.getUsername())
+                .withClaim("type", JwtTemplate.REFRESH_TYPE)
                 .sign(Algorithm.HMAC256(JwtTemplate.SECRET));
     }
 
@@ -37,16 +39,23 @@ public class JwtUtil {
         return username;
     }
 
-    public Boolean checkJwt(String username, String token) {
-        if (!username.equals(getUsernameFromToken(token))) {
-            return false;
-        }
-        return true;
+    public static String getTypeFromRefreshToken(String token){
+        token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
+
+        String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("type").asString();
+        return username;
     }
 
-    // 만료되었는지
-    private boolean isTokenExpired(String token) {
+    public static boolean isTokenExpired(String token) {
+        token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
+
         Date exp = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("exp").asDate();
         return exp.before(new Date());
+    }
+
+    public static String getUsernameFromRefreshToken(String token) {
+        String username = getUsernameFromToken(token);
+        if (username == null) throw new JwtTokenException("username can not be null");
+        return username;
     }
 }

@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
+import com.hanbat.zanbanzero.auth.login.dao.KeycloakUserInfoDAO;
 import com.hanbat.zanbanzero.dto.user.LoginDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
@@ -8,6 +9,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.Random;
 
 @Entity
 @AllArgsConstructor
@@ -50,19 +52,28 @@ public class User {
                 null,
                 dto.getUsername(),
                 dto.getPassword(),
-                "ROLE_USER"
+                dto.getRoles()
         );
     }
 
-    public static User of(LoginDto dto) {
+    public static User of(KeycloakUserInfoDAO dao, String roles) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+        int length = 10;
+
+        for (int i = 0; i < length; i++) {
+            int digit = random.nextInt(10);
+            sb.append(digit);
+        }
+
         return new User(
                 null,
                 null,
                 null,
                 null,
-                dto.getUsername() + "sso",
-                dto.getPassword(),
-                "ROLE_USER"
+                dao.getSub() + "_keycloak",
+                sb.toString(),
+                roles
         );
     }
 

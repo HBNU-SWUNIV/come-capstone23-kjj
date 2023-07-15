@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.controller.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

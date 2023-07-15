@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.service;
 
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
