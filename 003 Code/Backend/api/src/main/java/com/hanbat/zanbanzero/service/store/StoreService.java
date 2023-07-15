@@ -134,7 +134,7 @@ public class StoreService {
 
     @Transactional
     public void setOff(Boolean off, int year, int month, int day) {
-        LocalDate date = DateTools.makeResponseDateFormatLocalDate(year, month, day);
+        LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
         if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
@@ -142,11 +142,11 @@ public class StoreService {
     }
 
     public List<StoreStateDto> getClosedDays(int year, int month) {
-        String start = DateTools.makeResponseDateFormatString(year, month, 1);
-        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = DateTools.makeDateFormatLocalDate(year, month, 1);
+        LocalDate end = DateTools.makeDateFormatLocalDate(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
-                .map(StoreStateDto::of)
+                .map(state -> StoreStateDto.of(state))
                 .collect(Collectors.toList());
     }
 

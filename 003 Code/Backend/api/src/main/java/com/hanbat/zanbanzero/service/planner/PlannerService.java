@@ -26,7 +26,7 @@ public class PlannerService {
 
     @Transactional
     public void setPlanner(PlannerDto dto, int year, int month, int day) {
-        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
+        String dateString = DateTools.makeDateFormatString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -38,7 +38,7 @@ public class PlannerService {
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        String date = DateTools.makeResponseDateFormatString(year, month, day);
+        String date = DateTools.makeDateFormatString(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -46,8 +46,8 @@ public class PlannerService {
     }
 
     public List<PlannerDto> getPlanner(int year, int month) {
-        String start = DateTools.makeResponseDateFormatString(year, month, 1);
-        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
+        String start = DateTools.makeDateFormatString(year, month, 1);
+        String end = DateTools.makeDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
                 .map(planner -> PlannerDto.of(planner))

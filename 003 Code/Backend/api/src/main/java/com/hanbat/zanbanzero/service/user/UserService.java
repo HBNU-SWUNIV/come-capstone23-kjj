@@ -16,7 +16,6 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -70,7 +69,8 @@ public class UserService implements UserDetailsService {
         return UserInfoDto.of(user);
     }
 
-    public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
+    public UserMypageDto getMyPage(String username) throws CantFindByIdException, JsonProcessingException {
+        Long id = userRepository.findByUsername(username).getId();
         UserMypage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
 
         return UserMypageDto.createUserMyPageDto(userMyPage);
@@ -83,22 +83,29 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void setUserDatePolicy(UserPolicyDto dto, Long id) throws CantFindByIdException {
+    public UserPolicyDto setUserDatePolicy(UserPolicyDto dto, String username) throws CantFindByIdException {
+        Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         policy.setPolicy(dto);
+
+        return UserPolicyDto.of(policy);
     }
 
     @Transactional
-    public void setUserMenuPolicy(Long userId, Long menuId) throws CantFindByIdException, WrongParameter {
+    public UserPolicyDto setUserMenuPolicy(String username, Long menuId) throws CantFindByIdException, WrongParameter {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
 
-        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        Long id = userRepository.findByUsername(username).getId();
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         policy.setDefaultMenu(menuId);
+
+        return UserPolicyDto.of(policy);
     }
 
-    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
+    public UserPolicyDto getUserPolicy(String username) throws CantFindByIdException {
+        Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
-        return UserPolicyDto.createUserPolicyDto(policy);
+        return UserPolicyDto.of(policy);
     }
 
     public UserInfoDto getInfoForUsername(String username) {

@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.dto.order;
 
 import com.hanbat.zanbanzero.entity.order.Order;
+import com.hanbat.zanbanzero.service.DateTools;
 import lombok.*;
 
 
@@ -21,7 +22,7 @@ public class OrderDto {
                 order.getId(),
                 order.getMenu(),
                 order.getCost(),
-                order.getOrderDate(),
+                DateTools.makeDateFormatString(order.getOrderDate()),
                 order.isRecognize()
         );
     }

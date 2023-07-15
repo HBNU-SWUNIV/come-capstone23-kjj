@@ -17,7 +17,7 @@ public class UserPolicyDto {
 
     private Long defaultMenu;
 
-    public static UserPolicyDto createUserPolicyDto(UserPolicy policy) {
+    public static UserPolicyDto of(UserPolicy policy) {
         return new UserPolicyDto(
                 policy.isMonday(),
                 policy.isTuesday(),

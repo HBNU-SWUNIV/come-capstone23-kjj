@@ -1,6 +1,8 @@
 package com.hanbat.zanbanzero.controller.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
@@ -106,34 +108,33 @@ public class UserApiController {
     }
 
     @Operation(summary="일반 유저 마이페이지 조회", description="유저 상세정보 조회")
-    @GetMapping("{id}/page")
-    public ResponseEntity<UserMypageDto> getMyPage(@PathVariable Long id) throws CantFindByIdException, JsonProcessingException {
-        UserMypageDto userMyPageDto = userService.getMyPage(id);
+    @GetMapping("page")
+    public ResponseEntity<UserMypageDto> getMyPage(HttpServletRequest request) throws CantFindByIdException, JsonProcessingException {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userMyPageDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getMyPage(username));
     }
 
     @Operation(summary="일반 유저 요일정책 설정", description="유저 요일정책 설정")
-    @PatchMapping("{id}/policy/date")
-    public ResponseEntity<String> setUserDatePolicy(@RequestBody UserPolicyDto dto, @PathVariable Long id) throws CantFindByIdException {
-        userService.setUserDatePolicy(dto, id);
-
-        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+    @PatchMapping("policy/date")
+    public ResponseEntity<UserPolicyDto> setUserDatePolicy(HttpServletRequest request, @RequestBody UserPolicyDto dto) throws CantFindByIdException {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.setUserDatePolicy(dto, username));
     }
 
     @Operation(summary="일반 유저 메뉴정책 설정", description="유저 메뉴정책 설정")
-    @PatchMapping("{user_id}/policy/menu/{menu_id}")
-    public ResponseEntity<String> setUserMenuPolicy(@PathVariable Long user_id, @PathVariable Long menu_id) throws CantFindByIdException, WrongParameter {
-        userService.setUserMenuPolicy(user_id, menu_id);
+    @PatchMapping("policy/menu/{menu_id}")
+    public ResponseEntity<UserPolicyDto> setUserMenuPolicy(HttpServletRequest request, @PathVariable Long menu_id) throws CantFindByIdException, WrongParameter {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body("설정되었습니다.");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.setUserMenuPolicy(username, menu_id));
     }
 
     @Operation(summary="일반 유저 정책 조회", description="유저 요일정책 조회")
-    @GetMapping("{id}/policy/date")
-    public ResponseEntity<UserPolicyDto> getUserPolicy(@PathVariable Long id) throws CantFindByIdException {
-        UserPolicyDto dto = userService.getUserPolicy(id);
+    @GetMapping("policy/date")
+    public ResponseEntity<UserPolicyDto> getUserPolicy(HttpServletRequest request) throws CantFindByIdException {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserPolicy(username));
     }
 }

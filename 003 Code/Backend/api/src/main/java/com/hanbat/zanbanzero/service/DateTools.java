@@ -21,13 +21,13 @@ public class DateTools {
         return format.format(date);
     }
 
-    public static String makeResponseDateFormatString(int year, int month, int day) {
+    public static String makeDateFormatString(int year, int month, int day) {
         Date date = new Date(year - 1900, month - 1, day);
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         return format.format(date);
     }
 
-    public static LocalDate makeResponseDateFormatLocalDate(int year, int month, int day) {
+    public static LocalDate makeDateFormatLocalDate(int year, int month, int day) {
         return LocalDate.of(year, month, day);
     }
 
@@ -37,7 +37,7 @@ public class DateTools {
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
-    public static String makeResponseDateFormatString(String date) {
+    public static String makeDateFormatString(String date) {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
         LocalDate result = LocalDate.parse(date, inputFormatter);
@@ -45,7 +45,7 @@ public class DateTools {
         return result.format(formatter);
     }
 
-    public static String makeResponseDateFormatString(LocalDate date) {
+    public static String makeDateFormatString(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         return date.format(formatter);
@@ -71,5 +71,9 @@ public class DateTools {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         return date.format(formatter);
+    }
+
+    public static LocalDate toFormatterLocalDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
     }
 }
