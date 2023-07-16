@@ -19,7 +19,6 @@ public class StoreUserApiController {
     @Operation(summary="식당 정보 조회")
     @GetMapping("store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException {
-        StoreDto result = storeService.getStoreData();
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.ok(storeService.getStoreData());
     }
 }

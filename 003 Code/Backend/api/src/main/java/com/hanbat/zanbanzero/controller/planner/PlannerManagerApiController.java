@@ -16,8 +16,7 @@ public class PlannerManagerApiController {
 
     @Operation(summary="식단표 관리", description="n월 n일의 식단표 업로드(추가, 수정)")
     @PostMapping("planner/{year}/{month}/{day}")
-    public ResponseEntity<String> setPlanner(@RequestBody PlannerDto dto,@PathVariable int year, @PathVariable int month, @PathVariable int day) {
-        service.setPlanner(dto, year, month, day);
-        return ResponseEntity.ok().body("저장되었습니다.");
+    public ResponseEntity<PlannerDto> setPlanner(@RequestBody PlannerDto dto,@PathVariable int year, @PathVariable int month, @PathVariable int day) {
+        return ResponseEntity.ok(service.setPlanner(dto, year, month, day));
     }
 }

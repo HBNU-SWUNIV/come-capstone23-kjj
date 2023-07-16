@@ -34,7 +34,7 @@ public class LeftoverService {
     private int dataSize = 5;
 
     @Transactional
-    public void setLeftover(LeftoverDto dto) throws WrongParameter {
+    public LeftoverDto setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
         if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
 
@@ -44,6 +44,7 @@ public class LeftoverService {
             Leftover result = Leftover.of(leftoverPreRepository.getReferenceById(target.getId()), dto);
             leftoverRepository.save(result);
         }
+        return LeftoverDto.of(leftover);
     }
 
     public int getAllLeftoverPage() {

@@ -9,14 +9,14 @@ import java.sql.Connection;
 @RequiredArgsConstructor
 public class ConnectionHandler {
     private final SlackTools slackTools;
-    public void execute(Connection connection, ExceptionRunnable codeBlock) throws Exception {
+    public void execute(Connection connection, ExceptionRunnable runnable) throws Exception {
         try {
             connection.setAutoCommit(false);
-            codeBlock.run();
+            runnable.run();
             connection.commit();
         } catch (Exception e) {
             connection.rollback();
-            slackTools.sendSlackMessage(e, codeBlock.getClass().getName());
+            slackTools.sendSlackMessage(e, runnable.getClass().getName());
             throw e;
         } finally {
             connection.close();

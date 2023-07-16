@@ -1,6 +1,9 @@
 package com.hanbat.zanbanzero.controller.user;
 
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
+import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.JwtException;
 import com.hanbat.zanbanzero.service.user.ManagerService;
@@ -21,20 +24,13 @@ public class ManagerApiController {
     @PostMapping("login/id")
     public ResponseEntity<ManagerInfoDto> managerLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
-        return ResponseEntity.status(HttpStatus.OK).body(managerService.getInfoForUsername(username));
+        return ResponseEntity.ok(managerService.getInfoForUsername(username));
     }
 
     @Operation(summary="관리자 대표정보 조회", description="username만 입력받아 정보조회")
     @GetMapping("info")
-    public ResponseEntity<ManagerInfoDto> getInfo() throws JwtException, CantFindByIdException {
-        ManagerInfoDto managerDto = managerService.getInfo();
-        return ResponseEntity.status(HttpStatus.OK).body(managerDto);
-    }
-
-    @Operation(summary="관리자 아이디 변경", description="새 username 입력")
-    @PatchMapping("login-id")
-    public ResponseEntity<String> setManagerNickname(@RequestBody ManagerInfoDto dto) throws CantFindByIdException {
-        managerService.setManagerLoginId(dto.getLoginId());
-        return ResponseEntity.status(HttpStatus.OK).body("변경되었습니다.");
+    public ResponseEntity<ManagerInfoDto> getInfo(HttpServletRequest request) throws JwtException, CantFindByIdException {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
+        return ResponseEntity.ok(managerService.getInfo(username));
     }
 }

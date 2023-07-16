@@ -48,7 +48,7 @@ public class BatchScheduler {
                 .toJobParameters();
     }
 
-    @Scheduled(cron = "0 30 1 * * ?")
+    @Scheduled(cron = "0 45 0 * * ?")
     public void runOrderJob() throws Exception {
         String today = DateTools.getToday();
         String date = DateTools.getDate();

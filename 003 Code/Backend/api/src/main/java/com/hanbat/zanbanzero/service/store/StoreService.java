@@ -61,10 +61,10 @@ public class StoreService {
     }
 
     @Transactional
-    public void setSetting(StoreDto dto) throws SameNameException {
+    public StoreDto setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
-        storeRepository.save(Store.of(finalId, dto));
+        return StoreDto.of(storeRepository.save(Store.of(finalId, dto)));
     }
 
     @Transactional
@@ -133,12 +133,13 @@ public class StoreService {
     }
 
     @Transactional
-    public void setOff(Boolean off, int year, int month, int day) {
+    public StoreStateDto setOff(Boolean off, int year, int month, int day) {
         LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
+        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
         else storeState.setOff(off);
+        return StoreStateDto.of(storeState);
     }
 
     public List<StoreStateDto> getClosedDays(int year, int month) {

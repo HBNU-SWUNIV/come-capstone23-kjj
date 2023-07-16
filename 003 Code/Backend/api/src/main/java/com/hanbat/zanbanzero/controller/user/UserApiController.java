@@ -38,7 +38,7 @@ public class UserApiController {
     @PostMapping("login/id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getInfoForUsername(username));
+        return ResponseEntity.ok(userService.getInfoForUsername(username));
     }
 
     @Operation(summary="Keycloak 로그인 페이지")
@@ -59,7 +59,7 @@ public class UserApiController {
 
     @GetMapping("login/keycloak/redirect")
     public ResponseEntity<String> redirectAfterKeycloakLoginPage() {
-        return ResponseEntity.status(HttpStatus.OK).body("keycloak login success");
+        return ResponseEntity.ok("keycloak login success");
     }
 
     @Operation(summary="Keycloak 로그인")
@@ -68,7 +68,7 @@ public class UserApiController {
     @PostMapping("login/keycloak")
     public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
         User user = (User) request.getAttribute("user");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.loginFromKeycloak(user));
+        return ResponseEntity.ok(userService.loginFromKeycloak(user));
     }
 
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
@@ -83,7 +83,7 @@ public class UserApiController {
         if (!dto.checkForm()) throw new WrongRequestDetails("잘못된 정보입니다.");
         userService.join(dto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("회원가입에 성공했습니다.");
+        return ResponseEntity.ok("회원가입에 성공했습니다.");
     }
 
     @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")
@@ -92,7 +92,7 @@ public class UserApiController {
         if (!dto.checkForm()) throw new WrongRequestDetails("잘못된 정보입니다.");
         userService.withdraw(dto);
 
-        return ResponseEntity.status(HttpStatus.OK).body("탈퇴되었습니다.");
+        return ResponseEntity.ok("탈퇴되었습니다.");
     }
 
     @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복체크")
@@ -112,14 +112,14 @@ public class UserApiController {
     public ResponseEntity<UserMypageDto> getMyPage(HttpServletRequest request) throws CantFindByIdException, JsonProcessingException {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getMyPage(username));
+        return ResponseEntity.ok(userService.getMyPage(username));
     }
 
     @Operation(summary="일반 유저 요일정책 설정", description="유저 요일정책 설정")
     @PatchMapping("policy/date")
     public ResponseEntity<UserPolicyDto> setUserDatePolicy(HttpServletRequest request, @RequestBody UserPolicyDto dto) throws CantFindByIdException {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
-        return ResponseEntity.status(HttpStatus.OK).body(userService.setUserDatePolicy(dto, username));
+        return ResponseEntity.ok(userService.setUserDatePolicy(dto, username));
     }
 
     @Operation(summary="일반 유저 메뉴정책 설정", description="유저 메뉴정책 설정")
@@ -127,7 +127,7 @@ public class UserApiController {
     public ResponseEntity<UserPolicyDto> setUserMenuPolicy(HttpServletRequest request, @PathVariable Long menu_id) throws CantFindByIdException, WrongParameter {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.setUserMenuPolicy(username, menu_id));
+        return ResponseEntity.ok(userService.setUserMenuPolicy(username, menu_id));
     }
 
     @Operation(summary="일반 유저 정책 조회", description="유저 요일정책 조회")
@@ -135,6 +135,6 @@ public class UserApiController {
     public ResponseEntity<UserPolicyDto> getUserPolicy(HttpServletRequest request) throws CantFindByIdException {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
-        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserPolicy(username));
+        return ResponseEntity.ok(userService.getUserPolicy(username));
     }
 }

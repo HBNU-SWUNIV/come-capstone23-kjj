@@ -22,14 +22,12 @@ public class MenuUserApiController {
     @Operation(summary="전체 메뉴 조회")
     @GetMapping("menu")
     public ResponseEntity<List<MenuDto>> getMenus() {
-        List<MenuDto> menus = menuService.getMenus();
-        return ResponseEntity.status(HttpStatus.OK).body(menus);
+        return ResponseEntity.ok(menuService.getMenus());
     }
 
     @Operation(summary="특정 메뉴 상세정보 조회")
     @GetMapping("menu/{id}")
     public ResponseEntity<MenuInfoDto> getMenuInfo(@PathVariable Long id) throws CantFindByIdException {
-        MenuInfoDto menuDto = menuService.getMenuInfo(id);
-        return ResponseEntity.status(HttpStatus.OK).body(menuDto);
+        return ResponseEntity.ok(menuService.getMenuInfo(id));
     }
 }

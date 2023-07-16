@@ -25,16 +25,16 @@ public class PlannerService {
     }
 
     @Transactional
-    public void setPlanner(PlannerDto dto, int year, int month, int day) {
+    public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
         String dateString = DateTools.makeDateFormatString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
             dto.setDate(dateString);
-            repository.save(Planner.of(dto, getPlannerMenu()));
+            planner = repository.save(Planner.of(dto, getPlannerMenu()));
         }
         else planner.setMenus(dto.getMenus());
-
+        return PlannerDto.of(planner);
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
