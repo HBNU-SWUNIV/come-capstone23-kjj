@@ -1,10 +1,16 @@
-import { Outlet } from "react-router-dom";
-import Dashboard from "./dashboard/Dashboard";
+import { useKeycloak } from '@react-keycloak/web';
+import { Outlet } from 'react-router-dom';
 
 function App() {
+  const { initialized } = useKeycloak();
+
+  if (!initialized) {
+    return <>Loading...</>;
+  }
+
   return (
-    <div className="App">
-      <Outlet/>
+    <div>
+      <Outlet />
     </div>
   );
 }
