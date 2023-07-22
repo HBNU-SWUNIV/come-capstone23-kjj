@@ -1,81 +1,66 @@
-import * as React from "react";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import Stack from "@mui/material/Stack";
-import Drawerheader from "../components/Drawerheader";
-import Copyright from "../components/Copyright";
-import Toolbar from "@mui/material/Toolbar";
-import MuiAlert from "@mui/material/Alert";
-import Snackbar from "@mui/material/Snackbar";
-import Calander2 from "../components/Calander2";
-import Button from "@mui/material/Button";
+import * as React from 'react';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Drawerheader from '../components/Drawerheader';
+import Copyright from '../components/Copyright';
+import Toolbar from '@mui/material/Toolbar';
+import Snackbar from '@mui/material/Snackbar';
+import Calander2 from '../components/Calander2';
+import Button from '@mui/material/Button';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export default function Dayoff() {
   const [state, setState] = React.useState({
     open: false,
-    vertical: "top",
-    horizontal: "center",
+    vertical: 'top',
+    horizontal: 'center',
   });
   const { vertical, horizontal, open } = state;
 
   const handleClick = (newState) => () => {
     setState({ ...newState, open: true });
-    console.log("pages");
   };
 
   const handleClose = () => {
     setState({ ...state, open: false });
   };
-  // React.useEffect(() =>{
-  //   handleClick({})
-  // },[])
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <Drawerheader pages={"휴일설정"} />
+        <Drawerheader pages={'휴일설정'} />
 
         <Box
           component="main"
           sx={{
-            display: "flex",
-            flexDirection: "column",
+            display: 'flex',
+            flexDirection: 'column',
             backgroundColor: (theme) =>
-              theme.palette.mode === "light"
+              theme.palette.mode === 'light'
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],
             flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
-            display: "flex",
+            height: '100vh',
+            overflow: 'auto',
+            display: 'flex',
           }}
         >
           <Toolbar />
           <Container
             maxWidth="sm"
-            sx={{ mt: 4, mb: 4, display: "flex", flexDirection: "column" }}
+            sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column' }}
           >
-            <Typography
-              variant="h5"
-              align="center"
-              color="text.secondary"
-              paragraph
-            >
+            <Typography variant="h5" align="center" color="text.secondary" paragraph>
               달력에서 요일을 클릭해서 휴일을 설정해주세요.
             </Typography>
             <Typography
-              sx={{ whiteSpace: "nowrap" }}
+              sx={{ whiteSpace: 'nowrap' }}
               variant="h5"
               align="center"
               color="text.secondary"
@@ -84,9 +69,9 @@ export default function Dayoff() {
               휴일은 달력에 빨간색으로 표시됩니다.
             </Typography>
             <Button
-              sx={{ width: "100%" }}
+              sx={{ width: '100%' }}
               color="error"
-              onClick={handleClick({ vertical: "top", horizontal: "center" })}
+              onClick={handleClick({ vertical: 'top', horizontal: 'center' })}
             >
               주의사항 보기
             </Button>

@@ -6,16 +6,15 @@ import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import keycloak, { initOptions } from './Keycloak';
+import { CookiesProvider } from 'react-cookie';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <ReactKeycloakProvider initOptions={initOptions} authClient={keycloak}>
-    <RouterProvider router={router} />
+    <CookiesProvider>
+      <RouterProvider router={router} />
+    </CookiesProvider>
   </ReactKeycloakProvider>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
-// onEvent={onKeycloakEvent}

@@ -7,8 +7,6 @@ function App() {
   if (!initialized) {
     return <>Loading...</>;
   }
-  // usekeycloak 에서 authenticated 는 idToken 과 token 여부로 결정된다. */
-  // () => keycloak.logout()
 
   return (
     <div>

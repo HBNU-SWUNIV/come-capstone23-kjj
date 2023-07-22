@@ -13,9 +13,10 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Copyright from '../components/Copyright';
 import background from '../assets/capstone_background.png';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
+import { useCookies } from 'react-cookie';
 
 const defaultTheme = createTheme();
 
@@ -23,28 +24,27 @@ export default function Login() {
   const [username, setUsername] = React.useState('');
   const [password, setPassword] = React.useState('');
   const navigate = useNavigate();
-  const { keycloak, initialized } = useKeycloak();
+  const { keycloak } = useKeycloak();
+  const [cookies, setCookie] = useCookies(['accesstoken']);
+
   const onSubmit = (e) => {
     e.preventDefault();
     let body = { username, password };
-    // axios
-    //   .post(`/api/user/login/keycloak/page`, body)
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       axios.get('/api/manager/setting').then((res) => {
-    //         res.data.info === '' ? navigate('/loginfirst') : navigate('/home');
-    //       });
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     if (err.response.status === 401) {
-    //       alert('ID 또는 PASSWORD를 확인하세요.');
-    //     }
-    //   });
-    axios.get('/api/user/login/keycloak/page').then((res) => console.log(res));
+    axios
+      .post(`/api/user/login/keycloak?token=${keycloak.token}`, body)
+      .then((res) => {
+        const apitoken = res.headers.authorization;
+        const [, accesstoken] = apitoken.split('Bearer ');
+        const apitoken2 = res.headers.refresh_token;
+        const [, refreshtoken] = apitoken2.split('Bearer ');
+        setCookie('accesstoken', accesstoken);
+        setCookie('refreshtoken', refreshtoken);
+        navigate('/home');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
-
-  console.log(keycloak);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -109,13 +109,8 @@ export default function Login() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              {/* <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 로그인
-              </Button> */}
-              <Button>
-                <Link to="http://kjj.kjj.r-e.kr:8080/api/user/login/keycloak/page">
-                  로그인
-                </Link>
               </Button>
 
               <Copyright sx={{ mt: 5 }} />
