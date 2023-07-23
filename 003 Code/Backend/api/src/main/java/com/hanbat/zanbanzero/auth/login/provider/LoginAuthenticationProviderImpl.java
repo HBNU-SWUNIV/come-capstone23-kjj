@@ -19,13 +19,11 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationProviderImpl implements AuthenticationProvider {
+public class LoginAuthenticationProviderImpl implements AuthenticationProvider {
 
     private final ManagerService managerService;
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    private String loginEndPath = "/login/id";
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -35,10 +33,10 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
 
         UserDetails principalDetails = null;
 
-        if (uri.endsWith("/user" + loginEndPath)) {
+        if (uri.startsWith("/api/user")) {
             principalDetails = userService.loadUserByUsername(username);
         }
-        else if (uri.endsWith("/manager" + loginEndPath)) {
+        else if (uri.endsWith("/api/manager")) {
             principalDetails = managerService.loadUserByUsername(username);
         }
 

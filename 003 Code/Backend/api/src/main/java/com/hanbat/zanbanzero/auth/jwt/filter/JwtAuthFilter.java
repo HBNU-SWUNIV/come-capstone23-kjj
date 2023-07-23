@@ -27,15 +27,6 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private String userApiPrefix = "/api/user";
     private String managerApiPrefix = "/api/manager";
-    private String[] passPath = { "/swagger-ui/index.html",
-            userApiPrefix + "/join",
-            userApiPrefix + "/join/check",
-            userApiPrefix + "/login/id",
-            managerApiPrefix + "/login/id",
-            userApiPrefix + "/login/keycloak",
-            userApiPrefix + "/login/keycloak/redirect",
-            userApiPrefix + "/login/keycloak/page",
-            userApiPrefix + "/login/refresh"};
 
     public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
@@ -45,13 +36,10 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String jwtHeader = request.getHeader(JwtTemplate.HEADER_STRING);
-        // JWT(Header)가 있는지 확인
+//         JWT(Header)가 있는지 확인
         if ((jwtHeader == null || !jwtHeader.startsWith(JwtTemplate.TOKEN_PREFIX))) {
-            if (Arrays.asList(passPath).contains(request.getRequestURI())){
-                chain.doFilter(request, response);
-                return;
-            }
-            throw new ServletException("토큰이 없거나 잘못되었습니다.");
+            chain.doFilter(request, response);
+            return;
         }
 
         // JWT 검증
@@ -68,13 +56,12 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
 
             // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
             Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
 
             // SecurityContextHolder = 시큐리티 세션 공간에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             chain.doFilter(request, response);
         }
-        else throw new ServletException("username is null");
     }
 }

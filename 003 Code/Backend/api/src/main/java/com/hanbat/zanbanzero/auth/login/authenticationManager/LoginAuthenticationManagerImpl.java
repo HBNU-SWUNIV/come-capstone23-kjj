@@ -1,6 +1,6 @@
-package com.hanbat.zanbanzero.auth;
+package com.hanbat.zanbanzero.auth.login.authenticationManager;
 
-import com.hanbat.zanbanzero.auth.login.provider.AuthenticationProviderImpl;
+import com.hanbat.zanbanzero.auth.login.provider.LoginAuthenticationProviderImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticationManagerImpl implements AuthenticationManager {
+public class LoginAuthenticationManagerImpl implements AuthenticationManager {
 
-    private final AuthenticationProviderImpl authenticationProviderImpl;
+    private final LoginAuthenticationProviderImpl loginAuthenticationProviderImpl;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        return authenticationProviderImpl.authenticate(authentication);
+        return loginAuthenticationProviderImpl.authenticate(authentication);
     }
 }
