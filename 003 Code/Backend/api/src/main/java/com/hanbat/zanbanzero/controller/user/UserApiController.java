@@ -9,6 +9,7 @@ import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
+import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,8 +17,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
@@ -28,11 +27,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class UserApiController {
 
     private final UserService userService;
-
-    @Value("${my.keycloak.host}") private String keycloakHost;
-    @Value("${my.keycloak.realm_name}") private String realmName;
-    @Value("${my.keycloak.client_id}") private String clientId;
-    @Value("${my.keycloak.redirect_uri}") private String redirectUri;
+    private final KeycloakProperties keycloakProperties;
 
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("login/id")
@@ -45,14 +40,14 @@ public class UserApiController {
     @GetMapping("login/keycloak/page")
     public RedirectView redirectKeycloakLoginPage() {
         RedirectView redirectView = new RedirectView();
-        String uri = keycloakHost +
+        String uri = keycloakProperties.getHost() +
                 "/auth/realms/" +
-                realmName +
+                keycloakProperties.getRealmName() +
                 "/protocol/openid-connect/auth" +
                 "?response_type=code" +
-                "&client_id=" + clientId +
+                "&client_id=" + keycloakProperties.getClientId() +
                 "&scope=profile email roles openid" +
-                "&redirect_uri=" + redirectUri;
+                "&redirect_uri=" + keycloakProperties.getRedirectUri();
         redirectView.setUrl(uri);
         return redirectView;
     }
