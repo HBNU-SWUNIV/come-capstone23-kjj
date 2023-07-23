@@ -6,11 +6,20 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Drawerheader from '../components/Drawerheader';
-import Copyright from '../components/Copyright';
+import Copyright from '../components/general/Copyright';
 import Toolbar from '@mui/material/Toolbar';
-import Calander from '../components/Calander';
+import Calander from '../components/DailyMenu/Calander';
+import { styled } from 'styled-components';
 
 const defaultTheme = createTheme();
+
+export const Circle = styled.div`
+  width: 0.313rem;
+  height: 0.313rem;
+  margin-right: 0.313rem;
+  border-radius: 0.656rem;
+  background-color: #b0b3bc;
+`;
 
 export default function DailyMenu() {
   return (
@@ -39,6 +48,7 @@ export default function DailyMenu() {
             <Typography variant="h5" align="center" color="text.secondary" paragraph>
               달력에서 요일을 클릭해서 식단을 작성해주세요.
             </Typography>
+
             <Typography
               sx={{ whiteSpace: 'nowrap' }}
               variant="h5"

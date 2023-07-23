@@ -5,8 +5,8 @@ import reportWebVitals from './reportWebVitals';
 import { RouterProvider } from 'react-router-dom';
 import router from './router';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
-import keycloak, { initOptions } from './Keycloak';
 import { CookiesProvider } from 'react-cookie';
+import keycloak, { initOptions } from './auth/Keycloak';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

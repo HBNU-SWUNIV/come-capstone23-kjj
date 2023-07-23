@@ -6,10 +6,10 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Drawerheader from '../components/Drawerheader';
-import Copyright from '../components/Copyright';
+import Copyright from '../components/general/Copyright';
 import Toolbar from '@mui/material/Toolbar';
 import Snackbar from '@mui/material/Snackbar';
-import Calander2 from '../components/Calander2';
+import Calander2 from '../components/Dayoff/Calander2';
 import Button from '@mui/material/Button';
 
 const defaultTheme = createTheme();

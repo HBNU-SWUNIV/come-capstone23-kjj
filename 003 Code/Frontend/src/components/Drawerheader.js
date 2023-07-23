@@ -8,7 +8,7 @@ import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Main_Listitems from '../dashboard/Main_Listitems';
+import Main_Listitems from './general/Main_Listitems';
 import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -26,7 +26,7 @@ import { useState, useEffect } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { ConfigWithToken, ManagerBaseApi } from '../authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useCookies } from 'react-cookie';
 
 const drawerWidth = 240;
@@ -99,10 +99,13 @@ function Drawerheader(props) {
   };
 
   useEffect(() => {
-    axios.get('/api/user/store', config).then((res) => setMarketInfo(res.data.info));
     axios
-      .get(`${ManagerBaseApi}/setting`, config)
-      .then((res) => setImage(res.data.image));
+      .get('/api/user/store', config)
+      .then((res) => setMarketInfo(res.data.info))
+      .catch((err) => {
+        err.response.status === 401 && navigate('/');
+      });
+    axios.get(`/api/user/store`, config).then((res) => setImage(res.data.image));
   }, []);
 
   const handleSuccessOpen = () => {
@@ -279,7 +282,7 @@ function Drawerheader(props) {
         <List component="nav">
           <div
             style={{
-              width: '15vw',
+              width: '100%',
               height: '20vh',
               display: 'flex',
               flexDirection: 'column',
@@ -290,12 +293,9 @@ function Drawerheader(props) {
           >
             <img
               style={{
-                width: '5vw',
+                width: '80%',
               }}
-              src={
-                `http://kjj.kjj.r-e.kr:8080/api/image?token=${cookies.accesstoken}?dir=` +
-                image
-              }
+              src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
               alt="이미지없음"
             />
             <span
@@ -308,8 +308,6 @@ function Drawerheader(props) {
               식재료 절약단
             </span>
           </div>
-          {/* <Divider sx={{ my: 1 }} /> */}
-          {/* {mainListItems} */}
           <Main_Listitems />
         </List>
         <Menu
@@ -373,10 +371,7 @@ function Drawerheader(props) {
                     style={{
                       width: '7vw',
                     }}
-                    src={
-                      `http://kjj.kjj.r-e.kr:8080/api/image?token=${cookies.accesstoken}?dir=` +
-                      image
-                    }
+                    src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
                     alt="이미지없음"
                   />
                 ) : (
