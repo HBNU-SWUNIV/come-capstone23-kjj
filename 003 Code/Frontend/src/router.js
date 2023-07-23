@@ -1,11 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import App from './App';
-import Dashboard from './dashboard/Dashboard';
-import LoginFirst from './login/LoginFirst';
-import Album from './dashboard/Album';
-import DailyMenu from './dailyMenu/DailyMenu';
-import Dayoff from './dayoff/Dayoff';
+import Dashboard from './screens/Dashboard';
+import DailyMenu from './screens/DailyMenu';
+import Dayoff from './screens/Dayoff';
+import Menus from './screens/Menus';
 import Login from './login/Login';
+import LoginFirst from './login/LoginFirst';
 
 const router = createBrowserRouter([
   {
@@ -26,7 +26,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/menu',
-        element: <Album />,
+        element: <Menus />,
       },
       {
         path: '/dailymenu',

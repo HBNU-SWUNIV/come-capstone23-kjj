@@ -6,11 +6,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Chart from './Chart';
-import Deposits from './Deposits';
-import Chart2 from './Chart2';
+import Chart from '../components/Main/Chart';
+import Statistics from '../components/Main/Statistics';
+import Chart2 from '../components/Main/Chart2';
 import Drawerheader from '../components/Drawerheader';
-import Copyright from '../components/Copyright';
+import Copyright from '../components/general/Copyright';
 
 const defaultTheme = createTheme();
 
@@ -39,10 +39,11 @@ export default function Dashboard() {
               <Grid item xs={12} md={8} lg={9}>
                 <Paper
                   sx={{
+                    height: '100%',
+                    minHeight: '30vh',
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
                   }}
                 >
                   <Chart />
@@ -55,15 +56,24 @@ export default function Dashboard() {
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
-                    height: 240,
+                    minHeight: '36vh',
+                    height: '100%',
                   }}
                 >
-                  <Deposits />
+                  <Statistics />
                 </Paper>
               </Grid>
 
               <Grid item xs={12}>
-                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
+                <Paper
+                  sx={{
+                    height: '100%',
+                    minHeight: '30vh',
+                    p: 2,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
                   <Chart2 />
                 </Paper>
               </Grid>

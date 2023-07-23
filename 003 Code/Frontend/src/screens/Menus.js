@@ -12,7 +12,7 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Stack from '@mui/material/Stack';
 import Drawerheader from '../components/Drawerheader';
-import Copyright from '../components/Copyright';
+import Copyright from '../components/general/Copyright';
 import Toolbar from '@mui/material/Toolbar';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -27,7 +27,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import Input from '@mui/material/Input';
-import { ConfigWithToken, ManagerBaseApi } from '../authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
+import { useNavigate } from 'react-router-dom';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -35,7 +36,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const defaultTheme = createTheme();
 
-export default function Album() {
+export default function Menus() {
+  const navigate = useNavigate();
   const [onDelete, SetonDelete] = useState(false);
   const [deleteID, setDeleteId] = useState(0);
   const [addMenu, setAddMenu] = useState(false);
@@ -153,7 +155,6 @@ export default function Album() {
     setInputfields([{ key: '', value: '' }]);
     handle식재료Close();
   };
-
   const menuDelete = () => {
     axios
       .delete(`${ManagerBaseApi}/menu/${deleteID}`, config)
@@ -168,17 +169,22 @@ export default function Album() {
     SetonDelete(false);
   };
   const soldout = (id) => {
-    axios
-      .patch(`${ManagerBaseApi}/menu/${id}/sold/n`, formdataConfig)
-      .then((res) => console.log(res))
-      .catch((err) => console.error(err));
-
-    // axios.patch(`${ManagerBaseApi}/menu/${id}/sold/n`, config).then(() => {
-    //   axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
-    // });
+    axios({
+      method: 'PATCH',
+      url: `${ManagerBaseApi}/menu/${id}/sold/n`,
+      ...formdataConfig,
+    })
+      .then(() => {
+        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
+      })
+      .catch((err) => err.response.status === 401 && navigate('/'));
   };
   const resale = (id) => {
-    axios.patch(`${ManagerBaseApi}/menu/${id}/sold/y`, config).then(() => {
+    axios({
+      method: 'PATCH',
+      url: `${ManagerBaseApi}/menu/${id}/sold/y`,
+      ...formdataConfig,
+    }).then(() => {
       axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
     });
   };
@@ -274,10 +280,12 @@ export default function Album() {
     })
       .then((res) => res.status === 200 && handleSuccessOpen())
       .then(() => {
-        axios.get(`${ManagerBaseApi}/menu`).then((res) => setMenus(res.data));
+        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
       })
       .then(() => {
-        axios.get(`${ManagerBaseApi}/menu/planner`).then((res) => setIsplanner(res.data));
+        axios
+          .get(`${ManagerBaseApi}/menu/planner`, config)
+          .then((res) => setIsplanner(res.data));
       })
       .catch((err) => {
         if (err.response.status === 400) {

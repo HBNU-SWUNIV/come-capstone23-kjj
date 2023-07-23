@@ -11,12 +11,12 @@ import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Copyright from '../components/Copyright';
-import background from '../assets/capstone_background.png';
-import { useNavigate, Link } from 'react-router-dom';
+import background from '../image/capstone_background.png';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
+import Copyright from '../components/general/Copyright';
 
 const defaultTheme = createTheme();
 
