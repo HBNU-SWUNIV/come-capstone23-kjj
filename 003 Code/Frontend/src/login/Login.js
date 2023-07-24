@@ -5,45 +5,46 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Copyright from '../components/Copyright';
-import background from '../assets/capstone_background.png';
+import background from '../image/capstone_background.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
+import { useKeycloak } from '@react-keycloak/web';
+import { useCookies } from 'react-cookie';
+import Copyright from '../components/general/Copyright';
 
 const defaultTheme = createTheme();
 
-export default function Login1() {
-const [username,setUsername] = React.useState('');
-const [password,setPassword] = React.useState('');
-const navigate = useNavigate();
+export default function Login() {
+  const [username, setUsername] = React.useState('');
+  const [password, setPassword] = React.useState('');
+  const navigate = useNavigate();
+  const { keycloak } = useKeycloak();
+  const [cookies, setCookie] = useCookies(['accesstoken']);
 
-const onSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    let body = {username,password};
-    axios.post(`/api/manager/login/id`,body).then(res=> {
-        if(res.status === 200){
-            axios.get('/api/manager/setting').then(res => {
-               res.data.info === '' ? navigate('/loginfirst') : navigate('/home')
-            })
-        }
-    }).catch(err => {
-        if(err.response.status === 401){
-            alert('ID 또는 PASSWORD를 확인하세요.')
-        }
-    })
-}
-
-
+    let body = { username, password };
+    axios
+      .post(`/api/user/login/keycloak?token=${keycloak.token}`, body)
+      .then((res) => {
+        const apitoken = res.headers.authorization;
+        const [, accesstoken] = apitoken.split('Bearer ');
+        const apitoken2 = res.headers.refresh_token;
+        const [, refreshtoken] = apitoken2.split('Bearer ');
+        setCookie('accesstoken', accesstoken);
+        setCookie('refreshtoken', refreshtoken);
+        navigate('/home');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -77,7 +78,7 @@ const onSubmit = (e) => {
               <LockOutlinedIcon />
             </Avatar>
             <Typography component="h1" variant="h5">
-                식재료 절약단
+              식재료 절약단
             </Typography>
             <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
               <TextField
@@ -88,7 +89,7 @@ const onSubmit = (e) => {
                 label="ID"
                 name="ID"
                 value={username}
-                onChange={e => setUsername(e.target.value)}
+                onChange={(e) => setUsername(e.target.value)}
                 autoComplete="ID"
                 autoFocus
               />
@@ -97,7 +98,7 @@ const onSubmit = (e) => {
                 required
                 fullWidth
                 value={password}
-                onChange={e => setPassword(e.target.value)}
+                onChange={(e) => setPassword(e.target.value)}
                 name="password"
                 label="Password"
                 type="password"
@@ -108,15 +109,10 @@ const onSubmit = (e) => {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-              >
+              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                 로그인
               </Button>
-              
+
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
