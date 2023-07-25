@@ -1,15 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 function My() {
 
+    const userid = useSelector(state => state.username.userid);
     const [user, setUser] = useState("");
     const name = useSelector(state => state.username);
+    const [orderCount, setOrderCount] = useState("");
+    const [storeInfo, setStoreInfo] = useState("");
 
     useEffect(() => {
         setUser(name.username);
+
+        axios
+        .get(`/api/user/${userid}/order/count`)
+        .then(res => {
+            setOrderCount(res.data);
+        })
+        .catch(error => {
+            console.error("주문 횟수 조회 실패", error);
+        });
+
+        axios
+        .get(`/api/user/store`)
+        .then(res => {
+            setStoreInfo(res.data.name);
+        })
+        .catch(error => {
+            console.error("식당 정보 조회 실패", error);
+        });
     }, [])
+
 
     const pointboxStyle = {
         fontSize: '15px',
@@ -105,8 +128,8 @@ function My() {
         <div>
             <div style={pointboxStyle}>
                 <div style={{ ...point1boxStyle, marginBottom: '20px', borderBottom: '2px dotted' }}>
-                    <p style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{user}님</p>
-                    <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>한밭대학교</p>
+                <p style={{  margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{storeInfo}</p>
+                    <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>{user}님</p>
                 </div>
                 <div style={point1boxStyle}>
                     <p style={ponifont}>누적 포인트</p>
@@ -122,7 +145,7 @@ function My() {
                 <div style={leftboxStyle}>
                     <p style={{ ...threeboxfont, marginBottom: 0 }}>이번 달</p>
                     <p style={{ ...threeboxfont, marginTop: 0 }}>이용횟수</p>
-                    <p style={underPointfont}>0회</p>
+                    <p style={underPointfont}>{orderCount}회</p>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
@@ -137,7 +160,7 @@ function My() {
                                 <p style={{ fontSize: '15px', fontWeight: 'bold' }}>지난달,</p>
                                 <p style={{right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold'}}>&lt;상세조회&gt;</p>
                             </div>
-                            <p style={{marginTop: 0}}>식재료 절약단을 통해 약 0KG의 음식물 쓰레기 저감 활동에 동참했어요!</p>
+                            <p style={{marginTop: 0}}>식단미리 통해 약 0KG의 음식물 쓰레기 저감 활동에 동참했어요!</p>
                         </Link>
                     </div>
                 </div>

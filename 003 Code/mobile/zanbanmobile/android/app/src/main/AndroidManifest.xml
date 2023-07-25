@@ -2,7 +2,7 @@
     package="com.example.zanbanmobile">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="식재료&#10;절약단"
+        android:label="식단미리"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">

@@ -45,22 +45,10 @@ const DivDay = {
     width: '24vw',
     height: '10vh',
     display: 'flex',
+    flexDirection: 'column',
     justifyContent: 'space-between',
     border: '0.1px solid #5B5B5B',
     borderRightStyle: 'none',
-    span: {
-        '&:first-child': {
-            fontSize: '13px',
-            fontWeight: '600',
-            margin: '5px 5px',
-        },
-        '&:last-child': {
-            marginTop: '0.2vh',
-            marginRight: '0.2vw',
-            fontSize: '12px',
-            whiteSpace: 'pre-wrap',
-        },
-    },
 };
 
 const DaysDiv = {
@@ -163,12 +151,6 @@ const saveButton = {
     borderRadius: '10px'
 };
 
-const aquaticCreatures = [
-    { label: '백반', value: '0' },
-    { label: '촌돼지 김치찌개', value: '1' },
-    { label: '가마치통닭', value: '2' },
-    { label: '부대찌개', value: '3' },
-];
 
 const selectStyles = {
     control: (provided, state) => ({
@@ -212,17 +194,20 @@ function Calendar() {
                 setActiveDays(res.data);
             })
             .catch(error => {
-                console.error("Failed to get user policy date:", error);
+                console.error("유저 정책 조회 실패", error);
             });
 
         axios.get(`/api/manager/menu`)
             .then(res => setMenus(res.data))
+
     }, []);
 
 
     //메뉴 조희
     const [todayMenu, setTodayMenu] = useState([]);
     const DayPathMatch = useMatch('/calendar/:id');
+    //이용일 조회
+    const [useDays, setUseDays] = useState([]);
 
     useEffect(() => {
         if (DayPathMatch && DayPathMatch.params && DayPathMatch.params.id) {
@@ -238,8 +223,25 @@ function Calendar() {
                     console.error(error);
                     setTodayMenu([]);
                 });
+
+            //이용일 조회
+            axios
+                .get(`/api/user/order/${year}/${month}/${day}`)
+                .then(res => {
+                    setUseDays(res.data);
+                    console.log(useDays);
+                })
+                .catch(error => {
+                    console.error("유저 정책 조회 실패", error);
+                });
         }
     }, [DayPathMatch]);
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day1 = String(today.getDate()).padStart(2, '0');
+    const currentDate = `${year}${month}${day1}`;
 
 
     const navigate = useNavigate();
@@ -266,12 +268,6 @@ function Calendar() {
         }));
     };
 
-    //취소버튼 클릭시 스위치 기본값으로
-    const [originalCheckedStates, setOriginalCheckedStates] = useState({});
-    const handleCancel = () => {
-        setCheckedStates(originalCheckedStates);
-    };
-
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
@@ -286,13 +282,106 @@ function Calendar() {
     }
 
 
+    //메뉴 리스트
+    const [aquaticCreatures, setAquaticCreatures] = useState([]);
     //휴무일 조회
     const [storeoff, setStoreoff] = useState([]);
+
+    //이용메뉴
+    const [defaultMenu, setDefaultMenu] = useState('');
 
     useEffect(() => {
         axios.get(`/api/manager/store/off/${format(currentMonth, 'yyyy')}/${format(currentMonth, 'MM')}`)
             .then(res => setStoreoff(res.data))
+
+        axios
+            .get(`/api/user/${userid}/policy/date`)
+            .then(res => {
+                const receivedDefaultMenu = res.data.defaultMenu;
+
+                axios.get(`/api/manager/menu`)
+                    .then(res => {
+                        const menuList = res.data;
+                        //const id = menuList.map(menu => menu.id);
+                        const updatedAquaticCreatures = menuList.map((menu) => ({
+                            label: menu.name,
+                            value: menu.id.toString(),
+                            id: menu.id
+                        }));
+                        setAquaticCreatures(updatedAquaticCreatures);
+
+                        const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
+                        if (defaultMenu) {
+                            setDefaultMenu(defaultMenu.name);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Failed to get menu list:", error);
+                    });
+            })
+            .catch(error => {
+                console.error("Failed to get user policy date:", error);
+            });
     }, [])
+
+    //이용일별 이용 메뉴
+    const [useMenuIds, setUseMenuIds] = useState({});
+
+    //저장버튼 클릭시 동작
+    const handleSave = () => {
+
+        if (DayPathMatch && DayPathMatch.params && DayPathMatch.params.id) {
+            const { id } = DayPathMatch.params;
+            const year = id.slice(0, 4);
+            const month = id.slice(4, 6);
+            const day = id.slice(6, 8);
+
+            //수동 이용함
+            if (checkedStates[id]) {
+                axios
+                    .post(`/api/user/order/add/${useMenuID}/${year}/${month}/${day}`, 'false')
+                    .then(() => {
+                        console.log("수동 이용 성공");
+                        setUseMenuIds(prevState => {
+                            const menuName = aquaticCreatures.find(menu => menu.id === useMenuID).label;
+                            return { ...prevState, [id]: menuName };
+                        });
+                    })
+                    .catch((error) => {
+                        console.error("수동 이용 에러발생");
+                    });
+
+                if (!useMenuID) {
+                    setCheckedStates(originalCheckedStates);
+                    alert("이용 메뉴를 선택해주세요.");
+                    return;
+                }
+                setOriginalCheckedStates(checkedStates);
+                navigate('/calendar');
+            }
+
+            //수동 이용안함
+            if (!checkedStates[id]) {
+                axios
+                    .post(`/api/user/${userid}/order/cancel/${year}/${month}/${day}`, 'false')
+                    .then(() => {
+                        console.log("수동 이용 안함 성공");
+                    })
+                    .catch((error) => {
+                        console.error("수동 이용 안함 에러");
+                    });
+                setOriginalCheckedStates(checkedStates);
+                navigate('/calendar');
+            }
+        }
+    };
+
+    //취소버튼 클릭시 스위치 기본값으로
+    const [originalCheckedStates, setOriginalCheckedStates] = useState({});
+    const handleCancel = () => {
+        setCheckedStates(originalCheckedStates);
+        navigate('/calendar');
+    };
 
     function isHoliday(day) {
         const holidayDates = storeoff.filter(item => item.off).map(item => item.date);
@@ -301,7 +390,6 @@ function Calendar() {
         return holidayDates.includes(formattedDay);
     }
 
-
     while (day <= endDate) {
         for (let i = 0; i < 7; i++) {
             formattedDate = format(day, 'd').padStart(2, '0').toString();
@@ -309,43 +397,49 @@ function Calendar() {
             if (format(monthStart, 'M') !== format(day, 'M')) {
                 dayss.push(
                     <div style={{ ...DivDay, backgroundColor: '#c2bebe' }} key={shortid.generate()} >
-                        <span style={{ fontSize: '13px', color: '#666464', margin: '5px 5px' }}>{formattedDate}</span>
+                        <span style={{ fontSize: '13px', color: '#666464', margin: '0.3vh 0.3vh' }}>{formattedDate}</span>
                     </div>
                 );
             } else {
-                let backgroundColor = '#f7dfc8'; //기본 배경색
+                let backgroundColor = id < currentDate ? '#dec8b4' : '#f7dfc8'; //기본 배경색
 
                 if (i >= 1 && i <= 5) {
                     const dayIndex = i - 1;
+
                     if (Object.values(activeDays)[dayIndex] || checkedStates[id]) {  //이용일 배경색
                         backgroundColor = '#e0f7c8';
-                        //checkedStates[id] = true;
+                        if (id < currentDate) {
+                            backgroundColor = '#c0d4ab';
+                        }
                     }
-
-                    // const activeDayValue = Object.values(activeDays)[dayIndex];
-                    // checkedStates[id] = activeDayValue;
-
-                    // if (checkedStates[id]) {
-                    //     backgroundColor = '#e0f7c8';
-                    // }
 
 
                 } if ((i === 0 || i === 6) || isHoliday(day)) {  //휴무 배경색
                     backgroundColor = '#dec8f7';
+                    if (id < currentDate) {
+                        backgroundColor = '#b2a1c4';
+                    }
                 }
 
                 dayss.push(
-                    //<div style={{ ...DivDay, backgroundColor: checkedStates[id] ? '#e0f7c8' : (i === 0 || i === 6 ? '#dec8f7' : '#f7dfc8') }} onClick={() => onDay(id)} key={shortid.generate()}>
                     <div
                         style={{
                             ...DivDay,
                             backgroundColor: backgroundColor,
+                            color: id < currentDate ? '#7d7d7d' : 'black',
                             pointerEvents: isHoliday(day) || (i === 0 || i === 6) ? 'none' : 'auto'
                         }}
-                        onClick={() => (!isHoliday(day) && !(i === 0 || i === 6)) && onDay(id)}
+                        onClick={() => {
+                            if (id >= currentDate && !isHoliday(day) && !(i === 0 || i === 6)) {
+                                onDay(id);
+                            }
+                        }}
                         key={shortid.generate()}
                     >
-                        <span>{formattedDate}</span>
+                        <span style={{ fontSize: '13px', margin: '0.3vh 0.3vh' }}>{formattedDate}</span>
+                        {(backgroundColor === '#e0f7c8' || backgroundColor === '#c0d4ab') && (
+                            <p style={{ textAlign: 'right', fontSize: '1vh', marginBottom: '1vh', marginTop: 0 }}>{useMenuIds[id] || defaultMenu}</p>
+                        )}
                     </div>
                 );
             }
@@ -368,28 +462,21 @@ function Calendar() {
     };
 
 
-    //리스트
+    //메뉴 리스트
     const [selectedOption, setSelectedOption] = useState(aquaticCreatures[0]);
+    const [useMenuID, setUseMenuID] = useState();
 
-    const handleListChange = (selectedOption) => {
-        setSelectedOption(selectedOption);
+    const handleListChange = (selectedOptions) => {
+        setSelectedOption(selectedOptions);
+        setUseMenuID(selectedOptions.id);
     };
 
-    const WriteInfo0 = {
-        display: selectedOption.value === '0' ? 'block' : 'none',
-    };
+    const writeInfoArray = Array.from({ length: aquaticCreatures.length }, (_, index) => {
+        const adjustedIndex = index + 2;
+        const display = selectedOption && selectedOption.value === adjustedIndex.toString() ? 'block' : 'none';
+        return { display };
+    });
 
-    const WriteInfo1 = {
-        display: selectedOption.value === '1' ? 'block' : 'none',
-    };
-
-    const WriteInfo2 = {
-        display: selectedOption.value === '2' ? 'block' : 'none',
-    };
-
-    const WriteInfo3 = {
-        display: selectedOption.value === '3' ? 'block' : 'none',
-    };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -431,40 +518,22 @@ function Calendar() {
                         />
                     </div>
                     <div style={WriteInfo}>
-                        <div style={WriteInfo0}>
-                            <p style={{ margin: 0, fontWeight: 'bold' }}>식단표</p>
-                            <p style={{ margin: 0 }}>{todayMenu}</p>
-                        </div>
-                        <div style={WriteInfo1}>
-                            <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[1]?.name}</p>
-                            <p style={{ marginTop: 0 }}>{menus[1]?.cost}원</p>
-                            <div style={{ textAlign: 'left' }}>
-                                <p style={{ margin: 0 }}>{menus[1]?.details}</p>
-                                <p style={{ margin: 0 }}>{menus[1]?.info}</p>
+                        {writeInfoArray.map((writeInfo, index) => (
+                            <div style={writeInfo} key={index}>
+                                <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[index]?.name}</p>
+                                <p style={{ marginTop: 0 }}>{menus[index]?.cost}원</p>
+                                <div style={{ textAlign: 'left' }}>
+                                    <p style={{ margin: 0 }}>{menus[index]?.details}</p>
+                                    <p style={{ margin: 0 }}>{menus[index]?.info}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div style={WriteInfo2}>
-                            <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[2]?.name}</p>
-                            <p style={{ marginTop: 0 }}>{menus[2]?.cost}원</p>
-                            <div style={{ textAlign: 'left' }}>
-                                <p style={{ margin: 0 }}>{menus[2]?.details}</p>
-                                <p style={{ margin: 0 }}>{menus[2]?.info}</p>
-                            </div>
-                        </div>
-                        <div style={WriteInfo3}>
-                        <p style={{ margin: 0, fontWeight: 'bold' }}>{menus[3]?.name}</p>
-                            <p style={{ marginTop: 0 }}>{menus[3]?.cost}원</p>
-                            <div style={{ textAlign: 'left' }}>
-                                <p style={{ margin: 0 }}>{menus[3]?.details}</p>
-                                <p style={{ margin: 0 }}>{menus[3]?.info}</p>
-                            </div>
-                        </div>
+                        ))}
                     </div>
                     <div>
-                        <button style={saveButton} onClick={() => { setOriginalCheckedStates(checkedStates); navigate('/calendar'); }}>
+                        <button style={saveButton} onClick={() => { handleSave(); }}>
                             저장
                         </button>
-                        <button style={{ background: '#e07967', color: 'white', borderRadius: '10px' }} onClick={() => { handleCancel(); navigate('/calendar') }}>
+                        <button style={{ background: '#e07967', color: 'white', borderRadius: '10px' }} onClick={() => { handleCancel(); }}>
                             취소
                         </button>
                     </div>
@@ -487,10 +556,9 @@ function Calendar() {
             </div>
 
             <div style={infoBox}>
-                <p>✔백반단가: 5000원</p>
+                <p>✔이용일 당일은 오전10시에 예약이 마감됩니다.</p>
                 <p>✔요일 클릭 시 당일 메뉴를 확인할 수 있습니다.</p>
                 <p>✔식당운영시간: 11:30~13:00(석식 미운영) 매주 금요일 미운영</p>
-                <p>✔방학기간에는 교직원식당을 운영하지 않으니, 학생식당을 이용해주시기 바랍니다.</p>
             </div>
         </div>
     );
