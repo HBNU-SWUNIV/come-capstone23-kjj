@@ -66,12 +66,6 @@ public class StoreManagerApiController {
         return ResponseEntity.ok(storeService.getAllUsers());
     }
 
-    @Operation(summary = "최근 5영업일 메뉴별 판매량 조회", description = "메뉴 3종류만")
-    @GetMapping("state/menu")
-    public ResponseEntity<List<CalculateMenuForGraphDto>> getPopularMenus() {
-        return ResponseEntity.ok(storeService.getPopularMenus());
-    }
-
     @Operation(summary="단체명 수정")
     @PatchMapping("store/title")
     public ResponseEntity<StoreDto> updateStoreTitle(@RequestBody StoreDto dto) throws CantFindByIdException{
@@ -88,13 +82,6 @@ public class StoreManagerApiController {
     @PostMapping("store/off/{year}/{month}/{day}")
     public ResponseEntity<StoreStateDto> setOff(@RequestBody StoreOffDto off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
         return ResponseEntity.ok(storeService.setOff(off.isOff(), year, month, day));
-    }
-
-    @Operation(summary="월간 휴무일 조회", description="n월 한달의 휴무일 조회")
-    @GetMapping("store/off/{year}/{month}")
-    public ResponseEntity<List<StoreStateDto>> getClosedDays(@PathVariable int year, @PathVariable int month) throws WrongParameter {
-        if (0 >= month || month > 12) throw new WrongParameter("잘못된 입력입니다.");
-        return ResponseEntity.ok(storeService.getClosedDays(year, month));
     }
 
     @Operation(summary="익일 예측 이용자 수", description = "10시 30분 10초마다 갱신")

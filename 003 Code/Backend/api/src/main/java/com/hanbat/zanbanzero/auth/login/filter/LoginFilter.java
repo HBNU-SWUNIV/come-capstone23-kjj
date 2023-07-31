@@ -20,6 +20,8 @@ public class LoginFilter implements Filter {
     private CustomUriMapper customUriMapper;
 
     private String loginEndPath = "/login/id";
+    private String userLoginStartPath = "/api/user";
+    private String managerLoginStartPath = "/api/manager";
 
     public LoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;

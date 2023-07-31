@@ -105,14 +105,14 @@ public class StoreService {
 
     @Transactional
     public List<CalculateMenuForGraphDto> getPopularMenus() {
-        List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc()
-                .stream()
+        List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc().stream()
                 .map(Calculate::getId)
                 .collect(Collectors.toList());
 
         List<CalculateMenuForGraphDto> result = calculateMenuRepository.getPopularMenus(idList);
         result.sort(Comparator.comparingLong(CalculateMenuForGraphDto::getCount).reversed());
 
+        if (result.size() < 3) return result;
         return result.subList(0, 3);
     }
 

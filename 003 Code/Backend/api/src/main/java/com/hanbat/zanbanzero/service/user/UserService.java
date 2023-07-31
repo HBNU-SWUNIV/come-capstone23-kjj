@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserMyPageRepository userMyPageRepository;
+    private final UserMyPageRepository userMypageRepository;
     private final UserPolicyRepository userPolicyRepository;
 
     private final MenuRepository menuRepository;
@@ -38,7 +38,7 @@ public class UserService implements UserDetailsService {
     public User join(UserJoinDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
-        userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
+        userMypageRepository.save(UserMypage.createNewUserMyPage(user));
         userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
         return user;
     }
@@ -71,14 +71,15 @@ public class UserService implements UserDetailsService {
 
     public UserMypageDto getMyPage(String username) throws CantFindByIdException, JsonProcessingException {
         Long id = userRepository.findByUsername(username).getId();
-        UserMypage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        return UserMypageDto.createUserMyPageDto(userMyPage);
+        return UserMypageDto.createUserMyPageDto(userMypage);
     }
 
     @Override
     public UserDetailsInterfaceImpl loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
+        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저네임");
         return new UserDetailsInterfaceImpl(user);
     }
 

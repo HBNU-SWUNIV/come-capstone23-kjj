@@ -36,7 +36,7 @@ public class LoginAuthenticationProviderImpl implements AuthenticationProvider {
         if (uri.startsWith("/api/user")) {
             principalDetails = userService.loadUserByUsername(username);
         }
-        else if (uri.endsWith("/api/manager")) {
+        else if (uri.startsWith("/api/manager")) {
             principalDetails = managerService.loadUserByUsername(username);
         }
 

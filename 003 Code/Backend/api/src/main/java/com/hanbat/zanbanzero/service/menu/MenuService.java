@@ -42,9 +42,9 @@ public class MenuService {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Cacheable(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
-    public List<MenuDto> getMenus() {
-        return menuRepository.findAll().stream()
-                .map((menu) -> MenuDto.of(menu))
+    public List<MenuUserInfoDto> getMenus() {
+        return menuRepository.findAllWithMenuInfo().stream()
+                .map(menu -> MenuUserInfoDto.of(menu))
                 .collect(Collectors.toList());
     }
 

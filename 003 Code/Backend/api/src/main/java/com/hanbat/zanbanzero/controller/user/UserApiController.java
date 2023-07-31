@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.controller.user;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.dto.user.LoginDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
@@ -31,7 +32,7 @@ public class UserApiController {
 
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("login/id")
-    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
+    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request, @RequestBody LoginDto loginDto) {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.ok(userService.getInfoForUsername(username));
     }
@@ -98,7 +99,9 @@ public class UserApiController {
 
     @Operation(summary="일반회원 대표정보 조회")
     @GetMapping("info")
-    public ResponseEntity<UserInfoDto> getInfo(@RequestParam("username") String username) throws CantFindByIdException {
+    public ResponseEntity<UserInfoDto> getInfo(HttpServletRequest request) throws CantFindByIdException {
+        String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
+
         return ResponseEntity.ok(userService.getInfo(username));
     }
 

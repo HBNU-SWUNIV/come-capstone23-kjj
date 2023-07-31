@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
+import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
@@ -37,8 +38,8 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         // 1. 정상 요청
         {
             // Given
-            List<MenuDto> expected = new ArrayList<>();
-            expected.add(new MenuDto());
+            List<MenuUserInfoDto> expected = new ArrayList<>();
+            expected.add(new MenuUserInfoDto());
             Mockito.when(menuService.getMenus()).thenReturn(expected);
 
             // When
