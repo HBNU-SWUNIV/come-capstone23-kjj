@@ -2,17 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { RouterProvider} from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
 import router from './router';
+import { ReactKeycloakProvider } from '@react-keycloak/web';
+import { CookiesProvider } from 'react-cookie';
+import keycloak, { initOptions } from './auth/Keycloak';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
-    <RouterProvider router={router} />
-  </React.StrictMode>
+  <ReactKeycloakProvider initOptions={initOptions} authClient={keycloak}>
+    <CookiesProvider>
+      <RouterProvider router={router} />
+    </CookiesProvider>
+  </ReactKeycloakProvider>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+// onEvent={onKeycloakEvent}
