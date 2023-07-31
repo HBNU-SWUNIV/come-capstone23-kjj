@@ -27,7 +27,7 @@ import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
-import { useCookies } from 'react-cookie';
+import { useKeycloak } from '@react-keycloak/web';
 
 const drawerWidth = 240;
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -79,7 +79,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 function Drawerheader(props) {
-  const [cookies] = useCookies();
   const [success, setSuccess] = useState(false);
   const [info, setMarketInfo] = useState('');
   const [image, setImage] = useState('');
@@ -160,16 +159,20 @@ function Drawerheader(props) {
       url: `${ManagerBaseApi}/image`,
       data: formdata,
       ...formdataConfig,
-    }).then((res) => {
-      if (res.status === 200) {
-        axios
-          .get(`${ManagerBaseApi}/setting`, config)
-          .then((res) => setImage(res.data.image));
-      }
-    });
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          axios.get(`/api/user/store`, config).then((res) => setImage(res.data.image));
+        }
+      })
+      .catch((err) => alert('이미지 용량이 너무 큽니다.'));
     handleSuccessOpen();
     handleCloseModal2();
   };
+  const onLogout = () => {
+    navigate('/');
+  };
+
   return (
     <>
       <AppBar position="absolute" open={open1}>
@@ -288,12 +291,12 @@ function Drawerheader(props) {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              marginTop: '-20px',
             }}
           >
             <img
               style={{
-                width: '80%',
+                width: '50%',
+                maxWidth: '50%',
               }}
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
               alt="이미지없음"
@@ -322,7 +325,7 @@ function Drawerheader(props) {
         >
           <MenuItem onClick={handleClickOpenModal}>식당 소개메시지</MenuItem>
           <MenuItem onClick={handleClickOpenModal2}>식당 이미지 변경</MenuItem>
-          <MenuItem onClick={() => navigate('/')}>로그아웃</MenuItem>
+          <MenuItem onClick={onLogout}>로그아웃</MenuItem>
         </Menu>
 
         <Dialog open={openModal} onClose={handleCloseModal}>
@@ -396,7 +399,7 @@ function Drawerheader(props) {
 
         <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
           <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-            This is a success message!
+            성공!
           </Alert>
         </Snackbar>
       </Drawer>
