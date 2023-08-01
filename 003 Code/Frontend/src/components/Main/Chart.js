@@ -17,7 +17,10 @@ export default function Chart() {
       .get(`${ManagerBaseApi}/state/predict/food`, config)
       .then((res) => setPredictItems(res.data))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        if (err.response.status === 403) {
+          alert('다시 로그인 해주세요🌝');
+          navigate('/');
+        }
       });
   }, []);
   return (

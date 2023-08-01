@@ -33,7 +33,8 @@ export default function Chart2() {
       });
     axios
       .get(`${ManagerBaseApi}/state/predict/menu`, config)
-      .then((res) => setPredictMenus(res.data));
+      .then((res) => setPredictMenus(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   return (

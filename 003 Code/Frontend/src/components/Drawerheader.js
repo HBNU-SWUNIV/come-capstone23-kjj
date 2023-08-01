@@ -28,6 +28,7 @@ import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useKeycloak } from '@react-keycloak/web';
+import { useCookies } from 'react-cookie';
 
 const drawerWidth = 240;
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -79,6 +80,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 function Drawerheader(props) {
+  const [cookies, setCookie] = useCookies('accesstoken');
   const [success, setSuccess] = useState(false);
   const [info, setMarketInfo] = useState('');
   const [image, setImage] = useState('');
@@ -102,9 +104,12 @@ function Drawerheader(props) {
       .get('/api/user/store', config)
       .then((res) => setMarketInfo(res.data.info))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        err.response.status === 403 && navigate('/');
       });
-    axios.get(`/api/user/store`, config).then((res) => setImage(res.data.image));
+    axios
+      .get(`/api/user/store`, config)
+      .then((res) => setImage(res.data.image))
+      .catch((err) => console.log(err));
   }, []);
 
   const handleSuccessOpen = () => {
@@ -170,6 +175,7 @@ function Drawerheader(props) {
     handleCloseModal2();
   };
   const onLogout = () => {
+    setCookie('accesstoken', '');
     navigate('/');
   };
 

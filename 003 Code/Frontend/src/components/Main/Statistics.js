@@ -36,11 +36,12 @@ export default function Statistics() {
       .get(`${ManagerBaseApi}/state/today`, config)
       .then((res) => setTodaypop(res.data))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        err.response.status === 403 && navigate('/');
       });
     axios
       .get(`${ManagerBaseApi}/state/predict/user`, config)
-      .then((res) => setPredictUsers(res.data));
+      .then((res) => setPredictUsers(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
