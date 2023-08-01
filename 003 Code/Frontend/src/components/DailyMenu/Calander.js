@@ -24,6 +24,7 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import Circle from '../general/Circle';
 
 const ArrowCSS = { color: '#969696', fontSize: '1.875rem', margin: '0 1.25rem' };
 
@@ -183,6 +184,7 @@ function Calander() {
               }}
             >
               {formattedDate}
+              <Circle $color="red" />
             </span>
           </DivDay>
         );
