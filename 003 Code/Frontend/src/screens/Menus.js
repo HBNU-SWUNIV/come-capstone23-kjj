@@ -70,15 +70,17 @@ export default function Menus() {
         setMenus(response.data);
 
         if (response.data.length !== 0) {
-          setTimeout(() => setIsLoading(false), 1000);
+          setTimeout(() => setIsLoading(false), 200);
         }
 
         axios
           .get(`${ManagerBaseApi}/menu/planner`, config)
           .then((res) => setIsplanner(res.data));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setIsLoading(false);
+      } catch (err) {
+        if (err.response.status === 403) {
+          alert('다시 로그인 해주세요🌝');
+          navigate('/');
+        }
       }
     };
 
@@ -512,26 +514,16 @@ export default function Menus() {
           <DialogContentText>
             이미지 파일을 추가하여 이미지를 등록해주세요.
           </DialogContentText>
-          {imagesrc === 'null' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Skeleton variant="rectangular" width={210} height={118} />
-              <input
-                style={{ marginLeft: '2vw' }}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </div>
-          ) : (
-            <CardMedia
-              component="div"
-              sx={{
-                // 16:9
-                pt: '56.25%',
-              }}
-              image={'http://kjj.kjj.r-e.kr:8080/api/image?dir='}
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Skeleton variant="rectangular" width={210} height={118} />
+            <input
+              style={{ marginLeft: '2vw' }}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
             />
-          )}
+          </div>
 
           <TextField
             required
@@ -569,26 +561,16 @@ export default function Menus() {
           <DialogContentText>
             이미지 파일을 추가하여 이미지를 등록해주세요.
           </DialogContentText>
-          {imagesrc === 'null' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Skeleton variant="rectangular" width={210} height={118} />
-              <input
-                style={{ marginLeft: '2vw' }}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </div>
-          ) : (
-            <CardMedia
-              component="div"
-              sx={{
-                // 16:9
-                pt: '56.25%',
-              }}
-              image={'http://kjj.kjj.r-e.kr:8080/api/image?dir='}
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Skeleton variant="rectangular" width={210} height={118} />
+            <input
+              style={{ marginLeft: '2vw' }}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
             />
-          )}
+          </div>
 
           <TextField disabled id="outlined-required" label="오늘의메뉴명은 고정입니다." />
           <TextField

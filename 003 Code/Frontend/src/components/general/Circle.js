@@ -2,6 +2,8 @@ import React from 'react';
 import { styled } from 'styled-components';
 
 const Wrapper = styled.div`
+  position: absolute;
+  margin-top: 2px;
   width: 25px;
   height: 22px;
   border-radius: 50%;
@@ -9,7 +11,6 @@ const Wrapper = styled.div`
 `;
 
 const Circle = (props) => {
-  console.log(props.color);
   return <Wrapper $color={props.color} />;
 };
 
