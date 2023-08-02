@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 function Setting() {
     const buttonStyle = {
@@ -16,6 +17,12 @@ function Setting() {
         boxShadow: '3px 3px 5px rgba(0, 0, 0, 0.3)',
     };
 
+    const [user, setUser] = useState("");
+    const name = useSelector(state => state.username);
+    useEffect(() => {
+        setUser(name.username);
+    }, [])
+
     const [showDialog, setShowDialog] = useState(false);
 
     const handleWithdrawal = () => {
@@ -25,11 +32,22 @@ function Setting() {
     const handleCancel = () => {
         setShowDialog(false);
     }
+    const navigate = useNavigate();
+    const [password, setPassword] = useState("");
 
     //회원탈퇴시
     const handledelete = () => {
+        if (password === "") {
+            alert("비밀번호를 입력하세요.");
+            return;
+        }
         setShowDialog(false);
-        //코드추가
+        navigate('/login');
+        // axios
+        // .delete(`/api/user/withdraw`)
+        // .then(res => {
+        //     setOrderCount(res.data);
+        // })
     }
 
     return (
@@ -45,9 +63,13 @@ function Setting() {
                     <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '200px', textAlign: 'center' }}>
                         <h3>정말 탈퇴하시겠습니까?</h3>
                         <p>탈퇴 즉시 계정이 삭제되며,<br />개인정보는 안전하게 파기됩니다.</p>
-                        <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '20px' }}>
+                        <div>
+                        <input style={{borderRadius: '5px',  textAlign: 'center'}} type="text" id="password" name="password" placeholder="비밀번호를 입력하세요." 
+                        onChange={(e) => setPassword(e.target.value)}/>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                            <button style={{ ...buttonStyle, backgroundColor: '#f44336' }} onClick={handledelete}>회원탈퇴</button>
                             <button style={{ ...buttonStyle }} onClick={handleCancel}>취소</button>
-                            <Link to='/login' style={{ ...buttonStyle, backgroundColor: '#f44336' }} onClick={handledelete}>회원탈퇴</Link>
                         </div>
                     </div>
                 </div>

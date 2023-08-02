@@ -59,28 +59,28 @@ function Nav() {
       <nav style={Navbar}>
         <ul style={NavList} id="nav-list">
           <li style={NavListItem}>
-            <NavLink to="/home" style={{ ...NavLink1, ...(pathname === "/home" && ActiveLink) }}>
+            <NavLink to="/home" style={{ ...NavLink1, ...((pathname === "/Home" || pathname === "/home" || pathname === "/Home/BestMenu") && ActiveLink) }}>
               <i className="fas fa-home" style={Icon}></i>
               <div style={Text}>홈</div>
             </NavLink>
           </li>
 
           <li style={NavListItem}>
-            <NavLink to="/calendar" style={{ ...NavLink1, ...(pathname === "/calendar" || pathname.startsWith("/calendar/")) && ActiveLink }}>
+            <NavLink to="/calendar" style={{ ...NavLink1, ...((pathname === "/calendar" || pathname === "/Calendar") || pathname.startsWith("/calendar/")) && ActiveLink }}>
               <i className="fas fa-calendar" style={Icon}></i>
               <div style={Text}>일정예약</div>
             </NavLink>
           </li>
 
           <li style={NavListItem}>
-            <NavLink to="/my" style={{ ...NavLink1, ...(pathname === "/my" && ActiveLink) }}>
+            <NavLink to="/my" style={{ ...NavLink1, ...((pathname === "/my" || pathname === "/My" || pathname === "/Graph"  ) && ActiveLink) }}>
               <i className="fas fa-user" style={Icon}></i>
               <div style={Text}>마이</div>
             </NavLink>
           </li>
 
           <li style={NavListItem}>
-            <NavLink to="/setting" style={{ ...NavLink1, ...(pathname === "/setting" && ActiveLink) }}>
+            <NavLink to="/setting" style={{ ...NavLink1, ...((pathname === "/setting" || pathname === "/Setting") && ActiveLink) }}>
               <i className="fas fa-cog" style={Icon}></i>
               <div style={Text}>설정</div>
             </NavLink>

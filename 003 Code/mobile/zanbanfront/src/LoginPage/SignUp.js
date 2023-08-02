@@ -119,8 +119,8 @@ const SignUp = () => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ marginTop: '30px', marginBottom: '40px', color: '#A93528' }}>
-                <h1 style={{marginBottom: 0}}>식재료 절약단</h1>
-                <p style={{display: 'flex', justifyContent: 'center', marginTop: 0, fontSize: '12px'}}>구내식당 예약 시스템</p>
+                <h1 style={{marginBottom: 0}}>식단미리</h1>
+                <p style={{display: 'flex', justifyContent: 'center', marginTop: 0, fontSize: '12px'}}>구내식당 메뉴예약 시스템</p>
             </div>
 
             <div>

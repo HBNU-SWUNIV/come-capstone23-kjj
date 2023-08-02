@@ -10,6 +10,7 @@ import Graph from "../MyPage/Graph";
 import Setting from "../SettingPage/Setting";
 import Guide1 from "../SettingPage/Guide1";
 import Guide2 from "../SettingPage/Guide2";
+import BestMenu from "../HomePage/BestMenu";
 
 
 
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
             {
                 path:'/home/:id',
                 element:<Home/>
+            },
+            {
+                path:'/home/bestmenu',
+                element:<BestMenu/>
             },
             {
                 path:'/calendar',

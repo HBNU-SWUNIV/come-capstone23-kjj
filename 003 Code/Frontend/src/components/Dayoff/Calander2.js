@@ -111,7 +111,7 @@ function Calander2() {
   useEffect(() => {
     axios
       .get(
-        `${ManagerBaseApi}/store/off/${format(currentMonth, 'yyyy')}/${format(
+        `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
           currentMonth,
           'MM'
         )}`,
@@ -131,7 +131,7 @@ function Calander2() {
         res.status == 200 &&
           axios
             .get(
-              `${ManagerBaseApi}/store/off/${format(currentMonth, 'yyyy')}/${format(
+              `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
                 currentMonth,
                 'MM'
               )}`,
@@ -151,7 +151,7 @@ function Calander2() {
         res.status == 200 &&
           axios
             .get(
-              `${ManagerBaseApi}/store/off/${format(currentMonth, 'yyyy')}/${format(
+              `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
                 currentMonth,
                 'MM'
               )}`,

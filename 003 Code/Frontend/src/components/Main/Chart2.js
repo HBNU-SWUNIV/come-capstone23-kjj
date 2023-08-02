@@ -2,7 +2,6 @@ import * as React from 'react';
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import axios from 'axios';
 import styled from 'styled-components';
@@ -20,7 +19,6 @@ const ChartWrapper = styled.div`
 `;
 
 export default function Chart2() {
-  const navigate = useNavigate();
   const config = ConfigWithToken();
   const [reservationInfo, setReservationInfo] = useState([]);
   const [predictMenus, setPredictMenus] = useState([]);
@@ -28,10 +26,10 @@ export default function Chart2() {
 
   useEffect(() => {
     axios
-      .get(`${ManagerBaseApi}/state/menu`, config)
+      .get(`/api/user/state/menu`, config)
       .then((res) => setReservationInfo(res.data))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        console.log(err);
       });
     axios
       .get(`${ManagerBaseApi}/state/predict/menu`, config)

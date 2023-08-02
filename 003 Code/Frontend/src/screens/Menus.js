@@ -42,19 +42,20 @@ export default function Menus() {
   const [deleteID, setDeleteId] = useState(0);
   const [addMenu, setAddMenu] = useState(false);
   const [menus, setMenus] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [imagesrc, setImagesrc] = useState('null');
   const [image, setImage] = useState([]);
-  const menuNameRef = useRef('');
-  const menuDetailsRef = useRef('');
-  const menuCostRef = useRef('');
   const [success, setSuccess] = useState(false);
   const [update, setUpdate] = useState(null);
   const [updateMenu, setUpdatemenu] = useState(false);
-  const [일품, set일품] = useState(false);
+  const [오늘의메뉴, set일품] = useState(false);
   const [isplanner, setIsplanner] = useState(false);
   const [식재료open, set식재료open] = useState(false);
   const [식재료, set식재료] = useState(null);
   const [inputfields, setInputfields] = useState([{ key: '', value: '' }]);
+  const menuNameRef = useRef('');
+  const menuDetailsRef = useRef('');
+  const menuCostRef = useRef('');
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -63,10 +64,25 @@ export default function Menus() {
     },
   };
   useEffect(() => {
-    axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
-    axios
-      .get(`${ManagerBaseApi}/menu/planner`, config)
-      .then((res) => setIsplanner(res.data));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`${ManagerBaseApi}/menu`, config);
+        setMenus(response.data);
+
+        if (response.data.length !== 0) {
+          setTimeout(() => setIsLoading(false), 1000);
+        }
+
+        axios
+          .get(`${ManagerBaseApi}/menu/planner`, config)
+          .then((res) => setIsplanner(res.data));
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleDeleteOpen = (id) => {
@@ -101,7 +117,7 @@ export default function Menus() {
   const handle일품Open = () => {
     set일품(true);
   };
-  const handle일품Close = () => {
+  const handle오늘의메뉴Close = () => {
     set일품(false);
   };
   const handle식재료Open = (menu, id) => {
@@ -289,10 +305,7 @@ export default function Menus() {
       })
       .catch((err) => {
         if (err.response.status === 400) {
-          alert('파일의 용량이 너무큽니다.');
-          return;
-        } else if (err.response.status === 409) {
-          alert('중복된 메뉴명이 있습니다.');
+          alert('이미지 용량이 너무 크거나 입력하지 않은 필드가 있습니다.');
           return;
         }
       });
@@ -363,15 +376,18 @@ export default function Menus() {
                       flexDirection: 'column',
                     }}
                   >
-                    <CardMedia
-                      component="div"
-                      sx={{
-                        opacity: menu.sold === true ? null : 0.3,
-                        // 16:9
-                        pt: '56.25%',
-                      }}
-                      image={'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image}
-                    />
+                    {!isLoading ? (
+                      <CardMedia
+                        component="div"
+                        sx={{
+                          opacity: menu.sold === true ? null : 0.3,
+                          pt: '56.25%',
+                        }}
+                        image={'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image}
+                      />
+                    ) : (
+                      <Skeleton variant="rectangular" sx={{ pt: '56.25%' }} />
+                    )}
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography
                         sx={{ opacity: menu.sold === true ? null : 0.3 }}
@@ -380,26 +396,30 @@ export default function Menus() {
                         variant="h5"
                         component="h2"
                       >
-                        {menu.name}
+                        {!isLoading ? menu.name : <Skeleton />}
                       </Typography>
                       {menu.sold === true ? (
                         <>
-                          <Typography variant="body2">{menu.details}</Typography>
-                          <Typography>{menu.cost}원</Typography>
+                          <Typography variant="body2">
+                            {!isLoading ? menu.details : <Skeleton />}
+                          </Typography>
+                          <Typography>
+                            {!isLoading ? menu.cost + '원' : <Skeleton />}
+                          </Typography>
                         </>
                       ) : (
                         <>
                           <Typography variant="h4" color="error.dark">
-                            품 절 되었어요
+                            {!isLoading ? '품 절 되었어요' : <Skeleton />}
                           </Typography>
                         </>
                       )}
                     </CardContent>
+
                     <CardActions
                       sx={{
                         display: 'flex',
                         justifyContent: 'center',
-                        gap: '-10px',
                       }}
                     >
                       {menu.sold === true ? (
@@ -543,7 +563,7 @@ export default function Menus() {
         </DialogActions>
       </Dialog>
 
-      <Dialog open={일품} onClose={handle일품Close}>
+      <Dialog open={오늘의메뉴} onClose={handle오늘의메뉴Close}>
         <DialogTitle>오늘의메뉴 등록</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
           <DialogContentText>
@@ -587,7 +607,7 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handle일품Close}>
+          <Button color="error" onClick={handle오늘의메뉴Close}>
             닫기
           </Button>
           <Button onClick={오늘의메뉴Add}>등록</Button>
@@ -709,7 +729,7 @@ export default function Menus() {
 
       <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
         <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-          This is a success message!
+          성공!
         </Alert>
       </Snackbar>
     </ThemeProvider>

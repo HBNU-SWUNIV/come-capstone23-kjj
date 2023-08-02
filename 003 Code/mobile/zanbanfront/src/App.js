@@ -12,9 +12,11 @@ function App() {
         <h1>모바일 환경에서 접속해주세요.</h1>
       </BrowserView>
       <MobileView>
-        {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse', '/Graph'].includes(location.pathname) && <Nav />}
+        {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
         <Outlet />
       </MobileView>
+      {/* {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
+        <Outlet /> */}
     </div>
 
   );

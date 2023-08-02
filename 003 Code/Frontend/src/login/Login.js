@@ -17,6 +17,7 @@ import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
 import Copyright from '../components/general/Copyright';
+import { ManagerBaseApi } from '../auth/authConfig';
 
 const defaultTheme = createTheme();
 
@@ -27,23 +28,30 @@ export default function Login() {
   const { keycloak } = useKeycloak();
   const [cookies, setCookie] = useCookies(['accesstoken']);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     let body = { username, password };
-    axios
-      .post(`/api/user/login/keycloak?token=${keycloak.token}`, body)
-      .then((res) => {
-        const apitoken = res.headers.authorization;
-        const [, accesstoken] = apitoken.split('Bearer ');
-        const apitoken2 = res.headers.refresh_token;
-        const [, refreshtoken] = apitoken2.split('Bearer ');
-        setCookie('accesstoken', accesstoken);
-        setCookie('refreshtoken', refreshtoken);
-        navigate('/home');
-      })
-      .catch((err) => {
-        console.log(err);
+    try {
+      const res1 = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
+      const apitoken = res1.headers.authorization;
+      const [, keycloaktoken] = apitoken.split('Bearer ');
+      setCookie('keycloaktoken', keycloaktoken);
+
+      const res2 = await axios({
+        method: 'POST',
+        url: `${ManagerBaseApi}/login/id`,
+        data: body,
       });
+
+      const apitoken2 = res2.headers.authorization;
+      const [, accesstoken] = apitoken2.split('Bearer ');
+      setCookie('accesstoken', accesstoken);
+
+      if (res2.status === 200) navigate('/home');
+    } catch (err) {
+      if (err.response.status === 401) alert('ID or PW를 확인하세요.');
+      else if (err.response.status === 403) alert('keycloak 인증이 실패했습니다.');
+    }
   };
 
   return (
