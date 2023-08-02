@@ -2,7 +2,8 @@ package com.hanbat.zanbanzero.controller.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +22,7 @@ public class MenuUserApiController {
 
     @Operation(summary="전체 메뉴 조회")
     @GetMapping("menu")
-    public ResponseEntity<List<MenuDto>> getMenus() {
-        List<MenuDto> menus = menuService.getMenus();
-        return ResponseEntity.status(HttpStatus.OK).body(menus);
-    }
-
-    @Operation(summary="특정 메뉴 상세정보 조회")
-    @GetMapping("menu/{id}")
-    public ResponseEntity<MenuInfoDto> getMenuInfo(@PathVariable Long id) throws CantFindByIdException {
-        MenuInfoDto menuDto = menuService.getMenuInfo(id);
-        return ResponseEntity.status(HttpStatus.OK).body(menuDto);
+    public ResponseEntity<List<MenuUserInfoDto>> getMenus() {
+        return ResponseEntity.ok(menuService.getMenus());
     }
 }

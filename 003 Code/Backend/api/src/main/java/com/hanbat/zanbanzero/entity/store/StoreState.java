@@ -30,12 +30,12 @@ public class StoreState {
         this.off = off;
     }
 
-    public static StoreState createNewOffStoreState(Store store, LocalDate date) {
+    public static StoreState createNewOffStoreState(Store store, LocalDate date, boolean off) {
         return new StoreState(
                 null,
                 store,
                 date,
-                false
+                off
         );
     }
 }

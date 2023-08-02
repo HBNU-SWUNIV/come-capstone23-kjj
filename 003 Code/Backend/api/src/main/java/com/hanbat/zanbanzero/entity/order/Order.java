@@ -2,11 +2,12 @@ package com.hanbat.zanbanzero.entity.order;
 
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.dto.order.OrderDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.hibernate.annotations.Index;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 
 @Entity
@@ -28,7 +29,10 @@ public class Order {
     private String menu;
 
     private int cost;
-    private String orderDate;
+
+    @Index(name = "order_date_index")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate orderDate;
     private boolean recognize;
 
     public void setMenu(Menu menu) {this.menu = menu.getName();}
@@ -39,7 +43,7 @@ public class Order {
 
     public void setRecognizeToUse() { recognize = true; }
 
-    public static Order createNewOrder(User user, String menu, int cost, String date, boolean type) {
+    public static Order createNewOrder(User user, String menu, int cost, LocalDate date, boolean type) {
         return new Order(
                 null,
                 user,

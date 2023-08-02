@@ -8,12 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface UserMyPageRepository extends JpaRepository<UserMypage, User> {
-
-    @Query( value = "select * " +
-            "from user_my_page " +
-            "where users_id = :user_id",
-    nativeQuery = true)
-    Optional<UserMypage> getMyPage(@Param("user_id") Long id);
+public interface UserMyPageRepository extends JpaRepository<UserMypage, Long> {
 
 }

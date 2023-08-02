@@ -15,7 +15,7 @@ public class StoreStateDto {
 
     public static StoreStateDto of(StoreState state) {
         return new StoreStateDto(
-                DateTools.makeResponseDateFormatString(state.getDate()),
+                DateTools.makeDateFormatString(state.getDate()),
                 state.getOff()
         );
     }

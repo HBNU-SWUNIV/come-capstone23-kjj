@@ -1,7 +1,8 @@
-package com.hanbat.zanbanzero.auth.jwt;
+package com.hanbat.zanbanzero.auth.jwt.filter;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
@@ -18,13 +19,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
 
-    private String loginEndPath = "/login";
-    private String joinEndPath = "/join";
+    private String userApiPrefix = "/api/user";
+    private String managerApiPrefix = "/api/manager";
 
     public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
         super(authenticationManager);
@@ -32,15 +34,12 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         String jwtHeader = request.getHeader(JwtTemplate.HEADER_STRING);
-        // JWT(Header)가 있는지 확인
+//         JWT(Header)가 있는지 확인
         if ((jwtHeader == null || !jwtHeader.startsWith(JwtTemplate.TOKEN_PREFIX))) {
-            if (request.getRequestURI().endsWith(joinEndPath) || request.getRequestURI().endsWith(loginEndPath)){
-                chain.doFilter(request, response);
-                return;
-            }
-            throw new IOException("토큰이 없거나 잘못되었습니다.");
+            chain.doFilter(request, response);
+            return;
         }
 
         // JWT 검증
@@ -49,13 +48,15 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("username").asString();
         String roles = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("roles").asString();
 
+        if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족");
+
         if (username != null) {
             User user = userRepository.findByUsername(username);
             UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);
 
             // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
             Authentication authentication =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
 
             // SecurityContextHolder = 시큐리티 세션 공간에 저장
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -10,9 +10,9 @@ import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.SameNameException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
@@ -61,10 +61,10 @@ public class StoreService {
     }
 
     @Transactional
-    public void setSetting(StoreDto dto) throws SameNameException {
+    public StoreDto setSetting(StoreDto dto) throws SameNameException {
         if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
 
-        storeRepository.save(Store.of(finalId, dto));
+        return StoreDto.of(storeRepository.save(Store.of(finalId, dto)));
     }
 
     @Transactional
@@ -105,14 +105,14 @@ public class StoreService {
 
     @Transactional
     public List<CalculateMenuForGraphDto> getPopularMenus() {
-        List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc()
-                .stream()
+        List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc().stream()
                 .map(Calculate::getId)
                 .collect(Collectors.toList());
 
         List<CalculateMenuForGraphDto> result = calculateMenuRepository.getPopularMenus(idList);
         result.sort(Comparator.comparingLong(CalculateMenuForGraphDto::getCount).reversed());
 
+        if (result.size() < 3) return result;
         return result.subList(0, 3);
     }
 
@@ -133,20 +133,21 @@ public class StoreService {
     }
 
     @Transactional
-    public void setOff(Boolean off, int year, int month, int day) {
-        LocalDate date = DateTools.makeResponseDateFormatLocalDate(year, month, day);
+    public StoreStateDto setOff(Boolean off, int year, int month, int day) {
+        LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
+        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date, off));
         else storeState.setOff(off);
+        return StoreStateDto.of(storeState);
     }
 
     public List<StoreStateDto> getClosedDays(int year, int month) {
-        String start = DateTools.makeResponseDateFormatString(year, month, 1);
-        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = DateTools.makeDateFormatLocalDate(year, month, 1);
+        LocalDate end = DateTools.makeDateFormatLocalDate(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
-                .map(StoreStateDto::of)
+                .map(state -> StoreStateDto.of(state))
                 .collect(Collectors.toList());
     }
 

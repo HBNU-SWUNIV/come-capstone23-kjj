@@ -1,8 +1,8 @@
 package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.task.CreateCalculatePreTasklet;
+import com.batch.batch.batch.order.task.CreateLeftoverPreTasklet;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
@@ -20,6 +20,15 @@ public class CalculateStep {
 
     public CalculateStep(@Qualifier("dataDataSource") DataSource dataDataSource) {
         this.dataDataSource = dataDataSource;
+    }
+
+    @Bean
+    public Step createLeftoverPre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        Tasklet tasklet = new CreateLeftoverPreTasklet(dataDataSource);
+        return new StepBuilder("createLeftoverPre", jobRepository)
+                .tasklet(tasklet, transactionManager)
+                .allowStartIfComplete(true)
+                .build();
     }
 
     @Bean

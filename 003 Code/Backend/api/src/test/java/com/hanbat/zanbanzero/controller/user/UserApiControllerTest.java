@@ -6,8 +6,8 @@ import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UsernameDto;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -148,7 +148,7 @@ class UserApiControllerTest extends ControllerTestClass {
         {
             // Given
             UserMypageDto userMyPageDto = new UserMypageDto();
-            Mockito.when(userService.getMyPage(dto.getId())).thenReturn(userMyPageDto);
+            Mockito.when(userService.getMyPage(dto.getUsername())).thenReturn(userMyPageDto);
 
             // When
             mockMvc.perform(MockMvcRequestBuilders.get("/api/user/1/page")
@@ -158,14 +158,14 @@ class UserApiControllerTest extends ControllerTestClass {
                     .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(userMyPageDto)));
 
             // Then
-            Mockito.verify(userService, Mockito.times(1)).getMyPage(dto.getId());
+            Mockito.verify(userService, Mockito.times(1)).getMyPage(dto.getUsername());
         }
 
         // 2. 잘못된 id
         {
             // Given
             UserDto wrongId = new UserDto(99L, "wrong id", "1234", null);
-            Mockito.doThrow(CantFindByIdException.class).when(userService).getMyPage(wrongId.getId());
+            Mockito.doThrow(CantFindByIdException.class).when(userService).getMyPage(wrongId.getUsername());
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/user/" + wrongId.getId() + "/page")
@@ -176,7 +176,7 @@ class UserApiControllerTest extends ControllerTestClass {
             // Then
             assertEquals(500, result.getResponse().getStatus());
 
-            Mockito.verify(userService, Mockito.times(1)).getMyPage(wrongId.getId());
+            Mockito.verify(userService, Mockito.times(1)).getMyPage(wrongId.getUsername());
         }
     }
 }

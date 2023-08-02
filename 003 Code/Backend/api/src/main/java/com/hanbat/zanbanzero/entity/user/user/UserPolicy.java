@@ -46,6 +46,7 @@ public class UserPolicy {
         wednesday = dto.isWednesday();
         thursday = dto.isThursday();
         friday = dto.isFriday();
+        defaultMenu = dto.getDefaultMenu();
     }
 
     public void setDefaultMenu(Long id) {

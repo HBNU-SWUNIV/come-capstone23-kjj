@@ -12,11 +12,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class UserJoinDto {
     private String username;
     private String password;
+    private String roles;
 
     public static UserJoinDto of(User user) {
         return new UserJoinDto(
                 user.getUsername(),
-                user.getPassword()
+                user.getPassword(),
+                user.getRoles()
         );
     }
 

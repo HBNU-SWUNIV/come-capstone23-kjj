@@ -9,7 +9,7 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
@@ -49,31 +49,36 @@ public class OrderService {
     @Transactional
     public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
-        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
+        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), DateTools.toFormatterLocalDate(date), type));
     }
 
     @Transactional
-    public void cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeResponseDateFormatString(year, month, day);
-        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
+    public OrderDto cancelOrder(String username, int year, int month, int day) throws CantFindByIdException {
+        String date = DateTools.makeDateFormatString(year, month, day);
+        Long id = userRepository.findByUsername(username).getId();
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.toFormatterLocalDate(date));
 
-        if (order == null) orderRepository.save(createNewOrder(id, getDefaultMenu(id).getId(), date, false));
+        if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenu(id).getId(), date, false));
         else order.setRecognizeToCancel();
+        return OrderDto.of(order);
     }
 
     @Transactional
-    public void addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeResponseDateFormatString(year, month, day);
-        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
+    public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException {
+        String date = DateTools.makeDateFormatString(year, month, day);
+        Long id = userRepository.findByUsername(username).getId();
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.toFormatterLocalDate(date));
 
-        if (order == null) orderRepository.save(createNewOrder(id, menuId, date, true));
+        if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
             order.setMenu(menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new));
             order.setRecognizeToUse();
         }
+        return OrderDto.of(order);
     }
 
-    public int countPages(Long id) {
+    public int countPages(String username) {
+        Long id = userRepository.findByUsername(username).getId();
         Pageable pageable = PageRequest.of(0, pageSize);
 
         return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
@@ -89,7 +94,8 @@ public class OrderService {
     }
 
     @Transactional
-    public List<OrderDto> getOrdersPage(Long id, int page) {
+    public List<OrderDto> getOrdersPage(String username, int page) {
+        Long id = userRepository.findByUsername(username).getId();
         Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, pageSize));
 
         return orderPage.getContent()
@@ -99,7 +105,8 @@ public class OrderService {
     }
 
     @Transactional
-    public LastOrderDto getLastOrder(Long id){
+    public LastOrderDto getLastOrder(String username){
+        Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
@@ -125,5 +132,13 @@ public class OrderService {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 100, 100);
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
+    }
+
+    public OrderDto getOrder(String username, int year, int month, int day) {
+        Long id = userRepository.findByUsername(username).getId();
+
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeDateFormatLocalDate(year, month, day));
+        if (order == null) return null;
+        else return OrderDto.of(order);
     }
 }

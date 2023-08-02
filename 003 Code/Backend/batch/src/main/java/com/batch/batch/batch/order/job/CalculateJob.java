@@ -23,10 +23,11 @@ public class CalculateJob {
     private final JobRepository jobRepository;
 
     @Bean
-    public Job createPredictDataJob(@Qualifier("createCalculatePre") Step step)  {
+    public Job createPredictDataJob(@Qualifier("createLeftoverPre") Step step, @Qualifier("createCalculatePre") Step step2)  {
         return new JobBuilder("CalculateJob")
                 .repository(jobRepository)
                 .start(step)
+                .next(step2)
                 .build();
     }
 }

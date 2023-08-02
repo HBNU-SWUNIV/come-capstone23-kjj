@@ -2,9 +2,7 @@ package com.batch.batch.batch.order;
 
 import com.batch.batch.tools.DateTools;
 import com.batch.batch.tools.SlackTools;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,58 +23,39 @@ public class BatchScheduler {
     private final Job firstJob;
     private final Job secondJob;
     private final DataSource dataSource;
-    private final SlackTools slackTools;
 
-    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource, SlackTools slackTools) {
+    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource) {
         this.jobLauncher = jobLauncher;
         this.firstJob = firstJob;
         this.secondJob = secondJob;
         this.dataSource = dataSource;
-        this.slackTools = slackTools;
     }
 
-    // Docker image(openjdk:17) 기준 한국이 9시간 느림
-    @Scheduled(cron = "0 30 1 * * ?")
+    private JobParameters getFirstJobParameters() {
+        return new JobParametersBuilder()
+                .addString("date", DateTools.getDate())
+                .addString("time", String.valueOf(System.currentTimeMillis()))
+                .addString("today", DateTools.getToday().toLowerCase())
+                .toJobParameters();
+    }
+
+    private JobParameters getSecondJobParameters() {
+        return new JobParametersBuilder()
+                .addString("date", DateTools.getDatePlusOneDay())
+                .addString("time", String.valueOf(System.currentTimeMillis()))
+                .addString("today", DateTools.getDate())
+                .addString("day", DateTools.getTodayPlusOneDay().toLowerCase())
+                .toJobParameters();
+    }
+
+    @Scheduled(cron = "0 45 0 * * ?")
     public void runOrderJob() throws Exception {
-        String day = DateTools.getToday();
+        String today = DateTools.getToday();
         String date = DateTools.getDate();
         boolean off = isOffDay(date);
-        if (!day.equals("SATURDAY") && !day.equals("SUNDAY") && !off) {
-        //if (!off) {
-            JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("date", date)
-                    //.addString("today", "friday")
-                    .addString("time", String.valueOf(System.currentTimeMillis()))
-                    .addString("today", day.toLowerCase())
-                    .toJobParameters();
-            try {
-                jobLauncher.run(firstJob, jobParameters);
-            } catch (Exception e) {
-                slackTools.sendSlackMessage(e, new Object(){}.getClass().getEnclosingClass().getName());
-            }
-        }
-    }
-
-    @Scheduled(cron = "30 30 1 * * ?")
-    public void runCalculateJob() throws Exception {
-        String day = DateTools.getTodayPlusOneDay();
-        String date = DateTools.getDatePlusOneDay();
-        String today = DateTools.getDate();
-        boolean off = isOffDay(date);
-        if (!day.equals("SATURDAY") && !day.equals("SUNDAY") && !off) {
-            //if (!off) {
-            JobParameters jobParameters = new JobParametersBuilder()
-                    .addString("date", date)
-                    .addString("today", today)
-                    //.addString("today", "friday")
-                    .addString("time", String.valueOf(System.currentTimeMillis()))
-                    .addString("day", day.toLowerCase())
-                    .toJobParameters();
-            try {
-                jobLauncher.run(secondJob, jobParameters);
-            } catch (Exception e) {
-                slackTools.sendSlackMessage(e, new Object(){}.getClass().getEnclosingClass().getName());
-            }
+        if (!today.equals("SATURDAY") && !today.equals("SUNDAY") && !off) {
+            JobExecution run = jobLauncher.run(firstJob, getFirstJobParameters());
+            if (run.getStatus() != BatchStatus.FAILED) jobLauncher.run(secondJob, getSecondJobParameters());
         }
     }
 

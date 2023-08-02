@@ -7,17 +7,15 @@ import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
-import com.hanbat.zanbanzero.exception.controller.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.JwtException;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongRequestDetails;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -30,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final UserMyPageRepository userMyPageRepository;
+    private final UserMyPageRepository userMypageRepository;
     private final UserPolicyRepository userPolicyRepository;
 
     private final MenuRepository menuRepository;
@@ -40,7 +38,7 @@ public class UserService implements UserDetailsService {
     public User join(UserJoinDto dto) throws JsonProcessingException {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
-        userMyPageRepository.save(UserMypage.createNewUserMyPage(user));
+        userMypageRepository.save(UserMypage.createNewUserMyPage(user));
         userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
         return user;
     }
@@ -71,36 +69,44 @@ public class UserService implements UserDetailsService {
         return UserInfoDto.of(user);
     }
 
-    public UserMypageDto getMyPage(Long id) throws CantFindByIdException, JsonProcessingException {
-        UserMypage userMyPage = userMyPageRepository.getMyPage(id).orElseThrow(CantFindByIdException::new);
+    public UserMypageDto getMyPage(String username) throws CantFindByIdException, JsonProcessingException {
+        Long id = userRepository.findByUsername(username).getId();
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
-        return UserMypageDto.createUserMyPageDto(userMyPage);
+        return UserMypageDto.createUserMyPageDto(userMypage);
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetailsInterfaceImpl loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저 닉네임");
+        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저네임");
         return new UserDetailsInterfaceImpl(user);
     }
 
     @Transactional
-    public void setUserDatePolicy(UserPolicyDto dto, Long id) throws CantFindByIdException {
+    public UserPolicyDto setUserDatePolicy(UserPolicyDto dto, String username) throws CantFindByIdException {
+        Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         policy.setPolicy(dto);
+
+        return UserPolicyDto.of(policy);
     }
 
     @Transactional
-    public void setUserMenuPolicy(Long userId, Long menuId) throws CantFindByIdException, WrongParameter {
+    public UserPolicyDto setUserMenuPolicy(String username, Long menuId) throws CantFindByIdException, WrongParameter {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
 
-        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
+        Long id = userRepository.findByUsername(username).getId();
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
         policy.setDefaultMenu(menuId);
+
+        return UserPolicyDto.of(policy);
     }
 
-    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
+    public UserPolicyDto getUserPolicy(String username) throws CantFindByIdException {
+        Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
-        return UserPolicyDto.createUserPolicyDto(policy);
+        return UserPolicyDto.of(policy);
     }
 
     public UserInfoDto getInfoForUsername(String username) {

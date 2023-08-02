@@ -3,7 +3,6 @@ package com.hanbat.zanbanzero.service.planner;
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.planner.Planner;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.planner.PlannerRepository;
 import com.hanbat.zanbanzero.service.DateTools;
@@ -26,20 +25,20 @@ public class PlannerService {
     }
 
     @Transactional
-    public void setPlanner(PlannerDto dto, int year, int month, int day) {
-        String dateString = DateTools.makeResponseDateFormatString(year, month, day);
+    public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
+        String dateString = DateTools.makeDateFormatString(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
             dto.setDate(dateString);
-            repository.save(Planner.of(dto, getPlannerMenu()));
+            planner = repository.save(Planner.of(dto, getPlannerMenu()));
         }
         else planner.setMenus(dto.getMenus());
-
+        return PlannerDto.of(planner);
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        String date = DateTools.makeResponseDateFormatString(year, month, day);
+        String date = DateTools.makeDateFormatString(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -47,8 +46,8 @@ public class PlannerService {
     }
 
     public List<PlannerDto> getPlanner(int year, int month) {
-        String start = DateTools.makeResponseDateFormatString(year, month, 1);
-        String end = DateTools.makeResponseDateFormatString(year, month, DateTools.getLastDay(year, month));
+        String start = DateTools.makeDateFormatString(year, month, 1);
+        String end = DateTools.makeDateFormatString(year, month, DateTools.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
                 .map(planner -> PlannerDto.of(planner))

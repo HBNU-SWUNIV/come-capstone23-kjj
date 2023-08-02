@@ -4,7 +4,7 @@ import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
-import com.hanbat.zanbanzero.exception.controller.exceptions.WrongParameter;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +20,8 @@ public class LoginFilter implements Filter {
     private CustomUriMapper customUriMapper;
 
     private String loginEndPath = "/login/id";
+    private String userLoginStartPath = "/api/user";
+    private String managerLoginStartPath = "/api/manager";
 
     public LoginFilter(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;

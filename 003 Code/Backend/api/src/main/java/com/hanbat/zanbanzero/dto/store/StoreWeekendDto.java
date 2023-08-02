@@ -14,13 +14,13 @@ public class StoreWeekendDto {
 
     public static StoreWeekendDto createZeroStoreWeekendDto(String targetDate) {
         return new StoreWeekendDto(
-                DateTools.makeResponseDateFormatString(targetDate),
+                DateTools.makeDateFormatString(targetDate),
                 0);
     }
 
     public static StoreWeekendDto createStoreWeekendDto(String targetDate, int today) {
         return new StoreWeekendDto(
-                DateTools.makeResponseDateFormatString(targetDate),
+                DateTools.makeDateFormatString(targetDate),
                 today
         );
     }
