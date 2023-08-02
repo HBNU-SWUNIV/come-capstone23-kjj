@@ -137,7 +137,7 @@ public class StoreService {
         LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date));
+        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date, off));
         else storeState.setOff(off);
         return StoreStateDto.of(storeState);
     }
