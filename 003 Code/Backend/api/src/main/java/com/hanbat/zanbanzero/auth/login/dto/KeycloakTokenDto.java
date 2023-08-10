@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.login.dao;
+package com.hanbat.zanbanzero.auth.login.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeycloakTokenDAO {
+public class KeycloakTokenDto {
     private String access_token;
     private int expires_in;
     private int refresh_expires_in;

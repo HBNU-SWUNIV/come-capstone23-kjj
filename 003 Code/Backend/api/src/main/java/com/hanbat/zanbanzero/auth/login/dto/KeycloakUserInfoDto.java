@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.login.dao;
+package com.hanbat.zanbanzero.auth.login.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeycloakUserInfoDAO {
+public class KeycloakUserInfoDto {
     private String sub;
     private boolean email_verified;
     private String[] roles;

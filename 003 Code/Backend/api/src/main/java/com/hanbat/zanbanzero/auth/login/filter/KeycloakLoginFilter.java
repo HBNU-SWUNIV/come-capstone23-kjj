@@ -2,8 +2,8 @@ package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.login.dao.KeycloakTokenDAO;
-import com.hanbat.zanbanzero.auth.login.dao.KeycloakUserInfoDAO;
+import com.hanbat.zanbanzero.auth.login.dto.KeycloakTokenDto;
+import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.user.User;
@@ -12,24 +12,19 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,7 +42,7 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
-        KeycloakUserInfoDAO userInfo = getUserInfoFromKeycloakServer(request.getParameter("token"));
+        KeycloakUserInfoDto userInfo = getUserInfoFromKeycloakServer(request.getParameter("token"));
         User user;
         try {
             user = User.of(userInfo, checkUserInfo(userInfo));
@@ -94,16 +89,16 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, httpHeaders);
 
-        ResponseEntity<KeycloakTokenDAO> response = restTemplate.exchange(
+        ResponseEntity<KeycloakTokenDto> response = restTemplate.exchange(
                 url,
                 HttpMethod.POST,
                 entity,
-                KeycloakTokenDAO.class
+                KeycloakTokenDto.class
         );
         return response.getBody().getAccess_token();
     }
 
-    private KeycloakUserInfoDAO getUserInfoFromKeycloakServer(String token) {
+    private KeycloakUserInfoDto getUserInfoFromKeycloakServer(String token) {
         String url = properties.getHost() + "/auth/realms/" + properties.getRealmName() + "/protocol/openid-connect/userinfo";
         String tokenPrefix = "Bearer ";
 
@@ -112,16 +107,16 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
 
         HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(httpHeaders);
 
-        ResponseEntity<KeycloakUserInfoDAO> response = restTemplate.exchange(
+        ResponseEntity<KeycloakUserInfoDto> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,
                 entity,
-                KeycloakUserInfoDAO.class
+                KeycloakUserInfoDto.class
         );
         return response.getBody();
     }
 
-    private String checkUserInfo(KeycloakUserInfoDAO dao) throws IllegalAccessException {
+    private String checkUserInfo(KeycloakUserInfoDto dao) throws IllegalAccessException {
         String roleUser = "ROLE_USER";
         String roleManager = "ROLE_MANAGER";
         List<String> roles = Arrays.asList(dao.getRoles());

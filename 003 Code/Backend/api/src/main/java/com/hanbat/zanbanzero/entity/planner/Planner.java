@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Index;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @AllArgsConstructor
@@ -22,14 +26,16 @@ public class Planner {
     private Menu menu;
 
     @Index(name = "planner_date_index")
-    private String date;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
     private String menus;
 
     public static Planner of(PlannerDto dto, Menu menu){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return new Planner(
                 null,
                 menu,
-                dto.getDate(),
+                LocalDate.parse(dto.getDate(), formatter),
                 dto.getMenus()
         );
     }
