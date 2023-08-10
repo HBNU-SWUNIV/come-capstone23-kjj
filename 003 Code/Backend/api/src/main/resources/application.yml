@@ -32,8 +32,43 @@ spring:
     redis:
       host: localhost
       port: 6379
+<<<<<<< HEAD
 ---
 spring:
+=======
+<<<<<<< HEAD
+
+=======
+>>>>>>> 64228e3 (feat: apply actuator)
+#logging
+logging:
+  level:
+    root: info
+
+# Actuator
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, prometheus
+
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
+
+# Keycloak
+my:
+  keycloak:
+    host: http://kjj.kjj.r-e.kr:8081
+    realm_name: test-app
+    client_id: test-client
+    redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
+    client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
+#---
+>>>>>>> 3687ef0 (feat: apply actuator)
   config:
     activate:
       on-profile: prod
