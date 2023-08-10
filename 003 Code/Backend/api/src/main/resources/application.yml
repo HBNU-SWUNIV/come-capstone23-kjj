@@ -1,0 +1,100 @@
+# env
+spring:
+  profiles:
+    include: env
+
+# DB
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${my.mysqluri_local}
+    username: ${my.mysqlUsername}
+    password: ${my.mysqlPassword}
+
+# data.sql
+  sql:
+    init:
+      mode: never
+    defer-datasource-initialization: true
+    open-in-view: false
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      properties:
+        hibernate.show_sql: true
+      format_sql: true
+
+# Redis
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+#logging
+logging:
+  level:
+    root: info
+
+# Actuator
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, prometheus
+
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
+
+# Keycloak
+my:
+  keycloak:
+    host: http://kjj.kjj.r-e.kr:8081
+    realm_name: test-app
+    client_id: test-client
+    redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
+    client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
+#---
+  config:
+    activate:
+      on-profile: prod
+# DB
+  datasource:
+    url: ${my.mysqluri_docker}
+    username: ${my.mysqlUsername}
+    password: ${my.mysqlPassword}
+
+# data.sql
+  sql:
+    init:
+      mode: never
+  jpa:
+    defer-datasource-initialization: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
+# spring security
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+# logging
+    root: error
+
+# Redis
+  data:
+    redis:
+      host: db-redis
+      port: 6379
+
+# Keycloak
+    redirect_uri: http://kjj.kjj.r-e.kr:8080/api/user/login/keycloak/redirect

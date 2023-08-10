@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .and()
                 .addFilter(corsFilter)
                 .csrf().disable()
-                .formLogin().disable()
+//                .formLogin().disable()
                 .httpBasic().disable()
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
@@ -62,7 +62,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/user/login/**").permitAll()
                 .requestMatchers("/api/manager/login/**").permitAll()
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "MANAGER")
-                .requestMatchers("/api/manager/**").hasAnyRole("MANAGER")
+                .requestMatchers("/api/manager/**").hasRole("MANAGER")
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

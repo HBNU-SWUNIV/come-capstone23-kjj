@@ -58,6 +58,10 @@ dependencies {
 
 	// view test
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+
+	// actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus' // 마이크로미터 프로메테우스 구현체
 }
 
 tasks.named('test') {

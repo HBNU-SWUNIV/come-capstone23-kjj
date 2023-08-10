@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
-import com.hanbat.zanbanzero.auth.login.dao.KeycloakUserInfoDAO;
-import com.hanbat.zanbanzero.dto.user.LoginDto;
+import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.order.Order;
@@ -56,7 +55,7 @@ public class User {
         );
     }
 
-    public static User of(KeycloakUserInfoDAO dao, String roles) {
+    public static User of(KeycloakUserInfoDto dao, String roles) {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         int length = 10;

@@ -11,7 +11,7 @@ public class EnvConfig {
     @Bean(name = "env")
     public PropertiesFactoryBean propertiesFactoryBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
-        ClassPathResource classPathResource = new ClassPathResource("/application-env.properties");
+        ClassPathResource classPathResource = new ClassPathResource("/application-env.yml");
 
         propertiesFactoryBean.setLocation(classPathResource);
 

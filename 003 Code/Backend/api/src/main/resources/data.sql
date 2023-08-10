@@ -18,6 +18,7 @@ INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user16', '$2a$10
 INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user17', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 INSERT INTO zanbanzero.user(username, password, roles) VALUES ('user18', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_USER');
 INSERT INTO zanbanzero.user(username, password, roles) VALUES ('manager', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_MANAGER');
+INSERT INTO zanbanzero.user(username, password, roles) VALUES ('master', '$2a$10$rb7fhQHdtxNf7RgTJVlERePH99.BqB6/i5LE61leYMh0vGOQoGbIC', 'ROLE_MASTER');
 
 INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (1, 1, 0, 0, 0, 0, 1);
 INSERT INTO zanbanzero.user_policy(user_id, monday, tuesday, wednesday, thursday, friday, default_menu) VALUES (2, 0, 1, 0, 0, 0, 1);
