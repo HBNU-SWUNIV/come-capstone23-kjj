@@ -33,13 +33,19 @@ spring:
       host: localhost
       port: 6379
 <<<<<<< HEAD
+<<<<<<< HEAD
 ---
 spring:
 =======
+=======
+>>>>>>> 6b524bc (feat: bug fix)
 <<<<<<< HEAD
 
 =======
 >>>>>>> 64228e3 (feat: apply actuator)
+=======
+
+>>>>>>> 8bdf7db (feat: update)
 #logging
 logging:
   level:
