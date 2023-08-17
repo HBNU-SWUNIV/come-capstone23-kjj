@@ -44,12 +44,12 @@ export default function DailyMenu() {
           }}
         >
           <Toolbar />
-          <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
-              달력에서 요일을 클릭해서 식단을 작성해주세요.
+          <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+            <Typography variant="h4" align="center" color="#29b6f6" paragraph>
+              달력에서 요일을 클릭하여 식단을 작성해주세요.
             </Typography>
 
-            <Typography
+            {/* <Typography
               sx={{ whiteSpace: 'nowrap' }}
               variant="h5"
               align="center"
@@ -57,7 +57,7 @@ export default function DailyMenu() {
               paragraph
             >
               달력에 등록된 식단은 소비자가 확인할 수 있습니다.
-            </Typography>
+            </Typography> */}
             <Stack
               sx={{ pt: 4 }}
               direction="row"
