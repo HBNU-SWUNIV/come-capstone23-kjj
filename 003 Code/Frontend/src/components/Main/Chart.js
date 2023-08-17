@@ -25,7 +25,7 @@ export default function Chart() {
   }, []);
   return (
     <React.Fragment>
-      <Title>내일 식재료 예측</Title>
+      <Title>예약자 수를 기반으로 통계 된 내일의 식재료 예측</Title>
       <ApexCharts
         type="bar"
         series={[

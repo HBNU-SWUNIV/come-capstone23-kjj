@@ -29,6 +29,7 @@ import MuiAlert from '@mui/material/Alert';
 import Input from '@mui/material/Input';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useNavigate } from 'react-router-dom';
+import DailyMenu from './DailyMenu';
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -331,24 +332,30 @@ export default function Menus() {
                 ? theme.palette.grey[100]
                 : theme.palette.grey[900],
             flexGrow: 1,
-            height: '100vh',
+            height: '100%',
             overflow: 'auto',
             display: 'flex',
           }}
         >
           <Toolbar />
-          <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
-              요일별 다른 메뉴가 있다면 오늘의메뉴를 등록해주세요.
-            </Typography>
+          <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
             <Typography
-              sx={{ whiteSpace: 'nowrap', marginLeft: '-8vw' }}
-              variant="h5"
-              align="center"
-              color="text.secondary"
+              sx={{ whiteSpace: 'nowrap', marginLeft: '-1rem' }}
+              variant="h4"
+              color="#0288d1"
+              align="start"
               paragraph
             >
-              오늘의메뉴로 지정된 메뉴는 오늘의메뉴 페이지에서 요일별 식단표를 추가할 수
+              매일 매일 바뀌는 기본 메뉴가 있다면 오늘의메뉴로 등록해보세요.
+            </Typography>
+            <Typography
+              sx={{ whiteSpace: 'nowrap', marginTop: '-0.5rem' }}
+              variant="h5"
+              align="start"
+              color="text.error"
+              paragraph
+            >
+              오늘의메뉴로 등록된 메뉴는 오늘의메뉴 페이지에서 요일별 식단표를 추가할 수
               있습니다.
             </Typography>
             <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
@@ -483,6 +490,7 @@ export default function Menus() {
             </Grid>
             <Copyright sx={{ pt: 4 }} />
           </Container>
+          {/* <DailyMenu /> */}
         </Box>
       </Box>
 

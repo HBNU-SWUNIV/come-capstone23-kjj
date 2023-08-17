@@ -27,10 +27,10 @@ import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
-import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
+import MenuList from '@mui/material/MenuList';
 
-const drawerWidth = 240;
+const drawerWidth = 220;
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -112,15 +112,6 @@ function Drawerheader(props) {
       .catch((err) => console.log(err));
   }, []);
 
-  const handleSuccessOpen = () => {
-    setSuccess(true);
-  };
-  const handleSuccessClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess(false);
-  };
   const onInfo = (e) => {
     setMarketInfo(e);
   };
@@ -132,10 +123,10 @@ function Drawerheader(props) {
       .patch(`${ManagerBaseApi}/store/info`, body, config)
       .then((res) => res.status === 200 && handleCloseModal());
   };
-  const handleClick = (event) => {
+  const menuOpenHandler = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
+  const menuCloseHandler = () => {
     setAnchorEl(null);
   };
   const toggleDrawer = () => {
@@ -143,14 +134,14 @@ function Drawerheader(props) {
   };
   const handleClickOpenModal = () => {
     setOpenModal(true);
-    handleClose();
+    menuCloseHandler();
   };
   const handleCloseModal = () => {
     setOpenModal(false);
   };
   const handleClickOpenModal2 = () => {
     setOpenModal2(true);
-    handleClose();
+    menuCloseHandler();
   };
   const handleCloseModal2 = () => {
     setOpenModal2(false);
@@ -178,13 +169,22 @@ function Drawerheader(props) {
     setCookie('accesstoken', '');
     navigate('/');
   };
+  const handleSuccessOpen = () => {
+    setSuccess(true);
+  };
+  const handleSuccessClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccess(false);
+  };
 
   return (
     <>
       <AppBar position="absolute" open={open1}>
         <Toolbar
           sx={{
-            pr: '24px', // keep right padding when drawer closed
+            pr: '24px',
           }}
         >
           <IconButton
@@ -214,7 +214,7 @@ function Drawerheader(props) {
             aria-controls={open ? 'fade-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            onClick={handleClick}
+            onClick={menuOpenHandler}
           >
             <div
               style={{
@@ -226,9 +226,9 @@ function Drawerheader(props) {
             >
               <span
                 style={{
-                  marginLeft: '5vw',
+                  marginLeft: '9vw',
                   fontSize: '20px',
-                  fontWeight: '500',
+                  fontWeight: '700',
                   color: 'inherit',
                 }}
               >
@@ -256,16 +256,6 @@ function Drawerheader(props) {
                   }}
                 >
                   한밭대학교 구내식당
-                </span>
-                <span
-                  style={{
-                    fontSize: '15px',
-                    color: 'inherit',
-                    marginLeft: '3px',
-                    marginTop: '2px',
-                  }}
-                >
-                  님
                 </span>
               </div>
             </div>
@@ -309,7 +299,7 @@ function Drawerheader(props) {
             />
             <span
               style={{
-                fontSize: '25px',
+                fontSize: '20px',
                 color: '#0a376e',
                 fontWeight: '500',
               }}
@@ -319,25 +309,27 @@ function Drawerheader(props) {
           </div>
           <Main_Listitems />
         </List>
+
         <Menu
+          sx={{ width: '400px' }}
           id="fade-menu"
           MenuListProps={{
             'aria-labelledby': 'fade-button',
           }}
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose}
+          onClose={menuCloseHandler}
           TransitionComponent={Fade}
         >
-          <MenuItem onClick={handleClickOpenModal}>식당 소개메시지</MenuItem>
-          <MenuItem onClick={handleClickOpenModal2}>식당 이미지 변경</MenuItem>
+          <MenuItem onClick={handleClickOpenModal}>식당 소개 메시지 변경하기</MenuItem>
+          <MenuItem onClick={handleClickOpenModal2}>식당 이미지 변경하기</MenuItem>
           <MenuItem onClick={onLogout}>로그아웃</MenuItem>
         </Menu>
 
         <Dialog open={openModal} onClose={handleCloseModal}>
-          <DialogTitle>식당 소개 메시지</DialogTitle>
+          <DialogTitle sx={{ fontSize: '18px' }}>식당 소개 메시지 변경하기</DialogTitle>
           <DialogContent>
-            <DialogContentText sx={{ mb: '2vh' }}>
+            <DialogContentText sx={{ mb: '2vh', fontSize: '15px' }}>
               소개 메시지를 변경할 수 있습니다.
             </DialogContentText>
             <div>
@@ -370,15 +362,20 @@ function Drawerheader(props) {
         </Dialog>
 
         <Dialog open={openModal2} onClose={handleCloseModal2}>
-          <DialogTitle>식당 이미지 변경</DialogTitle>
+          <DialogTitle>식당 이미지 변경하기</DialogTitle>
           <DialogContent>
-            <DialogContentText sx={{ mb: '2vh' }}>현재 이미지</DialogContentText>
+            <DialogContentText sx={{ fontSize: '12px' }}>현재 이미지</DialogContentText>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
                 {image !== null ? (
                   <img
                     style={{
-                      width: '7vw',
+                      width: '10vw',
                     }}
                     src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
                     alt="이미지없음"

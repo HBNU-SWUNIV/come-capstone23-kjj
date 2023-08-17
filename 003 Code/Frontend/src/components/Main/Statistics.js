@@ -15,8 +15,16 @@ function preventDefault(event) {
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: start;
   height: 100%;
+`;
+
+const Div = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export default function Statistics() {
@@ -46,26 +54,35 @@ export default function Statistics() {
 
   return (
     <Wrapper>
-      <Title>금일 이용자 수</Title>
+      <Div>
+        <Title>금일 이용자 수</Title>
+        <Typography
+          sx={{ fontSize: '2.5rem', marginBottom: '-1rem' }}
+          component="p"
+          variant="h6"
+        >
+          {Todaypop}명
+        </Typography>
+      </Div>
       <Typography
-        sx={{ fontSize: '1.5rem', marginTop: '-3vh', marginBottom: '3vh' }}
-        component="p"
-        variant="h4"
+        sx={{ position: 'relative', marginTop: '-4rem' }}
+        color="text.secondary"
       >
-        {Todaypop}명
-      </Typography>
-      <Typography color="text.secondary">
         on {day} {month}, {year}
       </Typography>
-      <Divider />
-      <Title>내일 예약자 수</Title>
-      <Typography
-        sx={{ fontSize: '1.5rem', marginTop: '-3vh', marginBottom: '3vh' }}
-        component="p"
-        variant="h4"
-      >
-        {predictUsers}명
-      </Typography>
+
+      <Divider sx={{ width: '100%', height: '1rem' }} />
+
+      <Div>
+        <Title>내일 예약자 수</Title>
+        <Typography
+          sx={{ fontSize: '2.5rem', marginBottom: '-1rem' }}
+          component="p"
+          variant="h6"
+        >
+          {predictUsers}명
+        </Typography>
+      </Div>
     </Wrapper>
   );
 }
