@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -12,8 +11,6 @@ import Chart2 from '../components/Main/Chart2';
 import Drawerheader from '../components/Drawerheader';
 import Copyright from '../components/general/Copyright';
 
-const defaultTheme = createTheme();
-
 export default function Dashboard() {
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -24,10 +21,7 @@ export default function Dashboard() {
         <Box
           component="main"
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: 'white',
             flexGrow: 1,
             height: '100vh',
             overflow: 'scroll',
@@ -85,3 +79,5 @@ export default function Dashboard() {
     </ThemeProvider>
   );
 }
+
+const defaultTheme = createTheme();

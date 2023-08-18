@@ -24,23 +24,29 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import Circle from '../general/Circle';
 
-const ArrowCSS = { color: '#969696', fontSize: '1.875rem', margin: '0 1.25rem' };
+const ArrowCSS = {
+  color: 'black',
+  fontSize: '1.2rem',
+  margin: '0 1.25rem',
+};
 
 const Wrapper = styled.div`
+  @media screen and (max-width: 1200px) {
+    width: 95%;
+  }
+  width: 65%;
   display: flex;
-  margin-left: -1vw;
-  margin-top: -4vh;
   flex-direction: column;
   align-items: center;
 `;
 const HeaderW = styled.div`
-  width: 60vw;
-  height: 12vh;
+  width: 100%;
   display: flex;
+  position: relative;
   justify-content: center;
   align-items: center;
+  margin-bottom: 3%;
   span {
     color: #383838;
     font-size: 1.563rem;
@@ -48,44 +54,54 @@ const HeaderW = styled.div`
   }
 `;
 const DaysDiv = styled.div`
-  width: 9vw;
-  height: 7vh;
+  width: 15%;
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 0.1px solid #5b5b5b;
+  font-size: 15px;
+  font-weight: 500;
 `;
 const DaysWrapper = styled.div`
   display: flex;
-  justify-content: space-between;
-  width: 63vw;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
 `;
 const DivDay = styled.div`
-  width: 9vw;
-  height: 13vh;
+  &:hover {
+    cursor: pointer;
+  }
+  background-color: #f5f5f5;
+
+  height: 12vh;
+  width: 90%;
+  margin-bottom: 10%;
   display: flex;
   justify-content: space-between;
-  border: 0.1px solid #5b5b5b;
+  box-sizing: border-box;
+  border-radius: 20px;
+  padding: 5px;
+
   span:first-child {
     font-size: 0.188rem;
     font-weight: 600;
-    margin: 0.313rem 0.313rem;
   }
   span:last-child {
-    margin-top: 0.2vh;
-    margin-right: 0.2vw;
-    font-size: 0.75rem;
+    margin-right: 5px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: Cutefont;
     white-space: pre-wrap;
   }
 `;
 const DivWeek = styled.div`
-  display: flex;
-  width: 63vw;
-  height: 13vh;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  place-items: center;
 `;
 const DivWrapper = styled.div`
-  width: 63vw;
-  flex-direction: column;
+  width: 100%;
 `;
 
 function Calander() {
@@ -118,12 +134,7 @@ function Calander() {
         config
       )
       .then((res) => setSavedBackbaninfo(res.data))
-      .catch((err) => {
-        if (err.response.status === 403) {
-          alert('다시 로그인 해주세요🌝');
-          navigate('/');
-        }
-      });
+      .catch((err) => {});
   }, [currentMonth]);
 
   const onBackban = (event) => {
@@ -174,25 +185,18 @@ function Calander() {
         dayss.push(
           <DivDay
             style={{
-              backgroundColor: '#383838',
-              opacity: '0.5',
+              opacity: '0',
             }}
             key={shortid.generate()}
-          >
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                margin: '5px 5px',
-              }}
-            >
-              {formattedDate}
-            </span>
-          </DivDay>
+          ></DivDay>
         );
       } else {
         dayss.push(
-          <DivDay onClick={() => handleClickOpen(id)} key={shortid.generate()}>
+          <DivDay
+            className="scroll-hidden"
+            onClick={() => handleClickOpen(id)}
+            key={shortid.generate()}
+          >
             <span>{formattedDate}</span>
             <span>
               {savedBackbaninfo.map((savedbackban) =>
@@ -219,20 +223,25 @@ function Calander() {
   return (
     <Wrapper>
       <HeaderW>
-        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
-        <span>
-          {format(currentMonth, 'yyyy')}. {format(currentMonth, 'MM')}
+        <AiOutlineLeft className="pointer" style={{ ...ArrowCSS }} onClick={prevMonth} />
+        <span style={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '25px' }}>
+          {format(currentMonth, 'yy')}년 {format(currentMonth, 'MM')}월
         </span>
-        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
+        <AiOutlineRight className="pointer" style={{ ...ArrowCSS }} onClick={nextMonth} />
       </HeaderW>
       <DaysWrapper>{days}</DaysWrapper>
       <DivWrapper>{line}</DivWrapper>
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{dayId} - 식단등록</DialogTitle>
+        <DialogTitle sx={{ margin: '0 auto' }}>
+          Day {dayId && dayId?.substr(4, 2)}-{dayId && dayId?.substr(6, 2)}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ marginBottom: '1vh' }}>
-            식단 내용을 지우고 싶으시면 빈 내용으로 등록해주시면 됩니다.
+          <DialogContentText
+            align="center"
+            sx={{ marginBottom: '20px', color: '#FF385C', fontSize: '14px' }}
+          >
+            식단 내용을 지우고 싶으시면 빈 내용으로 등록해주시면 됩니다
           </DialogContentText>
           <div>
             <TextField

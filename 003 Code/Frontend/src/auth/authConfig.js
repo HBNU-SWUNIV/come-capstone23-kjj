@@ -10,3 +10,13 @@ export function ConfigWithToken() {
   };
   return config;
 }
+
+export function ConfigWithRefreshToken() {
+  const [cookies] = useCookies(['refreshtoken']);
+  const reconfig = {
+    headers: {
+      Authorization: `Bearer ${cookies.refreshtoken}`,
+    },
+  };
+  return reconfig;
+}
