@@ -24,6 +24,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Circle from '../general/Circle';
+
 const ArrowCSS = { color: '#969696', fontSize: '1.875rem', margin: '0 1.25rem' };
 
 const Wrapper = styled.div`
@@ -116,8 +117,6 @@ function Calander2() {
       .then((res) => setOffday(res.data))
       .catch((err) => {
         if (err.response.status === 403) {
-          alert('다시 로그인 해주세요🌝');
-          navigate('/');
         } else {
           console.log('Error occurred:', err);
         }

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -17,41 +16,95 @@ import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
 import Copyright from '../components/general/Copyright';
-import { ManagerBaseApi } from '../auth/authConfig';
-
-const defaultTheme = createTheme();
+import {
+  ConfigWithRefreshToken,
+  ConfigWithToken,
+  ManagerBaseApi,
+} from '../auth/authConfig';
+import { useEffect, useState } from 'react';
+import { useSetRecoilState } from 'recoil';
+import { isloginAtom } from '../atom/loginAtom';
 
 export default function Login() {
-  const [username, setUsername] = React.useState('');
-  const [password, setPassword] = React.useState('');
   const navigate = useNavigate();
-  const { keycloak } = useKeycloak();
-  const [cookies, setCookie] = useCookies(['accesstoken']);
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+  const config = ConfigWithToken();
+  // const reconfig = ConfigWithRefreshToken();
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const { keycloak } = useKeycloak();
+  const [cookies, setCookie] = useCookies();
+  const setIsLogin = useSetRecoilState(isloginAtom);
+
+  const onKeyCloakLogin = () => {
+    keycloak.login();
+  };
+
+  useEffect(() => {
+    if (keycloak.authenticated) {
+      cookies.accesstoken !== '' && navigate('/home');
+      cookies.accesstoken === '' && setKeyCloakToken();
+    }
+    if (cookies.accesstoken !== '') {
+      verifyFirstLogin();
+    }
+  }, [keycloak.authenticated, cookies.accesstoken]);
+
+  const setKeyCloakToken = async () => {
+    const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
+    const Header = response.headers.authorization;
+    const [, keycloaktoken] = Header.split('Bearer ');
+    setCookie('accesstoken', keycloaktoken);
+  };
+
+  const setLoginToken = async () => {
     let body = { username, password };
     try {
-      const res1 = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
-      const apitoken = res1.headers.authorization;
-      const [, keycloaktoken] = apitoken.split('Bearer ');
-      setCookie('keycloaktoken', keycloaktoken);
-
-      const res2 = await axios({
+      const response = await axios({
         method: 'POST',
         url: `${ManagerBaseApi}/login/id`,
         data: body,
       });
 
-      const apitoken2 = res2.headers.authorization;
-      const [, accesstoken] = apitoken2.split('Bearer ');
-      setCookie('accesstoken', accesstoken);
+      const Header = response.headers.authorization;
+      const [, token] = Header.split('Bearer ');
+      setCookie('accesstoken', token);
+      setIsLogin(true);
 
-      if (res2.status === 200) navigate('/home');
-    } catch (err) {
-      if (err.response.status === 401) alert('ID or PW를 확인하세요.');
-      else if (err.response.status === 403) alert('keycloak 인증이 실패했습니다.');
+      // 리프레쉬 토큰 -> 엑세스 토큰 반환 = 백엔드 구현끝나면 수정 필요.
+      // const refresh_header = response.headers.refresh_token;
+      // const [, refreshtoken] = refresh_header.split('Bearer ');
+      // setCookie('refreshtoken', refreshtoken);
+      // setTimeout(() => {
+      //   RefreshTokenHandler();
+      // }, 5000);
+    } catch (error) {
+      if (error.response.status === 401) alert('ID 또는 Password가 다릅니다.');
     }
+  };
+
+  // const RefreshTokenHandler = async () => {
+  //   const res = await axios({
+  //     method: 'POST',
+  //     url: `/api/user/login/refresh`,
+  //     ...reconfig,
+  //   });
+  // };
+
+  const verifyFirstLogin = () => {
+    axios
+      .get(`${ManagerBaseApi}/setting`, config)
+      .then((res) => {
+        if (res.data.name === '' && res.data.info === '') navigate('/loginfirst');
+        else navigate('/home');
+      })
+      .catch((err) => console.error(err));
+  };
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    setLoginToken();
   };
 
   return (
@@ -117,9 +170,19 @@ export default function Login() {
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                로그인
-              </Button>
+              <>
+                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                  로그인
+                </Button>
+                <Button
+                  onClick={onKeyCloakLogin}
+                  fullWidth
+                  variant="contained"
+                  sx={{ mb: 2 }}
+                >
+                  Keycloak 로그인
+                </Button>
+              </>
 
               <Copyright sx={{ mt: 5 }} />
             </Box>
@@ -129,3 +192,5 @@ export default function Login() {
     </ThemeProvider>
   );
 }
+
+const defaultTheme = createTheme();

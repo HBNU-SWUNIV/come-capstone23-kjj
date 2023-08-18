@@ -18,8 +18,6 @@ export default function Chart() {
       .then((res) => setPredictItems(res.data))
       .catch((err) => {
         if (err.response.status === 403) {
-          alert('다시 로그인 해주세요🌝');
-          navigate('/');
         }
       });
   }, []);

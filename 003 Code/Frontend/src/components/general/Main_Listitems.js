@@ -16,25 +16,31 @@ function Main_Listitems() {
         <ListItemIcon>
           <HomeIcon />
         </ListItemIcon>
-        <ListItemText primary="홈" />
+        <ListItemText>
+          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+            홈
+          </span>
+        </ListItemText>
       </ListItemButton>
       <ListItemButton onClick={() => navigate('/menu')}>
         <ListItemIcon>
           <RestaurantMenuIcon />
         </ListItemIcon>
-        <ListItemText primary="메뉴" />
-      </ListItemButton>
-      <ListItemButton onClick={() => navigate('/dailymenu')}>
-        <ListItemIcon>
-          <RiceBowlIcon />
-        </ListItemIcon>
-        <ListItemText primary="오늘의메뉴" />
+        <ListItemText>
+          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+            메뉴
+          </span>
+        </ListItemText>{' '}
       </ListItemButton>
       <ListItemButton onClick={() => navigate('/dayoff')}>
         <ListItemIcon>
           <SettingsIcon />
         </ListItemIcon>
-        <ListItemText primary="휴일설정" />
+        <ListItemText>
+          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+            휴일 설정
+          </span>
+        </ListItemText>{' '}
       </ListItemButton>
     </React.Fragment>
   );

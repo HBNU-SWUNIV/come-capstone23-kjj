@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import Title from '../general/Title';
 import { useState, useEffect } from 'react';
@@ -8,9 +7,6 @@ import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const Wrapper = styled.div`
   display: flex;
@@ -39,13 +35,11 @@ export default function Statistics() {
   });
   const day = today.getDate();
 
-  React.useEffect(() => {
+  useEffect(() => {
     axios
       .get(`${ManagerBaseApi}/state/today`, config)
       .then((res) => setTodaypop(res.data))
-      .catch((err) => {
-        err.response.status === 403 && navigate('/');
-      });
+      .catch((err) => {});
     axios
       .get(`${ManagerBaseApi}/state/predict/user`, config)
       .then((res) => setPredictUsers(res.data))
@@ -57,7 +51,7 @@ export default function Statistics() {
       <Div>
         <Title>금일 이용자 수</Title>
         <Typography
-          sx={{ fontSize: '2.5rem', marginBottom: '-1rem' }}
+          sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"
           variant="h6"
         >
@@ -76,7 +70,7 @@ export default function Statistics() {
       <Div>
         <Title>내일 예약자 수</Title>
         <Typography
-          sx={{ fontSize: '2.5rem', marginBottom: '-1rem' }}
+          sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"
           variant="h6"
         >
