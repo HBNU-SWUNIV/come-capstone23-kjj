@@ -17,12 +17,13 @@ export default function Chart() {
       .get(`${ManagerBaseApi}/state/predict/food`, config)
       .then((res) => setPredictItems(res.data))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        if (err.response.status === 403) {
+        }
       });
   }, []);
   return (
     <React.Fragment>
-      <Title>내일 식재료 예측</Title>
+      <Title>예약자 수를 기반으로 통계 된 내일의 식재료 예측</Title>
       <ApexCharts
         type="bar"
         series={[

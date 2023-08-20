@@ -12,7 +12,6 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Stack from '@mui/material/Stack';
 import Drawerheader from '../components/Drawerheader';
-import Copyright from '../components/general/Copyright';
 import Toolbar from '@mui/material/Toolbar';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -29,12 +28,32 @@ import MuiAlert from '@mui/material/Alert';
 import Input from '@mui/material/Input';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useNavigate } from 'react-router-dom';
+import DailyMenu from './DailyMenu';
+import { styled } from 'styled-components';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
+const NanumFontStyle = {
+  fontFamily: 'Nanum',
+  fontWeight: '600',
+};
 
-const defaultTheme = createTheme();
+const Title = styled.div`
+  @media screen and (max-width: 1050px) {
+    display: none;
+  }
+`;
+
+const MenuButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  button {
+    font-family: Dongle;
+    font-size: 20px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+`;
 
 export default function Menus() {
   const navigate = useNavigate();
@@ -43,7 +62,6 @@ export default function Menus() {
   const [addMenu, setAddMenu] = useState(false);
   const [menus, setMenus] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [imagesrc, setImagesrc] = useState('null');
   const [image, setImage] = useState([]);
   const [success, setSuccess] = useState(false);
   const [update, setUpdate] = useState(null);
@@ -57,6 +75,7 @@ export default function Menus() {
   const menuDetailsRef = useRef('');
   const menuCostRef = useRef('');
   const config = ConfigWithToken();
+
   const formdataConfig = {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -68,17 +87,16 @@ export default function Menus() {
       try {
         const response = await axios.get(`${ManagerBaseApi}/menu`, config);
         setMenus(response.data);
-
         if (response.data.length !== 0) {
-          setTimeout(() => setIsLoading(false), 1000);
+          setTimeout(() => setIsLoading(false), 200);
         }
 
         axios
           .get(`${ManagerBaseApi}/menu/planner`, config)
           .then((res) => setIsplanner(res.data));
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setIsLoading(false);
+      } catch (err) {
+        if (err.response.status === 403) {
+        }
       }
     };
 
@@ -324,48 +342,57 @@ export default function Menus() {
           sx={{
             display: 'flex',
             flexDirection: 'column',
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
+            backgroundColor: 'white',
             flexGrow: 1,
-            height: '100vh',
+            height: '100%',
             overflow: 'auto',
             display: 'flex',
           }}
         >
           <Toolbar />
-          <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-            <Typography variant="h5" align="center" color="text.secondary" paragraph>
-              요일별 다른 메뉴가 있다면 오늘의메뉴를 등록해주세요.
-            </Typography>
-            <Typography
-              sx={{ whiteSpace: 'nowrap', marginLeft: '-8vw' }}
-              variant="h5"
-              align="center"
-              color="text.secondary"
-              paragraph
-            >
-              오늘의메뉴로 지정된 메뉴는 오늘의메뉴 페이지에서 요일별 식단표를 추가할 수
-              있습니다.
-            </Typography>
+          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+            <Title>
+              <Typography
+                sx={{ whiteSpace: 'nowrap', fontFamily: 'Dongle', fontWeight: '600' }}
+                variant="h2"
+                color="#0288d1"
+                align="center"
+                paragraph
+              >
+                매일 바뀌는 기본 메뉴가 있다면 오늘의메뉴로 등록해보세요.
+              </Typography>
+            </Title>
+
             <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
-              <Button onClick={handleAddOpen} variant="contained">
+              <Button
+                sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
+                onClick={handleAddOpen}
+                variant="contained"
+              >
                 메뉴 등록
               </Button>
               {isplanner === true ? (
-                <Button disabled onClick={handle일품Open} variant="outlined">
+                <Button
+                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '20px' }}
+                  disabled
+                  onClick={handle일품Open}
+                  variant="outlined"
+                >
                   오늘의메뉴가 등록되어있습니다.
                 </Button>
               ) : (
-                <Button onClick={handle일품Open} variant="outlined">
+                <Button
+                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
+                  onClick={handle일품Open}
+                  variant="outlined"
+                >
                   오늘의메뉴 등록
                 </Button>
               )}
             </Stack>
           </Container>
 
-          <Container sx={{ py: 1 }} maxWidth="md">
+          <Container sx={{ py: 1 }} maxWidth="lg">
             <Grid container spacing={4}>
               {menus.map((menu) => (
                 <Grid item key={shortid.generate()} xs={12} sm={6} md={4}>
@@ -390,7 +417,12 @@ export default function Menus() {
                     )}
                     <CardContent sx={{ flexGrow: 1 }}>
                       <Typography
-                        sx={{ opacity: menu.sold === true ? null : 0.3 }}
+                        sx={{
+                          opacity: menu.sold === true ? null : 0.3,
+                          fontFamily: 'Dongle',
+                          fontWeight: 600,
+                          fontSize: '35px',
+                        }}
                         color={menu.usePlanner === true ? 'primary.dark' : 'inherit'}
                         gutterBottom
                         variant="h5"
@@ -400,16 +432,37 @@ export default function Menus() {
                       </Typography>
                       {menu.sold === true ? (
                         <>
-                          <Typography variant="body2">
+                          <Typography
+                            sx={{
+                              fontFamily: 'Nanum',
+                              fontWeight: 600,
+                              fontSize: '16px',
+                            }}
+                            variant="body2"
+                          >
                             {!isLoading ? menu.details : <Skeleton />}
                           </Typography>
-                          <Typography>
+                          <Typography
+                            sx={{
+                              fontFamily: 'NotoSans',
+                              fontWeight: 600,
+                              fontSize: '16px',
+                            }}
+                          >
                             {!isLoading ? menu.cost + '원' : <Skeleton />}
                           </Typography>
                         </>
                       ) : (
                         <>
-                          <Typography variant="h4" color="error.dark">
+                          <Typography
+                            sx={{
+                              fontFamily: 'Dongle',
+                              fontWeight: '500',
+                              fontSize: '60px',
+                            }}
+                            variant="h4"
+                            color="error.dark"
+                          >
                             {!isLoading ? '품 절 되었어요' : <Skeleton />}
                           </Typography>
                         </>
@@ -419,16 +472,11 @@ export default function Menus() {
                     <CardActions
                       sx={{
                         display: 'flex',
-                        justifyContent: 'center',
                       }}
                     >
                       {menu.sold === true ? (
-                        <>
-                          <Button
-                            onClick={() => handleUpdateOpen(menu)}
-                            sx={{ marginRight: '-1vw' }}
-                            size="small"
-                          >
+                        <MenuButtonWrapper>
+                          <Button onClick={() => handleUpdateOpen(menu)} size="small">
                             수정
                           </Button>
                           <Button onClick={() => soldout(menu.id)} size="small">
@@ -438,7 +486,6 @@ export default function Menus() {
                             <Button
                               disabled
                               onClick={() => handle식재료Open(menu)}
-                              sx={{ whiteSpace: 'nowrap' }}
                               size="small"
                             >
                               식재료 등록
@@ -446,7 +493,6 @@ export default function Menus() {
                           ) : (
                             <Button
                               onClick={() => handle식재료Open(menu, menu.id)}
-                              sx={{ whiteSpace: 'nowrap' }}
                               size="small"
                             >
                               식재료 등록
@@ -459,9 +505,9 @@ export default function Menus() {
                           >
                             삭제
                           </Button>
-                        </>
+                        </MenuButtonWrapper>
                       ) : (
-                        <>
+                        <MenuButtonWrapper>
                           <Button onClick={() => resale(menu.id)} size="small">
                             재판매
                           </Button>
@@ -472,66 +518,72 @@ export default function Menus() {
                           >
                             삭제
                           </Button>
-                        </>
+                        </MenuButtonWrapper>
                       )}
                     </CardActions>
                   </Card>
                 </Grid>
               ))}
             </Grid>
-            <Copyright sx={{ pt: 4 }} />
           </Container>
+          <DailyMenu />
         </Box>
       </Box>
 
       <Dialog
+        width="md"
         open={onDelete}
         onClose={handleDeleteClose}
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <DialogTitle id="alert-dialog-title">{'삭제 확인'}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
+          <DialogContentText
+            sx={{
+              width: '350px',
+              fontFamily: 'Dongle',
+              fontSize: '35px',
+              fontWeight: 600,
+            }}
+            id="alert-dialog-description"
+          >
             정말 삭제하시겠습니까?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={menuDelete}>
+          <Button
+            sx={{ fontFamily: 'Dongle', fontWeight: 500, fontSize: '30px' }}
+            color="error"
+            onClick={menuDelete}
+          >
             네
           </Button>
-          <Button onClick={handleDeleteClose} autoFocus>
+          <Button
+            sx={{ fontFamily: 'Dongle', fontWeight: 500, fontSize: '30px' }}
+            onClick={handleDeleteClose}
+            autoFocus
+          >
             아니요
           </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={addMenu} onClose={handleAddClose}>
-        <DialogTitle>메뉴 등록</DialogTitle>
+        <DialogTitle sx={NanumFontStyle}>메뉴 등록</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
-          <DialogContentText>
+          <DialogContentText sx={{ ...NanumFontStyle, fontSize: '15px' }}>
             이미지 파일을 추가하여 이미지를 등록해주세요.
           </DialogContentText>
-          {imagesrc === 'null' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Skeleton variant="rectangular" width={210} height={118} />
-              <input
-                style={{ marginLeft: '2vw' }}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </div>
-          ) : (
-            <CardMedia
-              component="div"
-              sx={{
-                // 16:9
-                pt: '56.25%',
-              }}
-              image={'http://kjj.kjj.r-e.kr:8080/api/image?dir='}
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Skeleton variant="rectangular" width={210} height={118} />
+            <input
+              style={{ marginLeft: '2vw' }}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
             />
-          )}
+          </div>
 
           <TextField
             required
@@ -556,39 +608,31 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleAddClose}>
+          <Button sx={NanumFontStyle} color="error" onClick={handleAddClose}>
             닫기
           </Button>
-          <Button onClick={menuAdd}>등록</Button>
+          <Button sx={NanumFontStyle} onClick={menuAdd}>
+            등록
+          </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={오늘의메뉴} onClose={handle오늘의메뉴Close}>
         <DialogTitle>오늘의메뉴 등록</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
-          <DialogContentText>
+          <DialogContentText sx={NanumFontStyle}>
             이미지 파일을 추가하여 이미지를 등록해주세요.
           </DialogContentText>
-          {imagesrc === 'null' ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Skeleton variant="rectangular" width={210} height={118} />
-              <input
-                style={{ marginLeft: '2vw' }}
-                type="file"
-                accept="image/*"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </div>
-          ) : (
-            <CardMedia
-              component="div"
-              sx={{
-                // 16:9
-                pt: '56.25%',
-              }}
-              image={'http://kjj.kjj.r-e.kr:8080/api/image?dir='}
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Skeleton variant="rectangular" width={210} height={118} />
+            <input
+              style={{ marginLeft: '2vw' }}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImage(e.target.files[0])}
             />
-          )}
+          </div>
 
           <TextField disabled id="outlined-required" label="오늘의메뉴명은 고정입니다." />
           <TextField
@@ -607,15 +651,17 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handle오늘의메뉴Close}>
+          <Button sx={NanumFontStyle} color="error" onClick={handle오늘의메뉴Close}>
             닫기
           </Button>
-          <Button onClick={오늘의메뉴Add}>등록</Button>
+          <Button sx={NanumFontStyle} onClick={오늘의메뉴Add}>
+            등록
+          </Button>
         </DialogActions>
       </Dialog>
 
       <Dialog open={updateMenu} onClose={handleUpdateClose}>
-        <DialogTitle>메뉴 수정</DialogTitle>
+        <DialogTitle sx={{ ...NanumFontStyle, fontWeight: '600' }}>메뉴 수정</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
           {updateMenu === true ? (
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -633,7 +679,7 @@ export default function Menus() {
             </div>
           ) : (
             <>
-              <DialogContentText>
+              <DialogContentText sx={NanumFontStyle}>
                 이미지 파일을 추가하여 이미지를 등록해주세요.
               </DialogContentText>
               <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -680,10 +726,12 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button color="error" onClick={handleUpdateClose}>
+          <Button sx={NanumFontStyle} color="error" onClick={handleUpdateClose}>
             닫기
           </Button>
-          <Button onClick={menuUpdate}>수정</Button>
+          <Button sx={NanumFontStyle} onClick={menuUpdate}>
+            수정
+          </Button>
         </DialogActions>
       </Dialog>
 
@@ -735,3 +783,9 @@ export default function Menus() {
     </ThemeProvider>
   );
 }
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
+const defaultTheme = createTheme();

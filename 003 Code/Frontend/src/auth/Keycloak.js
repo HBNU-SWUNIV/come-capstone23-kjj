@@ -10,27 +10,4 @@ const keycloak = new Keycloak({
   url: KEYCLOAK_URL,
 });
 
-export const initOptions = {
-  onLoad: 'login-required',
-  checkLoginIframe: false,
-};
-
-// export const onKeycloakEvent = (event, error) => {
-//   console.log('keycloak event ', event, error);
-//   switch (event) {
-//     case 'onAuthLogout':
-//       keycloak.logout();
-//       break;
-//     case 'onAuthRefreshError':
-//       keycloak.logout();
-//       break;
-//     case 'onAuthRefreshSuccess':
-//       console.log('auth token:  ' + keycloak.token);
-//       console.log('refresh token:  ' + keycloak.refreshToken);
-//       break;
-//     default:
-//       break;
-//   }
-// };
-
 export default keycloak;

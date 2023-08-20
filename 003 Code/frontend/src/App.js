@@ -1,21 +1,12 @@
-import { useKeycloak } from '@react-keycloak/web';
 import { Outlet } from 'react-router-dom';
-import Loading from './screens/Loading';
+import Auth from './router/Auth';
 
 function App() {
-  const { initialized, keycloak } = useKeycloak();
-
-  if (!initialized) {
-    return <Loading />;
-  }
-
-  if (keycloak.authenticated) {
-    return (
-      <div>
-        <Outlet />
-      </div>
-    );
-  }
+  return (
+    <Auth>
+      <Outlet />
+    </Auth>
+  );
 }
 
 export default App;

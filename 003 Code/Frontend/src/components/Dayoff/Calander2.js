@@ -23,6 +23,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import Circle from '../general/Circle';
 
 const ArrowCSS = { color: '#969696', fontSize: '1.875rem', margin: '0 1.25rem' };
 
@@ -59,21 +60,17 @@ const DaysWrapper = styled.div`
   width: 63vw;
 `;
 const DivDay = styled.div`
+  position: relative;
   width: 9vw;
   height: 13vh;
   display: flex;
   justify-content: space-between;
   border: 0.1px solid #5b5b5b;
-  span:first-child {
+  span {
     font-size: 13px;
     font-weight: 600;
     margin: 5px 5px;
-  }
-  span:last-child {
-    margin-top: 0.2vh;
-    margin-right: 0.2vw;
-    font-size: 12px;
-    white-space: pre-wrap;
+    z-index: 1;
   }
 `;
 const DivWeek = styled.div`
@@ -119,7 +116,10 @@ function Calander2() {
       )
       .then((res) => setOffday(res.data))
       .catch((err) => {
-        err.response.status === 401 && navigate('/');
+        if (err.response.status === 403) {
+        } else {
+          console.log('Error occurred:', err);
+        }
       });
   }, [currentMonth]);
 
@@ -202,14 +202,10 @@ function Calander2() {
       } else {
         dayss.push(
           <DivDay onClick={() => handleClickOpen(id)} key={shortid.generate()}>
-            <span
-              style={{
-                color:
-                  offday.filter((od) => od.date == id)[0]?.off == true ? 'red' : 'black',
-              }}
-            >
-              {formattedDate}
-            </span>
+            <span>{formattedDate}</span>
+            {offday.filter((offday) => offday.date == id)[0]?.off == true ? (
+              <Circle color="red" />
+            ) : null}
           </DivDay>
         );
       }

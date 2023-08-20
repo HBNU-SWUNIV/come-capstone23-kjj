@@ -8,12 +8,13 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   display: flex;
+  justify-content: space-between;
   @media (max-width: 1000px) {
     flex-direction: column;
   }
 `;
 const ChartWrapper = styled.div`
-  width: 50%;
+  width: 40%;
   display: flex;
   flex-direction: column;
 `;
@@ -33,14 +34,15 @@ export default function Chart2() {
       });
     axios
       .get(`${ManagerBaseApi}/state/predict/menu`, config)
-      .then((res) => setPredictMenus(res.data));
+      .then((res) => setPredictMenus(res.data))
+      .catch((err) => console.log(err));
   }, []);
 
   return (
     <React.Fragment>
       <Wrapper>
         <ChartWrapper>
-          <Title>요즘 인기있는 메뉴</Title>
+          <Title>요즘 가장 🔥한 메뉴는?</Title>
           <ApexCharts
             type="pie"
             series={reservationInfo.map((menu) => menu.count)}
@@ -57,7 +59,7 @@ export default function Chart2() {
           />
         </ChartWrapper>
         <ChartWrapper>
-          <Title>내일 예약 정보</Title>
+          <Title>내일 예약 메뉴들 🍽️</Title>
           <ApexCharts
             style={{ marginTop: '-3vh' }}
             width={400}

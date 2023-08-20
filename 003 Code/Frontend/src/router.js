@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom';
+import { Navigate, createBrowserRouter } from 'react-router-dom';
 import App from './App';
 import Dashboard from './screens/Dashboard';
 import DailyMenu from './screens/DailyMenu';
@@ -6,35 +6,47 @@ import Dayoff from './screens/Dayoff';
 import Menus from './screens/Menus';
 import Login from './login/Login';
 import LoginFirst from './login/LoginFirst';
+import RootContainer from './router/RootContainer';
 
 const router = createBrowserRouter([
   {
-    path: '',
-    element: <App />,
+    path: '/',
+    element: <RootContainer />,
     children: [
       {
-        path: '/',
+        path: '/login',
         element: <Login />,
       },
       {
-        path: '/loginfirst',
-        element: <LoginFirst />,
-      },
-      {
-        path: '/home',
-        element: <Dashboard />,
-      },
-      {
-        path: '/menu',
-        element: <Menus />,
-      },
-      {
-        path: '/dailymenu',
-        element: <DailyMenu />,
-      },
-      {
-        path: '/dayoff',
-        element: <Dayoff />,
+        path: '/',
+        element: <App />,
+        children: [
+          {
+            path: '/',
+            element: <Navigate to="/home" />,
+          },
+          {
+            path: '/home',
+            element: <Dashboard />,
+            index: true,
+          },
+          {
+            path: '/loginfirst',
+            element: <LoginFirst />,
+          },
+          {
+            path: '/menu',
+            element: <Menus />,
+          },
+          {
+            path: '/dailymenu',
+            element: <DailyMenu />,
+          },
+          {
+            path: '/dayoff',
+            element: <Dayoff />,
+          },
+        ],
       },
     ],
   },

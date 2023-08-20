@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -14,31 +13,56 @@ import background from '../image/capstone_background.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Skeleton from '@mui/material/Skeleton';
-
-const defaultTheme = createTheme();
+import { useState } from 'react';
+import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 
 export default function Loginfirst() {
-  const [name, setname] = React.useState('');
-  const [info, setInfo] = React.useState('');
-  const [image, setImage] = React.useState([]);
+  const [name, setname] = useState('');
+  const [info, setInfo] = useState('');
+  const [image, setImage] = useState([]);
+
   const navigate = useNavigate();
+  const config = ConfigWithToken();
+
+  const formdataConfig = {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+      ...config.headers,
+    },
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    let body = { info };
+    onName();
+    onInfo();
+    onImage();
+    navigate('/home');
+  };
+
+  const onName = () => {
+    const body = {
+      name,
+    };
+    axios.patch(`${ManagerBaseApi}/store/title`, body, config);
+  };
+
+  const onInfo = () => {
+    const body = {
+      info,
+    };
+    axios.patch(`${ManagerBaseApi}/store/info`, body, config);
+  };
+
+  const onImage = () => {
     const formdata = new FormData();
     image != null && formdata.append('file', image);
-
-    axios.patch('/api/manager/store/info', body).then((res) => console.log(res));
-    navigate('/home ');
-
     if (image.length !== 0) {
       axios({
         method: 'POST',
-        url: '/api/manager/image',
+        url: `${ManagerBaseApi}/image`,
         data: formdata,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      }).then((res) => console.log(res));
+        ...formdataConfig,
+      });
     }
   };
 
@@ -73,13 +97,26 @@ export default function Loginfirst() {
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <Typography component="h1" variant="h4">
+            <Typography
+              sx={{ fontFamily: 'Nanum', fontWeight: 600 }}
+              component="h1"
+              variant="h4"
+            >
               초기 설정
             </Typography>
 
-            <Typography color="error">
-              식당명은 초기 설정 후 변경이 불가능하니, 신중히 입력해주세요.
-            </Typography>
+            <div onClick={() => navigate('/home')}>
+              <Typography
+                sx={{
+                  cursor: 'pointer',
+                  fontFamily: 'Cutefont',
+                  fontSize: '20px',
+                }}
+                color="error"
+              >
+                나중에 등록하기
+              </Typography>
+            </div>
             <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
               <TextField
                 margin="normal"
@@ -105,8 +142,12 @@ export default function Loginfirst() {
                 autoComplete="current-info"
               />
 
-              <Typography component="h1" variant="h6">
-                식당 이미지
+              <Typography
+                sx={{ fontFamily: 'Nanum', fontWeight: 500, marginTop: '20px' }}
+                component="h1"
+                variant="h6"
+              >
+                이미지
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Skeleton variant="rectangular" width={210} height={118} />
@@ -118,7 +159,12 @@ export default function Loginfirst() {
                 />
               </div>
 
-              <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2, fontFamily: 'Nanum', fontWeight: 600 }}
+              >
                 등록
               </Button>
               <Copyright sx={{ mt: 5 }} />
@@ -129,3 +175,5 @@ export default function Loginfirst() {
     </ThemeProvider>
   );
 }
+
+const defaultTheme = createTheme();
