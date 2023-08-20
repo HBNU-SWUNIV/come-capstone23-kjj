@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,16 +48,16 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createNewOrder(Long userId, Long menuId, String date, boolean type) throws CantFindByIdException {
+    public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
-        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), DateTools.toFormatterLocalDate(date), type));
+        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
     @Transactional
     public OrderDto cancelOrder(String username, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateFormatString(year, month, day);
+        LocalDate date = DateTools.makeLocaldate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.toFormatterLocalDate(date));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenu(id).getId(), date, false));
         else order.setRecognizeToCancel();
@@ -65,9 +66,9 @@ public class OrderService {
 
     @Transactional
     public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        String date = DateTools.makeDateFormatString(year, month, day);
+        LocalDate date = DateTools.makeLocaldate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.toFormatterLocalDate(date));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {

@@ -1,5 +1,7 @@
 package com.hanbat.zanbanzero.service.user;
 
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
@@ -13,6 +15,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -29,9 +33,14 @@ public class ManagerService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException {
         User manager = repository.findByUsername(username);
         if (!manager.getRoles().equals("ROLE_MANAGER")) throw new UsernameNotFoundException("ManagerService - loadUserByUsername() : 잘못된 유저네임");
         return new UserDetailsInterfaceImpl(manager);
+    }
+
+    public Map<String, String> testToken() {
+        String managerName = "manager";
+        return Map.of("accessToken", JwtUtil.createToken(loadUserByUsername(managerName)));
     }
 }

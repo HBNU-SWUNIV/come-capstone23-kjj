@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.login.authenticationManager.LoginAuthenticationManagerImpl;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
-import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
+import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter_NotUsed;
 import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilter;
 import com.hanbat.zanbanzero.auth.login.filter.LoginFilter;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeKeycloak;
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .addFilterBefore(new LoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtRefreshFilter(userService), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new JwtRefreshFilter_NotUsed(userService), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userRepository))
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()

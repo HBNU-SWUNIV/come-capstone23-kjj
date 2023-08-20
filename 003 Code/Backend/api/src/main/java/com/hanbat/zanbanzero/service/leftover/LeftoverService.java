@@ -35,7 +35,7 @@ public class LeftoverService {
 
     @Transactional
     public LeftoverDto setLeftover(LeftoverDto dto) throws WrongParameter {
-        Calculate target = calculateRepository.findByDate(DateTools.makeTodayDateString());
+        Calculate target = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
         if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
 
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
@@ -89,16 +89,16 @@ public class LeftoverService {
         LocalDate date = DateTools.getLastWeeksMonday(type);
 
         for (int i = 0; i < dataSize; i ++) {
-            String targetDate = DateTools.toFormatterString(date.plusDays(i));
+            LocalDate targetDate = date.plusDays(i);
 
             Calculate target = calculateRepository.findByDate(targetDate);
             if (target == null) {
-                result.add(new LeftoverDto(targetDate, 0.0));
+                result.add(LeftoverDto.of(targetDate, 0.0));
                 continue;
             }
 
             Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
-            if (leftover == null) result.add(new LeftoverDto(targetDate, 0.0));
+            if (leftover == null) result.add(LeftoverDto.of(targetDate, 0.0));
             else result.add(LeftoverDto.of(leftover));
         }
         return result;

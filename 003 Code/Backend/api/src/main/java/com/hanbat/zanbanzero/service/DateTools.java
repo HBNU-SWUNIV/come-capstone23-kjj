@@ -2,11 +2,7 @@ package com.hanbat.zanbanzero.service;
 
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 
-import java.text.SimpleDateFormat;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
@@ -15,16 +11,14 @@ import java.util.Date;
 
 public class DateTools {
 
-    public static String makeTodayDateString() {
+    public static LocalDate makeTodayToLocalDate() {
         ZonedDateTime date = ZonedDateTime.now().plusHours(9).truncatedTo(ChronoUnit.HOURS);
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return format.format(date);
+        return date.toLocalDate();
     }
 
-    public static String makeDateFormatString(int year, int month, int day) {
+    public static LocalDate makeLocaldate(int year, int month, int day) {
         Date date = new Date(year - 1900, month - 1, day);
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        return format.format(date);
+        return LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 
     public static LocalDate makeDateFormatLocalDate(int year, int month, int day) {
@@ -37,15 +31,7 @@ public class DateTools {
         return calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
     }
 
-    public static String makeDateFormatString(String date) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
-        LocalDate result = LocalDate.parse(date, inputFormatter);
-
-        return result.format(formatter);
-    }
-
-    public static String makeDateFormatString(LocalDate date) {
+    public static String makeLocaldateToFormatterString(LocalDate date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 
         return date.format(formatter);
@@ -65,12 +51,6 @@ public class DateTools {
         }
 
         return result;
-    }
-
-    public static String toFormatterString(LocalDate date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-        return date.format(formatter);
     }
 
     public static LocalDate toFormatterLocalDate(String date) {

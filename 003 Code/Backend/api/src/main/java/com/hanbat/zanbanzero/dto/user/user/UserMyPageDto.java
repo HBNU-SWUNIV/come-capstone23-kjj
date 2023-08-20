@@ -15,14 +15,11 @@ import java.util.Map;
 @NoArgsConstructor
 public class UserMypageDto {
     private Long userId;
-    private Map<Integer, String> coupon;
     private int point;
 
-    public static UserMypageDto createUserMyPageDto(UserMypage userMyPage) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
+    public static UserMypageDto createUserMyPageDto(UserMypage userMyPage) {
         return new UserMypageDto(
                 userMyPage.getId(),
-                objectMapper.readValue(userMyPage.getCoupon(), new TypeReference<>() {}),
                 userMyPage.getPoint()
         );
     }

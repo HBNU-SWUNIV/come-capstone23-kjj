@@ -22,7 +22,7 @@ public class LastOrderDto {
                 order.getId(),
                 order.getMenu(),
                 order.getCost(),
-                DateTools.makeDateFormatString(order.getOrderDate()),
+                DateTools.makeLocaldateToFormatterString(order.getOrderDate()),
                 order.isRecognize()
         );
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.LoginDto;
+import com.hanbat.zanbanzero.dto.user.TokenRefreshDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
@@ -17,10 +18,13 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
+
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -67,9 +71,10 @@ public class UserApiController {
         return ResponseEntity.ok(userService.loginFromKeycloak(user));
     }
 
-    @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
+    @Operation(summary="Access Token 재발급", description = "request body에 Refresh token 첨부 필요")
     @PostMapping("login/refresh")
-    public ResponseEntity<String> refreshToken() {
+    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response, @RequestBody TokenRefreshDto dto) {
+        userService.refreshToken(request, response, dto);
         return ResponseEntity.ok("refresh success");
     }
 
@@ -134,5 +139,10 @@ public class UserApiController {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
 
         return ResponseEntity.ok(userService.getUserPolicy(username));
+    }
+
+    @GetMapping("login/test")
+    public ResponseEntity<Map<String, String>> testToken(){
+        return ResponseEntity.ok(userService.testToken());
     }
 }
