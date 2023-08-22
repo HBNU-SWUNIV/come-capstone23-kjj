@@ -17,19 +17,18 @@ import { useState } from 'react';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 
 export default function Loginfirst() {
-  const [name, setname] = useState('');
-  const [info, setInfo] = useState('');
-  const [image, setImage] = useState([]);
-
   const navigate = useNavigate();
   const config = ConfigWithToken();
-
   const formdataConfig = {
     headers: {
       'Content-Type': 'multipart/form-data',
       ...config.headers,
     },
   };
+
+  const [name, setname] = useState('');
+  const [info, setInfo] = useState('');
+  const [image, setImage] = useState([]);
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -45,14 +44,12 @@ export default function Loginfirst() {
     };
     axios.patch(`${ManagerBaseApi}/store/title`, body, config);
   };
-
   const onInfo = () => {
     const body = {
       info,
     };
     axios.patch(`${ManagerBaseApi}/store/info`, body, config);
   };
-
   const onImage = () => {
     const formdata = new FormData();
     image != null && formdata.append('file', image);
@@ -98,7 +95,7 @@ export default function Loginfirst() {
               <LockOutlinedIcon />
             </Avatar>
             <Typography
-              sx={{ fontFamily: 'Nanum', fontWeight: 600 }}
+              sx={{ fontFamily: 'NotoSans', fontWeight: 600 }}
               component="h1"
               variant="h4"
             >
@@ -109,12 +106,12 @@ export default function Loginfirst() {
               <Typography
                 sx={{
                   cursor: 'pointer',
-                  fontFamily: 'Cutefont',
-                  fontSize: '20px',
+                  fontFamily: 'NotoSans',
+                  fontSize: '15px',
                 }}
                 color="error"
               >
-                나중에 등록하기
+                다음에 등록하기
               </Typography>
             </div>
             <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
@@ -163,7 +160,7 @@ export default function Loginfirst() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, fontFamily: 'Nanum', fontWeight: 600 }}
+                sx={{ mt: 3, mb: 2, fontFamily: 'NotoSans', fontWeight: 600 }}
               >
                 등록
               </Button>

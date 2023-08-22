@@ -32,7 +32,7 @@ const DeveloperInfoWrapper = cStyled.div`
   align-items:center;
   padding:50px 10px;
   width: 600px;
-  height: 350px;
+  height: 250px;
 `;
 
 const User = cStyled.div`
@@ -94,10 +94,7 @@ function Copyright(props) {
           }}
         >
           <span style={{ fontFamily: 'NotoSans', fontSize: '30px', fontWeight: '600' }}>
-            Project
-          </span>
-          <span style={{ fontFamily: 'Cutefont', fontSize: '30px', fontWeight: '500' }}>
-            음식물 쓰레기 감소를 위한 구내식당 사전 예약 시스템
+            Developer Information
           </span>
 
           <DeveloperInfoWrapper>
@@ -213,7 +210,7 @@ function Copyright(props) {
             </User>
           </DeveloperInfoWrapper>
 
-          <span style={{ fontFamily: 'Dongle', fontSize: '20px' }}>
+          <span style={{ fontFamily: 'NotoSans', fontSize: '20px' }}>
             Capston Design 2023 KJJ Team
           </span>
         </DialogContent>
