@@ -31,11 +31,6 @@ import { useNavigate } from 'react-router-dom';
 import DailyMenu from './DailyMenu';
 import { styled } from 'styled-components';
 
-const NanumFontStyle = {
-  fontFamily: 'Nanum',
-  fontWeight: '600',
-};
-
 const Title = styled.div`
   @media screen and (max-width: 1050px) {
     display: none;
@@ -48,8 +43,9 @@ const MenuButtonWrapper = styled.div`
   align-items: center;
   width: 100%;
   button {
-    font-family: Dongle;
-    font-size: 20px;
+    width: 20%;
+    font-family: NotoSans;
+    font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
   }
@@ -57,31 +53,40 @@ const MenuButtonWrapper = styled.div`
 
 export default function Menus() {
   const navigate = useNavigate();
-  const [onDelete, SetonDelete] = useState(false);
+
+  const [onDelete, setonDelete] = useState(false);
   const [deleteID, setDeleteId] = useState(0);
+
   const [addMenu, setAddMenu] = useState(false);
   const [menus, setMenus] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState([]);
-  const [success, setSuccess] = useState(false);
+
   const [update, setUpdate] = useState(null);
   const [updateMenu, setUpdatemenu] = useState(false);
+
   const [오늘의메뉴, set일품] = useState(false);
   const [isplanner, setIsplanner] = useState(false);
+
   const [식재료open, set식재료open] = useState(false);
   const [식재료, set식재료] = useState(null);
+
+  const [success, setSuccess] = useState(false);
+
   const [inputfields, setInputfields] = useState([{ key: '', value: '' }]);
+
   const menuNameRef = useRef('');
   const menuDetailsRef = useRef('');
   const menuCostRef = useRef('');
-  const config = ConfigWithToken();
 
+  const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
       'Content-Type': 'multipart/form-data',
       ...config.headers,
     },
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -105,10 +110,10 @@ export default function Menus() {
 
   const handleDeleteOpen = (id) => {
     setDeleteId(id);
-    SetonDelete(true);
+    setonDelete(true);
   };
   const handleDeleteClose = () => {
-    SetonDelete(false);
+    setonDelete(false);
   };
   const handleAddOpen = () => {
     setAddMenu(true);
@@ -200,7 +205,7 @@ export default function Menus() {
           .get(`${ManagerBaseApi}/menu/planner`, config)
           .then((res) => setIsplanner(res.data));
       });
-    SetonDelete(false);
+    setonDelete(false);
   };
   const soldout = (id) => {
     axios({
@@ -345,23 +350,29 @@ export default function Menus() {
             backgroundColor: 'white',
             flexGrow: 1,
             height: '100%',
+            minHeight: '100vh',
             overflow: 'auto',
             display: 'flex',
           }}
         >
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Title>
+            {/* <Title>
               <Typography
-                sx={{ whiteSpace: 'nowrap', fontFamily: 'Dongle', fontWeight: '600' }}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  fontFamily: 'NotoSans',
+                  fontWeight: '600',
+                  fontSize: '25px',
+                }}
                 variant="h2"
                 color="#0288d1"
                 align="center"
                 paragraph
               >
-                매일 바뀌는 기본 메뉴가 있다면 오늘의메뉴로 등록해보세요.
+                메뉴
               </Typography>
-            </Title>
+            </Title> */}
 
             <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
               <Button
@@ -395,9 +406,10 @@ export default function Menus() {
           <Container sx={{ py: 1 }} maxWidth="lg">
             <Grid container spacing={4}>
               {menus.map((menu) => (
-                <Grid item key={shortid.generate()} xs={12} sm={6} md={4}>
+                <Grid item key={shortid.generate()} xs={12} sm={6} md={3}>
                   <Card
                     sx={{
+                      width: '260px',
                       height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
@@ -408,20 +420,30 @@ export default function Menus() {
                         component="div"
                         sx={{
                           opacity: menu.sold === true ? null : 0.3,
-                          pt: '56.25%',
+                          width: '100%',
+                          height: '260px',
                         }}
                         image={'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image}
                       />
                     ) : (
-                      <Skeleton variant="rectangular" sx={{ pt: '56.25%' }} />
+                      <Skeleton
+                        variant="rectangular"
+                        sx={{ width: '100%', height: '260px' }}
+                      />
                     )}
-                    <CardContent sx={{ flexGrow: 1 }}>
+                    <CardContent
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
                       <Typography
                         sx={{
                           opacity: menu.sold === true ? null : 0.3,
-                          fontFamily: 'Dongle',
+                          fontFamily: 'NotoSans',
                           fontWeight: 600,
-                          fontSize: '35px',
+                          fontSize: '15px',
                         }}
                         color={menu.usePlanner === true ? 'primary.dark' : 'inherit'}
                         gutterBottom
@@ -432,7 +454,7 @@ export default function Menus() {
                       </Typography>
                       {menu.sold === true ? (
                         <>
-                          <Typography
+                          {/* <Typography
                             sx={{
                               fontFamily: 'Nanum',
                               fontWeight: 600,
@@ -441,12 +463,12 @@ export default function Menus() {
                             variant="body2"
                           >
                             {!isLoading ? menu.details : <Skeleton />}
-                          </Typography>
+                          </Typography> */}
                           <Typography
                             sx={{
                               fontFamily: 'NotoSans',
                               fontWeight: 600,
-                              fontSize: '16px',
+                              fontSize: '20px',
                             }}
                           >
                             {!isLoading ? menu.cost + '원' : <Skeleton />}
@@ -456,9 +478,9 @@ export default function Menus() {
                         <>
                           <Typography
                             sx={{
-                              fontFamily: 'Dongle',
-                              fontWeight: '500',
-                              fontSize: '60px',
+                              fontFamily: 'NotoSans',
+                              fontWeight: '600',
+                              fontSize: '20px',
                             }}
                             variant="h4"
                             color="error.dark"
@@ -469,20 +491,18 @@ export default function Menus() {
                       )}
                     </CardContent>
 
-                    <CardActions
-                      sx={{
-                        display: 'flex',
-                      }}
-                    >
+                    <CardActions>
                       {menu.sold === true ? (
                         <MenuButtonWrapper>
                           <Button onClick={() => handleUpdateOpen(menu)} size="small">
                             수정
                           </Button>
+
                           <Button onClick={() => soldout(menu.id)} size="small">
                             품절
                           </Button>
-                          {menu.usePlanner === true ? (
+
+                          {/* {menu.usePlanner === true ? (
                             <Button
                               disabled
                               onClick={() => handle식재료Open(menu)}
@@ -497,7 +517,8 @@ export default function Menus() {
                             >
                               식재료 등록
                             </Button>
-                          )}
+                          )} */}
+
                           <Button
                             onClick={() => handleDeleteOpen(menu.id)}
                             color="error"
@@ -526,7 +547,7 @@ export default function Menus() {
               ))}
             </Grid>
           </Container>
-          <DailyMenu />
+          {/* <DailyMenu /> */}
         </Box>
       </Box>
 
@@ -777,7 +798,7 @@ export default function Menus() {
 
       <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
         <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-          성공!
+          success
         </Alert>
       </Snackbar>
     </ThemeProvider>
@@ -789,3 +810,8 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 const defaultTheme = createTheme();
+
+const NanumFontStyle = {
+  fontFamily: 'Nanum',
+  fontWeight: '600',
+};

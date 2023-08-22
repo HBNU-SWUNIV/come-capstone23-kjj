@@ -69,6 +69,11 @@ function Drawerheader(props) {
 
   const { keycloak } = useKeycloak();
   const [cookies, setCookie] = useCookies();
+
+  const [isExpired, setIsExpired] = useState(false);
+  const isRefreshtoken = cookies.refreshtoken !== '';
+
+  const reconfig = ConfigWithRefreshToken();
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -98,24 +103,25 @@ function Drawerheader(props) {
   }, [name, image, info]);
 
   useEffect(() => {
-    if (!cookies.accesstoken && cookies.refreshtoken && islogin) {
+    if (isExpired && isRefreshtoken && islogin) {
       reIssueToken();
     }
-  }, [cookies.accesstoken]);
+  }, [isExpired]);
 
   const reIssueToken = async () => {
     try {
-      const body = {
-        refreshToken: cookies.refreshtoken,
-      };
       const response = await axios({
         method: 'POST',
-        url: '`/api/user/login/refresh',
-        data: body,
+        url: '/api/user/login/refresh',
+        ...reconfig,
       });
 
-      // body or header로 보낼 지 수정 필요 8.22(화 기준)
-    } catch {}
+      if (response.headers.authorization !== '') {
+        setCookie('accesstoken', response.headers.authorization);
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const [success, setSuccess] = useState(false);
@@ -212,7 +218,9 @@ function Drawerheader(props) {
         setInfo(res.data.info);
         setName(res.data.name);
       })
-      .catch((err) => {});
+      .catch((err) => {
+        if (err.response.status === 403) setIsExpired(true);
+      });
   };
   const getMarketImage = () => {
     axios
