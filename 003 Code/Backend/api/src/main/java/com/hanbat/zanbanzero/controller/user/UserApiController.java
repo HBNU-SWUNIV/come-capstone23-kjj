@@ -73,8 +73,8 @@ public class UserApiController {
 
     @Operation(summary="Access Token 재발급", description = "request body에 Refresh token 첨부 필요")
     @PostMapping("login/refresh")
-    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response, @RequestBody TokenRefreshDto dto) {
-        userService.refreshToken(request, response, dto);
+    public ResponseEntity<String> refreshToken() {
+        // userService.refreshToken(request, response, dto);
         return ResponseEntity.ok("refresh success");
     }
 

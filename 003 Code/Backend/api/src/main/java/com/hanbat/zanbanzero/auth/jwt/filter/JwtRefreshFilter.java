@@ -11,12 +11,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public class JwtRefreshFilter_NotUsed implements Filter {
+public class JwtRefreshFilter implements Filter {
 
     private UserService service;
     private String refreshUri = "/api/user/login/refresh";
 
-    public JwtRefreshFilter_NotUsed(UserService service) {
+    public JwtRefreshFilter(UserService service) {
         this.service = service;
     }
 
