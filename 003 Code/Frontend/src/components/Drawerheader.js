@@ -26,37 +26,17 @@ import { useState, useEffect, useRef } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
+import {
+  ConfigWithRefreshToken,
+  ConfigWithToken,
+  ManagerBaseApi,
+} from '../auth/authConfig';
 import { useCookies } from 'react-cookie';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
 import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled } from 'styled-components';
-
-const marketNameStyle = {
-  fontWeight: '600',
-  color: 'inherit',
-  textDecoration: 'underline',
-  textDecorationThickness: '1px',
-  whiteSpace: 'nowrap',
-  textAlign: 'right',
-};
-const MenuItemTextStyle = {
-  fontFamily: 'Nanum',
-  fontWeight: 500,
-  margin: '10px 0px',
-};
-const DialogTitleStyle = {
-  margin: '0 auto',
-  fontFamily: 'Nanum',
-  fontSize: '20px',
-  fontWeight: '600',
-};
-const DialogTextStyle = {
-  fontFamily: 'Dongle',
-  fontSize: '25px',
-};
 
 const SetNameWrapper = Cstyled.div`
   display:flex;
@@ -65,45 +45,30 @@ const SetNameWrapper = Cstyled.div`
   justify-content:center;
   line-height:25px;
   span{
-    font-size:25px;
-    font-family:Cutefont;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Nanum;
   }
   span:first-child{
+    font-size:16px;
     font-weight:600;
     &:hover{
       cursor:pointer;
     }
   }
   span:last-child{
-    font-weight:400;
+    font-size:13px;
+    font-weight:600;
   }
 `;
 
 function Drawerheader(props) {
   const navigate = useNavigate();
-
-  const [isName, setIsName] = useState(false);
-  const [success, setSuccess] = useState(false);
-
-  const nameRef = useRef('');
-  const InfoRef = useRef('');
-
-  const [name, setName] = useState('');
-  const [info, setInfo] = useState('');
-  const [image, setImage] = useState('');
-  const [newImage, setNewImage] = useState([]);
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [open1, setOpen] = useState(true);
-  const [onInfo, setOpenModal] = useState(false);
-  const [onImage, setOpenModal2] = useState(false);
-  const [onName, setOnName] = useState(false);
-
-  const setIsLogin = useSetRecoilState(isloginAtom);
+  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
 
   const { keycloak } = useKeycloak();
-  const [cookies, setCookie] = useCookies('accesstoken');
+  const [cookies, setCookie] = useCookies();
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -112,6 +77,19 @@ function Drawerheader(props) {
     },
   };
 
+  const nameRef = useRef('');
+  const InfoRef = useRef('');
+
+  const [name, setName] = useState('');
+  const [info, setInfo] = useState('');
+  const [image, setImage] = useState('');
+  const [isName, setIsName] = useState(false);
+  const [newImage, setNewImage] = useState([]);
+
+  const [updateInfo, setUpdateInfo] = useState(false);
+  const [updateImage, setUpdateImage] = useState(false);
+  const [updateName, setUpdateName] = useState(false);
+
   useEffect(() => {
     getMarketDetails();
     getMarketImage();
@@ -119,29 +97,28 @@ function Drawerheader(props) {
     else if (name === '') setIsName(false);
   }, [name, image, info]);
 
-  const menuOpenHandler = (event) => {
-    setAnchorEl(event.currentTarget);
+  useEffect(() => {
+    if (!cookies.accesstoken && cookies.refreshtoken && islogin) {
+      reIssueToken();
+    }
+  }, [cookies.accesstoken]);
+
+  const reIssueToken = async () => {
+    try {
+      const body = {
+        refreshToken: cookies.refreshtoken,
+      };
+      const response = await axios({
+        method: 'POST',
+        url: '`/api/user/login/refresh',
+        data: body,
+      });
+
+      // body or header로 보낼 지 수정 필요 8.22(화 기준)
+    } catch {}
   };
-  const menuCloseHandler = () => {
-    setAnchorEl(null);
-  };
-  const toggleDrawer = () => {
-    setOpen(!open1);
-  };
-  const handleClickOpenModal = () => {
-    setOpenModal(true);
-    menuCloseHandler();
-  };
-  const onOffInfo = () => {
-    setOpenModal(false);
-  };
-  const handleClickOpenModal2 = () => {
-    setOpenModal2(true);
-    menuCloseHandler();
-  };
-  const onOffImage = () => {
-    setOpenModal2(false);
-  };
+
+  const [success, setSuccess] = useState(false);
   const handleSuccessOpen = () => {
     setSuccess(true);
   };
@@ -151,11 +128,41 @@ function Drawerheader(props) {
     }
     setSuccess(false);
   };
-  const handleOnName = () => {
-    setOnName(true);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [open1, setOpen] = useState(true);
+  const menuOpenHandler = (event) => {
+    setAnchorEl(event.currentTarget);
   };
-  const handleOffName = () => {
-    setOnName(false);
+  const menuCloseHandler = () => {
+    setAnchorEl(null);
+  };
+  const toggleDrawer = () => {
+    setOpen(!open1);
+  };
+
+  const openUpdateInfoModal = () => {
+    setUpdateInfo(true);
+    menuCloseHandler();
+  };
+  const closeUpdateInfoModal = () => {
+    setUpdateInfo(false);
+  };
+
+  const openUpdateImageModal = () => {
+    setUpdateImage(true);
+    menuCloseHandler();
+  };
+  const closeUpdateImageModal = () => {
+    setUpdateImage(false);
+  };
+
+  const openUpdateNameModal = () => {
+    setUpdateName(true);
+  };
+  const closeUpdateNameModal = () => {
+    setUpdateName(false);
   };
 
   const onUpdateMarketName = () => {
@@ -165,7 +172,7 @@ function Drawerheader(props) {
     axios.patch(`${ManagerBaseApi}/store/title`, body, config).then((res) => {
       if (res.status === 200) {
         getMarketDetails();
-        handleOffName();
+        closeUpdateNameModal();
       }
     });
   };
@@ -176,11 +183,11 @@ function Drawerheader(props) {
     axios.patch(`${ManagerBaseApi}/store/info`, body, config).then((res) => {
       if (res.status === 200) {
         getMarketDetails();
-        onOffInfo();
+        closeUpdateInfoModal();
       }
     });
   };
-  const onUpdateImage = () => {
+  const onUpdateMarketImage = () => {
     const formdata = new FormData();
     newImage !== null && formdata.append('file', newImage);
 
@@ -195,7 +202,7 @@ function Drawerheader(props) {
       })
       .catch((err) => alert('이미지 용량이 너무 큽니다.'));
     handleSuccessOpen();
-    onOffImage();
+    closeUpdateImageModal();
   };
 
   const getMarketDetails = () => {
@@ -251,7 +258,7 @@ function Drawerheader(props) {
             noWrap
             sx={{
               flexGrow: 1,
-              fontFamily: 'SingleDay',
+              fontFamily: 'Nanum',
               fontWeight: 500,
               fontSize: '30px',
             }}
@@ -261,11 +268,11 @@ function Drawerheader(props) {
 
           {!isName && (
             <SetNameWrapper>
-              <span className="blink" onClick={handleOnName}>
+              <span className="blink" onClick={openUpdateNameModal}>
+                Click
                 <MdTouchApp />
-                여기 클릭
               </span>
-              <span>식당이름을 설정해주세요.</span>
+              <span>식당이름을 설정해주세요</span>
             </SetNameWrapper>
           )}
 
@@ -343,16 +350,16 @@ function Drawerheader(props) {
           >
             <img
               style={{
-                width: '50%',
-                maxWidth: '50%',
+                width: '45%',
+                maxWidth: '45%',
               }}
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
-              alt="이미지없음"
+              alt="이미지 없음"
             />
             <span
               style={{
-                fontSize: '20px',
-                fontFamily: 'SingleDay',
+                fontSize: '17px',
+                fontFamily: 'NotoSans',
                 color: '#0a376e',
                 fontWeight: '600',
               }}
@@ -373,16 +380,16 @@ function Drawerheader(props) {
           onClose={menuCloseHandler}
           TransitionComponent={Fade}
         >
-          <MenuItem sx={MenuItemTextStyle} onClick={handleOnName}>
+          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateNameModal}>
             식당 이름 {isName ? '수정' : '설정'}
           </MenuItem>
           <MenuItem
             sx={{ ...MenuItemTextStyle, width: '250px' }}
-            onClick={handleClickOpenModal}
+            onClick={openUpdateInfoModal}
           >
             식당 소개 메시지 변경
           </MenuItem>
-          <MenuItem sx={MenuItemTextStyle} onClick={handleClickOpenModal2}>
+          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateImageModal}>
             식당 이미지 변경
           </MenuItem>
           <Divider />
@@ -391,7 +398,7 @@ function Drawerheader(props) {
           </MenuItem>
         </Menu>
 
-        <Dialog open={onInfo} onClose={onOffInfo}>
+        <Dialog open={updateInfo} onClose={closeUpdateInfoModal}>
           <DialogTitle sx={DialogTitleStyle}>식당 소개 메시지 변경</DialogTitle>
           <DialogContent>
             <DialogContentText sx={{ ...DialogTextStyle, marginBottom: '10px' }}>
@@ -419,13 +426,13 @@ function Drawerheader(props) {
           </DialogContent>
           <DialogActions>
             <Button onClick={onUpdateMarketInfo}>등록</Button>
-            <Button color="error" onClick={onOffInfo}>
+            <Button color="error" onClick={closeUpdateInfoModal}>
               닫기
             </Button>
           </DialogActions>
         </Dialog>
 
-        <Dialog open={onImage} onClose={onOffImage}>
+        <Dialog open={updateImage} onClose={closeUpdateImageModal}>
           <DialogTitle sx={DialogTitleStyle}>식당 이미지 변경하기</DialogTitle>
           <DialogContent>
             <DialogContentText sx={DialogTextStyle}>현재 이미지</DialogContentText>
@@ -458,8 +465,8 @@ function Drawerheader(props) {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={onUpdateImage}>등록</Button>
-            <Button color="error" onClick={onOffImage}>
+            <Button onClick={onUpdateMarketImage}>등록</Button>
+            <Button color="error" onClick={closeUpdateImageModal}>
               닫기
             </Button>
           </DialogActions>
@@ -472,7 +479,7 @@ function Drawerheader(props) {
         </Snackbar>
       </Drawer>
 
-      <Dialog open={onName} onClose={handleOffName}>
+      <Dialog open={updateName} onClose={closeUpdateNameModal}>
         <DialogTitle sx={DialogTitleStyle}>
           식당 이름 {isName ? '수정' : '설정'}
         </DialogTitle>
@@ -493,7 +500,7 @@ function Drawerheader(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={onUpdateMarketName}>등록</Button>
-          <Button color="error" onClick={handleOffName}>
+          <Button color="error" onClick={closeUpdateNameModal}>
             닫기
           </Button>
         </DialogActions>
@@ -503,9 +510,6 @@ function Drawerheader(props) {
 }
 
 export default Drawerheader;
-
-const screenWidth = window.innerWidth;
-const drawerWidth = screenWidth < 450 ? 20 : 220;
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -554,3 +558,32 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     },
   })
 );
+
+const screenWidth = window.innerWidth;
+const drawerWidth = screenWidth < 450 ? 20 : 220;
+
+const marketNameStyle = {
+  fontWeight: '600',
+  color: 'inherit',
+  textDecoration: 'underline',
+  textDecorationThickness: '1px',
+  whiteSpace: 'nowrap',
+  textAlign: 'right',
+};
+const MenuItemTextStyle = {
+  fontFamily: 'Nanum',
+  fontWeight: 500,
+  margin: '10px 0px',
+};
+const DialogTitleStyle = {
+  margin: '0 auto',
+  fontFamily: 'Nanum',
+  fontSize: '20px',
+  fontWeight: '600',
+};
+const DialogTextStyle = {
+  fontFamily: 'Nanum',
+  fontSize: '15px',
+  fontWeight: '600',
+  marginBottom: '10px',
+};

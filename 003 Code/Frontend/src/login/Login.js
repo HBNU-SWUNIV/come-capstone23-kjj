@@ -16,41 +16,23 @@ import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
 import Copyright from '../components/general/Copyright';
-import {
-  ConfigWithRefreshToken,
-  ConfigWithToken,
-  ManagerBaseApi,
-} from '../auth/authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useEffect, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
+import ErrorInform from '../components/general/ErrorInform';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [cookies, setCookie] = useCookies();
 
   const config = ConfigWithToken();
-  // const reconfig = ConfigWithRefreshToken();
-
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
   const { keycloak } = useKeycloak();
-  const [cookies, setCookie] = useCookies();
-  const setIsLogin = useSetRecoilState(isloginAtom);
 
   const onKeyCloakLogin = () => {
     keycloak.login();
   };
-
-  useEffect(() => {
-    if (keycloak.authenticated) {
-      cookies.accesstoken !== '' && navigate('/home');
-      cookies.accesstoken === '' && setKeyCloakToken();
-    }
-    if (cookies.accesstoken !== '') {
-      verifyFirstLogin();
-    }
-  }, [keycloak.authenticated, cookies.accesstoken]);
 
   const setKeyCloakToken = async () => {
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
@@ -58,6 +40,21 @@ export default function Login() {
     const [, keycloaktoken] = Header.split('Bearer ');
     setCookie('accesstoken', keycloaktoken);
   };
+
+  useEffect(() => {
+    if (keycloak.authenticated) {
+      cookies.accesstoken !== '' && navigate('/home');
+      cookies.accesstoken === '' && setKeyCloakToken();
+    }
+    if ((islogin || keycloak.authenticated) && cookies.accesstoken !== '') {
+      verifyFirstLogin();
+    }
+  }, [keycloak.authenticated, cookies.accesstoken]);
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+  const [loginError, setLoginError] = useState(false);
 
   const setLoginToken = async () => {
     let body = { username, password };
@@ -68,29 +65,37 @@ export default function Login() {
         data: body,
       });
 
-      const Header = response.headers.authorization;
-      const [, token] = Header.split('Bearer ');
+      const token = response.headers.authorization;
       setCookie('accesstoken', token);
       setIsLogin(true);
 
-      // 리프레쉬 토큰 -> 엑세스 토큰 반환 = 백엔드 구현끝나면 수정 필요.
-      // const refresh_header = response.headers.refresh_token;
-      // const [, refreshtoken] = refresh_header.split('Bearer ');
-      // setCookie('refreshtoken', refreshtoken);
-      // setTimeout(() => {
-      //   RefreshTokenHandler();
-      // }, 5000);
+      const refreshtoken = response.headers.refresh_token;
+      setCookie('refreshtoken', refreshtoken);
     } catch (error) {
-      if (error.response.status === 401) alert('ID 또는 Password가 다릅니다.');
+      if (error.response.status === 401) setLoginError(true);
     }
   };
 
-  // const RefreshTokenHandler = async () => {
-  //   const res = await axios({
-  //     method: 'POST',
-  //     url: `/api/user/login/refresh`,
-  //     ...reconfig,
-  //   });
+  // const RefreshTokenHandler = () => {
+
+  //     try {
+  //       const body = {
+  //         refreshToken: refresh,
+  //       };
+  //       const res = axios({
+  //         method: 'POST',
+  //         url: `/api/user/login/refresh`,
+  //         data: body,
+  //       });
+
+  //       const newtoken = res.headers.authorization;
+  //       setCookie('accesstoken', newtoken);
+  //       console.log(res);
+  //       console.log('재발급 성공');
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+
   // };
 
   const verifyFirstLogin = () => {
@@ -138,7 +143,11 @@ export default function Login() {
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <Typography component="h1" variant="h5">
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{ fontFamily: 'Nanum', fontWeight: '600' }}
+            >
               식재료 절약단
             </Typography>
             <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
@@ -154,6 +163,9 @@ export default function Login() {
                 autoComplete="ID"
                 autoFocus
               />
+              {loginError && (
+                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
+              )}
               <TextField
                 margin="normal"
                 required
@@ -166,24 +178,31 @@ export default function Login() {
                 id="password"
                 autoComplete="current-password"
               />
+              {loginError && (
+                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
+              )}{' '}
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"
               />
               <>
-                <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
+                >
                   로그인
                 </Button>
                 <Button
                   onClick={onKeyCloakLogin}
                   fullWidth
                   variant="contained"
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
                 >
                   Keycloak 로그인
                 </Button>
               </>
-
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
