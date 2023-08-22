@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -13,7 +14,7 @@ import java.util.List;
 public interface PlannerRepository extends JpaRepository<Planner, Long> {
 
     @Query("select p from Planner p where p.date = :date")
-    Planner findOnePlanner(@Param("date")String date);
+    Planner findOnePlanner(@Param("date")LocalDate date);
 
-    List<Planner> findAllByDateBetween(String start, String end);
+    List<Planner> findAllByDateBetween(LocalDate start, LocalDate end);
 }

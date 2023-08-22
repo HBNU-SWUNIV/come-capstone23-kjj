@@ -15,7 +15,7 @@ public class PlannerDto {
 
     public static PlannerDto of(Planner planner){
         return new PlannerDto(
-                DateTools.makeDateFormatString(planner.getDate()),
+                DateTools.makeLocaldateToFormatterString(planner.getDate()),
                 planner.getMenus()
         );
     }

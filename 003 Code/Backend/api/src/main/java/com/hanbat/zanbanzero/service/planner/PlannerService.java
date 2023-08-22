@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,11 +27,11 @@ public class PlannerService {
 
     @Transactional
     public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
-        String dateString = DateTools.makeDateFormatString(year, month, day);
+        LocalDate dateString = DateTools.makeLocaldate(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
-            dto.setDate(dateString);
+            dto.setDate(dateString.toString());
             planner = repository.save(Planner.of(dto, getPlannerMenu()));
         }
         else planner.setMenus(dto.getMenus());
@@ -38,7 +39,7 @@ public class PlannerService {
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        String date = DateTools.makeDateFormatString(year, month, day);
+        LocalDate date = DateTools.makeLocaldate(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -46,8 +47,8 @@ public class PlannerService {
     }
 
     public List<PlannerDto> getPlanner(int year, int month) {
-        String start = DateTools.makeDateFormatString(year, month, 1);
-        String end = DateTools.makeDateFormatString(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = DateTools.makeLocaldate(year, month, 1);
+        LocalDate end = DateTools.makeLocaldate(year, month, DateTools.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
                 .map(planner -> PlannerDto.of(planner))

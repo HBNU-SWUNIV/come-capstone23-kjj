@@ -76,7 +76,7 @@ public class StoreService {
 
     @Transactional
     public Integer getToday() {
-        Calculate calculate = calculateRepository.findByDate(DateTools.makeTodayDateString());
+        Calculate calculate = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
         if (calculate == null) return 0;
         return calculate.getToday();
     }
@@ -88,7 +88,7 @@ public class StoreService {
 
         int dataSize = 5;
         for (int i = 0; i < dataSize; i ++) {
-            String targetDate = DateTools.toFormatterString(date.plusDays(i));
+            LocalDate targetDate = date.plusDays(i);
             Calculate calculate = calculateRepository.findByDate(targetDate);
 
             if (calculate == null) result.add(StoreWeekendDto.createZeroStoreWeekendDto(targetDate));

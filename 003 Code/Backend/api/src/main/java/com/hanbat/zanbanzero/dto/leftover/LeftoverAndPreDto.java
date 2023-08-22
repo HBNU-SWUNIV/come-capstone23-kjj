@@ -17,7 +17,7 @@ public class LeftoverAndPreDto {
 
     public static LeftoverAndPreDto of(Leftover leftover, LeftoverPre leftoverPre) {
         return new LeftoverAndPreDto(
-                DateTools.makeDateFormatString(leftoverPre.getCalculate().getDate()),
+                DateTools.makeLocaldateToFormatterString(leftoverPre.getCalculate().getDate()),
                 leftover.getLeftover(),
                 leftoverPre.getPredict()
         );

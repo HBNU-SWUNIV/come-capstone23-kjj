@@ -1,7 +1,11 @@
 package com.hanbat.zanbanzero.service.user;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.dto.user.TokenRefreshDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
@@ -14,6 +18,8 @@ import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +27,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -35,7 +43,7 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public User join(UserJoinDto dto) throws JsonProcessingException {
+    public User join(UserJoinDto dto) {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
         userMypageRepository.save(UserMypage.createNewUserMyPage(user));
@@ -48,6 +56,22 @@ public class UserService implements UserDetailsService {
         User user = userRepository.findByUsername(u.getUsername());
         if (user == null) user = join(UserJoinDto.of(u));
         return UserInfoDto.of(user);
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response, TokenRefreshDto dto) {
+        String token = request.getHeader(JwtTemplate.HEADER_STRING);
+        if (token == null) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else if (JwtUtil.isTokenExpired(token)) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else if (!JwtUtil.getTypeFromRefreshToken(token).equals(JwtTemplate.REFRESH_TYPE))
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else {
+            UserDetailsInterface userDetails = loadUserByUsername(JwtUtil.getUsernameFromRefreshToken(token));
+
+            String jwtToken = JwtUtil.createToken(userDetails);
+            String refreshToken = JwtUtil.createRefreshToken(userDetails);
+            response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + jwtToken);
+            response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
+        }
     }
 
     @Transactional
@@ -69,7 +93,7 @@ public class UserService implements UserDetailsService {
         return UserInfoDto.of(user);
     }
 
-    public UserMypageDto getMyPage(String username) throws CantFindByIdException, JsonProcessingException {
+    public UserMypageDto getMyPage(String username) throws CantFindByIdException {
         Long id = userRepository.findByUsername(username).getId();
         UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
@@ -79,7 +103,6 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetailsInterfaceImpl loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
-        if (!user.getRoles().equals("ROLE_USER")) throw new UsernameNotFoundException("UserService - loadUserByUsername() : 잘못된 유저네임");
         return new UserDetailsInterfaceImpl(user);
     }
 
@@ -111,5 +134,10 @@ public class UserService implements UserDetailsService {
 
     public UserInfoDto getInfoForUsername(String username) {
         return UserInfoDto.of(userRepository.findByUsername(username));
+    }
+
+    public Map<String, String> testToken() {
+        String userName = "user";
+        return Map.of("accessToken", JwtUtil.createToken(loadUserByUsername(userName)));
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manager/")
@@ -32,5 +34,10 @@ public class ManagerApiController {
     public ResponseEntity<ManagerInfoDto> getInfo(HttpServletRequest request) throws JwtException, CantFindByIdException {
         String username = JwtUtil.getUsernameFromToken(request.getHeader(JwtTemplate.HEADER_STRING));
         return ResponseEntity.ok(managerService.getInfo(username));
+    }
+
+    @GetMapping("login/test")
+    public ResponseEntity<Map<String, String>> testToken(){
+        return ResponseEntity.ok(managerService.testToken());
     }
 }

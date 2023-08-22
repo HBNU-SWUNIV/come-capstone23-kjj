@@ -6,11 +6,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
 public interface CalculateRepository extends JpaRepository<Calculate, Long> {
-    Calculate findByDate(String todayDate);
+    Calculate findByDate(LocalDate todayDate);
 
     @Query("SELECT c FROM Calculate c ORDER BY c.id DESC LIMIT 5")
     List<Calculate> findTop5ByIdOrderByIdDesc();

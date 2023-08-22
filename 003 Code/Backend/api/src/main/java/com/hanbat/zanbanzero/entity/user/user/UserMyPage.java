@@ -22,16 +22,12 @@ public class UserMypage {
     @MapsId
     private User user;
 
-    private String coupon;
     private int point;
 
-    public static UserMypage createNewUserMyPage(User user) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<Integer, String> first_coupon = Map.of(1, "신규가입 환영 쿠폰");
+    public static UserMypage createNewUserMyPage(User user) {
         return new UserMypage(
                 user.getId(),
                 user,
-                objectMapper.writeValueAsString(first_coupon),
                 0
                 );
     }

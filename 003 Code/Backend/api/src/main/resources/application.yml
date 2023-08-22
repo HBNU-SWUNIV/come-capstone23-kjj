@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: env
+    include: env, actuator, keycloak
 
 # DB
   datasource:
@@ -21,8 +21,9 @@ spring:
     hibernate:
       ddl-auto: none
       properties:
-        hibernate.show_sql: true
-      format_sql: true
+        hibernate:
+          show_sql: true
+          format_sql: true
 
 # Redis
   cache:
@@ -31,7 +32,23 @@ spring:
     redis:
       host: localhost
       port: 6379
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+---
+spring:
+=======
+=======
+>>>>>>> 6b524bc (feat: bug fix)
+=======
+>>>>>>> 97abc79 (feat: fix bug)
+<<<<<<< HEAD
 
+=======
+>>>>>>> 64228e3 (feat: apply actuator)
+=======
+
+>>>>>>> 8bdf7db (feat: update)
 #logging
 logging:
   level:
@@ -60,42 +77,42 @@ my:
     redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
     client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
 #---
+<<<<<<< HEAD
+>>>>>>> 3687ef0 (feat: apply actuator)
+=======
+=======
+---
+spring:
+>>>>>>> f3c1edd (feat: fix bug)
+>>>>>>> 97abc79 (feat: fix bug)
   config:
     activate:
       on-profile: prod
-# DB
+  # DB
   datasource:
     url: ${my.mysqluri_docker}
-    username: ${my.mysqlUsername}
-    password: ${my.mysqlPassword}
 
-# data.sql
+  # data.sql
   sql:
     init:
       mode: never
   jpa:
-    defer-datasource-initialization: true
-    open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
-        show_sql: true
-        format_sql: true
+        show_sql: false
 
-# spring security
+  # spring security
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
 
-# logging
+    # logging
     root: error
 
-# Redis
+  # Redis
   data:
     redis:
       host: db-redis
       port: 6379
-
-# Keycloak
-    redirect_uri: http://kjj.kjj.r-e.kr:8080/api/user/login/keycloak/redirect

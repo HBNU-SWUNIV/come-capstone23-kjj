@@ -1,0 +1,16 @@
+# Keycloak
+my:
+  keycloak:
+    host: http://kjj.kjj.r-e.kr:8081
+    realm_name: test-app
+    client_id: test-client
+    redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
+    client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+my:
+  keycloak:
+    redirect_uri: http://kjj.kjj.r-e.kr:8080/api/user/login/keycloak/redirect

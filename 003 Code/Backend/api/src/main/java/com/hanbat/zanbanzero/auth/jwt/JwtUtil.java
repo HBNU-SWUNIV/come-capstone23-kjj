@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-@Component
 public class JwtUtil {
 
     public static String createToken(UserDetailsInterface userDetails) {
