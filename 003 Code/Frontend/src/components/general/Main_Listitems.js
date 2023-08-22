@@ -17,7 +17,7 @@ function Main_Listitems() {
           <HomeIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
             홈
           </span>
         </ListItemText>
@@ -27,7 +27,7 @@ function Main_Listitems() {
           <RestaurantMenuIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
             메뉴
           </span>
         </ListItemText>{' '}
@@ -37,7 +37,7 @@ function Main_Listitems() {
           <SettingsIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'SingleDay', fontWeight: '500', fontSize: '16px' }}>
+          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
             휴일 설정
           </span>
         </ListItemText>{' '}

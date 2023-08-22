@@ -2,20 +2,20 @@ import { useCookies } from 'react-cookie';
 export const ManagerBaseApi = '/api/manager';
 
 export function ConfigWithToken() {
-  const [cookies] = useCookies(['accesstoken']);
+  const [cookies] = useCookies();
   const config = {
     headers: {
-      Authorization: `Bearer ${cookies.accesstoken}`,
+      Authorization: cookies.accesstoken,
     },
   };
   return config;
 }
 
 export function ConfigWithRefreshToken() {
-  const [cookies] = useCookies(['refreshtoken']);
+  const [cookies] = useCookies();
   const reconfig = {
     headers: {
-      Authorization: `Bearer ${cookies.refreshtoken}`,
+      Authorization: cookies.refreshtoken,
     },
   };
   return reconfig;
