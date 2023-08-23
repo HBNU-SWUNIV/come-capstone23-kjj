@@ -30,7 +30,12 @@ import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useNavigate } from 'react-router-dom';
 import DailyMenu from './DailyMenu';
 import { styled } from 'styled-components';
-
+import Menulist from '../components/Menu/Menulist';
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 const Title = styled.div`
   @media screen and (max-width: 1050px) {
     display: none;
@@ -143,7 +148,7 @@ export default function Menus() {
   const handle오늘의메뉴Close = () => {
     set일품(false);
   };
-  const handle식재료Open = (menu, id) => {
+  const handle식재료Open = (menu) => {
     set식재료(menu);
     set식재료open(true);
   };
@@ -166,6 +171,8 @@ export default function Menus() {
     fields.splice(index, 1);
     setInputfields(fields);
   };
+
+  const [reGet, setReGet] = useState(false);
   const 식재료add = (id) => {
     let body = {};
     inputfields.forEach((field) => {
@@ -178,16 +185,18 @@ export default function Menus() {
       .get(`${ManagerBaseApi}/menu/${id}/food`, config)
       .then((res) => {
         if (res.status === 200) {
-          axios
-            .patch(`${ManagerBaseApi}/menu/${id}/food`, body, config)
-            .then((res) => console.log(res));
+          axios.patch(`${ManagerBaseApi}/menu/${id}/food`, body, config).then((res) => {
+            if (res.status === 200) {
+              setReGet((prev) => !prev);
+              handle식재료Close();
+            }
+          });
         }
       })
       .catch((err) => {
         if (err.response.status === 400) {
           axios
             .post(`${ManagerBaseApi}/menu/${id}/food`, body, config)
-            .then((res) => console.log(res))
             .then(handle식재료Close());
         }
       });
@@ -336,6 +345,11 @@ export default function Menus() {
     setImage(null);
   };
 
+  const [view, setView] = useState('card');
+  const handleView = (event, nextView) => {
+    if (nextView !== null) setView(nextView);
+  };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Box sx={{ display: 'flex' }}>
@@ -352,202 +366,178 @@ export default function Menus() {
             height: '100%',
             minHeight: '100vh',
             overflow: 'auto',
-            display: 'flex',
           }}
         >
           <Toolbar />
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            {/* <Title>
-              <Typography
-                sx={{
-                  whiteSpace: 'nowrap',
-                  fontFamily: 'NotoSans',
-                  fontWeight: '600',
-                  fontSize: '25px',
-                }}
-                variant="h2"
-                color="#0288d1"
-                align="center"
-                paragraph
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Stack
+              sx={{ pt: 4 }}
+              direction="row"
+              spacing={2}
+              justifyContent="space-between"
+            >
+              <ToggleButtonGroup
+                orientation="horizontal"
+                value={view}
+                exclusive
+                onChange={handleView}
               >
-                메뉴
-              </Typography>
-            </Title> */}
-
-            <Stack sx={{ pt: 4 }} direction="row" spacing={2} justifyContent="center">
+                <ToggleButton value="card" aria-label="card">
+                  <ViewModuleIcon />
+                </ToggleButton>
+                <ToggleButton value="list" aria-label="list">
+                  <ViewListIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
               <Button
-                sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
+                sx={{
+                  fontFamily: 'NotoSans',
+                  fontWeight: '500',
+                  fontSize: '16px',
+                  backgroundColor: 'rgb(0, 171, 85)',
+                }}
                 onClick={handleAddOpen}
                 variant="contained"
+                color="success"
               >
-                메뉴 등록
+                + 메뉴 등록
               </Button>
-              {isplanner === true ? (
-                <Button
-                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '20px' }}
-                  disabled
-                  onClick={handle일품Open}
-                  variant="outlined"
-                >
-                  오늘의메뉴가 등록되어있습니다.
-                </Button>
-              ) : (
-                <Button
-                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
-                  onClick={handle일품Open}
-                  variant="outlined"
-                >
-                  오늘의메뉴 등록
-                </Button>
-              )}
             </Stack>
           </Container>
 
           <Container sx={{ py: 1 }} maxWidth="lg">
-            <Grid container spacing={4}>
-              {menus.map((menu) => (
-                <Grid item key={shortid.generate()} xs={12} sm={6} md={3}>
-                  <Card
-                    sx={{
-                      width: '260px',
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    {!isLoading ? (
-                      <CardMedia
-                        component="div"
-                        sx={{
-                          opacity: menu.sold === true ? null : 0.3,
-                          width: '100%',
-                          height: '260px',
-                        }}
-                        image={'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image}
-                      />
-                    ) : (
-                      <Skeleton
-                        variant="rectangular"
-                        sx={{ width: '100%', height: '260px' }}
-                      />
-                    )}
-                    <CardContent
+            {view === 'card' && (
+              <Grid container spacing={4}>
+                {menus.map((menu) => (
+                  <Grid item key={shortid.generate()} xs={12} sm={6} md={4} lg={3}>
+                    <Card
                       sx={{
+                        width: '260px',
+                        height: '100%',
                         display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        flexDirection: 'column',
                       }}
                     >
-                      <Typography
+                      {!isLoading ? (
+                        <CardMedia
+                          component="div"
+                          sx={{
+                            opacity: menu.sold === true ? null : 0.3,
+                            width: '100%',
+                            height: '260px',
+                          }}
+                          image={
+                            'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image
+                          }
+                        />
+                      ) : (
+                        <Skeleton
+                          variant="rectangular"
+                          sx={{ width: '100%', height: '260px' }}
+                        />
+                      )}
+                      <CardContent
                         sx={{
-                          opacity: menu.sold === true ? null : 0.3,
-                          fontFamily: 'NotoSans',
-                          fontWeight: 600,
-                          fontSize: '15px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                         }}
-                        color={menu.usePlanner === true ? 'primary.dark' : 'inherit'}
-                        gutterBottom
-                        variant="h5"
-                        component="h2"
                       >
-                        {!isLoading ? menu.name : <Skeleton />}
-                      </Typography>
-                      {menu.sold === true ? (
-                        <>
-                          {/* <Typography
-                            sx={{
-                              fontFamily: 'Nanum',
-                              fontWeight: 600,
-                              fontSize: '16px',
-                            }}
-                            variant="body2"
-                          >
-                            {!isLoading ? menu.details : <Skeleton />}
-                          </Typography> */}
-                          <Typography
-                            sx={{
-                              fontFamily: 'NotoSans',
-                              fontWeight: 600,
-                              fontSize: '20px',
-                            }}
-                          >
-                            {!isLoading ? menu.cost + '원' : <Skeleton />}
-                          </Typography>
-                        </>
-                      ) : (
-                        <>
-                          <Typography
-                            sx={{
-                              fontFamily: 'NotoSans',
-                              fontWeight: '600',
-                              fontSize: '20px',
-                            }}
-                            variant="h4"
-                            color="error.dark"
-                          >
-                            {!isLoading ? '품 절 되었어요' : <Skeleton />}
-                          </Typography>
-                        </>
-                      )}
-                    </CardContent>
+                        <Typography
+                          sx={{
+                            opacity: menu.sold === true ? null : 0.3,
+                            fontFamily: 'NotoSans',
+                            fontWeight: 600,
+                            fontSize: '15px',
+                          }}
+                          color={menu.usePlanner === true ? 'primary.dark' : 'inherit'}
+                          gutterBottom
+                          variant="h5"
+                          component="h2"
+                        >
+                          {!isLoading ? menu.name : <Skeleton />}
+                        </Typography>
+                        {menu.sold === true ? (
+                          <>
+                            <Typography
+                              sx={{
+                                fontFamily: 'NotoSans',
+                                fontWeight: 600,
+                                fontSize: '20px',
+                              }}
+                            >
+                              {!isLoading ? menu.cost + '원' : <Skeleton />}
+                            </Typography>
+                          </>
+                        ) : (
+                          <>
+                            <Typography
+                              sx={{
+                                fontFamily: 'NotoSans',
+                                fontWeight: '600',
+                                fontSize: '20px',
+                              }}
+                              variant="h4"
+                              color="error.dark"
+                            >
+                              {!isLoading ? '품 절 되었어요' : <Skeleton />}
+                            </Typography>
+                          </>
+                        )}
+                      </CardContent>
 
-                    <CardActions>
-                      {menu.sold === true ? (
-                        <MenuButtonWrapper>
-                          <Button onClick={() => handleUpdateOpen(menu)} size="small">
-                            수정
-                          </Button>
+                      <CardActions>
+                        {menu.sold === true ? (
+                          <MenuButtonWrapper>
+                            <Button onClick={() => handleUpdateOpen(menu)} size="small">
+                              수정
+                            </Button>
 
-                          <Button onClick={() => soldout(menu.id)} size="small">
-                            품절
-                          </Button>
+                            <Button onClick={() => soldout(menu.id)} size="small">
+                              품절
+                            </Button>
 
-                          {/* {menu.usePlanner === true ? (
                             <Button
-                              disabled
-                              onClick={() => handle식재료Open(menu)}
+                              onClick={() => handleDeleteOpen(menu.id)}
+                              color="error"
                               size="small"
                             >
-                              식재료 등록
+                              삭제
                             </Button>
-                          ) : (
+                          </MenuButtonWrapper>
+                        ) : (
+                          <MenuButtonWrapper>
+                            <Button onClick={() => resale(menu.id)} size="small">
+                              재판매
+                            </Button>
                             <Button
-                              onClick={() => handle식재료Open(menu, menu.id)}
+                              onClick={() => handleDeleteOpen(menu.id)}
+                              color="error"
                               size="small"
                             >
-                              식재료 등록
+                              삭제
                             </Button>
-                          )} */}
+                          </MenuButtonWrapper>
+                        )}
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )}
 
-                          <Button
-                            onClick={() => handleDeleteOpen(menu.id)}
-                            color="error"
-                            size="small"
-                          >
-                            삭제
-                          </Button>
-                        </MenuButtonWrapper>
-                      ) : (
-                        <MenuButtonWrapper>
-                          <Button onClick={() => resale(menu.id)} size="small">
-                            재판매
-                          </Button>
-                          <Button
-                            onClick={() => handleDeleteOpen(menu.id)}
-                            color="error"
-                            size="small"
-                          >
-                            삭제
-                          </Button>
-                        </MenuButtonWrapper>
-                      )}
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+            {view === 'list' && (
+              <Menulist
+                addIngredients={handle식재료Open}
+                regetIngreditents={reGet}
+                soldout={soldout}
+                resale={resale}
+                onDelete={handleDeleteOpen}
+                onUpdate={handleUpdateOpen}
+                menus={menus}
+              />
+            )}
           </Container>
-          {/* <DailyMenu /> */}
         </Box>
       </Box>
 
@@ -562,8 +552,8 @@ export default function Menus() {
           <DialogContentText
             sx={{
               width: '350px',
-              fontFamily: 'Dongle',
-              fontSize: '35px',
+              fontFamily: 'NotoSans',
+              fontSize: '20px',
               fontWeight: 600,
             }}
             id="alert-dialog-description"
@@ -573,14 +563,14 @@ export default function Menus() {
         </DialogContent>
         <DialogActions>
           <Button
-            sx={{ fontFamily: 'Dongle', fontWeight: 500, fontSize: '30px' }}
+            sx={{ fontFamily: 'NotoSans', fontWeight: 500, fontSize: '18px' }}
             color="error"
             onClick={menuDelete}
           >
             네
           </Button>
           <Button
-            sx={{ fontFamily: 'Dongle', fontWeight: 500, fontSize: '30px' }}
+            sx={{ fontFamily: 'NotoSans', fontWeight: 500, fontSize: '18px' }}
             onClick={handleDeleteClose}
             autoFocus
           >
@@ -815,3 +805,73 @@ const NanumFontStyle = {
   fontFamily: 'Nanum',
   fontWeight: '600',
 };
+
+{
+  /* <Title>
+              <Typography
+                sx={{
+                  whiteSpace: 'nowrap',
+                  fontFamily: 'NotoSans',
+                  fontWeight: '600',
+                  fontSize: '25px',
+                }}
+                variant="h2"
+                color="#0288d1"
+                align="center"
+                paragraph
+              >
+                메뉴
+              </Typography>
+            </Title> */
+}
+{
+  /* {isplanner === true ? (
+                <Button
+                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '20px' }}
+                  disabled
+                  onClick={handle일품Open}
+                  variant="outlined"
+                >
+                  오늘의메뉴가 등록되어있습니다.
+                </Button>
+              ) : (
+                <Button
+                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
+                  onClick={handle일품Open}
+                  variant="outlined"
+                >
+                  오늘의메뉴 등록
+                </Button>
+              )} */
+}
+{
+  /* <Typography
+                            sx={{
+                              fontFamily: 'Nanum',
+                              fontWeight: 600,
+                              fontSize: '16px',
+                            }}
+                            variant="body2"
+                          >
+                            {!isLoading ? menu.details : <Skeleton />}
+                          </Typography> */
+}
+
+{
+  /* {menu.usePlanner === true ? (
+                            <Button
+                              disabled
+                              onClick={() => handle식재료Open(menu)}
+                              size="small"
+                            >
+                              식재료 등록
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => handle식재료Open(menu)}
+                              size="small"
+                            >
+                              식재료 등록
+                            </Button>
+                          )} */
+}
