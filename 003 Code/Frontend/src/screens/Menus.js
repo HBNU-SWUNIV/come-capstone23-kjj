@@ -34,12 +34,7 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-
-const Title = styled.div`
-  @media screen and (max-width: 1050px) {
-    display: none;
-  }
-`;
+import ErrorInform from '../components/general/ErrorInform';
 
 const MenuButtonWrapper = styled.div`
   display: flex;
@@ -124,6 +119,7 @@ export default function Menus() {
   };
   const handleAddClose = () => {
     setAddMenu(false);
+    setRequired(false);
   };
   const handleSuccessOpen = () => {
     setSuccess(true);
@@ -140,6 +136,7 @@ export default function Menus() {
   };
   const handleUpdateClose = () => {
     setUpdatemenu(false);
+    setNameDuplicate(false);
   };
   const handle오늘의메뉴Open = () => {
     set일품(true);
@@ -235,6 +232,14 @@ export default function Menus() {
       axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
     });
   };
+
+  const [nameDuplicate, setNameDuplicate] = useState(false);
+  const [required, setRequired] = useState(false);
+  const infoHandler = () => {
+    if (menuDetailsRef.current.value === '') setRequired(true);
+    else setRequired(false);
+  };
+
   const menuAdd = () => {
     const formdata = new FormData();
     let body = {
@@ -254,19 +259,22 @@ export default function Menus() {
     })
       .then((res) => res.status === 200 && handleSuccessOpen())
       .then(() => {
-        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
+        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => {
+          setMenus(res.data);
+          setAddMenu(false);
+          setImage(null);
+          setNameDuplicate(false);
+        });
       })
       .catch((err) => {
         if (err.response.status === 400) {
           alert('파일의 용량이 너무큽니다.');
           return;
         } else if (err.response.status === 409) {
-          alert('중복된 메뉴명이 있습니다.');
+          setNameDuplicate(true);
           return;
         }
       });
-    setAddMenu(false);
-    setImage(null);
   };
   const menuUpdate = () => {
     const formdata = new FormData();
@@ -275,7 +283,7 @@ export default function Menus() {
         .filter((f_menu) => f_menu.id != update.id)
         .filter((n) => n.name === menuNameRef.current.value).length != 0
     ) {
-      alert('중복된 메뉴명입니다.');
+      setNameDuplicate(true);
       return;
     }
     let body = {
@@ -296,17 +304,14 @@ export default function Menus() {
       url: `${ManagerBaseApi}/menu/${update.id}`,
       data: formdata,
       ...formdataConfig,
-    })
-      .then(() => {
-        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
-      })
-      .then(() => {
-        axios
-          .get(`${ManagerBaseApi}/menu/planner`, config)
-          .then((res) => setIsplanner(res.data));
+    }).then(() => {
+      axios.get(`${ManagerBaseApi}/menu`, config).then((res) => {
+        setMenus(res.data);
+        setImage('');
+        handleUpdateClose();
+        setNameDuplicate(false);
       });
-    setImage('');
-    handleUpdateClose();
+    });
   };
   const 오늘의메뉴Add = () => {
     const formdata = new FormData();
@@ -608,13 +613,16 @@ export default function Menus() {
             label="required"
             placeholder="메뉴명"
           />
+          {nameDuplicate && <ErrorInform message={'중복된 메뉴명이 있습니다'} />}
           <TextField
             inputRef={menuDetailsRef}
             required
             id="outlined-required2"
             label="required"
             placeholder="메뉴 소개"
+            onBlur={infoHandler}
           />
+          {required && <ErrorInform message={'메뉴 소개는 필수 입력입니다'} />}
           <TextField
             inputRef={menuCostRef}
             id="outlined-number"
@@ -708,21 +716,15 @@ export default function Menus() {
               </div>
             </>
           )}
-          {update?.usePlanner === true ? (
-            <TextField
-              disabled
-              inputRef={menuNameRef}
-              id="outlined-required"
-              label="오늘의메뉴"
-            />
-          ) : (
-            <TextField
-              required
-              inputRef={menuNameRef}
-              id="outlined-required"
-              placeholder={update?.name}
-            />
-          )}
+
+          <TextField
+            required
+            inputRef={menuNameRef}
+            id="outlined-required"
+            placeholder={update?.name}
+          />
+
+          {nameDuplicate && <ErrorInform message={'중복된 메뉴명이 있습니다'} />}
 
           <TextField
             inputRef={menuDetailsRef}

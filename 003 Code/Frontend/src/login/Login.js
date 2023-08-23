@@ -2,8 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -21,7 +19,27 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
 import ErrorInform from '../components/general/ErrorInform';
-import LoadingCircle from '../components/general/LoadingCircle';
+import keycloakimg from '../image/keycloak.png';
+import { styled } from 'styled-components';
+
+const HrWrapper = styled.div`
+  padding: 10px 0;
+
+  div {
+    width: 45%;
+    height: 1px;
+    background-color: #717171;
+  }
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  span {
+    font-size: 16px;
+    color: #717171;
+  }
+`;
 
 export default function Login() {
   const navigate = useNavigate();
@@ -181,12 +199,37 @@ export default function Login() {
                   로그인
                   {/* <LoadingCircle /> */}
                 </Button>
+
+                <HrWrapper>
+                  <div />
+                  <span>또는</span>
+                  <div />
+                </HrWrapper>
+
                 <Button
                   onClick={onKeyCloakLogin}
                   fullWidth
                   variant="contained"
-                  sx={{ mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
+                  color="inherit"
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    fontFamily: 'Nanum',
+                    fontWeight: '600',
+                    position: 'relative',
+                    backgroundColor: 'white',
+                    color: 'black',
+                  }}
                 >
+                  <img
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      position: 'absolute',
+                      left: 0,
+                    }}
+                    src={keycloakimg}
+                  />
                   Keycloak 로그인
                 </Button>
               </>
