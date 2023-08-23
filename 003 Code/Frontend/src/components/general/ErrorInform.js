@@ -3,7 +3,6 @@ import React from 'react';
 import { styled } from 'styled-components';
 
 const ErrorWrapper = styled.div`
-  box-sizing: border-box;
   padding: 0 10px;
 
   width: 100%;

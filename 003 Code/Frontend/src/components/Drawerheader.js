@@ -32,7 +32,7 @@ import {
   ManagerBaseApi,
 } from '../auth/authConfig';
 import { useCookies } from 'react-cookie';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
 import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
@@ -98,9 +98,12 @@ function Drawerheader(props) {
   useEffect(() => {
     getMarketDetails();
     getMarketImage();
+  }, []);
+
+  useEffect(() => {
     if (name !== '') setIsName(true);
     else if (name === '') setIsName(false);
-  }, [name, image, info]);
+  }, [name]);
 
   useEffect(() => {
     if (isExpired && isRefreshtoken && islogin) {
@@ -244,6 +247,7 @@ function Drawerheader(props) {
       <AppBar position="absolute" open={open1}>
         <Toolbar
           sx={{
+            backgroundColor: '#24292e',
             pr: '24px',
           }}
         >
@@ -267,8 +271,8 @@ function Drawerheader(props) {
             sx={{
               flexGrow: 1,
               fontFamily: 'Nanum',
-              fontWeight: 500,
-              fontSize: '30px',
+              fontWeight: 600,
+              fontSize: '25px',
             }}
           >
             {props?.pages}
@@ -277,7 +281,7 @@ function Drawerheader(props) {
           {!isName && (
             <SetNameWrapper>
               <span className="blink" onClick={openUpdateNameModal}>
-                Click
+                클릭
                 <MdTouchApp />
               </span>
               <span>식당이름을 설정해주세요</span>

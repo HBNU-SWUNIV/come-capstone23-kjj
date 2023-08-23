@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
 import ErrorInform from '../components/general/ErrorInform';
+import LoadingCircle from '../components/general/LoadingCircle';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -55,7 +56,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
   const [loginError, setLoginError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
+  const verifyPassword = () => {
+    if (password.length < 8) setPasswordError(true);
+    else setPasswordError(false);
+  };
   const setLoginToken = async () => {
     let body = { username, password };
     try {
@@ -75,28 +81,6 @@ export default function Login() {
       if (error.response.status === 401) setLoginError(true);
     }
   };
-
-  // const RefreshTokenHandler = () => {
-
-  //     try {
-  //       const body = {
-  //         refreshToken: refresh,
-  //       };
-  //       const res = axios({
-  //         method: 'POST',
-  //         url: `/api/user/login/refresh`,
-  //         data: body,
-  //       });
-
-  //       const newtoken = res.headers.authorization;
-  //       setCookie('accesstoken', newtoken);
-  //       console.log(res);
-  //       console.log('재발급 성공');
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-
-  // };
 
   const verifyFirstLogin = () => {
     axios
@@ -164,7 +148,7 @@ export default function Login() {
                 autoFocus
               />
               {loginError && (
-                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
+                <ErrorInform message="올바른 ID 또는 Password를 입력하세요." />
               )}
               <TextField
                 margin="normal"
@@ -177,22 +161,26 @@ export default function Login() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onBlur={verifyPassword}
               />
-              {loginError && (
-                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
-              )}{' '}
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              {passwordError && (
+                <ErrorInform message="비밀번호는 최소 7자 이상이여야 합니다." />
+              )}
+
               <>
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    fontFamily: 'Nanum',
+                    fontWeight: '600',
+                  }}
                 >
                   로그인
+                  {/* <LoadingCircle /> */}
                 </Button>
                 <Button
                   onClick={onKeyCloakLogin}
