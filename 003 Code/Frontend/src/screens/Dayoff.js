@@ -45,7 +45,8 @@ export default function Dayoff() {
             flexGrow: 1,
             height: '100vh',
             overflow: 'auto',
-            display: 'flex',
+            boxSizing: 'border-box',
+            paddingBottom: 'var(--copyright-height)',
           }}
         >
           <Toolbar />
@@ -82,8 +83,6 @@ export default function Dayoff() {
 
           <Container sx={{ py: 1 }} maxWidth="md">
             <Calander2 />
-
-            <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
         <Snackbar

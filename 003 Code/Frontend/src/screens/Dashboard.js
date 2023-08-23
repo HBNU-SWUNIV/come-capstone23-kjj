@@ -25,6 +25,8 @@ export default function Dashboard() {
             flexGrow: 1,
             minHeight: '100vh',
             overflow: 'scroll',
+            boxSizing: 'border-box',
+            paddingBottom: 'var(--copyright-height)',
           }}
         >
           <Toolbar />
@@ -72,7 +74,6 @@ export default function Dashboard() {
                 </Paper>
               </Grid>
             </Grid>
-            <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
       </Box>

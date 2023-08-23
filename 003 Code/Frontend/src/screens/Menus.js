@@ -28,14 +28,13 @@ import MuiAlert from '@mui/material/Alert';
 import Input from '@mui/material/Input';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useNavigate } from 'react-router-dom';
-import DailyMenu from './DailyMenu';
 import { styled } from 'styled-components';
 import Menulist from '../components/Menu/Menulist';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+
 const Title = styled.div`
   @media screen and (max-width: 1050px) {
     display: none;
@@ -142,7 +141,7 @@ export default function Menus() {
   const handleUpdateClose = () => {
     setUpdatemenu(false);
   };
-  const handle일품Open = () => {
+  const handle오늘의메뉴Open = () => {
     set일품(true);
   };
   const handle오늘의메뉴Close = () => {
@@ -314,7 +313,7 @@ export default function Menus() {
     let body = {
       name: '오늘의메뉴',
       cost: menuCostRef.current.value,
-      details: menuDetailsRef.current.value,
+      details: '매일 바뀌는 메뉴입니다',
       usePlanner: true,
     };
     const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
@@ -366,6 +365,8 @@ export default function Menus() {
             height: '100%',
             minHeight: '100vh',
             overflow: 'auto',
+            boxSizing: 'border-box',
+            paddingBottom: 'var(--copyright-height)',
           }}
         >
           <Toolbar />
@@ -489,9 +490,13 @@ export default function Menus() {
                       <CardActions>
                         {menu.sold === true ? (
                           <MenuButtonWrapper>
-                            <Button onClick={() => handleUpdateOpen(menu)} size="small">
-                              수정
-                            </Button>
+                            {menu.usePlanner ? (
+                              ''
+                            ) : (
+                              <Button onClick={() => handleUpdateOpen(menu)} size="small">
+                                수정
+                              </Button>
+                            )}
 
                             <Button onClick={() => soldout(menu.id)} size="small">
                               품절
@@ -619,11 +624,11 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button sx={NanumFontStyle} color="error" onClick={handleAddClose}>
-            닫기
-          </Button>
           <Button sx={NanumFontStyle} onClick={menuAdd}>
             등록
+          </Button>
+          <Button sx={NanumFontStyle} color="error" onClick={handleAddClose}>
+            닫기
           </Button>
         </DialogActions>
       </Dialog>
@@ -648,10 +653,9 @@ export default function Menus() {
           <TextField disabled id="outlined-required" label="오늘의메뉴명은 고정입니다." />
           <TextField
             inputRef={menuDetailsRef}
-            required
+            disabled
             id="outlined-required2"
-            label="required"
-            placeholder="메뉴 소개"
+            label="오늘의 메뉴명과 메뉴 정보는 바꿀 수 없습니다"
           />
           <TextField
             inputRef={menuCostRef}
@@ -662,11 +666,11 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button sx={NanumFontStyle} color="error" onClick={handle오늘의메뉴Close}>
-            닫기
-          </Button>
           <Button sx={NanumFontStyle} onClick={오늘의메뉴Add}>
             등록
+          </Button>
+          <Button sx={NanumFontStyle} color="error" onClick={handle오늘의메뉴Close}>
+            닫기
           </Button>
         </DialogActions>
       </Dialog>
@@ -716,7 +720,6 @@ export default function Menus() {
               required
               inputRef={menuNameRef}
               id="outlined-required"
-              label="required"
               placeholder={update?.name}
             />
           )}
@@ -725,7 +728,6 @@ export default function Menus() {
             inputRef={menuDetailsRef}
             required
             id="outlined-required2"
-            label="required"
             placeholder={update?.details}
           />
           <TextField
@@ -737,11 +739,11 @@ export default function Menus() {
           />
         </DialogContent>
         <DialogActions>
-          <Button sx={NanumFontStyle} color="error" onClick={handleUpdateClose}>
-            닫기
-          </Button>
           <Button sx={NanumFontStyle} onClick={menuUpdate}>
             수정
+          </Button>
+          <Button sx={NanumFontStyle} color="error" onClick={handleUpdateClose}>
+            닫기
           </Button>
         </DialogActions>
       </Dialog>
@@ -801,77 +803,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 const defaultTheme = createTheme();
 
-const NanumFontStyle = {
+export const NanumFontStyle = {
   fontFamily: 'Nanum',
   fontWeight: '600',
 };
-
-{
-  /* <Title>
-              <Typography
-                sx={{
-                  whiteSpace: 'nowrap',
-                  fontFamily: 'NotoSans',
-                  fontWeight: '600',
-                  fontSize: '25px',
-                }}
-                variant="h2"
-                color="#0288d1"
-                align="center"
-                paragraph
-              >
-                메뉴
-              </Typography>
-            </Title> */
-}
-{
-  /* {isplanner === true ? (
-                <Button
-                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '20px' }}
-                  disabled
-                  onClick={handle일품Open}
-                  variant="outlined"
-                >
-                  오늘의메뉴가 등록되어있습니다.
-                </Button>
-              ) : (
-                <Button
-                  sx={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '24px' }}
-                  onClick={handle일품Open}
-                  variant="outlined"
-                >
-                  오늘의메뉴 등록
-                </Button>
-              )} */
-}
-{
-  /* <Typography
-                            sx={{
-                              fontFamily: 'Nanum',
-                              fontWeight: 600,
-                              fontSize: '16px',
-                            }}
-                            variant="body2"
-                          >
-                            {!isLoading ? menu.details : <Skeleton />}
-                          </Typography> */
-}
-
-{
-  /* {menu.usePlanner === true ? (
-                            <Button
-                              disabled
-                              onClick={() => handle식재료Open(menu)}
-                              size="small"
-                            >
-                              식재료 등록
-                            </Button>
-                          ) : (
-                            <Button
-                              onClick={() => handle식재료Open(menu)}
-                              size="small"
-                            >
-                              식재료 등록
-                            </Button>
-                          )} */
-}

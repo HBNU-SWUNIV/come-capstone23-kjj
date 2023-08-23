@@ -337,6 +337,7 @@ function Drawerheader(props) {
         <Toolbar
           sx={{
             backgroundColor: '#f5f5f5',
+            zIndex: 3,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',

@@ -6,7 +6,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --c-green: rgb(0, 171, 85);
   --btn-green: rgb(0, 171, 85);
+  --copyright-height: 5vh;
+}
+
+.c-green {
+  color: var(--c-green);
 }
 
 code {
