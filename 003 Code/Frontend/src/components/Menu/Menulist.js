@@ -15,28 +15,20 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { styled } from 'styled-components';
-import ListSubheader from '@mui/material/ListSubheader';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import SendIcon from '@mui/icons-material/Send';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
-import StarBorder from '@mui/icons-material/StarBorder';
 import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
 import Chip from '@mui/material/Chip';
-import zIndex from '@mui/material/styles/zIndex';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import NoMealsIcon from '@mui/icons-material/NoMeals';
 import axios from 'axios';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import Fab from '@mui/material/Fab';
 
 const TableName = styled.div`
   display: flex;
@@ -61,6 +53,7 @@ const MenuEdit = styled.div`
 
 const MenuEditList = styled.div`
   position: absolute;
+
   width: 170px;
   height: 160px;
   border-radius: 10px;
@@ -79,17 +72,15 @@ const Row = (props) => {
 
   const { row, onDelete, soldout, resale, onUpdate, addIngredients, regetIngreditents } =
     props;
-  const [open, setOpen] = React.useState(false);
 
-  const [openEdit, setopenEdit] = React.useState(false);
-  const onOpenEdit = () => {
-    setopenEdit(true);
+  console.log(row);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const openEdit = Boolean(anchorEl);
+  const onOpenEdit = (event) => {
+    setAnchorEl(event.currentTarget);
   };
   const onOffEdit = () => {
-    setopenEdit(false);
-  };
-  const handleEdit = () => {
-    setopenEdit(!openEdit);
+    setAnchorEl(null);
   };
 
   const handleDelete = (id) => {
@@ -109,6 +100,7 @@ const Row = (props) => {
     resale(id);
   };
 
+  const [open, setOpen] = React.useState(false);
   const [ingredients, setIngredients] = React.useState([]);
 
   React.useEffect(() => {
@@ -139,12 +131,20 @@ const Row = (props) => {
           </IconButton>
         </TableCell>
 
-        <TableCell component="th" scope="row">
+        <TableCell
+          component="th"
+          scope="row"
+          sx={{ fontWeight: 600, color: row.usePlanner ? '#1565c0' : 'inherit' }}
+        >
           {row.name}
         </TableCell>
 
-        <TableCell align="left">{row.details}</TableCell>
-        <TableCell align="right">{row.cost}</TableCell>
+        <TableCell sx={{ fontWeight: 500 }} align="left">
+          {row.details}
+        </TableCell>
+        <TableCell sx={{ fontWeight: 600 }} align="right">
+          {row.cost}
+        </TableCell>
         <TableCell align="right">
           {row.sold === true ? (
             <Sale>
@@ -155,56 +155,58 @@ const Row = (props) => {
           )}
         </TableCell>
         <TableCell align="right">
-          <MenuEdit onClick={handleEdit}>
+          <MenuEdit onClick={onOpenEdit}>
             <MoreVertIcon />
           </MenuEdit>
-          {openEdit && (
-            <MenuEditList>
-              <Dialog sx={{ opacity: 0 }} onClose={onOffEdit} open={onOpenEdit} />
-              <List
-                sx={{
-                  width: '100%',
-                  maxWidth: 360,
-                  whiteSpace: 'nowrap',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'space-around',
-                }}
-                component="nav"
-                aria-labelledby="nested-list-subheader"
-              >
+
+          <Menu anchorEl={anchorEl} open={openEdit} onClose={onOffEdit}>
+            <List
+              sx={{
+                width: '170px',
+                maxWidth: '180px',
+                height: '150px',
+                whiteSpace: 'nowrap',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+              component="nav"
+              aria-labelledby="nested-list-subheader"
+            >
+              {row.usePlanner ? (
+                ''
+              ) : (
                 <ListItemButton onClick={() => handleUpdate(row)}>
                   <ListItemIcon>
                     <EditIcon />
                   </ListItemIcon>
                   <ListItemText primary="수정" />
                 </ListItemButton>
+              )}
 
-                {row.sold === true ? (
-                  <ListItemButton onClick={() => handleSoldout(row.id)}>
-                    <ListItemIcon>
-                      <NoMealsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="품절" />
-                  </ListItemButton>
-                ) : (
-                  <ListItemButton onClick={() => handleResale(row.id)}>
-                    <ListItemIcon>
-                      <RefreshIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="재판매" />
-                  </ListItemButton>
-                )}
-
-                <ListItemButton onClick={() => handleDelete(row.id)}>
+              {row.sold === true ? (
+                <ListItemButton onClick={() => handleSoldout(row.id)}>
                   <ListItemIcon>
-                    <DeleteIcon />
+                    <NoMealsIcon />
                   </ListItemIcon>
-                  <ListItemText primary="삭제" />
+                  <ListItemText primary="품절" />
                 </ListItemButton>
-              </List>
-            </MenuEditList>
-          )}
+              ) : (
+                <ListItemButton onClick={() => handleResale(row.id)}>
+                  <ListItemIcon>
+                    <RefreshIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="재판매" />
+                </ListItemButton>
+              )}
+
+              <ListItemButton onClick={() => handleDelete(row.id)}>
+                <ListItemIcon>
+                  <DeleteIcon />
+                </ListItemIcon>
+                <ListItemText primary="삭제" />
+              </ListItemButton>
+            </List>
+          </Menu>
         </TableCell>
       </TableRow>
 
@@ -214,12 +216,20 @@ const Row = (props) => {
             <Box sx={{ margin: 1 }}>
               <TableName>
                 <Typography variant="h6" gutterBottom component="div">
-                  식재료
+                  {!row.usePlanner ? (
+                    '식재료'
+                  ) : (
+                    <span style={{ color: '#1565c0', fontSize: '1.25rem' }}>
+                      오늘의 메뉴는 식재료를 등록할 수 없습니다
+                    </span>
+                  )}
                 </Typography>
 
-                <span onClick={() => addIngredients(row)}>
-                  <AddCircleIcon />
-                </span>
+                {!row.usePlanner && (
+                  <span onClick={() => addIngredients(row)}>
+                    <AddCircleIcon />
+                  </span>
+                )}
               </TableName>
 
               <Table size="small" aria-label="purchases">

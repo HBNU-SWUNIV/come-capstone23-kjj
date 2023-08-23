@@ -29,6 +29,7 @@ const ArrowCSS = {
   color: 'black',
   fontSize: '1.2rem',
   margin: '0 1.25rem',
+  marginBottom: '3px',
 };
 
 const Wrapper = styled.div`
@@ -75,23 +76,25 @@ const DivDay = styled.div`
 
   height: 12vh;
   width: 90%;
-  margin-bottom: 10%;
+  border-radius: 20px;
+
   display: flex;
   justify-content: space-between;
+
   box-sizing: border-box;
-  border-radius: 20px;
-  padding: 5px;
+  margin-bottom: 10%;
+  padding: 10px;
 
   span:first-child {
     font-size: 0.188rem;
     font-weight: 600;
   }
   span:last-child {
-    margin-right: 5px;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 600;
-    font-family: Cutefont;
+    font-family: NotoSans;
     white-space: pre-wrap;
+    text-align: right;
   }
 `;
 const DivWeek = styled.div`
@@ -224,7 +227,7 @@ function Calander() {
     <Wrapper>
       <HeaderW>
         <AiOutlineLeft className="pointer" style={{ ...ArrowCSS }} onClick={prevMonth} />
-        <span style={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '25px' }}>
+        <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '20px' }}>
           {format(currentMonth, 'yy')}년 {format(currentMonth, 'MM')}월
         </span>
         <AiOutlineRight className="pointer" style={{ ...ArrowCSS }} onClick={nextMonth} />

@@ -32,6 +32,16 @@ function Main_Listitems() {
           </span>
         </ListItemText>{' '}
       </ListItemButton>
+      <ListItemButton onClick={() => navigate('/dailymenu')}>
+        <ListItemIcon>
+          <RiceBowlIcon />
+        </ListItemIcon>
+        <ListItemText>
+          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
+            오늘의 메뉴
+          </span>
+        </ListItemText>
+      </ListItemButton>
       <ListItemButton onClick={() => navigate('/dayoff')}>
         <ListItemIcon>
           <SettingsIcon />

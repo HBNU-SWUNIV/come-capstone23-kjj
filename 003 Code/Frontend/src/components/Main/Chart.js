@@ -4,10 +4,8 @@ import ApexCharts from 'react-apexcharts';
 import { useState, useEffect } from 'react';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 export default function Chart() {
-  const navigate = useNavigate();
   const [predictitems, setPredictItems] = useState([]);
   const predictItemsArray = Object.entries(predictitems);
   const config = ConfigWithToken();
@@ -23,7 +21,11 @@ export default function Chart() {
   }, []);
   return (
     <React.Fragment>
-      <Title>예약자 수를 기반으로 통계 된 내일의 식재료 예측</Title>
+      <Title>
+        <span style={{ color: 'rgb(0, 171, 85)' }}>
+          예약자 수를 기반으로 통계 된 내일의 식재료 예측
+        </span>
+      </Title>
       <ApexCharts
         type="bar"
         series={[

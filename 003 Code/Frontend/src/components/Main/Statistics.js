@@ -49,7 +49,9 @@ export default function Statistics() {
   return (
     <Wrapper>
       <Div>
-        <Title>금일 이용자 수</Title>
+        <Title>
+          <span className="c-green">금일 이용자 수</span>
+        </Title>
         <Typography
           sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"
@@ -68,7 +70,9 @@ export default function Statistics() {
       <Divider sx={{ width: '100%', height: '1rem' }} />
 
       <Div>
-        <Title>내일 예약자 수</Title>
+        <Title>
+          <span className="c-green">내일 예약자 수</span>
+        </Title>
         <Typography
           sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"
