@@ -73,7 +73,6 @@ const Row = (props) => {
   const { row, onDelete, soldout, resale, onUpdate, addIngredients, regetIngreditents } =
     props;
 
-  console.log(row);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const openEdit = Boolean(anchorEl);
   const onOpenEdit = (event) => {

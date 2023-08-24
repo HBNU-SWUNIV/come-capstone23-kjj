@@ -70,7 +70,8 @@ export default function DailyMenu() {
   React.useEffect(() => {
     axios
       .get(`${ManagerBaseApi}/menu/planner`, config)
-      .then((res) => setIsTodayMenu(res.data));
+      .then((res) => setIsTodayMenu(res.data))
+      .catch((err) => console.log('DailyMenu Error=', err));
   });
 
   const [openTodayMenu, setOpenTodayMenu] = React.useState(false);

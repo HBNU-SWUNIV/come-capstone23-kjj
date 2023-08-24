@@ -58,14 +58,12 @@ export default function Menus() {
 
   const [addMenu, setAddMenu] = useState(false);
   const [menus, setMenus] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [image, setImage] = useState([]);
 
   const [update, setUpdate] = useState(null);
   const [updateMenu, setUpdatemenu] = useState(false);
 
   const [오늘의메뉴, set일품] = useState(false);
-  const [isplanner, setIsplanner] = useState(false);
 
   const [식재료open, set식재료open] = useState(false);
   const [식재료, set식재료] = useState(null);
@@ -87,24 +85,10 @@ export default function Menus() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${ManagerBaseApi}/menu`, config);
-        setMenus(response.data);
-        if (response.data.length !== 0) {
-          setTimeout(() => setIsLoading(false), 200);
-        }
-
-        axios
-          .get(`${ManagerBaseApi}/menu/planner`, config)
-          .then((res) => setIsplanner(res.data));
-      } catch (err) {
-        if (err.response.status === 403) {
-        }
-      }
-    };
-
-    fetchData();
+    axios
+      .get(`${ManagerBaseApi}/menu`, config)
+      .then((res) => setMenus(res.data))
+      .catch((err) => console.log('MenuError', err));
   }, []);
 
   const handleDeleteOpen = (id) => {
@@ -137,9 +121,6 @@ export default function Menus() {
   const handleUpdateClose = () => {
     setUpdatemenu(false);
     setNameDuplicate(false);
-  };
-  const handle오늘의메뉴Open = () => {
-    set일품(true);
   };
   const handle오늘의메뉴Close = () => {
     set일품(false);
@@ -205,11 +186,7 @@ export default function Menus() {
       .then(() => {
         axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
       })
-      .then(() => {
-        axios
-          .get(`${ManagerBaseApi}/menu/planner`, config)
-          .then((res) => setIsplanner(res.data));
-      });
+      .catch((err) => console.log('menuDeleteError', err));
     setonDelete(false);
   };
   const soldout = (id) => {
@@ -334,14 +311,9 @@ export default function Menus() {
       .then(() => {
         axios.get(`${ManagerBaseApi}/menu`, config).then((res) => setMenus(res.data));
       })
-      .then(() => {
-        axios
-          .get(`${ManagerBaseApi}/menu/planner`, config)
-          .then((res) => setIsplanner(res.data));
-      })
       .catch((err) => {
         if (err.response.status === 400) {
-          alert('이미지 용량이 너무 크거나 입력하지 않은 필드가 있습니다.');
+          alert('이미지 용량이 너무 큽니다.');
           return;
         }
       });
@@ -424,24 +396,16 @@ export default function Menus() {
                         flexDirection: 'column',
                       }}
                     >
-                      {!isLoading ? (
-                        <CardMedia
-                          component="div"
-                          sx={{
-                            opacity: menu.sold === true ? null : 0.3,
-                            width: '100%',
-                            height: '260px',
-                          }}
-                          image={
-                            'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image
-                          }
-                        />
-                      ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          sx={{ width: '100%', height: '260px' }}
-                        />
-                      )}
+                      <CardMedia
+                        component="div"
+                        sx={{
+                          opacity: menu.sold === true ? null : 0.3,
+                          width: '100%',
+                          height: '260px',
+                        }}
+                        image={'http://kjj.kjj.r-e.kr:8080/api/image?dir=' + menu?.image}
+                      />
+
                       <CardContent
                         sx={{
                           display: 'flex',
@@ -461,7 +425,7 @@ export default function Menus() {
                           variant="h5"
                           component="h2"
                         >
-                          {!isLoading ? menu.name : <Skeleton />}
+                          {menu.name}
                         </Typography>
                         {menu.sold === true ? (
                           <>
@@ -472,7 +436,7 @@ export default function Menus() {
                                 fontSize: '20px',
                               }}
                             >
-                              {!isLoading ? menu.cost + '원' : <Skeleton />}
+                              {menu.cost + '원'}
                             </Typography>
                           </>
                         ) : (
@@ -486,7 +450,7 @@ export default function Menus() {
                               variant="h4"
                               color="error.dark"
                             >
-                              {!isLoading ? '품 절 되었어요' : <Skeleton />}
+                              품 절 되었어요
                             </Typography>
                           </>
                         )}
