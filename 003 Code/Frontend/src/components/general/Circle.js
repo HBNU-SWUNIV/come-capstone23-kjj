@@ -5,7 +5,7 @@ const Wrapper = styled.div`
   position: absolute;
   margin-top: 2px;
   width: 25px;
-  height: 22px;
+  height: 25px;
   border-radius: 50%;
   background-color: ${({ $color }) => ($color === 'red' ? '#FCACAC' : '#a3f394')};
 `;
