@@ -267,8 +267,7 @@ function Calander2() {
 
   const offNameRef = useRef('');
   const onOffday = (year, month, day) => {
-    console.log(offNameRef.current.value);
-    let body = { off: true };
+    let body = { off: true, name: offNameRef?.current?.value };
     axios
       .post(`${ManagerBaseApi}/store/off/${year}/${month}/${day}`, body, config)
       .then((res) => {
@@ -350,6 +349,7 @@ function Calander2() {
             <span style={{ color: customRed }}>
               {!isArray && holiday?.locdate == id && holiday?.dateName}
               {isArray && holiday?.map((hol) => hol?.locdate == id && hol?.dateName)}
+              {offday?.filter((offday) => offday.date === id)[0]?.name}
             </span>
             {offday.filter((offday) => offday.date == id)[0]?.off == true ? (
               <Circle color="red" />
@@ -365,7 +365,7 @@ function Calander2() {
     line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
     dayss = [];
   }
-
+  console.log(offday);
   // 월 넘기기
   const prevMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
