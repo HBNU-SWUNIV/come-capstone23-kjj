@@ -39,6 +39,7 @@ const ArrowCSS = {
   fontSize: '18px',
   margin: '0 20px',
   fontWeight: 600,
+  cursor: 'pointer',
 };
 
 const customBlue = '#64b5f6';
@@ -365,8 +366,7 @@ function Calander2() {
     line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
     dayss = [];
   }
-  console.log(offday);
-  // 월 넘기기
+
   const prevMonth = () => {
     setCurrentMonth(subMonths(currentMonth, 1));
   };
@@ -377,11 +377,11 @@ function Calander2() {
   return (
     <Wrapper>
       <HeaderW>
-        <AiOutlineLeft className="pointer" style={{ ...ArrowCSS }} onClick={prevMonth} />
+        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
         <span>
           {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}
         </span>
-        <AiOutlineRight className="pointer" style={{ ...ArrowCSS }} onClick={nextMonth} />
+        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
       </HeaderW>
 
       <DaysWrapper>{days}</DaysWrapper>

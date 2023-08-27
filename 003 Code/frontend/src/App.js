@@ -9,7 +9,7 @@ const CopyrightWrapper = styled.div`
   left: 0;
   right: 0;
 
-  height: var(--copyright-height);
+  height: 5vh;
   width: 100%;
 
   display: flex;
@@ -20,7 +20,7 @@ const CopyrightWrapper = styled.div`
 `;
 
 const OutletWrapper = styled.div`
-  height: calc(100% - var(--copyright-height));
+  height: 100%;
 `;
 
 function App() {

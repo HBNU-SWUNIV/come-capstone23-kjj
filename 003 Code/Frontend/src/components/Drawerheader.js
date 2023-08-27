@@ -36,7 +36,13 @@ import { useRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
 import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
-import { styled as Cstyled } from 'styled-components';
+import { styled as Cstyled, keyframes } from 'styled-components';
+
+const blinkEffects = keyframes`
+  50%{
+    opacity:0.3;
+  }
+`;
 
 const SetNameWrapper = Cstyled.div`
   display:flex;
@@ -53,6 +59,9 @@ const SetNameWrapper = Cstyled.div`
   span:first-child{
     font-size:16px;
     font-weight:600;
+
+    animation:${blinkEffects} 1s ease infinite;
+
     &:hover{
       cursor:pointer;
     }
@@ -280,7 +289,7 @@ function Drawerheader(props) {
 
           {!isName && (
             <SetNameWrapper>
-              <span className="blink" onClick={openUpdateNameModal}>
+              <span onClick={openUpdateNameModal}>
                 클릭
                 <MdTouchApp />
               </span>

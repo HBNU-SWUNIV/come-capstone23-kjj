@@ -19,7 +19,6 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import Dialog from '@mui/material/Dialog';
 import Chip from '@mui/material/Chip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -27,7 +26,6 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import NoMealsIcon from '@mui/icons-material/NoMeals';
 import axios from 'axios';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 
 const TableName = styled.div`

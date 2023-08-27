@@ -183,7 +183,7 @@ export default function DailyMenu() {
                       fontFamily: 'NotoSans',
                       fontWeight: '600',
                       fontSize: '20px',
-                      backgroundColor: 'var(--btn-green)',
+                      backgroundColor: 'rgb(0, 171, 85)',
                       marginBottom: '30px',
                     }}
                     onClick={openTodayMenuModal}
