@@ -4,7 +4,7 @@ import Dashboard from './screens/Dashboard';
 import DailyMenu from './screens/DailyMenu';
 import Dayoff from './screens/Dayoff';
 import Menus from './screens/Menus';
-import Login from './login/Login';
+import Login, { action as loginAction } from './login/Login';
 import LoginFirst from './login/LoginFirst';
 import RootContainer from './router/RootContainer';
 
@@ -16,6 +16,7 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />,
+        action: loginAction,
       },
       {
         path: '/',

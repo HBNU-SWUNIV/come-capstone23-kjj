@@ -43,7 +43,7 @@ export default function Chart2() {
       <Wrapper>
         <ChartWrapper>
           <Title>
-            <span className="c-green">요즘 가장 🔥한 메뉴는?</span>
+            <span style={{ color: 'rgb(0, 171, 85)' }}>요즘 가장 🔥한 메뉴는?</span>
           </Title>
           <ApexCharts
             type="pie"
@@ -62,7 +62,7 @@ export default function Chart2() {
         </ChartWrapper>
         <ChartWrapper>
           <Title>
-            <span className="c-green">내일 예약 메뉴들 🍽️</span>
+            <span style={{ color: 'rgb(0, 171, 85)' }}>내일 예약 메뉴들 🍽️</span>
           </Title>
           <ApexCharts
             style={{ marginTop: '-3vh' }}

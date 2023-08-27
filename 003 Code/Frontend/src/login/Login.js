@@ -9,7 +9,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import background from '../image/capstone_background.png';
-import { useNavigate } from 'react-router-dom';
+import { useActionData, useNavigate, useNavigation, useSubmit } from 'react-router-dom';
 import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
@@ -21,38 +21,36 @@ import { isloginAtom } from '../atom/loginAtom';
 import ErrorInform from '../components/general/ErrorInform';
 import keycloakimg from '../image/keycloak.png';
 import { styled } from 'styled-components';
-
-const HrWrapper = styled.div`
-  padding: 10px 0;
-
-  div {
-    width: 45%;
-    height: 1px;
-    background-color: #717171;
-  }
-
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-
-  span {
-    font-size: 16px;
-    color: #717171;
-  }
-`;
+import LoadingDots from '../components/general/LoadingDots';
 
 export default function Login() {
+  const navigation = useNavigation();
   const navigate = useNavigate();
+  const actionData = useActionData();
   const [cookies, setCookie] = useCookies();
 
+  const submit = useSubmit();
+  const isSubmitting = navigation.state === 'submitting';
+
+  useEffect(() => {
+    if (actionData?.ok) {
+      const token = actionData.response.headers.authorization;
+      setCookie('accesstoken', token);
+      setIsLogin(true);
+
+      const refreshtoken = actionData.response.headers.refresh_token;
+      setCookie('refreshtoken', refreshtoken);
+    } else if (actionData?.ok === false) {
+      setLoginError(true);
+      verifyPassword();
+    }
+  }, [actionData]);
+
   const config = ConfigWithToken();
-
   const { keycloak } = useKeycloak();
-
   const onKeyCloakLogin = () => {
     keycloak.login();
   };
-
   const setKeyCloakToken = async () => {
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
     const keycloaktoken = response.headers.authorization;
@@ -79,26 +77,6 @@ export default function Login() {
     if (password.length < 8) setPasswordError(true);
     else setPasswordError(false);
   };
-  const setLoginToken = async () => {
-    let body = { username, password };
-    try {
-      const response = await axios({
-        method: 'POST',
-        url: `${ManagerBaseApi}/login/id`,
-        data: body,
-      });
-
-      const token = response.headers.authorization;
-      setCookie('accesstoken', token);
-      setIsLogin(true);
-
-      const refreshtoken = response.headers.refresh_token;
-      setCookie('refreshtoken', refreshtoken);
-    } catch (error) {
-      if (error.response.status === 401) setLoginError(true);
-    }
-  };
-
   const verifyFirstLogin = () => {
     axios
       .get(`${ManagerBaseApi}/setting`, config)
@@ -108,9 +86,9 @@ export default function Login() {
       })
       .catch((err) => console.error(err));
   };
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setLoginToken();
+    submit({ username, password }, { method: 'POST' });
   };
 
   return (
@@ -194,10 +172,12 @@ export default function Login() {
                     mb: 2,
                     fontFamily: 'Nanum',
                     fontWeight: '600',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}
                 >
-                  로그인
-                  {/* <LoadingCircle /> */}
+                  {isSubmitting ? <LoadingDots /> : '로그인'}
                 </Button>
 
                 <HrWrapper>
@@ -243,3 +223,40 @@ export default function Login() {
 }
 
 const defaultTheme = createTheme();
+
+const HrWrapper = styled.div`
+  padding: 10px 0;
+
+  div {
+    width: 45%;
+    height: 1px;
+    background-color: #717171;
+  }
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  span {
+    font-size: 16px;
+    color: #717171;
+  }
+`;
+
+export async function action({ request }) {
+  const formData = await request.formData();
+
+  const username = formData.get('username');
+  const password = formData.get('password');
+
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: `${ManagerBaseApi}/login/id`,
+      data: { username, password },
+    });
+    return { ok: true, response };
+  } catch {
+    return { ok: false };
+  }
+}
