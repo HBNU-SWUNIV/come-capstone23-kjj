@@ -2,20 +2,24 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 function My() {
-
-    const userid = useSelector(state => state.username.userid);
-    const [user, setUser] = useState("");
-    const name = useSelector(state => state.username);
     const [orderCount, setOrderCount] = useState("");
     const [storeInfo, setStoreInfo] = useState("");
+    const [idnum, setidnum] = useState([]);
+
+    const config = ConfigWithToken();
 
     useEffect(() => {
-        setUser(name.username);
+        axios
+        .get(`${UserBaseApi}/info`, config)
+        .then(res => {
+            setidnum(res.data.id);
+        })
 
         axios
-        .get(`/api/user/${userid}/order/count`)
+        .get(`${UserBaseApi}/${idnum}/order/count`, config)
         .then(res => {
             setOrderCount(res.data);
         })
@@ -24,13 +28,15 @@ function My() {
         });
 
         axios
-        .get(`/api/user/store`)
+        .get(`/api/user/store`, config)
         .then(res => {
             setStoreInfo(res.data.name);
         })
         .catch(error => {
             console.error("식당 정보 조회 실패", error);
         });
+        console.log(storeInfo);
+
     }, [])
 
 
@@ -129,7 +135,7 @@ function My() {
             <div style={pointboxStyle}>
                 <div style={{ ...point1boxStyle, marginBottom: '20px', borderBottom: '2px dotted' }}>
                 <p style={{  margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{storeInfo}</p>
-                    <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>{user}님</p>
+                    <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>{idnum}님</p>
                 </div>
                 <div style={point1boxStyle}>
                     <p style={ponifont}>누적 포인트</p>

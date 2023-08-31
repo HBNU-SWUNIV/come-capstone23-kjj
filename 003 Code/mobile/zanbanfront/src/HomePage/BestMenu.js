@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import ApexCharts from "react-apexcharts";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 const boldP = {
     fontWeight: 'bold',
@@ -31,8 +32,10 @@ function BestMenu() {
 
     const [goodmenu, setGoodmenu] = useState([]);
 
+    const config = ConfigWithToken();
+
     useEffect(() => {
-        axios.get(`/api/manager/state/menu`)
+        axios.get(`/api/user/state/menu`, config)
             .then(res => setGoodmenu(res.data))
     }, [])
 

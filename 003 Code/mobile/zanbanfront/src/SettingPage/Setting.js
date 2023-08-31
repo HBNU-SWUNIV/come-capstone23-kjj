@@ -1,8 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import { useKeycloak } from '@react-keycloak/web';
+import { useCookies } from 'react-cookie';
 
 function Setting() {
+    const { keycloak } = useKeycloak();
+    const navigate = useNavigate();
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+
+    const handleLogout = async () => {
+        if (keycloak.authenticated) {
+            navigate('/');
+            //setCookie('accesstoken', '');
+            await keycloak.logout();
+        }
+        navigate('/');
+    }
+    
+
     const buttonStyle = {
         backgroundColor: 'white',
         fontSize: '15px',
@@ -32,15 +48,15 @@ function Setting() {
     const handleCancel = () => {
         setShowDialog(false);
     }
-    const navigate = useNavigate();
+
     const [password, setPassword] = useState("");
 
     //회원탈퇴시
     const handledelete = () => {
-        if (password === "") {
-            alert("비밀번호를 입력하세요.");
-            return;
-        }
+        // if (password === "") {
+        //     alert("비밀번호를 입력하세요.");
+        //     return;
+        // }
         setShowDialog(false);
         navigate('/login');
         // axios
@@ -50,12 +66,13 @@ function Setting() {
         // })
     }
 
+
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: '50px' }}>
 
             <Link to='/Guide1' style={buttonStyle}>이용 가이드</Link>
             <Link to='/setting' style={buttonStyle}>비밀번호 변경</Link>
-            <Link to='/login' style={buttonStyle}>로그아웃</Link>
+            <div style={buttonStyle} onClick={handleLogout}>로그아웃</div>
             <Link to='' style={buttonStyle} onClick={handleWithdrawal}>회원탈퇴</Link>
 
             {showDialog && (
@@ -64,8 +81,8 @@ function Setting() {
                         <h3>정말 탈퇴하시겠습니까?</h3>
                         <p>탈퇴 즉시 계정이 삭제되며,<br />개인정보는 안전하게 파기됩니다.</p>
                         <div>
-                        <input style={{borderRadius: '5px',  textAlign: 'center'}} type="text" id="password" name="password" placeholder="비밀번호를 입력하세요." 
-                        onChange={(e) => setPassword(e.target.value)}/>
+                            <input style={{ borderRadius: '5px', textAlign: 'center' }} type="text" id="password" name="password" placeholder="비밀번호를 입력하세요."
+                                onChange={(e) => setPassword(e.target.value)} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                             <button style={{ ...buttonStyle, backgroundColor: '#f44336' }} onClick={handledelete}>회원탈퇴</button>
