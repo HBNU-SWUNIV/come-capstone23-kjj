@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import Divider from '@mui/material/Divider';
 import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import { useNavigate } from 'react-router-dom';
 import { styled } from 'styled-components';
 
 const Wrapper = styled.div`
@@ -24,7 +23,6 @@ const Div = styled.div`
 `;
 
 export default function Statistics() {
-  const navigate = useNavigate();
   const [Todaypop, setTodaypop] = useState(0);
   const [predictUsers, setPredictUsers] = useState(0);
   const config = ConfigWithToken();
@@ -49,7 +47,9 @@ export default function Statistics() {
   return (
     <Wrapper>
       <Div>
-        <Title>금일 이용자 수</Title>
+        <Title>
+          <span style={{ color: 'rgb(0, 171, 85)' }}>금일 이용자 수</span>
+        </Title>
         <Typography
           sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"
@@ -68,7 +68,9 @@ export default function Statistics() {
       <Divider sx={{ width: '100%', height: '1rem' }} />
 
       <Div>
-        <Title>내일 예약자 수</Title>
+        <Title>
+          <span style={{ color: 'rgb(0, 171, 85)' }}>내일 예약자 수</span>
+        </Title>
         <Typography
           sx={{ fontSize: '2.5rem', marginBottom: '-1rem', whiteSpace: 'nowrap' }}
           component="p"

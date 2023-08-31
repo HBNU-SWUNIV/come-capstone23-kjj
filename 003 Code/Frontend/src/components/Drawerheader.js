@@ -32,11 +32,17 @@ import {
   ManagerBaseApi,
 } from '../auth/authConfig';
 import { useCookies } from 'react-cookie';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
 import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
-import { styled as Cstyled } from 'styled-components';
+import { styled as Cstyled, keyframes } from 'styled-components';
+
+const blinkEffects = keyframes`
+  50%{
+    opacity:0.3;
+  }
+`;
 
 const SetNameWrapper = Cstyled.div`
   display:flex;
@@ -53,6 +59,9 @@ const SetNameWrapper = Cstyled.div`
   span:first-child{
     font-size:16px;
     font-weight:600;
+
+    animation:${blinkEffects} 1s ease infinite;
+
     &:hover{
       cursor:pointer;
     }
@@ -98,9 +107,12 @@ function Drawerheader(props) {
   useEffect(() => {
     getMarketDetails();
     getMarketImage();
+  }, []);
+
+  useEffect(() => {
     if (name !== '') setIsName(true);
     else if (name === '') setIsName(false);
-  }, [name, image, info]);
+  }, [name]);
 
   useEffect(() => {
     if (isExpired && isRefreshtoken && islogin) {
@@ -244,6 +256,7 @@ function Drawerheader(props) {
       <AppBar position="absolute" open={open1}>
         <Toolbar
           sx={{
+            backgroundColor: '#24292e',
             pr: '24px',
           }}
         >
@@ -267,8 +280,8 @@ function Drawerheader(props) {
             sx={{
               flexGrow: 1,
               fontFamily: 'Nanum',
-              fontWeight: 500,
-              fontSize: '30px',
+              fontWeight: 600,
+              fontSize: '25px',
             }}
           >
             {props?.pages}
@@ -276,8 +289,8 @@ function Drawerheader(props) {
 
           {!isName && (
             <SetNameWrapper>
-              <span className="blink" onClick={openUpdateNameModal}>
-                Click
+              <span onClick={openUpdateNameModal}>
+                클릭
                 <MdTouchApp />
               </span>
               <span>식당이름을 설정해주세요</span>
@@ -333,6 +346,7 @@ function Drawerheader(props) {
         <Toolbar
           sx={{
             backgroundColor: '#f5f5f5',
+            zIndex: 3,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'flex-end',

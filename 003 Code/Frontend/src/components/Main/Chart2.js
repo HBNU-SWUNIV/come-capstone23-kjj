@@ -42,7 +42,9 @@ export default function Chart2() {
     <React.Fragment>
       <Wrapper>
         <ChartWrapper>
-          <Title>요즘 가장 🔥한 메뉴는?</Title>
+          <Title>
+            <span style={{ color: 'rgb(0, 171, 85)' }}>요즘 가장 🔥한 메뉴는?</span>
+          </Title>
           <ApexCharts
             type="pie"
             series={reservationInfo.map((menu) => menu.count)}
@@ -59,7 +61,9 @@ export default function Chart2() {
           />
         </ChartWrapper>
         <ChartWrapper>
-          <Title>내일 예약 메뉴들 🍽️</Title>
+          <Title>
+            <span style={{ color: 'rgb(0, 171, 85)' }}>내일 예약 메뉴들 🍽️</span>
+          </Title>
           <ApexCharts
             style={{ marginTop: '-3vh' }}
             width={400}

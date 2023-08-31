@@ -12,7 +12,7 @@ import { RecoilRoot } from 'recoil';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <ReactKeycloakProvider authClient={keycloak}>
+  <ReactKeycloakProvider authClient={keycloak} initOptions={initOptions}>
     <CookiesProvider>
       <RecoilRoot>
         <RouterProvider router={router} />

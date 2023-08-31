@@ -2,8 +2,6 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -11,7 +9,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import background from '../image/capstone_background.png';
-import { useNavigate } from 'react-router-dom';
+import { useActionData, useNavigate, useNavigation, useSubmit } from 'react-router-dom';
 import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
@@ -21,30 +19,48 @@ import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
 import ErrorInform from '../components/general/ErrorInform';
+import keycloakimg from '../image/keycloak.png';
+import { styled } from 'styled-components';
+import LoadingDots from '../components/general/LoadingDots';
 
 export default function Login() {
+  const navigation = useNavigation();
   const navigate = useNavigate();
+  const actionData = useActionData();
   const [cookies, setCookie] = useCookies();
 
+  const submit = useSubmit();
+  const isSubmitting = navigation.state === 'submitting';
+
+  useEffect(() => {
+    if (actionData?.ok) {
+      const token = actionData.response.headers.authorization;
+      setCookie('accesstoken', token);
+      setIsLogin(true);
+
+      const refreshtoken = actionData.response.headers.refresh_token;
+      setCookie('refreshtoken', refreshtoken);
+    } else if (actionData?.ok === false) {
+      setLoginError(true);
+      verifyPassword();
+    }
+  }, [actionData]);
+
   const config = ConfigWithToken();
-
   const { keycloak } = useKeycloak();
-
   const onKeyCloakLogin = () => {
     keycloak.login();
   };
-
   const setKeyCloakToken = async () => {
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
-    const Header = response.headers.authorization;
-    const [, keycloaktoken] = Header.split('Bearer ');
+    const keycloaktoken = response.headers.authorization;
     setCookie('accesstoken', keycloaktoken);
   };
 
   useEffect(() => {
     if (keycloak.authenticated) {
-      cookies.accesstoken !== '' && navigate('/home');
       cookies.accesstoken === '' && setKeyCloakToken();
+      cookies.accesstoken !== '' && navigate('/home');
     }
     if ((islogin || keycloak.authenticated) && cookies.accesstoken !== '') {
       verifyFirstLogin();
@@ -55,49 +71,12 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
   const [loginError, setLoginError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
-  const setLoginToken = async () => {
-    let body = { username, password };
-    try {
-      const response = await axios({
-        method: 'POST',
-        url: `${ManagerBaseApi}/login/id`,
-        data: body,
-      });
-
-      const token = response.headers.authorization;
-      setCookie('accesstoken', token);
-      setIsLogin(true);
-
-      const refreshtoken = response.headers.refresh_token;
-      setCookie('refreshtoken', refreshtoken);
-    } catch (error) {
-      if (error.response.status === 401) setLoginError(true);
-    }
+  const verifyPassword = () => {
+    if (password.length < 8) setPasswordError(true);
+    else setPasswordError(false);
   };
-
-  // const RefreshTokenHandler = () => {
-
-  //     try {
-  //       const body = {
-  //         refreshToken: refresh,
-  //       };
-  //       const res = axios({
-  //         method: 'POST',
-  //         url: `/api/user/login/refresh`,
-  //         data: body,
-  //       });
-
-  //       const newtoken = res.headers.authorization;
-  //       setCookie('accesstoken', newtoken);
-  //       console.log(res);
-  //       console.log('재발급 성공');
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-
-  // };
-
   const verifyFirstLogin = () => {
     axios
       .get(`${ManagerBaseApi}/setting`, config)
@@ -107,9 +86,9 @@ export default function Login() {
       })
       .catch((err) => console.error(err));
   };
-  const onSubmit = async (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    setLoginToken();
+    submit({ username, password }, { method: 'POST' });
   };
 
   return (
@@ -164,7 +143,7 @@ export default function Login() {
                 autoFocus
               />
               {loginError && (
-                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
+                <ErrorInform message="올바른 ID 또는 Password를 입력하세요." />
               )}
               <TextField
                 margin="normal"
@@ -177,29 +156,60 @@ export default function Login() {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                onBlur={verifyPassword}
               />
-              {loginError && (
-                <ErrorInform message="올바른 ID 또는 비밀번호를 입력하세요." />
-              )}{' '}
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              {passwordError && (
+                <ErrorInform message="비밀번호는 최소 7자 이상이여야 합니다." />
+              )}
+
               <>
                 <Button
                   type="submit"
                   fullWidth
                   variant="contained"
-                  sx={{ mt: 3, mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
+                  sx={{
+                    mt: 3,
+                    mb: 2,
+                    fontFamily: 'Nanum',
+                    fontWeight: '600',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
                 >
-                  로그인
+                  {isSubmitting ? <LoadingDots /> : '로그인'}
                 </Button>
+
+                <HrWrapper>
+                  <div />
+                  <span>또는</span>
+                  <div />
+                </HrWrapper>
+
                 <Button
                   onClick={onKeyCloakLogin}
                   fullWidth
                   variant="contained"
-                  sx={{ mb: 2, fontFamily: 'Nanum', fontWeight: '600' }}
+                  color="inherit"
+                  sx={{
+                    mt: 2,
+                    mb: 2,
+                    fontFamily: 'Nanum',
+                    fontWeight: '600',
+                    position: 'relative',
+                    backgroundColor: 'white',
+                    color: 'black',
+                  }}
                 >
+                  <img
+                    style={{
+                      width: '30px',
+                      height: '30px',
+                      position: 'absolute',
+                      left: 0,
+                    }}
+                    src={keycloakimg}
+                  />
                   Keycloak 로그인
                 </Button>
               </>
@@ -213,3 +223,40 @@ export default function Login() {
 }
 
 const defaultTheme = createTheme();
+
+const HrWrapper = styled.div`
+  padding: 10px 0;
+
+  div {
+    width: 45%;
+    height: 1px;
+    background-color: #717171;
+  }
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  span {
+    font-size: 16px;
+    color: #717171;
+  }
+`;
+
+export async function action({ request }) {
+  const formData = await request.formData();
+
+  const username = formData.get('username');
+  const password = formData.get('password');
+
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: `${ManagerBaseApi}/login/id`,
+      data: { username, password },
+    });
+    return { ok: true, response };
+  } catch {
+    return { ok: false };
+  }
+}

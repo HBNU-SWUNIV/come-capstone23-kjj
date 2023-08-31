@@ -11,7 +11,6 @@ import {
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
-import { useMatch, useNavigate } from 'react-router-dom';
 import shortid from 'shortid';
 import axios from 'axios';
 import Button from '@mui/material/Button';
@@ -29,6 +28,8 @@ const ArrowCSS = {
   color: 'black',
   fontSize: '1.2rem',
   margin: '0 1.25rem',
+  marginBottom: '3px',
+  cursor: 'pointer',
 };
 
 const Wrapper = styled.div`
@@ -72,26 +73,29 @@ const DivDay = styled.div`
     cursor: pointer;
   }
   background-color: #f5f5f5;
+  overflow: scroll;
 
   height: 12vh;
   width: 90%;
-  margin-bottom: 10%;
+  border-radius: 20px;
+
   display: flex;
   justify-content: space-between;
+
   box-sizing: border-box;
-  border-radius: 20px;
-  padding: 5px;
+  margin-bottom: 10%;
+  padding: 10px;
 
   span:first-child {
     font-size: 0.188rem;
     font-weight: 600;
   }
   span:last-child {
-    margin-right: 5px;
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 600;
-    font-family: Cutefont;
+    font-family: NotoSans;
     white-space: pre-wrap;
+    text-align: right;
   }
 `;
 const DivWeek = styled.div`
@@ -106,7 +110,7 @@ const DivWrapper = styled.div`
 
 function Calander() {
   const config = ConfigWithToken();
-  const navigate = useNavigate();
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [Backbaninfo, setBackbaninfo] = useState('');
   const [savedBackbaninfo, setSavedBackbaninfo] = useState([]);
@@ -192,11 +196,7 @@ function Calander() {
         );
       } else {
         dayss.push(
-          <DivDay
-            className="scroll-hidden"
-            onClick={() => handleClickOpen(id)}
-            key={shortid.generate()}
-          >
+          <DivDay onClick={() => handleClickOpen(id)} key={shortid.generate()}>
             <span>{formattedDate}</span>
             <span>
               {savedBackbaninfo.map((savedbackban) =>
@@ -223,11 +223,11 @@ function Calander() {
   return (
     <Wrapper>
       <HeaderW>
-        <AiOutlineLeft className="pointer" style={{ ...ArrowCSS }} onClick={prevMonth} />
-        <span style={{ fontFamily: 'Cutefont', fontWeight: '600', fontSize: '25px' }}>
+        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
+        <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '20px' }}>
           {format(currentMonth, 'yy')}년 {format(currentMonth, 'MM')}월
         </span>
-        <AiOutlineRight className="pointer" style={{ ...ArrowCSS }} onClick={nextMonth} />
+        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
       </HeaderW>
       <DaysWrapper>{days}</DaysWrapper>
       <DivWrapper>{line}</DivWrapper>
