@@ -5,6 +5,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { useMatch, useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -15,11 +16,14 @@ const Home = () => {
     const [todayMenu, setTodayMenu] = useState("");
     const [menus, setMenus] = useState([]);
     const [user, setUser] = useState("");
+    const [test, setTest] = useState([]);
+
+    const config = ConfigWithToken();
 
 
     //회원 이름, 번호
     const userinfo = useSelector(state => state.username);
-    console.log(userinfo);
+    //console.log(userinfo);
     const name = useSelector(state => state.username.username);
     //console.log(name);
     const userid = useSelector(state => state.username.userid);
@@ -36,29 +40,27 @@ const Home = () => {
 
     useEffect(() => {
         axios
-        .get(`/api/user/store`)
+        .get(`api/user/store`, config)
         .then(res => {
             setStoreInfo(res.data.name);
         })
 
-        axios.get(`/api/user/planner/${t_year}/${t_month}/${t_day}`)
+        axios.get(`${UserBaseApi}/planner/${t_year}/${t_month}/${t_day}`, config)
             .then(res => setTodayMenu(res.data.menus))
 
-        axios.get(`/api/manager/menu`)
+        axios.get(`${UserBaseApi}/menu`, config)
             .then(res => setMenus(res.data))
 
             axios
-            .get(`/api/user/${userid}/policy/date`)
+            .get(`${UserBaseApi}/policy/date`, config)
             .then(res => {
-              console.log("A request has occurred:", res.data);
           
               const receivedActiveDays = Object.values(res.data);
               setActiveDays(receivedActiveDays);
           
               const receivedDefaultMenu = res.data.defaultMenu;
-              //setDefaultMenu(receivedDefaultMenu);
           
-              axios.get(`/api/manager/menu`)
+              axios.get(`${UserBaseApi}/menu`, config)
                 .then(res => {
                   const menuList = res.data;
                   const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
@@ -74,17 +76,16 @@ const Home = () => {
               console.error("Failed to get user policy date:", error);
             });
 
-        axios.get(`/api/manager/state/menu`)
+        axios.get(`${UserBaseApi}/state/menu`, config)
             .then(res => setGoodmenu(res.data.map(menu => menu.name)))
-        // axios.patch(`/api/user/${ userid }/date`)
-        //     .then(() => {
-        //         console.log("연결 성공");
-        //     })
-        //     .catch(error => {
-        //         console.error("연결 실패:", error);
-        //     });
 
-        setUser(name);
+        axios
+        .get(`${UserBaseApi}/info`, config)
+        .then(res => {
+            setTest(res.data.id);
+        })
+
+        console.log(test);
 
         const interval = setInterval(() => {
             setCurrentIdx((prevIdx) => (prevIdx + 1) % goodmenu.length);
@@ -247,34 +248,61 @@ const Home = () => {
             friday: updatedActiveDays[4],
         };
 
-        axios.patch(`/api/user/${userid}/policy/date`, activeDaysObject, {
+        axios.patch(`${UserBaseApi}/policy/date`, activeDaysObject, {
             headers: {
                 "Content-Type": "application/json",
             },
+            ...config,
         })
-            .then(() => {
-                console.log("패치 성공");
-                axios.get(`/api/user/${userid}/policy/date`)
-                    .then(res => {
-                        console.log("겟 성공");
-                        const receivedActiveDays = Object.values(res.data);
-                        setActiveDays(receivedActiveDays);
-                    })
-                    .catch(error => {
-                        console.error("겟 실패:", error);
-                    });
+        .then(() => {
+            console.log("패치 성공");
+            axios.get(`${UserBaseApi}/policy/date`, {
+                headers: {
+                    "Content-Type": "application/json",
+                    ...config.headers,
+                },
+            })
+            .then(res => {
+                console.log("GET 성공");
+                const receivedActiveDays = Object.values(res.data);
+                setActiveDays(receivedActiveDays);
             })
             .catch(error => {
-                console.error("패치 실패:", error);
+                console.error("GET 실패:", error);
             });
+        })
+        .catch(error => {
+            console.error("패치 실패:", error);
+        });
     };
+    //     axios.patch(`${UserBaseApi}/policy/date`, config, activeDaysObject, {
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //     })
+    //         .then(() => {
+    //             console.log("패치 성공");
+    //             axios.get(`${UserBaseApi}/policy/date`, config)
+    //                 .then(res => {
+    //                     console.log("겟 성공");
+    //                     const receivedActiveDays = Object.values(res.data);
+    //                     setActiveDays(receivedActiveDays);
+    //                 })
+    //                 .catch(error => {
+    //                     console.error("겟 실패:", error);
+    //                 });
+    //         })
+    //         .catch(error => {
+    //             console.error("패치 실패:", error);
+    //         });
+    // };
 
     // const menu_id = menus.map(menu => menu.id);
     // console.log(menu_id)
 
     const handlemenuSaveClick = () => {
         axios
-            .patch(`/api/user/${userid}/policy/menu/${DetailPath.id}`, {})
+            .patch(`${UserBaseApi}/policy/menu/${DetailPath.id}`, {}, config)
             .then(() => {
                 console.log("patch successful");
                 // Update the default menu value in the state
@@ -332,8 +360,8 @@ const Home = () => {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
                         <p><span style={{ fontSize: '15px', fontWeight: 'bold', lineHeight: 2 }}>{storeInfo}</span></p>
-                        <p style={{ fontWeight: 'bold', lineHeight: 0 }}>{user}님</p>
-                        <p>안녕하세요</p>
+                        <p style={{ fontWeight: 'bold', lineHeight: 0 }}>User ID : {test}님</p>
+                        <p>안녕하세요😄</p>
                     </div>
 
                     <div style={qrbox} onClick={handleqr}>

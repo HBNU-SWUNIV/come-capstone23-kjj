@@ -9,11 +9,18 @@ module.exports = function (app) {
     }),
   );
   app.use(
-    '/login/manager',
+    '/api',
     createProxyMiddleware({
-      target: 'http://kjj.kjj.r-e.kr:8080',
+      target: 'http://kjj.kjj.r-e.kr:8081',
       changeOrigin: true,
     }),
   );
+  // app.use(
+  //   '/login/manager',
+  //   createProxyMiddleware({
+  //     target: 'http://kjj.kjj.r-e.kr:8080',
+  //     changeOrigin: true,
+  //   }),
+  // );
 };
 

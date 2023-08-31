@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 const SignUp = () => {
     const [username, setusername] = useState('');
@@ -12,6 +13,8 @@ const SignUp = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const config = ConfigWithToken();
 
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
@@ -40,13 +43,13 @@ const SignUp = () => {
                 alert("ID를 입력해주세요.");
                 return;
             }
-            axios.get(`/api/user/join/check?username=${username}`)
+            axios.get(`${UserBaseApi}/login/join/check?username=${username}`, config)
                 .then(res => {
                     if (res.data === true) {
                         alert("ID를 다시 확인해 주세요.")
                     }
                     if (res.data === false) {
-                        axios.post(`/api/user/join`, body)
+                        axios.post(`${UserBaseApi}/login/join`, body, config)
                             .then(res => console.log(res))
                             .catch(err => console.log(err))
                         alert("회원가입이 완료되었습니다.")
@@ -64,7 +67,7 @@ const SignUp = () => {
         }
 
         axios
-            .get(`/api/user/join/check?username=${username}`)
+            .get(`${UserBaseApi}/login/join/check?username=${username}`, config)
             .then((res) => {
                 if (res.data === true) {
                     setIdMessage("이미 사용중인 ID입니다.");

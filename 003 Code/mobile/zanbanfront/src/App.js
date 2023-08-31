@@ -1,4 +1,4 @@
-import { BrowserView, MobileView, isMobileOnly } from 'react-device-detect'
+import { BrowserView, MobileView } from 'react-device-detect'
 import { Outlet, useLocation } from 'react-router-dom';
 import Nav from './Nav/Nav';
 
@@ -15,8 +15,6 @@ function App() {
         {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
         <Outlet />
       </MobileView>
-      {/* {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
-        <Outlet /> */}
     </div>
 
   );

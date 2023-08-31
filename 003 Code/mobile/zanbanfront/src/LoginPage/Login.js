@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { R_login } from '../store';
 import { useDispatch } from 'react-redux';
+import { useKeycloak } from '@react-keycloak/web';
+import { useCookies } from 'react-cookie';
 
 const Login = () => {
     const [username, setusername] = useState('');
@@ -10,43 +12,58 @@ const Login = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const { keycloak } = useKeycloak();
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+
+    const handleSSOLogin = async () => {
+        keycloak.login();
+    }
+
+    const setKeyCloakToken = async () => {
+        try {
+            const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
+            const keycloaktoken = response.headers.authorization;
+            const [, accesstoken] = keycloaktoken.split('Bearer ');
+            setCookie('accesstoken', accesstoken);
+        } catch (error) {
+            console.error('키클락 토큰 생성 에러 발생:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (keycloak.authenticated) {
+            (cookies.accesstoken === undefined || cookies.accesstoken === '') && setKeyCloakToken();
+            (cookies.accesstoken !== undefined || cookies.accesstoken !== '') && navigate('/home');
+        }
+    }, [keycloak.authenticated, cookies.accesstoken]);
+
+
+    //일반 로그인
     const handleLogin = async () => {
         let body = { username, password };
         try {
-            const res = await axios.post(`/api/user/login/id`, body);
-            const token = res.data.token; // 서버에서 반환하는 토큰 정보
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`; // 요청 헤더에 토큰 추가
-            const { username, id } = res.data;
-            //console.log('Response:', res.data);
-            if (res.status === 200) {
-                //dispatch(R_login({ username }));
-                dispatch(R_login({ username, id }));
-                navigate('/home');
+            const response = await axios({
+                method: 'POST',
+                url: `/api/user/login/id`,
+                data: body,
+            });
 
-            }
+            const token = response.headers.authorization;
+            const [, accesstoken] = token.split('Bearer ');
+            setCookie('accesstoken', accesstoken);
+            const refreshtoken = response.headers.refresh_token;
+            const [, refreshtoken1] = refreshtoken.split('Bearer ');
+            setCookie('refreshtoken', refreshtoken1);
+            navigate('/home')
+
         } catch (error) {
-            alert("ID와 패스워드를 확인하세요.");
+            console.log(error);
+            if (error.response.status === 401) {
+                alert("ID와 패스워드를 확인하세요.");
+            }
         }
     };
 
-    const handleSSOLogin = async () => {
-        let body = { username, password };
-        try {
-            const res = await axios.post(`/api/user/login/keycloak/page`, body);
-            const accestoken = res.data.token; // 서버에서 반환하는 토큰 정보
-            axios.defaults.headers.common['Authorization'] = `Bearer ${accestoken}`; // 요청 헤더에 토큰 추가
-            const { username, id } = res.data;
-            //console.log('Response:', res.data);
-            if (res.status === 200) {
-                //dispatch(R_login({ username }));
-                dispatch(R_login({ username, id }));
-                navigate('/home');
-
-            }
-        } catch (error) {
-            alert("ID와 패스워드를 확인하세요.");
-        }
-    };
 
     const inputStyle = {
         width: '250px',
@@ -92,9 +109,7 @@ const Login = () => {
                 </div>
 
                 <div style={{ margin: '10px' }}>
-                    <Link to=''>
-                        <button onClick={handleSSOLogin} style={{ backgroundColor: '#635a59', color: 'white', border: 'none', borderRadius: '5px', width: '100px', height: '30px' }}>SSO로그인</button>
-                    </Link>
+                    <button onClick={handleSSOLogin} style={{ backgroundColor: '#635a59', color: 'white', border: 'none', borderRadius: '5px', width: '100px', height: '30px' }}>SSO로그인</button>
                 </div>
             </div>
 
