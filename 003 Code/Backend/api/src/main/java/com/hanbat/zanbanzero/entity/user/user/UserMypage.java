@@ -1,13 +1,9 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
 
 @Entity
 @Getter
@@ -29,6 +25,6 @@ public class UserMypage {
                 user.getId(),
                 user,
                 0
-                );
+        );
     }
 }

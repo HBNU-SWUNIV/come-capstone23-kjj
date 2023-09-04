@@ -27,9 +27,6 @@ out/
 !**/src/test/**/out/
 
 ### Web Backend ###
-JwtTemplate.java
-application-env.properties
-logback-spring.xml
 ../.env
 data
 gradlew
