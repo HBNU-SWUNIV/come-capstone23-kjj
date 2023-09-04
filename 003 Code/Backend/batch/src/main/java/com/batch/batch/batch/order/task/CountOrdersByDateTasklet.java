@@ -101,6 +101,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
             clear();
         });
 
+        createTodayOrder.clearNameToCostMap();
         return RepeatStatus.FINISHED;
     }
 }

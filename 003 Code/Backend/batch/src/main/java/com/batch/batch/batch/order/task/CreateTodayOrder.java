@@ -39,6 +39,10 @@ public class CreateTodayOrder {
         return nameToCostMap;
     }
 
+    public static void clearNameToCostMap() {
+        nameToCostMap.clear();
+    }
+
     private void initMenu() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             String query = "select id, name, cost from menu";
@@ -106,8 +110,7 @@ public class CreateTodayOrder {
 
                         insertStatement.executeUpdate();
                     }
-                    throw new IllegalAccessException("dd");
-                    //return new Order(userId, cost, defaultMenu, date, true);
+                    return new Order(userId, cost, defaultMenu, date, true);
                 }
             }
             return null;

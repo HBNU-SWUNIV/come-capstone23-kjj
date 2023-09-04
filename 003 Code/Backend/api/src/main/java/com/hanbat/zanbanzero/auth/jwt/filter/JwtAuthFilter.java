@@ -11,7 +11,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,13 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
-
-    private String userApiPrefix = "/api/user";
     private String managerApiPrefix = "/api/manager";
 
     public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
