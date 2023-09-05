@@ -54,12 +54,13 @@ export default function Login() {
   const setKeyCloakToken = async () => {
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
     const keycloaktoken = response.headers.authorization;
+    console.log(keycloaktoken);
     setCookie('accesstoken', keycloaktoken);
   };
 
   useEffect(() => {
     if (keycloak.authenticated) {
-      cookies.accesstoken === '' && setKeyCloakToken();
+      (cookies.accesstoken == undefined || '') && setKeyCloakToken();
       cookies.accesstoken !== '' && navigate('/home');
     }
     if ((islogin || keycloak.authenticated) && cookies.accesstoken !== '') {

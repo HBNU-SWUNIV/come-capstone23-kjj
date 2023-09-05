@@ -27,6 +27,7 @@ public class JwtRefreshFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         HttpServletResponse servletResponse = (HttpServletResponse) response;
+
         String refreshUri = "/api/user/login/refresh";
         if (!(servletRequest.getRequestURI().equals(refreshUri))) chain.doFilter(request, response);
         else {
@@ -42,7 +43,6 @@ public class JwtRefreshFilter implements Filter {
                 servletResponse.setStatus(HttpServletResponse.SC_OK);
                 servletResponse.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
                 servletResponse.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
-
                 chain.doFilter(request, response);
             }
         }
