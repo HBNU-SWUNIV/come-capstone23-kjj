@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -107,7 +106,7 @@ public class StoreService {
     public List<CalculateMenuForGraphDto> getPopularMenus() {
         List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc().stream()
                 .map(Calculate::getId)
-                .collect(Collectors.toList());
+                .toList();
 
         List<CalculateMenuForGraphDto> result = calculateMenuRepository.getPopularMenus(idList);
         result.sort(Comparator.comparingLong(CalculateMenuForGraphDto::getCount).reversed());
@@ -147,16 +146,15 @@ public class StoreService {
         LocalDate end = DateTools.makeDateFormatLocalDate(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
-                .map(state -> StoreStateDto.of(state))
-                .collect(Collectors.toList());
+                .map(StoreStateDto::of)
+                .toList();
     }
 
     @Transactional
     public Integer getCalculatePreUser() {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
-        Integer result = calculatePre.getPredictUser();
 
-        return result;
+        return calculatePre.getPredictUser();
     }
 
     @Transactional

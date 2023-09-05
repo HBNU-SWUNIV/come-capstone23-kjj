@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +50,7 @@ public class PlannerService {
         LocalDate end = DateTools.makeLocaldate(year, month, DateTools.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
-                .map(planner -> PlannerDto.of(planner))
-                .collect(Collectors.toList());
+                .map(PlannerDto::of)
+                .toList();
     }
 }

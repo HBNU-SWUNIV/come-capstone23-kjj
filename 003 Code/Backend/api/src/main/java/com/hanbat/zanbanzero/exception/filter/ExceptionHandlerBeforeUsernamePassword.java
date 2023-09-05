@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.exception.filter;
 
-import com.hanbat.zanbanzero.exception.filter.SetFilterException;
+import com.hanbat.zanbanzero.exception.exceptions.SetFilterErrorResponseException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,14 +18,12 @@ public class ExceptionHandlerBeforeUsernamePassword extends OncePerRequestFilter
         try {
             filterChain.doFilter(request, response);
         }
-        catch (NullPointerException e) {
-            SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED,"인증에 실패하였습니다.");
-        }
-        catch (AuthenticationServiceException e) {
-            SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED,"인증에 실패하였습니다.");
-        }
-        catch (UsernameNotFoundException e) {
-            SetFilterException.setResponse(request, response, HttpStatus.UNAUTHORIZED,"인증에 실패하였습니다.");
+        catch (NullPointerException | AuthenticationServiceException | UsernameNotFoundException e) {
+            try {
+                SetFilterErrorResponse.setResponse(request, response, HttpStatus.UNAUTHORIZED,"인증에 실패하였습니다.");
+            } catch (SetFilterErrorResponseException ex) {
+                throw new RuntimeException(ex);
+            }
         }
     }
 }

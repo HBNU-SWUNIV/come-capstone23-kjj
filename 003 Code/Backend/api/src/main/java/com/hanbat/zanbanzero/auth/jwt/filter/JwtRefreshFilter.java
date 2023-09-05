@@ -13,32 +13,36 @@ import java.io.IOException;
 
 public class JwtRefreshFilter implements Filter {
 
-    private UserService service;
-    private String refreshUri = "/api/user/login/refresh";
+    private final UserService service;
+    private final JwtUtil jwtUtil;
+    private final JwtTemplate jwtTemplate;
 
-    public JwtRefreshFilter(UserService service) {
+    public JwtRefreshFilter(UserService service, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
         this.service = service;
+        this.jwtTemplate = jwtTemplate;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         HttpServletResponse servletResponse = (HttpServletResponse) response;
+
+        String refreshUri = "/api/user/login/refresh";
         if (!(servletRequest.getRequestURI().equals(refreshUri))) chain.doFilter(request, response);
         else {
-            String token = servletRequest.getHeader(JwtTemplate.HEADER_STRING);
+            String token = servletRequest.getHeader(jwtTemplate.getHeaderString());
             if (token == null) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            else if (JwtUtil.isTokenExpired(token)) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            else if (!JwtUtil.getTypeFromRefreshToken(token).equals(JwtTemplate.REFRESH_TYPE)) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            else if (jwtUtil.isTokenExpired(token)) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            else if (!jwtUtil.getTypeFromRefreshToken(token).equals(jwtTemplate.getRefreshType())) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             else {
-                UserDetailsInterface userDetails = service.loadUserByUsername(JwtUtil.getUsernameFromRefreshToken(token));
+                UserDetailsInterface userDetails = service.loadUserByUsername(jwtUtil.getUsernameFromRefreshToken(token));
 
-                String jwtToken = JwtUtil.createToken(userDetails);
-                String refreshToken = JwtUtil.createRefreshToken(userDetails);
+                String jwtToken = jwtUtil.createToken(userDetails);
+                String refreshToken = jwtUtil.createRefreshToken(userDetails);
                 servletResponse.setStatus(HttpServletResponse.SC_OK);
-                servletResponse.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + jwtToken);
-                servletResponse.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
-
+                servletResponse.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
+                servletResponse.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
                 chain.doFilter(request, response);
             }
         }

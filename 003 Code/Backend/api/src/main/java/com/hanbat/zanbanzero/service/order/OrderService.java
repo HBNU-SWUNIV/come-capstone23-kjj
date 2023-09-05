@@ -1,13 +1,14 @@
 package com.hanbat.zanbanzero.service.order;
 
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.hanbat.zanbanzero.dto.order.LastOrderDto;
+import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
-import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
@@ -26,9 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -40,7 +41,7 @@ public class OrderService {
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
 
-    private int pageSize = 10;
+    private static final int PAGE_SIZE = 10;
 
     private Menu getDefaultMenu(Long userId) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
@@ -80,7 +81,7 @@ public class OrderService {
 
     public int countPages(String username) {
         Long id = userRepository.findByUsername(username).getId();
-        Pageable pageable = PageRequest.of(0, pageSize);
+        Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
         return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
     }
@@ -90,19 +91,19 @@ public class OrderService {
         List<Order> orders = orderRepository.findByUserId(id);
 
         return orders.stream()
-                .map(order -> OrderDto.of(order))
-                .collect(Collectors.toList());
+                .map(OrderDto::of)
+                .toList();
     }
 
     @Transactional
     public List<OrderDto> getOrdersPage(String username, int page) {
         Long id = userRepository.findByUsername(username).getId();
-        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, pageSize));
+        Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, PAGE_SIZE));
 
         return orderPage.getContent()
                 .stream()
-                .map(order -> OrderDto.of(order))
-                .collect(Collectors.toList());
+                .map(OrderDto::of)
+                .toList();
     }
 
     @Transactional
@@ -119,7 +120,7 @@ public class OrderService {
         return LastOrderDto.of(order);
     }
 
-    public void getOrderQr(HttpServletResponse response, Long id) throws Exception {
+    public void getOrderQr(HttpServletResponse response, Long id) throws WriterException, IOException {
         String domain = "http://kjj.kjj.r-e.kr:8080";
         String endPoint = "/api/user/order/" + id;
         BufferedImage qrCode = createQRCode(domain + endPoint);
@@ -129,7 +130,7 @@ public class OrderService {
         ImageIO.write(qrCode, "png", response.getOutputStream());
     }
 
-    private BufferedImage createQRCode(String data) throws Exception{
+    private BufferedImage createQRCode(String data) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 100, 100);
         return MatrixToImageWriter.toBufferedImage(bitMatrix);

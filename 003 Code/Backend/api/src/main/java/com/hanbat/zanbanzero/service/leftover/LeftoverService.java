@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +30,7 @@ public class LeftoverService {
     private final LeftoverRepository leftoverRepository;
     private final LeftoverPreRepository leftoverPreRepository;
 
-    private int dataSize = 5;
+    private static final int DATA_SIZE = 5;
 
     @Transactional
     public LeftoverDto setLeftover(LeftoverDto dto) throws WrongParameter {
@@ -41,14 +40,14 @@ public class LeftoverService {
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
         if (leftover != null) leftover.setLeftover(dto.getLeftover());
         else {
-            Leftover result = Leftover.of(leftoverPreRepository.getReferenceById(target.getId()), dto);
-            leftoverRepository.save(result);
+            leftover = Leftover.of(leftoverPreRepository.getReferenceById(target.getId()), dto);
+            leftoverRepository.save(leftover);
         }
         return LeftoverDto.of(leftover);
     }
 
     public int getAllLeftoverPage() {
-        Pageable pageable = PageRequest.of(0, dataSize);
+        Pageable pageable = PageRequest.of(0, DATA_SIZE);
         Page<Leftover> result = leftoverRepository.findAll(pageable);
 
         return result.getTotalPages();
@@ -56,21 +55,21 @@ public class LeftoverService {
 
     @Transactional
     public List<LeftoverDto> getLeftoverPage(int count) {
-        Pageable pageable = PageRequest.of(count, dataSize);
+        Pageable pageable = PageRequest.of(count, DATA_SIZE);
         List<Leftover> result = leftoverRepository.findAllByOrderByLeftoverPreIdDesc(pageable).getContent();
 
         return result.stream()
-                .map((history) -> LeftoverDto.of(history))
-                .collect(Collectors.toList());
+                .map(LeftoverDto::of)
+                .toList();
     }
 
     @Transactional
     public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) throws CantFindByIdException {
-        Pageable pageable = PageRequest.of(page, dataSize);
+        Pageable pageable = PageRequest.of(page, DATA_SIZE);
         List<Long> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
                 .getContent().stream()
-                .map(calculate -> calculate.getId())
-                .collect(Collectors.toList());
+                .map(Calculate::getId)
+                .toList();
 
         List<LeftoverAndPreDto> result = new ArrayList<>();
         for (Long id : calculates) {
@@ -88,7 +87,7 @@ public class LeftoverService {
         List<LeftoverDto> result = new ArrayList<>();
         LocalDate date = DateTools.getLastWeeksMonday(type);
 
-        for (int i = 0; i < dataSize; i ++) {
+        for (int i = 0; i < DATA_SIZE; i ++) {
             LocalDate targetDate = date.plusDays(i);
 
             Calculate target = calculateRepository.findByDate(targetDate);

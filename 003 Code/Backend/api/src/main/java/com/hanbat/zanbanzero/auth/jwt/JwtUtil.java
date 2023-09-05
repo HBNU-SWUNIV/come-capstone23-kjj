@@ -4,57 +4,57 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+@Component
 public class JwtUtil {
+    
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
+    private static final String USERNAME = "username";
 
-    public static String createToken(UserDetailsInterface userDetails) {
+    public String createToken(UserDetailsInterface userDetails) {
         return JWT.create()
-                .withSubject(JwtTemplate.TOKEN_PREFIX)
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtTemplate.EXPIRATION_TIME))
+                .withSubject(jwtTemplate.getTokenPrefix())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtTemplate.getExpiration()))
                 .withClaim("id", userDetails.getMemberId())
-                .withClaim("username", userDetails.getUsername())
+                .withClaim(USERNAME, userDetails.getUsername())
                 .withClaim("roles", userDetails.getMemberRoles())
-                .sign(Algorithm.HMAC256(JwtTemplate.SECRET));
+                .sign(Algorithm.HMAC256(jwtTemplate.getSecret()));
     }
 
-    public static String createRefreshToken(UserDetailsInterface userDetails) {
+    public String createRefreshToken(UserDetailsInterface userDetails) {
         return JWT.create()
-                .withSubject(JwtTemplate.TOKEN_PREFIX)
-                .withExpiresAt(new Date(System.currentTimeMillis() + JwtTemplate.EXPIRATION_TIME_REFRESH))
-                .withClaim("username", userDetails.getUsername())
-                .withClaim("type", JwtTemplate.REFRESH_TYPE)
-                .sign(Algorithm.HMAC256(JwtTemplate.SECRET));
+                .withSubject(jwtTemplate.getTokenPrefix())
+                .withExpiresAt(new Date(System.currentTimeMillis() + jwtTemplate.getRefreshExpiration()))
+                .withClaim(USERNAME, userDetails.getUsername())
+                .withClaim("type", jwtTemplate.getRefreshType())
+                .sign(Algorithm.HMAC256(jwtTemplate.getSecret()));
     }
 
-    public static String getUsernameFromToken(String token) {
-        token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
+    public String getUsernameFromToken(String token) {
+        token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
-        String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("username").asString();
-        return username;
+        return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim(USERNAME).asString();
     }
 
-    public static String getTypeFromRefreshToken(String token){
-        token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
+    public String getTypeFromRefreshToken(String token){
+        token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
-        String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("type").asString();
-        return username;
+        return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("type").asString();
     }
 
-    public static boolean isTokenExpired(String token) {
-        token = token.replace(JwtTemplate.TOKEN_PREFIX, "");
+    public boolean isTokenExpired(String token) {
+        token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
-        Date exp = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(token).getClaim("exp").asDate();
+        Date exp = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("exp").asDate();
         return exp.before(new Date());
     }
 
-    public static String getUsernameFromRefreshToken(String token) {
-        String username = getUsernameFromToken(token);
-        if (username == null) throw new JwtTokenException("username can not be null");
-        return username;
+    public String getUsernameFromRefreshToken(String token) {
+        String data = getUsernameFromToken(token);
+        if (data == null) throw new JwtTokenException("username can not be null");
+        return data;
     }
 }

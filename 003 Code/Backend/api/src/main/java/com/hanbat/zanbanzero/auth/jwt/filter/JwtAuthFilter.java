@@ -22,27 +22,29 @@ import java.io.*;
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private UserRepository userRepository;
+    private JwtTemplate jwtTemplate;
     private String managerApiPrefix = "/api/manager";
 
-    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository) {
+    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTemplate jwtTemplate) {
         super(authenticationManager);
         this.userRepository = userRepository;
+        this.jwtTemplate = jwtTemplate;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        String jwtHeader = request.getHeader(JwtTemplate.HEADER_STRING);
+        String jwtHeader = request.getHeader(jwtTemplate.getHeaderString());
 //         JWT(Header)가 있는지 확인
-        if ((jwtHeader == null || !jwtHeader.startsWith(JwtTemplate.TOKEN_PREFIX))) {
+        if ((jwtHeader == null || !jwtHeader.startsWith(jwtTemplate.getTokenPrefix()))) {
             chain.doFilter(request, response);
             return;
         }
 
         // JWT 검증
-        String jwtToken = jwtHeader.replace(JwtTemplate.TOKEN_PREFIX, "");
+        String jwtToken = jwtHeader.replace(jwtTemplate.getTokenPrefix(), "");
 
-        String username = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("username").asString();
-        String roles = JWT.require(Algorithm.HMAC256(JwtTemplate.SECRET)).build().verify(jwtToken).getClaim("roles").asString();
+        String username = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("username").asString();
+        String roles = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("roles").asString();
 
         if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족");
 

@@ -1,8 +1,5 @@
 package com.hanbat.zanbanzero.controller.user;
 
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.hanbat.zanbanzero.dto.user.TokenRefreshDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
@@ -56,18 +53,17 @@ public class UserAuthController {
     }
 
     @Operation(summary="Keycloak 로그인")
-    @Parameters({
-            @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)})
+    @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)
     @PostMapping("login/keycloak")
-    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws JsonProcessingException {
+    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
         return ResponseEntity.ok(userService.loginFromKeycloak(user));
     }
 
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
     @PostMapping("login/refresh")
-    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response, @RequestBody TokenRefreshDto dto) {
-        userService.refreshToken(request, response, dto);
+    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        userService.refreshToken(request, response);
         return ResponseEntity.ok("refresh success");
     }
 

@@ -24,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,19 +35,19 @@ public class MenuService {
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
 
-    private final String menuCacheKey = "1";
-    private final String cacheManager = "cacheManager";
+    private static final String MENU_CACHE_KEY = "1";
+    private static final String CACHE_MANAGER = "cacheManager";
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Cacheable(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    @Cacheable(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public List<MenuUserInfoDto> getMenus() {
         return menuRepository.findAllWithMenuInfo().stream()
-                .map(menu -> MenuUserInfoDto.of(menu))
-                .collect(Collectors.toList());
+                .map(MenuUserInfoDto::of)
+                .toList();
     }
 
-    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = cacheManager)
+    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
         return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(CantFindByIdException::new));
     }
@@ -56,14 +55,14 @@ public class MenuService {
     @Transactional
     public List<MenuManagerInfoDto> getMenusForManager() {
         return menuRepository.findAllWithMenuInfo().stream()
-                .map(menu -> MenuManagerInfoDto.of(menu))
-                .collect(Collectors.toList());
+                .map(MenuManagerInfoDto::of)
+                .toList();
     }
 
     public Boolean isPlanned() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
@@ -94,7 +93,7 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
@@ -110,32 +109,27 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuDto deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         userPolicyRepository.saveAll(userPolicyRepository.findAllByDefaultMenu(id).stream()
                 .peek(policy -> policy.setDefaultMenu(null))
-                .collect(Collectors.toList()));
+                .toList());
         menuRepository.delete(menu);
 
         return MenuDto.of(menu);
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = menuCacheKey, cacheManager = cacheManager)
+    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuDto setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         switch (type) {
-            case 'n':
-                menu.setSold(false);
-                break;
-            case 'y':
-                menu.setSold(true);
-                break;
-            default:
-                throw new WrongParameter("잘못된 파라미터입니다.");
+            case 'n' -> menu.setSold(false);
+            case 'y' -> menu.setSold(true);
+            default -> throw new WrongParameter("잘못된 파라미터입니다.");
         }
         return MenuDto.of(menu);
     }

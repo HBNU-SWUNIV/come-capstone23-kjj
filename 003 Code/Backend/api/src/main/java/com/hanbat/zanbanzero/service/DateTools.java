@@ -10,6 +10,9 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateTools {
+    private DateTools() throws WrongParameter {
+        throw new WrongParameter("DateTools can not init");
+    }
 
     public static LocalDate makeTodayToLocalDate() {
         ZonedDateTime date = ZonedDateTime.now().plusHours(9).truncatedTo(ChronoUnit.HOURS);
@@ -38,19 +41,14 @@ public class DateTools {
     }
 
     public static LocalDate getLastWeeksMonday(int type) throws WrongParameter {
-        LocalDate result;
-        switch (type) {
-            case 0:
-                result = LocalDateTime.now().minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
-                break;
-            case 1:
-                result = LocalDateTime.now().minusWeeks(2).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
-                break;
-            default:
-                throw new WrongParameter("잘못된 타입입니다.");
-        }
 
-        return result;
+        return switch (type) {
+            case 0 ->
+                    LocalDateTime.now().minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
+            case 1 ->
+                    LocalDateTime.now().minusWeeks(2).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
+            default -> throw new WrongParameter("잘못된 타입입니다.");
+        };
     }
 
     public static LocalDate toFormatterLocalDate(String date) {

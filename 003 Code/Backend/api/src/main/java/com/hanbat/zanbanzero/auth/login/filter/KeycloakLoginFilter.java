@@ -2,13 +2,13 @@ package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.login.dto.KeycloakTokenDto;
 import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
-import jakarta.servlet.*;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,11 +32,15 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
 
     private final KeycloakProperties properties;
     private final RestTemplate restTemplate;
+    private final JwtUtil jwtUtil;
+    private final JwtTemplate jwtTemplate;
 
-    public KeycloakLoginFilter(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties) {
+    public KeycloakLoginFilter(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
         super(filterProcessesUrl);
         this.restTemplate = restTemplate;
         this.properties = properties;
+        this.jwtUtil = jwtUtil;
+        this.jwtTemplate = jwtTemplate;
     }
 
     @Override
@@ -57,11 +60,11 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String accessToken = JwtUtil.createToken((UserDetailsInterface) authResult.getPrincipal());
-        String refreshToken = JwtUtil.createRefreshToken((UserDetailsInterface) authResult.getPrincipal());
+        String accessToken = jwtUtil.createToken((UserDetailsInterface) authResult.getPrincipal());
+        String refreshToken = jwtUtil.createRefreshToken((UserDetailsInterface) authResult.getPrincipal());
 
-        response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + accessToken);
-        response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
+        response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + accessToken);
+        response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
 
         chain.doFilter(request, response);
     }
@@ -69,33 +72,6 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         throw new ServletException("keycloak login failed");
-    }
-
-    private String getTokenFromKeycloakServer(String code) {
-        String url = properties.getHost() + "/auth/realms/" + properties.getRealmName() + "/protocol/openid-connect/token";
-        String grantType = "authorization_code";
-        String scope = "profile email roles openid";
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Content-type", "application/x-www-form-urlencoded");
-
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("grant_type", grantType);
-        body.add("client_id", properties.getClientId());
-        body.add("client_secret", properties.getClientSecret());
-        body.add("redirect_uri", properties.getRedirectUri());
-        body.add("code", code);
-        body.add("scope", scope);
-
-        HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(body, httpHeaders);
-
-        ResponseEntity<KeycloakTokenDto> response = restTemplate.exchange(
-                url,
-                HttpMethod.POST,
-                entity,
-                KeycloakTokenDto.class
-        );
-        return response.getBody().getAccess_token();
     }
 
     private KeycloakUserInfoDto getUserInfoFromKeycloakServer(String token) {
