@@ -9,6 +9,7 @@ import Chart from '../components/Main/Chart';
 import Statistics from '../components/Main/Statistics';
 import Chart2 from '../components/Main/Chart2';
 import Drawerheader from '../components/Drawerheader';
+import { useCookies } from 'react-cookie';
 
 export default function Dashboard() {
   return (

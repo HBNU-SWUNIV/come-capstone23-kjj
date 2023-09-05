@@ -74,6 +74,11 @@ const DivDay = styled.div`
   }
   background-color: #f5f5f5;
   overflow: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   height: 12vh;
   width: 90%;
@@ -192,7 +197,7 @@ function Calander() {
               opacity: '0',
             }}
             key={shortid.generate()}
-          ></DivDay>
+          />
         );
       } else {
         dayss.push(
