@@ -1,11 +1,27 @@
 package com.hanbat.zanbanzero.auth.jwt;
 
-public interface JwtTemplate {
-    String SECRET = "capston2023kjj";
-    int EXPIRATION_TIME = 30;
-    long EXPIRATION_TIME_REFRESH = 30;
-    String TOKEN_PREFIX = "Bearer ";
-    String HEADER_STRING = "Authorization";
-    String REFRESH_HEADER_STRING = "Refresh_Token";
-    String REFRESH_TYPE = "Refresh";
+public class JwtTemplate {
+    public String getSecret() { return "capston2023kjj";}
+
+    public int getExpiration() {
+        return 30;
+    }
+
+    public long getRefreshExpiration() {
+        return 30;
+    }
+
+    public String getTokenPrefix() {
+        return "Bearer ";
+    }
+
+    public String getHeaderString() {
+        return "Authorization";
+    }
+
+    public String getRefreshHeaderString() {
+        return "Refresh_Token";
+    }
+
+    public String getRefreshType() { return "Refresh"; }
 }

@@ -1,5 +1,7 @@
 package com.hanbat.zanbanzero.config;
 
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
 import com.hanbat.zanbanzero.auth.login.authenticationManager.LoginAuthenticationManagerImpl;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
@@ -29,6 +31,8 @@ public class SecurityConfig {
 
     private final CorsFilter corsFilter;
     private final RestTemplate restTemplate;
+    private final JwtUtil jwtUtil;
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
     private final UserService userService;
     private final UserRepository userRepository;
     private final LoginAuthenticationManagerImpl authenticationManager;
@@ -36,7 +40,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer customizer() {
-        return (web) -> web.ignoring().requestMatchers(
+        return web -> web.ignoring().requestMatchers(
                 "/apis",
                 "/swagger-ui/**",
                 "/v3/api-docs/**",
@@ -52,11 +56,11 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilter(authenticationManager, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtRefreshFilter(userService), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthFilter(authenticationManager, userRepository))
+                .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRefreshFilter(userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()

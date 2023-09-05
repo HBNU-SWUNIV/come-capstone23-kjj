@@ -28,8 +28,7 @@ public class ImageService {
         return filePath;
     }
 
-    public String updateImage(MultipartFile file, String oldPath) throws IOException {
+    public void updateImage(MultipartFile file, String oldPath) throws IOException {
         Files.copy(file.getInputStream(), Paths.get(oldPath), StandardCopyOption.REPLACE_EXISTING);
-        return "파일 업데이트 성공";
     }
 }

@@ -16,17 +16,20 @@ import org.springframework.security.core.Authentication;
 import java.io.IOException;
 
 public class LoginFilter implements Filter {
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
     private CustomUriMapper customUriMapper;
+    private final JwtUtil jwtUtil;
+    private final JwtTemplate jwtTemplate;
 
-    private String loginEndPath = "/login/id";
-
-    public LoginFilter(AuthenticationManager authenticationManager) {
+    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
         this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+        this.jwtTemplate = jwtTemplate;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String loginEndPath = "/login/id";
         if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {
             try {
                 customUriMapper = new CustomUriMapper(request);
@@ -55,10 +58,10 @@ public class LoginFilter implements Filter {
         UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
         // HMAC256
-        String jwtToken = JwtUtil.createToken(principalDetails);
-        String refreshToken = JwtUtil.createRefreshToken(principalDetails);
+        String jwtToken = jwtUtil.createToken(principalDetails);
+        String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + jwtToken);
-        response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
+        response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
+        response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
     }
 }

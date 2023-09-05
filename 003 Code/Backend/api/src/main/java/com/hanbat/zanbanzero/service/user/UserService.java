@@ -1,14 +1,14 @@
 package com.hanbat.zanbanzero.service.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.dto.user.TokenRefreshDto;
-import com.hanbat.zanbanzero.dto.user.user.*;
-import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
+import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
+import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
+import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -41,6 +41,8 @@ public class UserService implements UserDetailsService {
 
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtUtil jwtUtil;
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
 
     @Transactional
     public User join(UserJoinDto dto) {
@@ -52,25 +54,25 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserInfoDto loginFromKeycloak(User u) throws JsonProcessingException {
+    public UserInfoDto loginFromKeycloak(User u) {
         User user = userRepository.findByUsername(u.getUsername());
         if (user == null) user = join(UserJoinDto.of(u));
         return UserInfoDto.of(user);
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response, TokenRefreshDto dto) {
-        String token = request.getHeader(JwtTemplate.HEADER_STRING);
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader(jwtTemplate.getHeaderString());
         if (token == null) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        else if (JwtUtil.isTokenExpired(token)) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        else if (!JwtUtil.getTypeFromRefreshToken(token).equals(JwtTemplate.REFRESH_TYPE))
+        else if (jwtUtil.isTokenExpired(token)) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        else if (!jwtUtil.getTypeFromRefreshToken(token).equals(jwtTemplate.getRefreshType()))
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         else {
-            UserDetailsInterface userDetails = loadUserByUsername(JwtUtil.getUsernameFromRefreshToken(token));
+            UserDetailsInterface userDetails = loadUserByUsername(jwtUtil.getUsernameFromRefreshToken(token));
 
-            String jwtToken = JwtUtil.createToken(userDetails);
-            String refreshToken = JwtUtil.createRefreshToken(userDetails);
-            response.addHeader(JwtTemplate.HEADER_STRING, JwtTemplate.TOKEN_PREFIX + jwtToken);
-            response.addHeader(JwtTemplate.REFRESH_HEADER_STRING, JwtTemplate.TOKEN_PREFIX + refreshToken);
+            String jwtToken = jwtUtil.createToken(userDetails);
+            String refreshToken = jwtUtil.createRefreshToken(userDetails);
+            response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
+            response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
         }
     }
 
@@ -82,8 +84,7 @@ public class UserService implements UserDetailsService {
     }
 
     public boolean check(String username) {
-        if (userRepository.existsByUsername(username)) return true;
-        return false;
+        return userRepository.existsByUsername(username);
     }
 
     public UserInfoDto getInfo(String username) throws CantFindByIdException {
@@ -138,6 +139,6 @@ public class UserService implements UserDetailsService {
 
     public Map<String, String> testToken() {
         String userName = "user";
-        return Map.of("accessToken", JwtUtil.createToken(loadUserByUsername(userName)));
+        return Map.of("accessToken", jwtUtil.createToken(loadUserByUsername(userName)));
     }
 }
