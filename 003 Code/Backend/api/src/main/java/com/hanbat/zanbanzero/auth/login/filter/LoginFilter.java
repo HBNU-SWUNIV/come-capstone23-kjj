@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
+import com.hanbat.zanbanzero.exception.exceptions.LoginFilterException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import jakarta.servlet.*;
@@ -34,7 +35,7 @@ public class LoginFilter implements Filter {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {
-                throw new RuntimeException(e);
+                throw new LoginFilterException(e);
             }
             attemptAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
             chain.doFilter(request, response);

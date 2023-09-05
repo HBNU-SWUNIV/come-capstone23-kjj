@@ -41,15 +41,8 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, status);
     }
 
-    @ExceptionHandler(WrongRequestDetails.class)
-    public final ResponseEntity<Object> wrongRequestDetails(Exception ex, WebRequest request){
-        status = HttpStatus.BAD_REQUEST;
-        ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
-        return new ResponseEntity<>(exceptionResponse, status);
-    }
-
-    @ExceptionHandler(WrongParameter.class)
-    public final ResponseEntity<Object> wrongParameter(Exception ex, WebRequest request){
+    @ExceptionHandler({WrongRequestDetails.class, WrongParameter.class})
+    public final ResponseEntity<Object> wrongRequest(Exception ex, WebRequest request){
         status = HttpStatus.BAD_REQUEST;
         ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
         return new ResponseEntity<>(exceptionResponse, status);

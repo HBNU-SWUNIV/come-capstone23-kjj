@@ -1,6 +1,8 @@
 package com.hanbat.zanbanzero.exception.exceptions;
 
-public class SetFilterErrorResponseException extends  Exception{
+import java.io.IOException;
+
+public class SetFilterErrorResponseException extends IOException{
 
     public SetFilterErrorResponseException(Exception message) {
         super(message);

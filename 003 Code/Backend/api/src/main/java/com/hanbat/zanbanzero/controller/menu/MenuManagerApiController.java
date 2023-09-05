@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import com.hanbat.zanbanzero.service.menu.MenuService;
@@ -54,7 +55,7 @@ public class MenuManagerApiController {
 
     @Operation(summary="관리자 - 메뉴 추가")
     @PostMapping("menu")
-    public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter {
+    public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter, UploadFileException {
         if (dto == null || !dto.check()) throw new WrongParameter("잘못된 데이터 정보입니다.");
 
         String filePath = (file != null) ? menuImageService.uploadImage(file, uploadDir) : null;

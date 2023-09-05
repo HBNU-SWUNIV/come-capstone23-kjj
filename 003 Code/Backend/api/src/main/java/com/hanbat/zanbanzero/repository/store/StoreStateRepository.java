@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.repository.store;
 
 import com.hanbat.zanbanzero.entity.store.StoreState;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;

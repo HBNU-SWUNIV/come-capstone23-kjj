@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.exception.filter;
 
-import com.hanbat.zanbanzero.exception.exceptions.SetFilterErrorResponseException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,11 +17,7 @@ public class ExceptionHandlerBeforeKeycloak extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         }
         catch (HttpClientErrorException e) {
-            try {
-                SetFilterErrorResponse.setResponse(request, response, HttpStatus.UNAUTHORIZED,"Keycloak 인증에 실패하였습니다.");
-            } catch (SetFilterErrorResponseException ex) {
-                throw new RuntimeException(ex);
-            }
+            SetFilterErrorResponse.setResponse(request, response, HttpStatus.UNAUTHORIZED,"Keycloak 인증에 실패하였습니다.");
         }
     }
 }

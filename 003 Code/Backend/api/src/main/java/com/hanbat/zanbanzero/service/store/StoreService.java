@@ -12,6 +12,7 @@ import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
@@ -67,7 +68,7 @@ public class StoreService {
     }
 
     @Transactional
-    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException {
+    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException, UploadFileException {
         Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
         else imageService.updateImage(file, store.getImage());

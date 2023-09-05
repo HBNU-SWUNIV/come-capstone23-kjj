@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.image;
 
+import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,14 +17,14 @@ public class ImageService {
         return Paths.get(uploadDir, filename).toString();
     }
 
-    public String uploadImage(MultipartFile file, String uploadDir) {
+    public String uploadImage(MultipartFile file, String uploadDir) throws UploadFileException {
         String fileName = RandomStringUtils.randomAlphanumeric(10);
         String filePath = makeFilePath(fileName + ".png", uploadDir);
         try {
             Files.createDirectories(Paths.get(uploadDir));
             Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new RuntimeException("파일 업로드 실패");
+            throw new UploadFileException("파일 업로드 실패");
         }
         return filePath;
     }
