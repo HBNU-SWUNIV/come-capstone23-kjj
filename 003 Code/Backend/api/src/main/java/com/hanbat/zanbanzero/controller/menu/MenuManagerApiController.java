@@ -84,7 +84,7 @@ public class MenuManagerApiController {
 
     @Operation(summary="관리자 - 메뉴 수정")
     @PatchMapping("menu/{id}")
-    public ResponseEntity<MenuInfoDto> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException {
+    public ResponseEntity<MenuInfoDto> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, UploadFileException {
         return ResponseEntity.ok(menuService.updateMenu(dto, file, id, uploadDir));
     }
 

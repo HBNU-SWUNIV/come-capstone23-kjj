@@ -67,10 +67,9 @@ public class CountOrdersByDateTasklet implements Tasklet {
 
     private int getSales() {
         int sales = 0;
-        Map<String, Integer> nameToCostMap = createTodayOrder.getNameToCostMap();
-        for (String keys : resultMap.keySet()) {
-            sales += nameToCostMap.get(keys) * resultMap.get(keys);
-        }
+        Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
+        for (Map.Entry<String, Integer> entry : resultMap.entrySet()) sales += nameToCostMap.get(entry.getKey()) * entry.getValue();
+
         return sales;
     }
 

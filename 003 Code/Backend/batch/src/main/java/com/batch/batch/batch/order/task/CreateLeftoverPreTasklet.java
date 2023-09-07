@@ -22,7 +22,6 @@ import java.util.Map;
 public class CreateLeftoverPreTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final double aver = 120;
 
     private Map<String, Object> getCalculateData(Connection connection) throws SQLException {
         Map<String, Object> result = new HashMap<>();
@@ -57,6 +56,7 @@ public class CreateLeftoverPreTasklet implements Tasklet {
         String query = "insert into leftover_pre(calculate_id, predict) values(?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setLong(1, id);
+            double aver = 120;
             statement.setDouble(2, aver * today);
 
             statement.executeUpdate();

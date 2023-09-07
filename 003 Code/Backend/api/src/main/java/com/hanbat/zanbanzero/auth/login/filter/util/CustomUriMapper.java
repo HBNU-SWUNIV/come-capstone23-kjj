@@ -5,11 +5,10 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class CustomUriMapper {
-    private CreateTokenInterface createTokenInterface;
-
-    private String loginEndPath = "/login/id";
+    private final CreateTokenInterface createTokenInterface;
 
     public CustomUriMapper(ServletRequest request) throws WrongParameter {
+        String loginEndPath = "/login/id";
         if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {
             createTokenInterface = new CreateUserTokenImpl();
         }

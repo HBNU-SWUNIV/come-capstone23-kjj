@@ -3,6 +3,7 @@ package com.batch.batch.batch.order.task;
 import com.batch.batch.pojo.Order;
 import com.batch.batch.pojo.UserPolicy;
 import com.batch.batch.tools.DateTools;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
@@ -28,15 +29,12 @@ public class CreateTodayOrder {
 
     private final DataSource dataSource;
 
-    private static Map<Long, String> idToNameMap = new HashMap<>();
+    private static final Map<Long, String> idToNameMap = new HashMap<>();
+    @Getter
     private static Map<String, Integer> nameToCostMap = new HashMap<>();
 
     public CreateTodayOrder(@Qualifier("dataDataSource") DataSource dataSource) {
         this.dataSource = dataSource;
-    }
-
-    public static Map<String, Integer> getNameToCostMap() {
-        return nameToCostMap;
     }
 
     public static void clearNameToCostMap() {

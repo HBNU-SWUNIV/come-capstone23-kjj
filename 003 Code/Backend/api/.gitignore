@@ -29,8 +29,6 @@ out/
 ### Web Backend ###
 ../.env
 data
-gradlew
-gradlew.bat
 
 ### NetBeans ###
 /nbproject/private/

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -26,7 +27,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
     private static Map<Long, String> menuIdToNameMap = new HashMap<>();
     private static Map<String, Long> menuNameToIdMap = new HashMap<>();
 
-    private Long calculateCheck(Connection connection, String today, String day) throws Exception {
+    private Long calculateCheck(Connection connection, String today, String day) throws SQLException {
         if (day.equals("monday")) {
             String query = "insert into calculate(date, today, sales) values(?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -41,14 +42,13 @@ public class CreateCalculatePreTasklet implements Tasklet {
             statement.setString(1, today);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                Long id = resultSet.getLong("id");
-                return id;
+                return resultSet.getLong("id");
             }
         }
         return null;
     }
 
-    private void initMenu(Connection connection) throws Exception {
+    private void initMenu(Connection connection) throws SQLException {
         String query = "select id, name from menu";
         try (ResultSet resultSet = connection.prepareStatement(query).executeQuery()) {
             while (resultSet.next()) {
@@ -103,9 +103,11 @@ public class CreateCalculatePreTasklet implements Tasklet {
 
                 String menu = resultSet.getString("food");
                 Map<String, Integer> foods = objectMapper.readValue(menu, Map.class);
-                for (String key : foods.keySet()) {
-                    if (result.containsKey(key)) result.put(key, result.get(key) + foods.get(key) * map.get(menuName));
-                    else result.put(key, foods.get(key) * map.get(menuName));
+                for (Map.Entry<String, Integer> entry : foods.entrySet()) {
+                    String key = entry.getKey();
+                    Integer value = entry.getValue();
+                    if (result.containsKey(key)) result.put(key, result.get(key) + value * map.get(menuName));
+                    else result.put(key, value * map.get(menuName));
                 }
             }
         }
@@ -125,7 +127,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
     }
 
     @Override
-    public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+    public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Connection connection = dataSource.getConnection();
         JobParameters jobParameters = contribution.getStepExecution().getJobParameters();
 

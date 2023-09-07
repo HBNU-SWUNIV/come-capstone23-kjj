@@ -9,6 +9,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class DateTools {
+    private DateTools() throws IllegalArgumentException {
+        throw new IllegalArgumentException("DateTools can not init");
+    }
+
     public static String getToday() {
         LocalDate date = LocalDate.now();
         DayOfWeek dayOfWeek = date.getDayOfWeek();

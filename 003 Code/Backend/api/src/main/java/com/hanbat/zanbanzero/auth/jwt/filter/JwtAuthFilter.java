@@ -21,9 +21,8 @@ import java.io.*;
 
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
-    private UserRepository userRepository;
-    private JwtTemplate jwtTemplate;
-    private String managerApiPrefix = "/api/manager";
+    private final UserRepository userRepository;
+    private final JwtTemplate jwtTemplate;
 
     public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTemplate jwtTemplate) {
         super(authenticationManager);
@@ -46,6 +45,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String username = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("username").asString();
         String roles = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("roles").asString();
 
+        String managerApiPrefix = "/api/manager";
         if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족");
 
         if (username != null) {

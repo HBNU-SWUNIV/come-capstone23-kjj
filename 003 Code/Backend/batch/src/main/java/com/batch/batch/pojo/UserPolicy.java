@@ -9,11 +9,11 @@ public class UserPolicy {
     private boolean wednesday;
     private boolean thursday;
     private boolean friday;
-    private Long default_menu;
-    private Long user_id;
+    private Long defaultMenu;
+    private Long userId;
 
     public UserPolicy(String defaultMenu, String userId) {
-        default_menu = Long.valueOf(defaultMenu);
-        user_id = Long.valueOf(userId);
+        this.defaultMenu = Long.valueOf(defaultMenu);
+        this.userId = Long.valueOf(userId);
     }
 }

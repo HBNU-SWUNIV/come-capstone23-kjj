@@ -1,6 +1,5 @@
 package com.batch.batch.tools;
 
-import com.batch.batch.tools.DateTools;
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;

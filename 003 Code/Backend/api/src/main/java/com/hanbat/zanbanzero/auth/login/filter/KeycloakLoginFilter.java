@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,14 +45,10 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         KeycloakUserInfoDto userInfo = getUserInfoFromKeycloakServer(request.getParameter("token"));
         User user;
-        try {
-            user = User.of(userInfo, checkUserInfo(userInfo));
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        user = User.of(userInfo, checkUserInfo(userInfo));
         request.setAttribute("user", user);
 
         UserDetailsInterfaceImpl userDetails = new UserDetailsInterfaceImpl(user);
@@ -92,12 +89,12 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
         return response.getBody();
     }
 
-    private String checkUserInfo(KeycloakUserInfoDto dao) throws IllegalAccessException {
+    private String checkUserInfo(KeycloakUserInfoDto dao) throws KeycloakLoginException {
         String roleUser = "ROLE_USER";
         String roleManager = "ROLE_MANAGER";
         List<String> roles = Arrays.asList(dao.getRoles());
         if (roles.contains(roleManager)) return roleManager;
         else if (roles.contains(roleUser)) return roleUser;
-        else throw new IllegalAccessException("need role");
+        else throw new KeycloakLoginException("need role");
     }
 }

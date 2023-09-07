@@ -45,31 +45,31 @@ public class StoreService {
     private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
 
-    private final Long finalId = 1L;
-    private String uploadDir = "img/store";
+    private static final Long FINAL_ID = 1L;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public StoreDto isSetting() {
-        Store store = storeRepository.findById(finalId).orElse(null);
+        Store store = storeRepository.findById(FINAL_ID).orElse(null);
         if (store == null) return null;
         return StoreDto.of(store);
     }
 
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.of(storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new));
+        return StoreDto.of(storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new));
     }
 
     @Transactional
     public StoreDto setSetting(StoreDto dto) throws SameNameException {
-        if (storeRepository.existsById(finalId)) throw new SameNameException("중복된 요청입니다.");
+        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("중복된 요청입니다.");
 
-        return StoreDto.of(storeRepository.save(Store.of(finalId, dto)));
+        return StoreDto.of(storeRepository.save(Store.of(FINAL_ID, dto)));
     }
 
     @Transactional
     public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException, UploadFileException {
-        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
+        String uploadDir = "img/store";
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
         else imageService.updateImage(file, store.getImage());
     }
@@ -118,7 +118,7 @@ public class StoreService {
 
     @Transactional
     public StoreDto updateStoreTitle(StoreDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
         store.setName(dto);
 
         return StoreDto.of(store);
@@ -126,7 +126,7 @@ public class StoreService {
 
     @Transactional
     public StoreDto updateStoreInfo(StoreDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(finalId).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
         store.setInfo(dto);
 
         return StoreDto.of(store);
@@ -137,7 +137,7 @@ public class StoreService {
         LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(finalId), date, off));
+        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, off));
         else storeState.setOff(off);
         return StoreStateDto.of(storeState);
     }

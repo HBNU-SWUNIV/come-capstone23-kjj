@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class KeycloakUserInfoDto {
     private String sub;
-    private boolean email_verified;
+    private boolean emailVerified;
     private String[] roles;
     private String name;
-    private String preferred_username;
-    private String given_name;
-    private String family_name;
+    private String preferredUsername;
+    private String givenName;
+    private String familyName;
 }
