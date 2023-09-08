@@ -95,6 +95,6 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
         List<String> roles = Arrays.asList(dao.getRoles());
         if (roles.contains(roleManager)) return roleManager;
         else if (roles.contains(roleUser)) return roleUser;
-        else throw new KeycloakLoginException("need role");
+        else throw new KeycloakLoginException("need roles : " + roles);
     }
 }

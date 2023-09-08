@@ -6,6 +6,8 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Component
@@ -15,9 +17,10 @@ public class JwtUtil {
     private static final String USERNAME = "username";
 
     public String createToken(UserDetailsInterface userDetails) {
+        LocalDateTime localDateTime = LocalDateTime.now().plusMinutes(jwtTemplate.getExpiration());
         return JWT.create()
                 .withSubject(jwtTemplate.getTokenPrefix())
-                .withExpiresAt(new Date(System.currentTimeMillis() + jwtTemplate.getExpiration()))
+                .withExpiresAt(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()))
                 .withClaim("id", userDetails.getMemberId())
                 .withClaim(USERNAME, userDetails.getUsername())
                 .withClaim("roles", userDetails.getMemberRoles())
@@ -25,9 +28,10 @@ public class JwtUtil {
     }
 
     public String createRefreshToken(UserDetailsInterface userDetails) {
+        LocalDateTime localDateTime = LocalDateTime.now().plusDays(jwtTemplate.getExpiration());
         return JWT.create()
                 .withSubject(jwtTemplate.getTokenPrefix())
-                .withExpiresAt(new Date(System.currentTimeMillis() + jwtTemplate.getRefreshExpiration()))
+                .withExpiresAt(Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant()))
                 .withClaim(USERNAME, userDetails.getUsername())
                 .withClaim("type", jwtTemplate.getRefreshType())
                 .sign(Algorithm.HMAC256(jwtTemplate.getSecret()));

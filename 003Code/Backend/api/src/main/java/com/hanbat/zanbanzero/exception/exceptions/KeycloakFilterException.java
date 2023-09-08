@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class KeycloakFilterException extends IOException {
 
-    public KeycloakFilterException(Exception message) {
-        super(message);
+    public KeycloakFilterException(String message, Exception e) {
+        super(message, e);
     }
 }

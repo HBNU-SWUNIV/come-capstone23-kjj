@@ -4,8 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class CreateTokenException extends RuntimeException{
-    public CreateTokenException() {}
-
-    public CreateTokenException(String m) { super(m); }
+    public CreateTokenException(Exception e) { super(e); }
 
 }
