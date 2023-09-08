@@ -4,10 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class SameNameException extends Exception{
-    public SameNameException() {
-    }
-
-    public SameNameException(String message) {
-        super(message);
+    public SameNameException(String m) {
+        super(m);
     }
 }
