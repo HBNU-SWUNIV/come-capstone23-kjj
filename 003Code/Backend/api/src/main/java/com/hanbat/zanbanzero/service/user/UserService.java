@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
@@ -77,8 +78,8 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
-        User user = userRepository.findByUsername(dto.getUsername());
+    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
+        User user = userRepository.findByUsername(username);
         if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
         else throw new WrongRequestDetails("비밀번호 틀림");
     }
@@ -89,7 +90,7 @@ public class UserService implements UserDetailsService {
 
     public UserInfoDto getInfo(String username) throws CantFindByIdException {
         User user = userRepository.findByUsername(username);
-        if (user == null) throw new CantFindByIdException();
+        if (user == null) throw new CantFindByIdException(username);
 
         return UserInfoDto.of(user);
     }

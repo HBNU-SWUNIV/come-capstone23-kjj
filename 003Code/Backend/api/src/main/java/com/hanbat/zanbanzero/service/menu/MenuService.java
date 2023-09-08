@@ -18,6 +18,7 @@ import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,16 +37,16 @@ public class MenuService {
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
 
-    private static final String MENU_CACHE_KEY = "1";
+    private static final String MENU_DTO_CACHE_KEY = "1";
     private static final String CACHE_MANAGER = "cacheManager";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Cacheable(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
-    public List<MenuUserInfoDto> getMenus() {
-        return menuRepository.findAllWithMenuInfo().stream()
-                .map(dto -> MenuUserInfoDto.of(dto))
-                .toList();
+    @Cacheable(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    public MenuUserInfoDtos getMenus() {
+        return MenuUserInfoDtos.of(menuRepository.findAllWithMenuInfo().stream()
+                .map(MenuUserInfoDto::of)
+                .toList());
     }
 
     @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
@@ -63,7 +64,6 @@ public class MenuService {
     public Boolean isPlanned() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("데이터 중복입니다.");
 
@@ -94,7 +94,10 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @Caching(evict = {
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    })
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException, UploadFileException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(CantFindByIdException::new);
@@ -110,7 +113,10 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @Caching(evict = {
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    })
     public MenuDto deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
@@ -123,14 +129,14 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
-    public MenuDto setSoldOut(Long id, char type) throws CantFindByIdException, WrongParameter {
+    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(CantFindByIdException::new);
 
         switch (type) {
-            case 'n' -> menu.setSold(false);
-            case 'y' -> menu.setSold(true);
-            default -> throw new WrongParameter("잘못된 파라미터입니다.");
+            case "n" -> menu.setSold(false);
+            case "y" -> menu.setSold(true);
+            default -> throw new WrongParameter(type);
         }
         return MenuDto.of(menu);
     }

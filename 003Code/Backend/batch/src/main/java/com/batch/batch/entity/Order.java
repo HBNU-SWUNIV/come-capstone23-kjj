@@ -1,4 +1,4 @@
-package com.batch.batch.pojo;
+package com.batch.batch.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

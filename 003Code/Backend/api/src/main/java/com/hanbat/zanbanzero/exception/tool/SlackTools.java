@@ -19,10 +19,6 @@ public class SlackTools {
     @Value("${slack.webhook.url}") private String slackUrl;
     private final Slack slack = Slack.getInstance();
 
-    public void makeProperties() {
-
-    }
-
     public void sendSlackMessage(Exception e, String method, String properties) {
         try {
             slack.send(slackUrl, payload(p -> p.text(method)

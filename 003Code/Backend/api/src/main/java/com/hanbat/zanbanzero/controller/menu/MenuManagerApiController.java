@@ -96,7 +96,7 @@ public class MenuManagerApiController {
 
     @Operation(summary="관리자 - 품절 지정")
     @PatchMapping("menu/{id}/sold/{type}")
-    public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable char type) throws CantFindByIdException, WrongParameter {
+    public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {
         return ResponseEntity.ok(menuService.setSoldOut(id, type));
     }
 }

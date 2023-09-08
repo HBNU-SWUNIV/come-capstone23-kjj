@@ -11,19 +11,19 @@ spring:
     password: ${my.mysqlPassword}
 
 # data.sql
-  sql:
-    init:
-      mode: never
-    defer-datasource-initialization: true
-    open-in-view: false
-
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
       properties:
         hibernate:
           show_sql: true
           format_sql: true
+
+  sql:
+    init:
+      mode: always
+    defer-datasource-initialization: true
+    open-in-view: false
 
 # Redis
   cache:

@@ -1,7 +1,7 @@
 package com.batch.batch.batch.order.task;
 
-import com.batch.batch.pojo.Order;
-import com.batch.batch.pojo.UserPolicy;
+import com.batch.batch.entity.Order;
+import com.batch.batch.entity.UserPolicy;
 import com.batch.batch.tools.DateTools;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -78,8 +78,8 @@ public class CreateTodayOrder {
 
         return item -> {
             boolean exists;
-            Long userId = item.getUser_id();
-            Long defaultMenu = item.getDefault_menu();
+            Long userId = item.getUserId();
+            Long defaultMenu = item.getDefaultMenu();
             String date = DateTools.getDate();
 
             try (Connection connection = dataSource.getConnection()) {

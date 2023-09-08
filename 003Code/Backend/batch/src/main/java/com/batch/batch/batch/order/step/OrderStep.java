@@ -2,10 +2,9 @@ package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.task.CountOrdersByDateTasklet;
 import com.batch.batch.batch.order.task.CreateTodayOrder;
-import com.batch.batch.pojo.Order;
-import com.batch.batch.pojo.UserPolicy;
+import com.batch.batch.entity.Order;
+import com.batch.batch.entity.UserPolicy;
 import com.batch.batch.tools.ConnectionHandler;
-import com.batch.batch.tools.SlackTools;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
