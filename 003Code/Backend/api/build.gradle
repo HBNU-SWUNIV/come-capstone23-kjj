@@ -50,6 +50,9 @@ dependencies {
 	// QRCode
 	implementation 'com.google.zxing:javase:3.4.1'
 
+	// slack
+	implementation 'com.slack.api:slack-api-client:1.29.0'
+
 	// test
 	testImplementation 'org.projectlombok:lombok:1.18.22'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'

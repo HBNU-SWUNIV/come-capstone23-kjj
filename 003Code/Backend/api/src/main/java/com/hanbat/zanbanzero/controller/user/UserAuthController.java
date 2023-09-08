@@ -8,7 +8,6 @@ import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,14 +24,14 @@ public class UserAuthController {
     private final KeycloakProperties keycloakProperties;
 
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
-    @PostMapping("login/id")
+    @PostMapping("id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.ok(userService.getInfoForUsername(username));
     }
 
     @Operation(summary="Keycloak 로그인 페이지")
-    @GetMapping("login/keycloak/page")
+    @GetMapping("keycloak/page")
     public RedirectView redirectKeycloakLoginPage() {
         RedirectView redirectView = new RedirectView();
         String uri = keycloakProperties.getHost() +
@@ -47,21 +46,21 @@ public class UserAuthController {
         return redirectView;
     }
 
-    @GetMapping("login/keycloak/redirect")
+    @GetMapping("keycloak/redirect")
     public ResponseEntity<String> redirectAfterKeycloakLoginPage() {
         return ResponseEntity.ok("keycloak login success");
     }
 
     @Operation(summary="Keycloak 로그인")
     @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)
-    @PostMapping("login/keycloak")
+    @PostMapping("keycloak")
     public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) {
         User user = (User) request.getAttribute("user");
         return ResponseEntity.ok(userService.loginFromKeycloak(user));
     }
 
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
-    @PostMapping("login/refresh")
+    @PostMapping("refresh")
     public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
         userService.refreshToken(request, response);
         return ResponseEntity.ok("refresh success");
