@@ -1,0 +1,36 @@
+# env
+spring:
+  profiles:
+    include: env
+
+# Batch Table
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    jdbc-url: ${my.batchuri_docker}
+    username: ${my.mysqlUsername}
+    password: ${my.mysqlPassword}
+    data:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      jdbc-url: ${my.mysqluri_docker}
+      username: ${my.mysqlUsername}
+      password: ${my.mysqlPassword}
+
+# spring
+  main:
+    allow-bean-definition-overriding: true
+
+# batch
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+---
+spring:
+  config:
+    activate.on-profile: dev
+# DB
+  datasource:
+    jdbc-url: ${my.batchuri_local}
+    data:
+      jdbc-url: ${my.mysqluri_local}
