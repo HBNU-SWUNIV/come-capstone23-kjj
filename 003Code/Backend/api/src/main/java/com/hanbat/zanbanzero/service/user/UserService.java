@@ -81,7 +81,7 @@ public class UserService implements UserDetailsService {
     public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
         User user = userRepository.findByUsername(username);
         if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
-        else throw new WrongRequestDetails("비밀번호 틀림");
+        else throw new WrongRequestDetails("error");
     }
 
     public boolean check(String username) {
@@ -119,7 +119,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserPolicyDto setUserMenuPolicy(String username, Long menuId) throws CantFindByIdException, WrongParameter {
-        if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
+        if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
 
         Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);

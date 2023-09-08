@@ -56,7 +56,8 @@ public class MenuManagerApiController {
     @Operation(summary="관리자 - 메뉴 추가")
     @PostMapping("menu")
     public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter, UploadFileException {
-        if (dto == null || !dto.check()) throw new WrongParameter("잘못된 데이터 정보입니다.");
+        if (dto == null) throw new WrongParameter("dto : null");
+        else if (!dto.check()) throw new WrongParameter("dto : " + dto);
 
         String filePath = (file != null) ? menuImageService.uploadImage(file, uploadDir) : null;
         return ResponseEntity.ok(menuService.addMenu(dto, filePath));

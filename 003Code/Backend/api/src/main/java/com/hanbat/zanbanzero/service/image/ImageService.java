@@ -12,7 +12,13 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class ImageService {
-
+    /**
+     * 이미지 관련 처리 Service
+     *
+     * @param filename :
+     * @param uploadDir
+     * @return
+     */
     private String makeFilePath(String filename, String uploadDir) {
         return Paths.get(uploadDir, filename).toString();
     }

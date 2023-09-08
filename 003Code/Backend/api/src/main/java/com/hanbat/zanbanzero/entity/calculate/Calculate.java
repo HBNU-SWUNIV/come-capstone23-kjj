@@ -15,7 +15,6 @@ public class Calculate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private LocalDate date;
     private int today;
     private int sales;

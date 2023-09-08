@@ -5,8 +5,6 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.exceptions.JwtException;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,14 +24,14 @@ public class ManagerService implements UserDetailsService {
         return ManagerInfoDto.of(repository.findByUsername(username));
     }
 
-    public ManagerInfoDto getInfo(String username) throws JwtException, CantFindByIdException {
+    public ManagerInfoDto getInfo(String username) {
         return ManagerInfoDto.of(repository.findByUsername(username));
     }
 
     @Override
     public UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException {
         User manager = repository.findByUsername(username);
-        if (!manager.getRoles().equals("ROLE_MANAGER")) throw new UsernameNotFoundException("ManagerService - loadUserByUsername() : 잘못된 유저네임");
+        if (!manager.getRoles().equals("ROLE_MANAGER")) throw new UsernameNotFoundException("ManagerService - loadUserByUsername()");
         return new UserDetailsInterfaceImpl(manager);
     }
 

@@ -47,7 +47,7 @@ public class DateTools {
                     LocalDateTime.now().minusWeeks(1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
             case 1 ->
                     LocalDateTime.now().minusWeeks(2).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
-            default -> throw new WrongParameter("잘못된 타입입니다.");
+            default -> throw new WrongParameter("type(0 or 1) : " + type);
         };
     }
 

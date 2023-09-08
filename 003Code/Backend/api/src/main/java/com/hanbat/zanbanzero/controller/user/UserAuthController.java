@@ -69,7 +69,7 @@ public class UserAuthController {
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("join")
     public ResponseEntity<String> join(@RequestBody UserJoinDto dto) throws WrongRequestDetails {
-        if (!dto.checkForm()) throw new WrongRequestDetails("잘못된 정보입니다.");
+        if (!dto.checkForm()) throw new WrongRequestDetails("dto : " + dto);
         userService.join(dto);
 
         return ResponseEntity.ok("회원가입에 성공했습니다.");
