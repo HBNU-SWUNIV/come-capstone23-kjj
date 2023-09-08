@@ -24,7 +24,7 @@ public class ImageService {
             Files.createDirectories(Paths.get(uploadDir));
             Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UploadFileException("파일 업로드 실패");
+            throw new UploadFileException(String.format("fileName : %s / filePath : %s", fileName, filePath), e);
         }
         return filePath;
     }

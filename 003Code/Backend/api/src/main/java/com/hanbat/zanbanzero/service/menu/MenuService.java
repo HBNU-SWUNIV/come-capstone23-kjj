@@ -44,7 +44,7 @@ public class MenuService {
     @Cacheable(value = "MenuDto", key = MENU_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public List<MenuUserInfoDto> getMenus() {
         return menuRepository.findAllWithMenuInfo().stream()
-                .map(MenuUserInfoDto::of)
+                .map(dto -> MenuUserInfoDto.of(dto))
                 .toList();
     }
 
