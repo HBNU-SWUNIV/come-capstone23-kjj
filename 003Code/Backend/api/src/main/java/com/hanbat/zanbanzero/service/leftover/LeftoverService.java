@@ -74,7 +74,7 @@ public class LeftoverService {
         List<LeftoverAndPreDto> result = new ArrayList<>();
         for (Long id : calculates) {
             Leftover leftover = leftoverRepository.findById(id).orElse(new Leftover(null, null, 0));
-            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(CantFindByIdException::new);
+            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
             result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
         }

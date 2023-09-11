@@ -31,7 +31,7 @@ public class CreateTodayOrder {
 
     private static final Map<Long, String> idToNameMap = new HashMap<>();
     @Getter
-    private static Map<String, Integer> nameToCostMap = new HashMap<>();
+    private static final Map<String, Integer> nameToCostMap = new HashMap<>();
 
     public CreateTodayOrder(@Qualifier("dataDataSource") DataSource dataSource) {
         this.dataSource = dataSource;

@@ -27,7 +27,7 @@ public class MenuManagerApiController {
     private final MenuService menuService;
     private final ImageService menuImageService;
 
-    private String uploadDir = "img/menu";
+    private final String uploadDir = "img/menu";
 
     @Operation(summary="전체 메뉴 조회 - 관리자 전용")
     @GetMapping("menu")

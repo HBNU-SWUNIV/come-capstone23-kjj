@@ -12,13 +12,6 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class ImageService {
-    /**
-     * 이미지 관련 처리 Service
-     *
-     * @param filename :
-     * @param uploadDir
-     * @return
-     */
     private String makeFilePath(String filename, String uploadDir) {
         return Paths.get(uploadDir, filename).toString();
     }
@@ -35,7 +28,6 @@ public class ImageService {
         return filePath;
     }
 
-    // 이미지 업데이트
     public void updateImage(MultipartFile file, String oldPath) throws IOException {
         Files.copy(file.getInputStream(), Paths.get(oldPath), StandardCopyOption.REPLACE_EXISTING);
     }

@@ -25,7 +25,7 @@ public class UserApiController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    private JwtTemplate jwtTemplate = new JwtTemplate();
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
 
     @Operation(summary="회원탈퇴")
     @DeleteMapping("withdraw")

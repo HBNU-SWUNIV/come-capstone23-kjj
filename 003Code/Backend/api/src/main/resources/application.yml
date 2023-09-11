@@ -3,6 +3,18 @@ spring:
   profiles:
     include: db, actuator, keycloak, slack
 
+  application:
+    name: zanbanzero
+
+  # data.sql
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+        hibernate:
+          show_sql: true
+          format_sql: true
+
 # DB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -10,21 +22,9 @@ spring:
     username: ${my.mysqlUsername}
     password: ${my.mysqlPassword}
 
-# data.sql
-  jpa:
-    hibernate:
-      ddl-auto: create
-      properties:
-        hibernate:
-          show_sql: true
-          format_sql: true
-
   sql:
     init:
-      mode: always
-    defer-datasource-initialization: true
-    open-in-view: false
-
+      mode: never
 # Redis
   cache:
     type: redis
@@ -33,26 +33,29 @@ spring:
       host: localhost
       port: 6379
 ---
-spring:
-
-  #logging
-  logging:
-    level:
-      root: info
-
   # Actuator
-  management:
-    endpoints:
-      enabled-by-default: false
-      web:
-        exposure:
-          include: health, prometheus
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, prometheus
 
   endpoint:
     health:
       enabled: true
     prometheus:
       enabled: true
+
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      consume: b3_single
+      produce: b3_multi
+  zipkin:
+    tracing:
+      endpoint: "http://kjj.kjj.r-e.kr:9411/api/v2/spans"
 
 # Keycloak
 my:

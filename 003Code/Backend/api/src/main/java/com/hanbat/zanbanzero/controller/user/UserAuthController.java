@@ -10,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -61,8 +60,7 @@ public class UserAuthController {
 
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
     @PostMapping("refresh")
-    public ResponseEntity<String> refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        userService.refreshToken(request, response);
+    public ResponseEntity<String> refreshToken() {
         return ResponseEntity.ok("refresh success");
     }
 

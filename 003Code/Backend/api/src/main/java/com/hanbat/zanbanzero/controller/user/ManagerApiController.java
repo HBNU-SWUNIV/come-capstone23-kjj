@@ -21,7 +21,7 @@ import java.util.Map;
 public class ManagerApiController {
     private final ManagerService managerService;
     private final JwtUtil jwtUtil;
-    private JwtTemplate jwtTemplate = new JwtTemplate();
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
 
     @Operation(summary="관리자 로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("login/id")

@@ -43,6 +43,12 @@ public class JwtUtil {
         return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim(USERNAME).asString();
     }
 
+    public Long getIdFromToken(String token) {
+        token = token.replace(jwtTemplate.getTokenPrefix(), "");
+
+        return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("id").asLong();
+    }
+
     public String getTypeFromRefreshToken(String token){
         token = token.replace(jwtTemplate.getTokenPrefix(), "");
 

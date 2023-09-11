@@ -60,7 +60,7 @@ public class StoreService {
 
     @Transactional
     public StoreDto setSetting(StoreDto dto) throws SameNameException {
-        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("중복된 요청입니다.");
+        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("dto : " + dto);
 
         return StoreDto.of(storeRepository.save(Store.of(FINAL_ID, dto)));
     }
