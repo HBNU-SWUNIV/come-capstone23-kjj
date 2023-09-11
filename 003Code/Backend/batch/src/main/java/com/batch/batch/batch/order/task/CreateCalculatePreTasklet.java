@@ -24,8 +24,8 @@ import java.util.Map;
 public class CreateCalculatePreTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private static Map<Long, String> menuIdToNameMap = new HashMap<>();
-    private static Map<String, Long> menuNameToIdMap = new HashMap<>();
+    private static final Map<Long, String> menuIdToNameMap = new HashMap<>();
+    private static final Map<String, Long> menuNameToIdMap = new HashMap<>();
 
     private Long calculateCheck(Connection connection, String today, String day) throws SQLException {
         if (day.equals("monday")) {

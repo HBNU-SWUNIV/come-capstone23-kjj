@@ -23,8 +23,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
 
     private final ConnectionHandler connectionHandler;
     private final DataSource dataSource;
-    private final CreateTodayOrder createTodayOrder;
-    private Map<String, Integer> resultMap = new HashMap<>();
+    private final Map<String, Integer> resultMap = new HashMap<>();
 
     private Long initOrder(Connection connection, String date, int today, int sales) throws SQLException{
         Long id;
@@ -56,7 +55,7 @@ public class CountOrdersByDateTasklet implements Tasklet {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     String menu = resultSet.getString("menu");
-                    Integer count = resultSet.getInt("count");
+                    int count = resultSet.getInt("count");
                     result += count;
                     resultMap.put(menu, count);
                 }
@@ -80,27 +79,27 @@ public class CountOrdersByDateTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String date = DateTools.getDate();
-        Map<String, Integer> nameToCostMap = createTodayOrder.getNameToCostMap();
+        Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
         Connection connection = dataSource.getConnection();
 
         connectionHandler.execute(connection, () -> {
             int count = countTodayOrders(connection, date);
             int sales = getSales();
             Long id = initOrder(connection, date, count, sales);
-            for (String key : resultMap.keySet()) {
+            for (Map.Entry<String, Integer> data : resultMap.entrySet()) {
                 String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
                 try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
                     insertStatement.setLong(1, id);
-                    insertStatement.setString(2, key);
-                    insertStatement.setInt(3, resultMap.get(key));
-                    insertStatement.setInt(4, resultMap.get(key) * nameToCostMap.get(key));
+                    insertStatement.setString(2, data.getKey());
+                    insertStatement.setInt(3, data.getValue());
+                    insertStatement.setInt(4, data.getValue() * nameToCostMap.get(data.getKey()));
                     insertStatement.executeUpdate();
                 }
             }
             clear();
         });
 
-        createTodayOrder.clearNameToCostMap();
+        CreateTodayOrder.clearNameToCostMap();
         return RepeatStatus.FINISHED;
     }
 }

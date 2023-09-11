@@ -1,10 +1,9 @@
 package com.hanbat.zanbanzero.controller.menu;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
-import com.hanbat.zanbanzero.dto.menu.MenuDto;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
+import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
@@ -18,10 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @WebMvcTest(MenuManagerApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -38,8 +34,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         // 1. 정상 요청
         {
             // Given
-            List<MenuUserInfoDto> expected = new ArrayList<>();
-            expected.add(new MenuUserInfoDto());
+            MenuUserInfoDtos expected = new MenuUserInfoDtos();
             Mockito.when(menuService.getMenus()).thenReturn(expected);
 
             // When
@@ -203,7 +198,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "잘못된 id 입니다.";
-            Mockito.doThrow(new CantFindByIdException(expectedMsg)).when(menuService).deleteMenu(testId);
+            Mockito.doThrow(new CantFindByIdException()).when(menuService).deleteMenu(testId);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/manager/menu/1/del")).andReturn();
@@ -222,7 +217,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "반영되었습니다.";
-            char type = 'y';
+            String type = "y";
             Mockito.doNothing().when(menuService).setSoldOut(testId, type);
 
             // When
@@ -239,7 +234,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "반영되었습니다.";
-            char type = 'n';
+            String type = "n";
             Mockito.doNothing().when(menuService).setSoldOut(testId, type);
 
             // When
@@ -256,8 +251,8 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "잘못된 id 입니다.";
-            char type = 'y';
-            Mockito.doThrow(new CantFindByIdException(expectedMsg)).when(menuService).setSoldOut(testId, type);
+            String type = "y";
+            Mockito.doThrow(new CantFindByIdException(expectedMsg, new IllegalArgumentException())).when(menuService).setSoldOut(testId, type);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/sold/" + type)).andReturn();
@@ -273,7 +268,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "잘못된 파라미터입니다.";
-            char type = 'z';
+            String type = "z";
             Mockito.doThrow(new WrongParameter(expectedMsg)).when(menuService).setSoldOut(testId, type);
 
             // When

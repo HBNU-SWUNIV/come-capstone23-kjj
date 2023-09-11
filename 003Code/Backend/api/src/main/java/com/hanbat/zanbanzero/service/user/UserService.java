@@ -1,9 +1,8 @@
 package com.hanbat.zanbanzero.service.user;
 
-import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
@@ -18,8 +17,6 @@ import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,7 +39,6 @@ public class UserService implements UserDetailsService {
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
-    private final JwtTemplate jwtTemplate = new JwtTemplate();
 
     @Transactional
     public User join(UserJoinDto dto) {
@@ -60,27 +56,11 @@ public class UserService implements UserDetailsService {
         return UserInfoDto.of(user);
     }
 
-    public void refreshToken(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader(jwtTemplate.getHeaderString());
-        if (token == null) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        else if (jwtUtil.isTokenExpired(token)) response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        else if (!jwtUtil.getTypeFromRefreshToken(token).equals(jwtTemplate.getRefreshType()))
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        else {
-            UserDetailsInterface userDetails = loadUserByUsername(jwtUtil.getUsernameFromRefreshToken(token));
-
-            String jwtToken = jwtUtil.createToken(userDetails);
-            String refreshToken = jwtUtil.createRefreshToken(userDetails);
-            response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
-            response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
-        }
-    }
-
     @Transactional
-    public void withdraw(UserJoinDto dto) throws WrongRequestDetails {
-        User user = userRepository.findByUsername(dto.getUsername());
+    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
+        User user = userRepository.findByUsername(username);
         if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
-        else throw new WrongRequestDetails("비밀번호 틀림");
+        else throw new WrongRequestDetails("error");
     }
 
     public boolean check(String username) {
@@ -89,14 +69,14 @@ public class UserService implements UserDetailsService {
 
     public UserInfoDto getInfo(String username) throws CantFindByIdException {
         User user = userRepository.findByUsername(username);
-        if (user == null) throw new CantFindByIdException();
+        if (user == null) throw new CantFindByIdException(username);
 
         return UserInfoDto.of(user);
     }
 
     public UserMypageDto getMyPage(String username) throws CantFindByIdException {
         Long id = userRepository.findByUsername(username).getId();
-        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         return UserMypageDto.createUserMyPageDto(userMypage);
     }
@@ -110,7 +90,7 @@ public class UserService implements UserDetailsService {
     @Transactional
     public UserPolicyDto setUserDatePolicy(UserPolicyDto dto, String username) throws CantFindByIdException {
         Long id = userRepository.findByUsername(username).getId();
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         policy.setPolicy(dto);
 
         return UserPolicyDto.of(policy);
@@ -118,10 +98,10 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserPolicyDto setUserMenuPolicy(String username, Long menuId) throws CantFindByIdException, WrongParameter {
-        if (!menuRepository.existsById(menuId)) throw new WrongParameter("잘못된 메뉴 ID");
+        if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
 
         Long id = userRepository.findByUsername(username).getId();
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         policy.setDefaultMenu(menuId);
 
         return UserPolicyDto.of(policy);
@@ -129,7 +109,7 @@ public class UserService implements UserDetailsService {
 
     public UserPolicyDto getUserPolicy(String username) throws CantFindByIdException {
         Long id = userRepository.findByUsername(username).getId();
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(CantFindByIdException::new);
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         return UserPolicyDto.of(policy);
     }
 

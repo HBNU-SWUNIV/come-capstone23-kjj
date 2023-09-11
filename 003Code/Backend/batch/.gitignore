@@ -27,9 +27,6 @@ out/
 !**/src/test/**/out/
 
 ### custom ###
-application-env.properties
-gradlew
-gradlew.bat
 
 
 ### NetBeans ###

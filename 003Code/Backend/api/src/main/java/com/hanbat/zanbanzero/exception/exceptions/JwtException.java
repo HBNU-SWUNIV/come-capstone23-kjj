@@ -4,10 +4,7 @@ import lombok.Getter;
 
 @Getter
 public class JwtException extends Exception{
-    public JwtException() {
-    }
-
-    public JwtException(String message) {
-        super(message);
+    public JwtException(String message, Exception e) {
+        super(message, e);
     }
 }

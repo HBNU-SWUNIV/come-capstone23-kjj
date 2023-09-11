@@ -16,7 +16,7 @@ public class ConnectionHandler {
             connection.commit();
         } catch (Exception e) {
             connection.rollback();
-            slackTools.sendSlackMessage(e, runnable.getClass().getName());
+            slackTools.sendSlackErrorMessage(e, runnable.getClass().getName());
             throw e;
         } finally {
             connection.close();

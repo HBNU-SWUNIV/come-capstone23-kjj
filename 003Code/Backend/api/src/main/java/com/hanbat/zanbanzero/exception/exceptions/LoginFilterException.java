@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public class LoginFilterException extends IOException {
 
-    public LoginFilterException(Exception message) {
-        super(message);
+    public LoginFilterException(String m, Exception message) {
+        super(m, message);
     }
 }

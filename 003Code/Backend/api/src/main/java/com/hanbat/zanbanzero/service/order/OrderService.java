@@ -11,6 +11,7 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
@@ -43,14 +44,16 @@ public class OrderService {
 
     private static final int PAGE_SIZE = 10;
 
-    private Menu getDefaultMenu(Long userId) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(CantFindByIdException::new);
-        return menuRepository.findById(policy.getDefaultMenu()).orElseThrow(CantFindByIdException::new);
+    private Long getDefaultMenuId(Long userId) throws CantFindByIdException {
+        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userId : " + userId));
+        Long defaultMenu = policy.getDefaultMenu();
+        if (defaultMenu == null) return null;
+        else return menuRepository.findById(defaultMenu).orElseThrow(() -> new CantFindByIdException("defaultMenu : " + defaultMenu)).getId();
     }
 
     @Transactional
     public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException {
-        Menu menu = menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new);
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
         return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
@@ -60,7 +63,7 @@ public class OrderService {
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
-        if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenu(id).getId(), date, false));
+        if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenuId(id), date, false));
         else order.setRecognizeToCancel();
         return OrderDto.of(order);
     }
@@ -115,12 +118,18 @@ public class OrderService {
         return LastOrderDto.of(order);
     }
 
-    public LastOrderDto getOrderById(Long id) throws CantFindByIdException {
-        Order order = orderRepository.findById(id).orElseThrow(CantFindByIdException::new);
+    @Transactional
+    public LastOrderDto getOrderById(Long userId, Long id) throws CantFindByIdException, WrongRequestDetails {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        if (order.getUser().getId() != userId) throw new WrongRequestDetails("userId : " + userId + " / orderId : " + id);
         return LastOrderDto.of(order);
     }
 
-    public void getOrderQr(HttpServletResponse response, Long id) throws WriterException, IOException {
+    @Transactional
+    public void getOrderQr(HttpServletResponse response, Long userId, Long id) throws WriterException, IOException, CantFindByIdException, WrongRequestDetails {
+        Long orderUserId = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getUser().getId();
+        if (orderUserId != userId) throw new WrongRequestDetails("orderUserId, userId : " + orderUserId + userId);
+
         String domain = "http://kjj.kjj.r-e.kr:8080";
         String endPoint = "/api/user/order/" + id;
         BufferedImage qrCode = createQRCode(domain + endPoint);

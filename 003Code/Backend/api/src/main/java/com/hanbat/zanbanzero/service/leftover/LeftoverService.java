@@ -35,7 +35,7 @@ public class LeftoverService {
     @Transactional
     public LeftoverDto setLeftover(LeftoverDto dto) throws WrongParameter {
         Calculate target = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
-        if (target == null) throw new WrongParameter("정산 데이터가 없습니다.");
+        if (target == null) throw new WrongParameter("Calculate : null");
 
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
         if (leftover != null) leftover.setLeftover(dto.getLeftover());
@@ -74,7 +74,7 @@ public class LeftoverService {
         List<LeftoverAndPreDto> result = new ArrayList<>();
         for (Long id : calculates) {
             Leftover leftover = leftoverRepository.findById(id).orElse(new Leftover(null, null, 0));
-            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(CantFindByIdException::new);
+            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
             result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
         }

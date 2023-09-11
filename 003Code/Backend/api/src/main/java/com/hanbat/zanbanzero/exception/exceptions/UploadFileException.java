@@ -6,10 +6,8 @@ import java.io.IOException;
 
 @Getter
 public class UploadFileException extends IOException{
-    public UploadFileException() {
-    }
 
-    public UploadFileException(String message) {
-        super(message);
+    public UploadFileException(String message, Exception e) {
+        super(message, e);
     }
 }

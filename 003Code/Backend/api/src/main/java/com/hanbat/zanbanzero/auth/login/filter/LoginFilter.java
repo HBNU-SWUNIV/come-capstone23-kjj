@@ -35,7 +35,7 @@ public class LoginFilter implements Filter {
             try {
                 customUriMapper = new CustomUriMapper(request);
             } catch (WrongParameter e) {
-                throw new LoginFilterException(e);
+                throw new LoginFilterException(((HttpServletRequest) request).getRequestURI(), e);
             }
             attemptAuthentication((HttpServletRequest) request, (HttpServletResponse) response);
             chain.doFilter(request, response);

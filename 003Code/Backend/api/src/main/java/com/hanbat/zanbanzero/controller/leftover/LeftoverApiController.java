@@ -24,8 +24,7 @@ public class LeftoverApiController {
     @Operation(summary="잔반 감소량 설정")
     @PostMapping("leftover")
     public ResponseEntity<LeftoverDto> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails, WrongParameter {
-        if (dto.getDate() != null) throw new WrongRequestDetails("날짜값은 생략되어야 합니다.");
-        if (dto.getLeftover() == null) throw new WrongRequestDetails("데이터가 부족합니다.");
+        if (dto.getLeftover() == null) throw new WrongRequestDetails("Leftover : null");
 
         return ResponseEntity.ok(leftoverService.setLeftover(dto));
     }
@@ -51,7 +50,7 @@ public class LeftoverApiController {
     @Operation(summary="지난주 잔반량 데이터 조회", description="월~금 5개 데이터")
     @GetMapping("leftover/last-week/{type}")
     public ResponseEntity<List<LeftoverDto>> getLastWeeksLeftovers(@PathVariable int type) throws WrongParameter {
-        if (type != 0 && type != 1) throw new WrongParameter("잘못된 타입입니다.");
+        if (type != 0 && type != 1) throw new WrongParameter("type(0 or 1) : " + type);
         return ResponseEntity.ok(leftoverService.getLastWeeksLeftovers(type));
     }
 }

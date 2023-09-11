@@ -12,7 +12,6 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 public class ImageService {
-
     private String makeFilePath(String filename, String uploadDir) {
         return Paths.get(uploadDir, filename).toString();
     }
@@ -24,12 +23,11 @@ public class ImageService {
             Files.createDirectories(Paths.get(uploadDir));
             Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UploadFileException("파일 업로드 실패");
+            throw new UploadFileException(String.format("fileName : %s / filePath : %s", fileName, filePath), e);
         }
         return filePath;
     }
 
-    // 이미지 업데이트
     public void updateImage(MultipartFile file, String oldPath) throws IOException {
         Files.copy(file.getInputStream(), Paths.get(oldPath), StandardCopyOption.REPLACE_EXISTING);
     }

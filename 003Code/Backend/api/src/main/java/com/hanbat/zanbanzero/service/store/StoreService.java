@@ -12,7 +12,6 @@ import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
-import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
@@ -61,13 +60,13 @@ public class StoreService {
 
     @Transactional
     public StoreDto setSetting(StoreDto dto) throws SameNameException {
-        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("중복된 요청입니다.");
+        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("dto : " + dto);
 
         return StoreDto.of(storeRepository.save(Store.of(FINAL_ID, dto)));
     }
 
     @Transactional
-    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException, UploadFileException {
+    public void setStoreImage(MultipartFile file) throws CantFindByIdException, IOException {
         Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
         String uploadDir = "img/store";
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));

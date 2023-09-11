@@ -27,7 +27,7 @@ public class MenuManagerApiController {
     private final MenuService menuService;
     private final ImageService menuImageService;
 
-    private String uploadDir = "img/menu";
+    private final String uploadDir = "img/menu";
 
     @Operation(summary="전체 메뉴 조회 - 관리자 전용")
     @GetMapping("menu")
@@ -56,7 +56,8 @@ public class MenuManagerApiController {
     @Operation(summary="관리자 - 메뉴 추가")
     @PostMapping("menu")
     public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter, UploadFileException {
-        if (dto == null || !dto.check()) throw new WrongParameter("잘못된 데이터 정보입니다.");
+        if (dto == null) throw new WrongParameter("dto : null");
+        else if (!dto.check()) throw new WrongParameter("dto : " + dto);
 
         String filePath = (file != null) ? menuImageService.uploadImage(file, uploadDir) : null;
         return ResponseEntity.ok(menuService.addMenu(dto, filePath));
@@ -96,7 +97,7 @@ public class MenuManagerApiController {
 
     @Operation(summary="관리자 - 품절 지정")
     @PatchMapping("menu/{id}/sold/{type}")
-    public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable char type) throws CantFindByIdException, WrongParameter {
+    public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {
         return ResponseEntity.ok(menuService.setSoldOut(id, type));
     }
 }

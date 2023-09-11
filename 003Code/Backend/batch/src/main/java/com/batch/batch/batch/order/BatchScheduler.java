@@ -4,6 +4,9 @@ import com.batch.batch.tools.DateTools;
 import com.batch.batch.tools.SlackTools;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,11 +27,14 @@ public class BatchScheduler {
     private final Job secondJob;
     private final DataSource dataSource;
 
-    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource) {
+    private final SlackTools slackTools;
+
+    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource, SlackTools slackTools) {
         this.jobLauncher = jobLauncher;
         this.firstJob = firstJob;
         this.secondJob = secondJob;
         this.dataSource = dataSource;
+        this.slackTools = slackTools;
     }
 
     private JobParameters getFirstJobParameters() {
@@ -48,14 +54,19 @@ public class BatchScheduler {
                 .toJobParameters();
     }
 
-    @Scheduled(cron = "0 45 0 * * ?")
-    public void runOrderJob() throws Exception {
+    @Scheduled(cron = "10 7 11 * * ?")
+    public void runOrderJob() throws SQLException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String today = DateTools.getToday();
         String date = DateTools.getDate();
         boolean off = isOffDay(date);
         if (!today.equals("SATURDAY") && !today.equals("SUNDAY") && !off) {
             JobExecution run = jobLauncher.run(firstJob, getFirstJobParameters());
-            if (run.getStatus() != BatchStatus.FAILED) jobLauncher.run(secondJob, getSecondJobParameters());
+            if (run.getStatus() != BatchStatus.FAILED) {
+                slackTools.sendSlackMessage("firstJob");
+                JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
+                if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
+
+            }
         }
     }
 

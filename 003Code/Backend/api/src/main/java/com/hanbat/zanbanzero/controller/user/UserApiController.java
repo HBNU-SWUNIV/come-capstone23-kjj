@@ -2,8 +2,8 @@ package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -25,13 +25,13 @@ public class UserApiController {
 
     private final UserService userService;
     private final JwtUtil jwtUtil;
-    private JwtTemplate jwtTemplate = new JwtTemplate();
+    private final JwtTemplate jwtTemplate = new JwtTemplate();
 
-    @Operation(summary="회원탈퇴", description="username과 password를 입력받아 회원탈퇴")
+    @Operation(summary="회원탈퇴")
     @DeleteMapping("withdraw")
-    public ResponseEntity<String> withdraw(@RequestBody UserJoinDto dto) throws WrongRequestDetails {
-        if (!dto.checkForm()) throw new WrongRequestDetails("잘못된 정보입니다.");
-        userService.withdraw(dto);
+    public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails {
+        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        userService.withdraw(username, dto);
 
         return ResponseEntity.ok("탈퇴되었습니다.");
     }
