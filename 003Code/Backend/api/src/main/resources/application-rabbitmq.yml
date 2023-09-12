@@ -1,0 +1,14 @@
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: admin
+    password: 1234
+
+rabbitmq:
+  queue:
+    name: zanbanzero.queue
+  exchange:
+    name: zanbanzero.exchange
+  routing:
+    key: zanbanzero.key

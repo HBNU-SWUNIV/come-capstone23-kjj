@@ -17,6 +17,12 @@ import java.nio.file.Paths;
 @Controller
 public class ImageController {
 
+    /**
+     * 이미지 조회
+     *
+     * @param dir - DB에 저장된 경로
+     * @return 이미지 파일
+     */
     @Operation(summary="이미지 조회")
     @GetMapping("/api/image")
     public ResponseEntity<FileSystemResource> getImage(@RequestParam("dir") String dir) throws IOException {

@@ -16,6 +16,7 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -93,10 +94,8 @@ public class MenuService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
-    })
+    @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
+    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
@@ -128,7 +127,10 @@ public class MenuService {
     }
 
     @Transactional
-    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @Caching(evict = {
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    })
     public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 

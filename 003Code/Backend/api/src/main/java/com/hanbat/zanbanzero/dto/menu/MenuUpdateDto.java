@@ -28,7 +28,7 @@ public class MenuUpdateDto {
     }
 
     public boolean check() {
-        if (name == null || cost == null || details == null || usePlanner == null) {
+        if (name == null || cost == null || info == null || details == null || usePlanner == null) {
             return false;
         }
         return true;

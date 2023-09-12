@@ -38,6 +38,11 @@ public class SecurityConfig {
     private final LoginAuthenticationManagerImpl authenticationManager;
     private final KeycloakProperties properties;
 
+    /**
+     * Spring Security 설정을 무시하기 위한 빈
+     *
+     * @return WebSecurityCustomizer 빈
+     */
     @Bean
     public WebSecurityCustomizer customizer() {
         return web -> web.ignoring().requestMatchers(
@@ -47,6 +52,14 @@ public class SecurityConfig {
                 "/favicon.ico"
         );
     }
+
+    /**
+     * Spring Security 설정을 위한 빈
+     *
+     * @param http  HttpSecurity 객체
+     * @return SecurityFilterChain 빈
+     * @throws Exception http.sessionManagement()에서 throw 하는 예외
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

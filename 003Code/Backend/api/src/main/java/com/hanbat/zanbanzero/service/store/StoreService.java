@@ -3,16 +3,13 @@ package com.hanbat.zanbanzero.service.store;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
-import com.hanbat.zanbanzero.dto.store.StoreDto;
-import com.hanbat.zanbanzero.dto.store.StoreStateDto;
-import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
+import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
-import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
@@ -59,7 +56,7 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDto setSetting(StoreDto dto) throws SameNameException {
+    public StoreDto setSetting(StoreSettingDto dto) throws SameNameException {
         if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("dto : " + dto);
 
         return StoreDto.of(storeRepository.save(Store.of(FINAL_ID, dto)));
@@ -81,7 +78,7 @@ public class StoreService {
     }
 
     @Transactional
-    public List<StoreWeekendDto> getLastWeeksUser() throws WrongParameter {
+    public List<StoreWeekendDto> getLastWeeksUser() {
         List<StoreWeekendDto> result = new ArrayList<>();
         LocalDate date = DateTools.getLastWeeksMonday(0);
 
@@ -116,24 +113,24 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreDto updateStoreTitle(StoreDto dto) throws CantFindByIdException {
+    public StoreDto updateStoreTitle(StoreTitleDto dto) throws CantFindByIdException {
         Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
-        store.setName(dto);
+        store.setName(dto.getName());
 
         return StoreDto.of(store);
     }
 
     @Transactional
-    public StoreDto updateStoreInfo(StoreDto dto) throws CantFindByIdException {
+    public StoreDto updateStoreInfo(StoreInfoDto dto) throws CantFindByIdException {
         Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
-        store.setInfo(dto);
+        store.setInfo(dto.getInfo());
 
         return StoreDto.of(store);
     }
 
     @Transactional
     public StoreStateDto setOff(Boolean off, int year, int month, int day) {
-        LocalDate date = DateTools.makeDateFormatLocalDate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
         if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, off));
@@ -142,8 +139,8 @@ public class StoreService {
     }
 
     public List<StoreStateDto> getClosedDays(int year, int month) {
-        LocalDate start = DateTools.makeDateFormatLocalDate(year, month, 1);
-        LocalDate end = DateTools.makeDateFormatLocalDate(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = DateTools.makeLocalDate(year, month, 1);
+        LocalDate end = DateTools.makeLocalDate(year, month, DateTools.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
                 .map(StoreStateDto::of)

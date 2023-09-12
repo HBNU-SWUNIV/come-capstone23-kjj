@@ -67,6 +67,10 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus' // 마이크로미터 프로메테우스 구현체
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave' // Brave
 	implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // Zipkin
+
+	// rabbitMQ
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 tasks.named('test') {

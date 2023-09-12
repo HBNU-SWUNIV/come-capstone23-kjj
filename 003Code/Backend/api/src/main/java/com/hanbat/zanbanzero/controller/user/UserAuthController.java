@@ -13,7 +13,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 @RestController
 @RequestMapping("/api/user/login/")
@@ -22,6 +21,12 @@ public class UserAuthController {
     private final UserService userService;
     private final KeycloakProperties keycloakProperties;
 
+    /**
+     * username, password로 로그인
+     * response header에 토큰 발급
+     *
+     * @return UserInfoDto
+     */
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
@@ -29,27 +34,11 @@ public class UserAuthController {
         return ResponseEntity.ok(userService.getInfoForUsername(username));
     }
 
-    @Operation(summary="Keycloak 로그인 페이지")
-    @GetMapping("keycloak/page")
-    public RedirectView redirectKeycloakLoginPage() {
-        RedirectView redirectView = new RedirectView();
-        String uri = keycloakProperties.getHost() +
-                "/auth/realms/" +
-                keycloakProperties.getRealmName() +
-                "/protocol/openid-connect/auth" +
-                "?response_type=code" +
-                "&client_id=" + keycloakProperties.getClientId() +
-                "&scope=profile email roles openid" +
-                "&redirect_uri=" + keycloakProperties.getRedirectUri();
-        redirectView.setUrl(uri);
-        return redirectView;
-    }
-
-    @GetMapping("keycloak/redirect")
-    public ResponseEntity<String> redirectAfterKeycloakLoginPage() {
-        return ResponseEntity.ok("keycloak login success");
-    }
-
+    /**
+     * 클라이언트가 보낸 token으로 유저 인증
+     *
+     * @return UserInfoDto
+     */
     @Operation(summary="Keycloak 로그인")
     @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)
     @PostMapping("keycloak")
@@ -58,12 +47,22 @@ public class UserAuthController {
         return ResponseEntity.ok(userService.loginFromKeycloak(user));
     }
 
+    /**
+     * 토큰 재발급 로직
+     * response header에 access, refresh 모두 재발급
+     */
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
     @PostMapping("refresh")
     public ResponseEntity<String> refreshToken() {
         return ResponseEntity.ok("refresh success");
     }
 
+    /**
+     * 회원가입
+     *
+     * @param dto - username, password
+     * @throws WrongRequestDetails - username, password 둘 중 하나라도 null일 때 발생
+     */
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
     @PostMapping("join")
     public ResponseEntity<String> join(@RequestBody UserJoinDto dto) throws WrongRequestDetails {
@@ -73,6 +72,12 @@ public class UserAuthController {
         return ResponseEntity.ok("회원가입에 성공했습니다.");
     }
 
+    /**
+     * 아이디 중복 체크
+     *
+     * @param username - 로그인 아이디
+     * @return Boolean
+     */
     @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복체크")
     @GetMapping("join/check")
     public ResponseEntity<Boolean> check(@RequestParam("username") String username) {

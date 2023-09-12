@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: db, actuator, keycloak, slack
+    include: db, actuator, keycloak, slack, rabbitmq
 
   application:
     name: zanbanzero
@@ -14,25 +14,10 @@ spring:
         hibernate:
           show_sql: true
           format_sql: true
-
-# DB
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${my.mysqluri_local}
-    username: ${my.mysqlUsername}
-    password: ${my.mysqlPassword}
-
   sql:
     init:
       mode: never
-# Redis
-  cache:
-    type: redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
----
+
   # Actuator
 management:
   endpoints:
@@ -56,23 +41,11 @@ management:
   zipkin:
     tracing:
       endpoint: "http://kjj.kjj.r-e.kr:9411/api/v2/spans"
-
-# Keycloak
-my:
-  keycloak:
-    host: http://kjj.kjj.r-e.kr:8081
-    realm_name: test-app
-    client_id: test-client
-    redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
-    client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
 ---
 spring:
   config:
     activate:
       on-profile: prod
-  # DB
-  datasource:
-    url: ${my.mysqluri_docker}
 
   # data.sql
   sql:
@@ -92,9 +65,3 @@ spring:
 
     # logging
     root: error
-
-  # Redis
-  data:
-    redis:
-      host: db-redis
-      port: 6379

@@ -59,7 +59,7 @@ public class OrderService {
 
     @Transactional
     public OrderDto cancelOrder(String username, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -70,7 +70,7 @@ public class OrderService {
 
     @Transactional
     public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -145,10 +145,18 @@ public class OrderService {
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
-    public OrderDto getOrder(String username, int year, int month, int day) {
+    public List<OrderDto> getOrderMonth(Long id, int year, int month) {
+
+        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
+        return order.stream()
+                .map(OrderDto::of)
+                .toList();
+    }
+
+    public OrderDto getOrderDay(String username, int year, int month, int day) {
         Long id = userRepository.findByUsername(username).getId();
 
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeDateFormatLocalDate(year, month, day));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);
     }
