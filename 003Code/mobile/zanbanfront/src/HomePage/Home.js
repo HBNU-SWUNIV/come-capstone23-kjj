@@ -1,11 +1,14 @@
+/* eslint-disable */
 import React, { useState, useEffect } from "react";
-import qr from "../img/qr.png"
+import qrimg from "../img/qr.png"
 import food_icon from "../img/food_icon.png"
 import axios from "axios";
 import { format } from "date-fns";
 import { useMatch, useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
+import Swal from "sweetalert2";
+import { motion } from 'framer-motion';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -40,50 +43,50 @@ const Home = () => {
 
     useEffect(() => {
         axios
-        .get(`api/user/store`, config)
-        .then(res => {
-            setStoreInfo(res.data.name);
-        })
+            .get(`api/user/store`, config)
+            .then(res => {
+                setStoreInfo(res.data.name);
+            })
 
         axios.get(`${UserBaseApi}/planner/${t_year}/${t_month}/${t_day}`, config)
             .then(res => setTodayMenu(res.data.menus))
 
-        axios.get(`${UserBaseApi}/menu`, config)
+        axios.get(`/api/user/menu`, config)
             .then(res => setMenus(res.data))
 
-            axios
+        axios
             .get(`${UserBaseApi}/policy/date`, config)
             .then(res => {
-          
-              const receivedActiveDays = Object.values(res.data);
-              setActiveDays(receivedActiveDays);
-          
-              const receivedDefaultMenu = res.data.defaultMenu;
-          
-              axios.get(`${UserBaseApi}/menu`, config)
-                .then(res => {
-                  const menuList = res.data;
-                  const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
-                  if (defaultMenu) {
-                    setDefaultMenu(defaultMenu.name);
-                  }
-                })
-                .catch(error => {
-                  console.error("Failed to get menu list:", error);
-                });
+
+                const receivedActiveDays = Object.values(res.data);
+                setActiveDays(receivedActiveDays);
+
+                const receivedDefaultMenu = res.data.defaultMenu;
+
+                axios.get(`${UserBaseApi}/menu`, config)
+                    .then(res => {
+                        const menuList = res.data;
+                        const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
+                        if (defaultMenu) {
+                            setDefaultMenu(defaultMenu.name);
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Failed to get menu list:", error);
+                    });
             })
             .catch(error => {
-              console.error("Failed to get user policy date:", error);
+                console.error("Failed to get user policy date:", error);
             });
 
         axios.get(`${UserBaseApi}/state/menu`, config)
             .then(res => setGoodmenu(res.data.map(menu => menu.name)))
 
         axios
-        .get(`${UserBaseApi}/info`, config)
-        .then(res => {
-            setTest(res.data.id);
-        })
+            .get(`${UserBaseApi}/info`, config)
+            .then(res => {
+                setTest(res.data.id);
+            })
 
         console.log(test);
 
@@ -94,10 +97,7 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [goodmenu.length]);
 
-    const fadeDuration = 800;
-
-
-    const infoboxStyle = {
+    const infoBox = {
         fontSize: '15px',
         lineHeight: '1.5',
         width: '80%',
@@ -146,6 +146,7 @@ const Home = () => {
         boxShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)',
         display: 'flex',
         flexDirection: 'column',
+        height: '180px',
     };
 
     const menu1boxStyle = {
@@ -158,9 +159,21 @@ const Home = () => {
     };
 
     const [showDialog, setShowDialog] = useState(false);
+    const [qr, setQR] = useState([]);
 
     const handleqr = () => {
-        setShowDialog(true);
+        axios.get(`/api/user/order/${test}`, config)
+            .then(res => setQR(res.data),
+                setShowDialog(true))
+            .catch(error => {
+                setShowDialog(false);
+                console.error("QR GET 실패:", error);
+                Swal.fire({
+                    icon: 'warning',
+                    text: `발급된 정보가 없습니다.`,
+                    confirmButtonText: "확인",
+                })
+            });
     }
 
     const handleqrCancel = () => {
@@ -254,26 +267,26 @@ const Home = () => {
             },
             ...config,
         })
-        .then(() => {
-            console.log("패치 성공");
-            axios.get(`${UserBaseApi}/policy/date`, {
-                headers: {
-                    "Content-Type": "application/json",
-                    ...config.headers,
-                },
-            })
-            .then(res => {
-                console.log("GET 성공");
-                const receivedActiveDays = Object.values(res.data);
-                setActiveDays(receivedActiveDays);
+            .then(() => {
+                console.log("패치 성공");
+                axios.get(`${UserBaseApi}/policy/date`, {
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...config.headers,
+                    },
+                })
+                    .then(res => {
+                        console.log("GET 성공");
+                        const receivedActiveDays = Object.values(res.data);
+                        setActiveDays(receivedActiveDays);
+                    })
+                    .catch(error => {
+                        console.error("GET 실패:", error);
+                    });
             })
             .catch(error => {
-                console.error("GET 실패:", error);
+                console.error("패치 실패:", error);
             });
-        })
-        .catch(error => {
-            console.error("패치 실패:", error);
-        });
     };
     //     axios.patch(`${UserBaseApi}/policy/date`, config, activeDaysObject, {
     //         headers: {
@@ -356,7 +369,7 @@ const Home = () => {
 
     return (
         <div>
-            <div style={infoboxStyle}>
+            <div style={{ ...infoBox }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <div>
                         <p><span style={{ fontSize: '15px', fontWeight: 'bold', lineHeight: 2 }}>{storeInfo}</span></p>
@@ -364,9 +377,9 @@ const Home = () => {
                         <p>안녕하세요😄</p>
                     </div>
 
-                    <div style={qrbox} onClick={handleqr}>
+                    <div style={{ ...qrbox }} onClick={handleqr}>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
-                            <img src={qr} alt="QR코드" style={{ maxWidth: '50%', height: 'auto' }} />
+                            <img src={qrimg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto' }} />
                         </div>
                         <div style={{ marginTop: '10px', textAlign: 'center' }}>
                             <p style={{ lineHeight: 0 }}>{formattedDate}</p>
@@ -377,17 +390,23 @@ const Home = () => {
                 </div>
 
                 {showDialog && (
-                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '80%', textAlign: 'center' }}>
-                            <img src={qr} alt="QR코드" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%' }} />
-                            <p>예약자명: {user}님<br />예약번호: 123번
-                                ,<br />메뉴: 백반 정식</p>
-                            <p>예약일시: 2023-04-20 08:40</p>
+                    <motion.div
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '100%' }}
+                    transition={{ duration: 0.5 }} 
+                    style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '50%', textAlign: 'center' }}>
+                            <img src={qrimg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%' }} />
+                            <p>예약자 ID : {test}님
+                                <br />가격 : {qr.cost}원
+                                <br />메뉴 : {qr.menu}</p>
+                            <p>예약일 : {qr.orderDate}</p>
                             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10%' }}>
-                                <button style={ DialogButtonStyle } onClick={handleqrCancel}>확인</button>
+                                <button style={DialogButtonStyle} onClick={handleqrCancel}>확인</button>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -402,7 +421,7 @@ const Home = () => {
                     </div>
                     <div id="menu">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>현재 기본 메뉴</p>
-                        <p style={{ lineHeight: 0 }}>{defaultMenu ? defaultMenu : ( <> 등록 안됨{" "} </>)}</p>
+                        <p style={{ lineHeight: 0 }}>{defaultMenu ? defaultMenu : (<> 등록 안됨{" "} </>)}</p>
                     </div>
 
                 </div>
@@ -463,11 +482,11 @@ const Home = () => {
                                     style={{ ...menuboxStyle, backgroundColor: '#e3e3e3' }}
                                 >
                                     <img
-                                        style={{ maxWidth: '100%', height: '70%' }}
+                                        style={{ maxWidth: '100%', maxHeight: '100px', height: 'auto', height: '50%' }}
                                         src={s_menu.image ? `http://kjj.kjj.r-e.kr:8080/api/image?dir=${s_menu.image}` : food_icon}
                                         alt="이미지 없음"
                                     />
-                                    <p style={{ marginTop: '30px', marginBottom: 0, fontSize: '15px', fontWeight: 'bold' }}>{s_menu.name}</p>
+                                    <p style={{ marginTop: '10px', marginBottom: 0, fontSize: '15px', fontWeight: 'bold' }}>{s_menu.name}</p>
                                     <p style={{ lineHeight: 0 }}>{s_menu.cost}원</p>
                                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                         <p style={{ margin: 0, color: 'red' }}>품절</p>
@@ -482,11 +501,11 @@ const Home = () => {
                                     style={menuboxStyle}
                                 >
                                     <img
-                                        style={{ maxWidth: '100%', height: '70%' }}
+                                        style={{ maxWidth: '100%', maxHeight: '100px', height: 'auto', height: '50%' }}
                                         src={s_menu.image ? `http://kjj.kjj.r-e.kr:8080/api/image?dir=${s_menu.image}` : food_icon}
                                         alt="이미지 없음"
                                     />
-                                    <p style={{ marginTop: '30px', marginBottom: 0, fontSize: '15px', fontWeight: 'bold' }}>{s_menu.name}</p>
+                                    <p style={{ marginTop: '10px', marginBottom: 0, fontSize: '15px', fontWeight: 'bold' }}>{s_menu.name}</p>
                                     <p style={{ lineHeight: 0 }}>{s_menu.cost}원</p>
                                 </div>
                             )
@@ -496,7 +515,12 @@ const Home = () => {
             </div>
 
             {DetailPathMatch && (
-                <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <motion.div
+                initial={{ y: '100%' }}
+                animate={{ y: 0 }}
+                exit={{ y: '100%' }}
+                transition={{ duration: 0.5 }} 
+                style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '500px', textAlign: 'center' }}>
                         <img src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=${DetailPath?.image}`} alt="메뉴사진" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%', border: "1px solid black", borderRadius: '10px', }} />
                         <h1>{DetailPath.name}<br />{DetailPath.cost}원</h1>
@@ -508,7 +532,7 @@ const Home = () => {
                             <button style={{ ...DialogButtonStyle }} onClick={() => navigate('/home')}>취소</button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             )}
 
             <div style={{ marginBottom: '100px' }}></div>
