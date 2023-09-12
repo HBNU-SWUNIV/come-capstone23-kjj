@@ -12,25 +12,19 @@ import { Provider } from 'react-redux';
 import { ReactKeycloakProvider } from '@react-keycloak/web';
 import { CookiesProvider } from 'react-cookie';
 import keycloak from './auth/Keycloak';
+import { RecoilRoot } from 'recoil';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-// root.render(
-//   <React.StrictMode>
-//     <Provider store={store}>
-//       <PersistGate loading={null} persistor={persistor}>
-//         <RouterProvider router={router} />
-//       </PersistGate>
-//     </Provider>
-//   </React.StrictMode>,
-// );
 
 root.render(
   <Provider store={store}>
     <ReactKeycloakProvider authClient={keycloak}>
       <CookiesProvider>
-        <PersistGate loading={null} persistor={persistor}>
-          <RouterProvider router={router} />
-        </PersistGate>
+        <RecoilRoot>
+          <PersistGate loading={null} persistor={persistor}>
+            <RouterProvider router={router} />
+          </PersistGate>
+        </RecoilRoot>
       </CookiesProvider>
     </ReactKeycloakProvider>
   </Provider>,

@@ -1,9 +1,13 @@
+/* eslint-diable */
 import { BrowserView, MobileView } from 'react-device-detect'
 import { Outlet, useLocation } from 'react-router-dom';
 import Nav from './Nav/Nav';
+import Auth from './router/Auth';
+import { AnimatePresence } from 'framer-motion';
 
 function App() {
   const location = useLocation();
+
 
   return (
     <div className="App">
@@ -12,8 +16,12 @@ function App() {
         <h1>모바일 환경에서 접속해주세요.</h1>
       </BrowserView>
       <MobileView>
-        {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
-        <Outlet />
+        <AnimatePresence>
+          <Auth>
+            {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
+            <Outlet />
+          </Auth>
+        </AnimatePresence>
       </MobileView>
     </div>
 

@@ -5,6 +5,11 @@ import { R_login } from '../store';
 import { useDispatch } from 'react-redux';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
+import { useRecoilState } from 'recoil';
+import { isloginAtom } from '../atom/loginAtom';
+import Swal from "sweetalert2";
+import { motion } from 'framer-motion';
+
 
 const Login = () => {
     const [username, setusername] = useState('');
@@ -15,6 +20,7 @@ const Login = () => {
     const { keycloak } = useKeycloak();
     const [cookies, setCookie] = useCookies(['accesstoken']);
 
+    //키클락 로그인
     const handleSSOLogin = async () => {
         keycloak.login();
     }
@@ -25,6 +31,11 @@ const Login = () => {
             const keycloaktoken = response.headers.authorization;
             const [, accesstoken] = keycloaktoken.split('Bearer ');
             setCookie('accesstoken', accesstoken);
+            const refreshtoken = response.headers.refresh_token;
+            const [, refreshtoken1] = refreshtoken.split('Bearer ');
+            setCookie('refreshtoken', refreshtoken1);
+
+            navigate('/home');
         } catch (error) {
             console.error('키클락 토큰 생성 에러 발생:', error);
         }
@@ -32,11 +43,17 @@ const Login = () => {
 
     useEffect(() => {
         if (keycloak.authenticated) {
-            (cookies.accesstoken === undefined || cookies.accesstoken === '') && setKeyCloakToken();
-            (cookies.accesstoken !== undefined || cookies.accesstoken !== '') && navigate('/home');
+            if (!cookies.accesstoken) {
+                setKeyCloakToken();
+            } else {
+                navigate('/home');
+            }
         }
     }, [keycloak.authenticated, cookies.accesstoken]);
 
+
+    //로그인 여부 확인(리다이엑트)
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
 
     //일반 로그인
     const handleLogin = async () => {
@@ -54,16 +71,29 @@ const Login = () => {
             const refreshtoken = response.headers.refresh_token;
             const [, refreshtoken1] = refreshtoken.split('Bearer ');
             setCookie('refreshtoken', refreshtoken1);
+            console.log(accesstoken);
+            console.log(refreshtoken);
+            setIsLogin(true);
             navigate('/home')
 
         } catch (error) {
             console.log(error);
             if (error.response.status === 401) {
-                alert("ID와 패스워드를 확인하세요.");
+                Swal.fire({
+                    icon: 'warning',
+                    text: `ID와 비밀번호를 확인하세요.`,
+                    confirmButtonText: "확인",
+                })
             }
         }
     };
 
+    //엔터키 로그인
+    const handleOnKeyPress = e => {
+        if (e.key === 'Enter') {
+            handleLogin(); // Enter 입력이 되면 로그인 이벤트 실행
+        }
+    };
 
     const inputStyle = {
         width: '250px',
@@ -71,7 +101,6 @@ const Login = () => {
         borderRadius: '10px',
 
     };
-
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
@@ -96,7 +125,7 @@ const Login = () => {
                 <div style={{ padding: '5px', marginBottom: '10px' }}>
                     <label htmlFor="password">
                         <input type="password" id="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)}
-                            style={inputStyle} />
+                            style={inputStyle} onKeyPress={handleOnKeyPress} />
                     </label>
                 </div>
             </div>
@@ -114,12 +143,11 @@ const Login = () => {
             </div>
 
             <div style={{ marginTop: '40%', textAlign: 'center', width: '100%', color: '#A93528' }}>
-                <p><Link to="/SignUp" style={{ textDecoration: 'none' }}>
+                <p><Link to="/SignUp" style={{ color: '#A93528', textDecoration: 'none' }}>
                     회원가입
                 </Link></p>
             </div>
         </div>
-
 
     );
 };
