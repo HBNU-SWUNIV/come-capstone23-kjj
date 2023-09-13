@@ -88,8 +88,6 @@ const Home = () => {
                 setTest(res.data.id);
             })
 
-        console.log(test);
-
         const interval = setInterval(() => {
             setCurrentIdx((prevIdx) => (prevIdx + 1) % goodmenu.length);
         }, 2200);
@@ -158,23 +156,69 @@ const Home = () => {
         gap: '20px',
     };
 
+    //QR코드 부분에 오늘 날짜 출력
+    const today = new Date();
+
+    const formattedDate = `${today.toLocaleDateString('ko-KR', {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+    })} (${today.toLocaleString('ko-KR', { weekday: 'short' })})`;
+
+    const QRyear = today.getFullYear();
+    const QRmonth = String(today.getMonth() + 1).padStart(2, '0');
+    const QRday = String(today.getDate()).padStart(2, '0');
+
+    //이용일 조회
+    const [useDays, setUseDays] = useState([]);
+
     const [showDialog, setShowDialog] = useState(false);
     const [qr, setQR] = useState([]);
+    const [qrCodeImg, setQRCodeImg] = useState("");
 
     const handleqr = () => {
-        axios.get(`/api/user/order/${test}`, config)
+        const orderID = useDays.id;
+
+        axios.get(`/api/user/order/${orderID}`, config)
             .then(res => setQR(res.data),
                 setShowDialog(true))
             .catch(error => {
                 setShowDialog(false);
-                console.error("QR GET 실패:", error);
+                console.error("QR 정보 조회 실패:", error);
                 Swal.fire({
                     icon: 'warning',
                     text: `발급된 정보가 없습니다.`,
                     confirmButtonText: "확인",
                 })
             });
+
+            //qr정보 이미지로 인코딩
+            axios.get(`/api/user/order/${orderID}/qr`, config)
+            .then(res => {
+                // 이미지 데이터를 base64로 인코딩
+                const base64Image = btoa(
+                    new Uint8Array(res.data)
+                        .reduce((data, byte) => data + String.fromCharCode(byte), "")
+                );
+                setQRCodeImg(`data:image/png;base64,${base64Image}`);
+                // setQRCodeImg(res.data);
+            })
+            .catch(error => {
+                console.error("QR 이미지 생성 실패:", error);
+            });
+
+            console.log(qrCodeImg);
     }
+
+    useEffect(() => {
+        //이용일 조회
+        axios.get(`${UserBaseApi}/order/${QRyear}/${QRmonth}/${QRday}`, config)
+            .then(res => setUseDays(res.data))
+            .catch(error => {
+                console.error("유저 이용일 조회 실패", error);
+            });
+        //키클락 로그인은 적용X
+    }, [])
 
     const handleqrCancel = () => {
         setShowDialog(false);
@@ -197,15 +241,6 @@ const Home = () => {
         marginBottom: '10px',
         fontSize: '20px'
     }
-
-    //QR코드 부분에 오늘 날짜 출력
-    const today = new Date();
-
-    const formattedDate = `${today.toLocaleDateString('ko-KR', {
-        year: '2-digit',
-        month: '2-digit',
-        day: '2-digit',
-    })} (${today.toLocaleString('ko-KR', { weekday: 'short' })})`;
 
     const handleUsedateClick = () => {
         const usedatesetDiv = document.getElementById('usedateset');
@@ -241,7 +276,6 @@ const Home = () => {
         const menuDiv = document.getElementById('menu');
         const weekDays = [...document.querySelectorAll('.weekday')];
 
-        //receivedActiveDays이걸 추가해야될거 같은데
         const updatedActiveDays = [];
         weekDays.forEach((day) => {
             updatedActiveDays.push(day.classList.contains('active'));
@@ -288,31 +322,7 @@ const Home = () => {
                 console.error("패치 실패:", error);
             });
     };
-    //     axios.patch(`${UserBaseApi}/policy/date`, config, activeDaysObject, {
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     })
-    //         .then(() => {
-    //             console.log("패치 성공");
-    //             axios.get(`${UserBaseApi}/policy/date`, config)
-    //                 .then(res => {
-    //                     console.log("겟 성공");
-    //                     const receivedActiveDays = Object.values(res.data);
-    //                     setActiveDays(receivedActiveDays);
-    //                 })
-    //                 .catch(error => {
-    //                     console.error("겟 실패:", error);
-    //                 });
-    //         })
-    //         .catch(error => {
-    //             console.error("패치 실패:", error);
-    //         });
-    // };
-
-    // const menu_id = menus.map(menu => menu.id);
-    // console.log(menu_id)
-
+  
     const handlemenuSaveClick = () => {
         axios
             .patch(`${UserBaseApi}/policy/menu/${DetailPath.id}`, {}, config)
@@ -382,22 +392,28 @@ const Home = () => {
                             <img src={qrimg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto' }} />
                         </div>
                         <div style={{ marginTop: '10px', textAlign: 'center' }}>
-                            <p style={{ lineHeight: 0 }}>{formattedDate}</p>
-                            <p>중식</p>
-                            <p style={{ color: 'gray' }}>+크게보기</p>
+                            {useDays.length === 0 ? (
+                                <p style={{ margin: '0', color: "red" }}>발급 정보 없음</p>
+                            ) : (
+                                <>
+                                    <p style={{ margin: '0' }}>{formattedDate}</p>
+                                    <p style={{ margin: '0', color: 'green' }}>발급 완료</p>
+                                </>
+                            )}
+                            <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p>
                         </div>
                     </div>
                 </div>
 
                 {showDialog && (
                     <motion.div
-                    initial={{ y: '100%' }}
-                    animate={{ y: 0 }}
-                    exit={{ y: '100%' }}
-                    transition={{ duration: 0.5 }} 
-                    style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        initial={{ y: '100%' }}
+                        animate={{ y: 0 }}
+                        exit={{ y: '100%' }}
+                        transition={{ duration: 0.5 }}
+                        style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '50%', textAlign: 'center' }}>
-                            <img src={qrimg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%' }} />
+                            <img src={qrCodeImg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%' }} />
                             <p>예약자 ID : {test}님
                                 <br />가격 : {qr.cost}원
                                 <br />메뉴 : {qr.menu}</p>
@@ -417,7 +433,7 @@ const Home = () => {
                     </div>
                     <div id="nextusedate">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>다음 이용 예정일</p>
-                        <p style={{ lineHeight: 0 }}>2023-06-12(월)</p>
+                        <p style={{ lineHeight: 0 }}>정보 없음</p>
                     </div>
                     <div id="menu">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>현재 기본 메뉴</p>
@@ -516,19 +532,24 @@ const Home = () => {
 
             {DetailPathMatch && (
                 <motion.div
-                initial={{ y: '100%' }}
-                animate={{ y: 0 }}
-                exit={{ y: '100%' }}
-                transition={{ duration: 0.5 }} 
-                style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '500px', textAlign: 'center' }}>
-                        <img src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=${DetailPath?.image}`} alt="메뉴사진" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%', border: "1px solid black", borderRadius: '10px', }} />
-                        <h1>{DetailPath.name}<br />{DetailPath.cost}원</h1>
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '100%' }}
+                    transition={{ duration: 0.5 }}
+                    style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '400px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                            <img src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=${DetailPath?.image}`} alt="메뉴사진" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%', border: "1px solid black", borderRadius: '10px', }} />
+                            <div style={{marginTop: '10%'}}>
+                                <h1 style={{marginBottom: '0'}}>{DetailPath.name}</h1>
+                                <p style={{marginTop: '0'}}>{DetailPath.cost}원</p>
+                            </div>
+                        </div>
                         <p>{DetailPath.details}</p>
                         <p>{DetailPath.info}</p>
                         <p style={{ fontWeight: 'bold', marginTop: '30px' }}>선택하신 메뉴를 기본메뉴로 <br />등록하시겠습니까?</p>
                         <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10%' }}>
-                            <button style={{ ...DialogButtonStyle }} onClick={handlemenuSaveClick}>등록</button>
+                            <button style={{ ...DialogButtonStyle, backgroundColor: '#f7dfc8' }} onClick={handlemenuSaveClick}>등록</button>
                             <button style={{ ...DialogButtonStyle }} onClick={() => navigate('/home')}>취소</button>
                         </div>
                     </div>

@@ -148,11 +148,10 @@ const SignUp = () => {
 
     return (
         <motion.div
-        className="box"
         initial={{ y: '100%' }}
         animate={{ y: 0 }}
         exit={{ y: '100%' }}
-        transition={{ duration: 3, type: 'spring', stiffness: 120 }}
+        transition={{ duration: 0.5, stiffness: 120 }}
       >
         <div></div>
             <div className='sigunup' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>

@@ -10,6 +10,7 @@ import Graph from "../MyPage/Graph";
 import Setting from "../SettingPage/Setting";
 import Guide1 from "../SettingPage/Guide1";
 import Guide2 from "../SettingPage/Guide2";
+import Guide3 from "../SettingPage/Guide3";
 import BestMenu from "../HomePage/BestMenu";
 import RootContainer from './RootContainer';
 
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
                     {
                         path: '/guide2',
                         element: <Guide2 />
+                    },
+                    {
+                        path: '/guide3',
+                        element: <Guide3 />
                     },
                     {
                         path: '/myuse',

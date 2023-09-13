@@ -18,7 +18,7 @@ function App() {
       <MobileView>
         <AnimatePresence>
           <Auth>
-            {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/MyUse'].includes(location.pathname) && <Nav />}
+            {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/Guide3', '/MyUse'].includes(location.pathname) && <Nav />}
             <Outlet />
           </Auth>
         </AnimatePresence>

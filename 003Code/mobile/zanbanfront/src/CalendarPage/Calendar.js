@@ -194,6 +194,7 @@ function Calendar() {
                 console.error("유저 정책 조회 실패", error);
             });
 
+
         axios.get(`${UserBaseApi}/menu`, config)
             .then(res => setMenus(res.data))
 
@@ -271,8 +272,24 @@ function Calendar() {
     let dayss = [];
     let line = [];
 
+    const [idUseCheck, SetIdUseCheck] = useState([]);
     //달력 일 클릭시 해당 id페이지 출력
     const onDay = (id) => {
+        const idYear = id.substring(0, 4);
+        const idMonth = id.substring(4, 6);
+        const idDay = id.substring(6, 8);
+
+        axios
+            .get(`${UserBaseApi}/order/${idYear}/${idMonth}/${idDay}`, config)
+            .then(res => {
+                SetIdUseCheck(res.data.recognize);
+            })
+        //일 단위 이용일 검사해서 true이면 스위치 true로 설정하는건데 잘 동작 안됨(우선 순위는 아님)
+        if (idUseCheck === true) {
+            setCheckedStates[id] = 'true';
+            console.log(checkedStates[id]);
+        }
+
         navigate(`/calendar/${id}`);
     }
 
@@ -307,6 +324,8 @@ function Calendar() {
                             console.log(useMenuID);
                             return { ...prevState, [id]: menuName };
                         });
+                        //임시방편
+                        window.location.reload();
                     })
                     .catch((error) => {
                         console.error("수동 이용 에러발생");
@@ -331,6 +350,7 @@ function Calendar() {
                     .post(`${UserBaseApi}/order/cancel/${year}/${month}/${day}`, 'false', config)
                     .then(() => {
                         console.log("수동 이용 안함 성공");
+                        window.location.reload();
                     })
                     .catch((error) => {
                         console.error("수동 이용 안함 에러");
@@ -340,6 +360,40 @@ function Calendar() {
             }
         }
     };
+
+    useEffect(() => {
+        //이용일 조회
+        axios.get(`${UserBaseApi}/order/${format(currentMonth, 'yyyy')}/${format(currentMonth, 'MM')}`, config)
+            .then(res => setUseDays(res.data))
+            .catch(error => {
+                console.error("유저 이용일 조회 실패", error);
+            });
+        //키클락 로그인은 적용X
+
+    }, [format(currentMonth, 'MM')])
+
+    //이용일만 따로 저장
+    function getRecognizedOrderDates(data) {
+        return data
+            .filter(item => item.recognize === true)
+            .map(item => item.orderDate);
+    }
+    const recognizedOrderDates = getRecognizedOrderDates(useDays);
+    //메뉴만 따로 저장
+    function getRecognizedMenus(data) {
+        return data
+            .filter(item => item.recognize === true)
+            .map(item => item.menu);
+    }
+    const recognizedMenus = getRecognizedMenus(useDays);
+    //이용안하는 날 따로 저장
+    function getRecognizedNotUseDates(data) {
+        return data
+            .filter(item => item.recognize === false)
+            .map(item => item.orderDate);
+    }
+    const recognizedNotUseDates = getRecognizedNotUseDates(useDays);
+
 
     //취소버튼 클릭시 스위치 기본값으로
     const [originalCheckedStates, setOriginalCheckedStates] = useState({});
@@ -355,11 +409,8 @@ function Calendar() {
         return holidayDates.includes(formattedDay);
     }
 
-    //이용일 조회시 필요
-    const lastDayOfMonth = new Date(format(currentMonth, 'yyyy'), format(currentMonth, 'MM'), 0).getDate();
-    let getUseDay = [];
-    let getNotUseDay = [];
-
+    //10시30분 배경색 변환
+    const isAfter1030 = currentHour > 10 || (currentHour === 10 && currentMinute >= 30);
 
     //달력 생성
     while (day <= endDate) {
@@ -379,14 +430,18 @@ function Calendar() {
 
                 if (i >= 1 && i <= 5) {
                     const dayIndex = i - 1;
-
-                    if (Object.values(activeDays)[dayIndex] || checkedStates[id] || getUseDay.includes(id)) {  //이용일 원 배경색
-                        //setCheckedStates[id] = 'true';
+                    if (Object.values(activeDays)[dayIndex] || checkedStates[id] || recognizedOrderDates.includes(id)) {  //이용일 원 배경색
+                        // setCheckedStates[id] = 'true';
                         circlebackgroundColor = id < currentDate ? '#c0d4ab' : '#e0f7c8';
+                        //주이용일 이용안함 설정시 원 배경색 변경
+                        if(recognizedNotUseDates.includes(id)){
+                            circlebackgroundColor = id < currentDate ? '#dec8b4' : '#f7dfc8';
+                        }
+                        //나중에 추가로 주이용 설정한걸 10시30분에 마감하여 서버로 전송
                     }
 
 
-                } if (i === 0 || isHoliday(day)) {  //휴무 원 배경색
+                } if (i === 0 || isHoliday(day)) {  //휴무 원 배경색 (사용안함), 글자색
                     circlebackgroundColor = '#dec8f7';
                     textcolor = '#f44336';
 
@@ -401,12 +456,12 @@ function Calendar() {
                         style={{
                             ...DivDay,
                             // 10시30분 이후에 배경색 변하게 설정
-                            //시:currentHour, 분:currentMinute
-                            backgroundColor: id < currentDate ? '#f5f5f5' : 'white',
+                            backgroundColor: (id < currentDate) || (id === currentDate && isAfter1030 === true) ? '#f5f5f5' : 'white',
                             pointerEvents: isHoliday(day) || (i === 0 || i === 6) ? 'none' : 'auto'
                         }}
                         onClick={() => {
-                            if (id >= currentDate && !isHoliday(day) && !(i === 0 || i === 6)) {
+                            //마감 이후 클릭 불가능
+                            if (id >= currentDate && !isHoliday(day) && !(i === 0 || i === 6) && !(id === currentDate && isAfter1030 === true)) {
                                 onDay(id);
                             }
                         }}
@@ -422,14 +477,16 @@ function Calendar() {
                             )}
                         </div>
                         {(circlebackgroundColor === '#e0f7c8' || circlebackgroundColor === '#c0d4ab') && (
-                            <p style={{ textAlign: 'right', fontSize: '1vh', marginBottom: '1vh', marginTop: 0 }}>{useMenuIds[id] || defaultMenu}</p>
+                            <p style={{ textAlign: 'right', fontSize: '1vh', marginBottom: '1vh', marginTop: 0 }}>
+                                {/* 이용일 설정돼 있으면 해당하는 메뉴 출력*/}
+                                {recognizedOrderDates.includes(id) ? recognizedMenus[recognizedOrderDates.indexOf(id)] : useMenuIds[id] || defaultMenu}
+                            </p>
                         )}
                     </div>
                 );
             }
             day = addDays(day, 1);
         }
-
         line.push(
             <div style={DivWeek} key={shortid.generate()}>
                 {dayss}
@@ -481,42 +538,6 @@ function Calendar() {
                 console.error("유저 정책 조회 실패:", error);
             });
 
-
-        //여기를 살려야 됨
-
-        //{format(currentMonth, 'yyyy'), {format(currentMonth, 'MM'}을 기반으로 api호출 여기에 해당하는 useEffect는 달이 바뀔때마다 최산화
-        //값을 가져와서 recognize값을 통해 스위치 설정
-        //가져온 값을 배열에 저장?? const useRequest
-
-        // //이용일 조회
-        // const fetchData = async () => {
-        //     try {
-        //         const requests = [];
-        //         for (let useCheckDay = 1; useCheckDay <= lastDayOfMonth; useCheckDay++) {
-        //             requests.push(
-        //                 axios.get(`${UserBaseApi}/order/${format(currentMonth, 'yyyy')}/${format(currentMonth, 'MM')}/${useCheckDay}`, config)
-        //             );
-        //         }
-
-        //         const responses = await Promise.all(requests);
-        //         const updatedUseDays = responses.map(res => res.data).filter(data => data && data !== "");
-        //         setUseDays(updatedUseDays);
-        //         console.log(useDays);
-        //     } catch (error) {
-        //         console.error("유저 이용일 조회 실패", error);
-        //     }
-
-        //     const filteredUseDays = useDays.filter(item => item.recognize);
-        //     getUseDay = filteredUseDays.filter(item => item.recognize === true).map(item => item.orderDate);
-        //     getNotUseDay = filteredUseDays.filter(item => item.recognize === false).map(item => item.orderDate);
-        //     console.log(getUseDay);
-        //     console.log(getNotUseDay);
-
-
-        // };
-
-        // fetchData();
-
     }, [format(currentMonth, 'MM')])
 
     //메뉴 리스트
@@ -536,9 +557,9 @@ function Calendar() {
             <div>
                 <ActiveDays activeDays={activeDays} />
                 <div style={Wrapper}>
-                <div style={{ ...HeaderW, fontSize: '20px' }}>
+                    <div style={{ ...HeaderW, fontSize: '20px' }}>
                         <AiOutlineLeft style={{ ...ArrowCSS, marginLeft: '20px' }} onClick={prevMonth} />
-                        <span style={{color: '#64b5f6'}}>
+                        <span style={{ color: '#64b5f6' }}>
                             {format(currentMonth, 'yyyy')}. {format(currentMonth, 'MM')}
                         </span>
                         <AiOutlineRight style={{ ...ArrowCSS, marginRight: '20px' }} onClick={nextMonth} />
