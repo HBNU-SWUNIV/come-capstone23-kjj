@@ -20,6 +20,8 @@ function Setting() {
             navigate('/');
             await keycloak.logout();
         }
+        setCookie('accesstoken', '');
+        setCookie('refreshtoken', '');
         navigate('/');
     }
 
