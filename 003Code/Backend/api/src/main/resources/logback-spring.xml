@@ -15,7 +15,23 @@
     </appender>
 
     <!-- Logger -->
-    <logger name="com.hanbat.zanbanzero.service" level="INFO" additivity="false">
+    <logger name="com.hanbat.zanbanzero.auth.jwt.filter" level="WARN" additivity="false">
+        <appender-ref ref="fileAppender" />
+    </logger>
+
+    <logger name="com.hanbat.zanbanzero.auth.login.filter.LoginFilter" level="WARN" additivity="false">
+        <appender-ref ref="fileAppender" />
+    </logger>
+
+    <logger name="com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilter" level="WARN" additivity="false">
+        <appender-ref ref="fileAppender" />
+    </logger>
+
+    <logger name="com.hanbat.zanbanzero.service" level="WARN" additivity="false">
+        <appender-ref ref="fileAppender" />
+    </logger>
+
+    <logger name="com.hanbat.zanbanzero.controller" level="WARN" additivity="false">
         <appender-ref ref="fileAppender" />
     </logger>
 
