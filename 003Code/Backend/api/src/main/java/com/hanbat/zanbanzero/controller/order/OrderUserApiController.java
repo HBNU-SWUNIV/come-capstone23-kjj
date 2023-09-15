@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.controller.order;
 
-import com.google.zxing.WriterException;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.order.LastOrderDto;
@@ -10,12 +9,10 @@ import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -131,34 +128,22 @@ public class OrderUserApiController {
         return ResponseEntity.ok(orderService.getLastOrder(username));
     }
 
-    /**
-     * QR에 담길 데이터
-     *
-     * @param id - Order ID
-     * @return LastOrderDto
-     * @throws CantFindByIdException - Order 정보가 없을 때 발생
-     * @throws WrongRequestDetails - 본인의 Order 데이터가 아닐 때 발생
-     */
-    @Operation(summary="id 오더 정보 조회(QR data 용)")
-    @GetMapping("order/{id}")
-    public ResponseEntity<LastOrderDto> getOrderById(HttpServletRequest request, @PathVariable Long id) throws CantFindByIdException, WrongRequestDetails {
-        Long userId = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.getOrderById(userId, id));
+    @Operation(summary="예약 내역 정보 조회", description = "본인 예약이 아니면 예외 발생")
+    @GetMapping("order/{orderId}")
+    public ResponseEntity<OrderDto> getOrderInfo(@PathVariable Long orderId) throws CantFindByIdException {
+        return ResponseEntity.ok(orderService.getOrderInfo(orderId));
     }
 
     /**
-     * QR코드 이미지 조회
+     * QR에 담길 데이터
      *
-     * @param id - Order ID
-     * @throws WriterException - QR 생성 라이브러리 사용 중 발생
-     * @throws IOException - 응답에 QR코드 작성 중 발생
+     * @return LastOrderDto
      * @throws CantFindByIdException - Order 정보가 없을 때 발생
-     * @throws WrongRequestDetails - 본인의 Order 데이터가 아닐 때 발생
      */
-    @Operation(summary="QR코드 조회")
-    @GetMapping("order/{id}/qr")
-    public void getOrderQr(HttpServletRequest request, HttpServletResponse response, @PathVariable Long id) throws WriterException, IOException, CantFindByIdException, WrongRequestDetails {
-        Long userId = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        orderService.getOrderQr(response, userId, id);
+    @Operation(summary="QR 내부 데이터")
+    @GetMapping("order/{orderId}/qr")
+    public ResponseEntity<String> checkOrder(@PathVariable Long orderId) throws CantFindByIdException {
+        orderService.checkOrder(orderId);
+        return ResponseEntity.ok("order checked");
     }
 }

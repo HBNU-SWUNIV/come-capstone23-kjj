@@ -124,7 +124,7 @@ public class MenuManagerApiController {
      */
     @Operation(summary="관리자 - 식자재 정보 조회")
     @GetMapping("menu/{id}/food")
-    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
+    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(menuService.getFood(id));
     }
 

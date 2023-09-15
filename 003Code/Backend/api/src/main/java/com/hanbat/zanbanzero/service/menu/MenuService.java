@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -78,9 +79,10 @@ public class MenuService {
         return MenuFoodDto.of(menuFoodRepository.save(MenuFood.of(menu, data)));
     }
 
-    public Map<String, Integer> getFood(Long id) throws CantFindByIdException, JsonProcessingException {
-        String result = menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getFood();
-        return objectMapper.readValue(result, Map.class);
+    public Map<String, Integer> getFood(Long id) throws JsonProcessingException {
+        MenuFood result = menuFoodRepository.findById(id).orElse(null);
+        if (result == null) return Collections.emptyMap();
+        return objectMapper.readValue(result.getFood(), Map.class);
     }
 
     @Transactional

@@ -60,10 +60,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public User join(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        User savedUser = userRepository.save(user);
+        userMypageRepository.save(UserMypage.createNewUserMyPage(savedUser));
+        userPolicyRepository.save(UserPolicy.createNewUserPolicy(savedUser));
+        return savedUser;
+    }
+
+    @Transactional
     public UserInfoDto loginFromKeycloak(User u) {
-        User user = userRepository.findByUsername(u.getUsername());
-        if (user == null) user = join(UserJoinDto.of(u));
-        return UserInfoDto.of(user);
+        return UserInfoDto.of(userRepository.findByUsername(u.getUsername()));
     }
 
     @Transactional

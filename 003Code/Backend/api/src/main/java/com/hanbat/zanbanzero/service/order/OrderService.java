@@ -126,12 +126,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void getOrderQr(HttpServletResponse response, Long userId, Long id) throws WriterException, IOException, CantFindByIdException, WrongRequestDetails {
-        Long orderUserId = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getUser().getId();
-        if (orderUserId != userId) throw new WrongRequestDetails("orderUserId, userId : " + orderUserId + userId);
-
+    public void getOrderQr(HttpServletResponse response, Long id) throws WriterException, IOException{
         String domain = "http://kjj.kjj.r-e.kr:8080";
-        String endPoint = "/api/user/order/" + id;
+        String endPoint = "/api/user/order/" + id + "/qr";
         BufferedImage qrCode = createQRCode(domain + endPoint);
 
         response.setContentType("image/png");
@@ -153,11 +150,26 @@ public class OrderService {
                 .toList();
     }
 
+    @Transactional
     public OrderDto getOrderDay(String username, int year, int month, int day) {
         Long id = userRepository.findByUsername(username).getId();
 
         Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);
+    }
+
+    @Transactional
+    public void checkOrder(Long id) throws CantFindByIdException {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+        if (order.isExpired()) return;
+        order.setExpired(true);
+    }
+
+    @Transactional
+    public OrderDto getOrderInfo(Long orderId) throws CantFindByIdException {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId : " + orderId));
+
+        return OrderDto.of(order);
     }
 }
