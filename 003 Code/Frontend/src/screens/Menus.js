@@ -36,20 +36,6 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import ErrorInform from '../components/general/ErrorInform';
 
-const MenuButtonWrapper = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 100%;
-  button {
-    width: 20%;
-    font-family: NotoSans;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-`;
-
 export default function Menus() {
   const navigate = useNavigate();
 
@@ -332,20 +318,7 @@ export default function Menus() {
         <CssBaseline />
         <Drawerheader pages={'메뉴'} />
 
-        <Box
-          component="main"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: 'white',
-            flexGrow: 1,
-            height: '100%',
-            minHeight: '100vh',
-            overflow: 'auto',
-            boxSizing: 'border-box',
-            paddingBottom: 'var(--copyright-height)',
-          }}
-        >
+        <Box component="main" sx={MenusBoxStyle}>
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
             <Stack
@@ -368,12 +341,7 @@ export default function Menus() {
                 </ToggleButton>
               </ToggleButtonGroup>
               <Button
-                sx={{
-                  fontFamily: 'NotoSans',
-                  fontWeight: '500',
-                  fontSize: '16px',
-                  backgroundColor: 'rgb(0, 171, 85)',
-                }}
+                sx={MenusButtonStyle}
                 onClick={handleAddOpen}
                 variant="contained"
                 color="success"
@@ -388,14 +356,7 @@ export default function Menus() {
               <Grid container spacing={4}>
                 {menus.map((menu) => (
                   <Grid item key={shortid.generate()} xs={12} sm={6} md={4} lg={3}>
-                    <Card
-                      sx={{
-                        width: '260px',
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column',
-                      }}
-                    >
+                    <Card sx={cardStyle}>
                       <CardMedia
                         component="div"
                         sx={{
@@ -416,7 +377,7 @@ export default function Menus() {
                         <Typography
                           sx={{
                             opacity: menu.sold === true ? null : 0.3,
-                            fontFamily: 'NotoSans',
+
                             fontWeight: 600,
                             fontSize: '15px',
                           }}
@@ -431,7 +392,6 @@ export default function Menus() {
                           <>
                             <Typography
                               sx={{
-                                fontFamily: 'NotoSans',
                                 fontWeight: 600,
                                 fontSize: '20px',
                               }}
@@ -443,7 +403,6 @@ export default function Menus() {
                           <>
                             <Typography
                               sx={{
-                                fontFamily: 'NotoSans',
                                 fontWeight: '600',
                                 fontSize: '20px',
                               }}
@@ -526,7 +485,7 @@ export default function Menus() {
           <DialogContentText
             sx={{
               width: '350px',
-              fontFamily: 'NotoSans',
+
               fontSize: '20px',
               fontWeight: 600,
             }}
@@ -536,18 +495,10 @@ export default function Menus() {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button
-            sx={{ fontFamily: 'NotoSans', fontWeight: 500, fontSize: '18px' }}
-            color="error"
-            onClick={menuDelete}
-          >
+          <Button sx={deleteButtonStyle} color="error" onClick={menuDelete}>
             네
           </Button>
-          <Button
-            sx={{ fontFamily: 'NotoSans', fontWeight: 500, fontSize: '18px' }}
-            onClick={handleDeleteClose}
-            autoFocus
-          >
+          <Button sx={deleteButtonStyle} onClick={handleDeleteClose} autoFocus>
             아니요
           </Button>
         </DialogActions>
@@ -648,7 +599,7 @@ export default function Menus() {
       </Dialog>
 
       <Dialog open={updateMenu} onClose={handleUpdateClose}>
-        <DialogTitle sx={{ ...NanumFontStyle, fontWeight: '600' }}>메뉴 수정</DialogTitle>
+        <DialogTitle sx={{ ...NanumFontStyle }}>메뉴 수정</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
           {updateMenu === true ? (
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -770,6 +721,47 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 const defaultTheme = createTheme();
 
 export const NanumFontStyle = {
-  fontFamily: 'Nanum',
   fontWeight: '600',
 };
+
+const MenuButtonWrapper = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  button {
+    width: 20%;
+    font-family: NotoSans;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+`;
+
+const MenusBoxStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: 'white',
+  flexGrow: 1,
+  height: '100%',
+  minHeight: '100vh',
+  overflow: 'auto',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+};
+
+const MenusButtonStyle = {
+  fontFamily: 'NotoSans',
+  fontWeight: '500',
+  fontSize: '16px',
+  backgroundColor: 'rgb(0, 171, 85)',
+};
+
+const cardStyle = {
+  width: '260px',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const deleteButtonStyle = { fontWeight: 500, fontSize: '18px' };

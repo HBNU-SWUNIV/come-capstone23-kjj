@@ -28,7 +28,13 @@ export default function Login() {
   const navigate = useNavigate();
   const actionData = useActionData();
   const [cookies, setCookie] = useCookies();
-
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+  const [loginError, setLoginError] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
+  const config = ConfigWithToken();
+  const { keycloak } = useKeycloak();
   const submit = useSubmit();
   const isSubmitting = navigation.state === 'submitting';
 
@@ -46,18 +52,6 @@ export default function Login() {
     }
   }, [actionData]);
 
-  const config = ConfigWithToken();
-  const { keycloak } = useKeycloak();
-  const onKeyCloakLogin = () => {
-    keycloak.login();
-  };
-  const setKeyCloakToken = async () => {
-    const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
-    const keycloaktoken = response.headers.authorization;
-    console.log(keycloaktoken);
-    setCookie('accesstoken', keycloaktoken);
-  };
-
   useEffect(() => {
     if (keycloak.authenticated) {
       (cookies.accesstoken == undefined || '') && setKeyCloakToken();
@@ -68,16 +62,22 @@ export default function Login() {
     }
   }, [keycloak.authenticated, cookies.accesstoken]);
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
-  const [loginError, setLoginError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
+  const onKeyCloakLogin = () => {
+    keycloak.login();
+  };
+
+  const setKeyCloakToken = async () => {
+    const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
+    const keycloaktoken = response.headers.authorization;
+    console.log(keycloaktoken);
+    setCookie('accesstoken', keycloaktoken);
+  };
 
   const verifyPassword = () => {
-    if (password.length < 8) setPasswordError(true);
+    if (password.length < 4) setPasswordError(true);
     else setPasswordError(false);
   };
+
   const verifyFirstLogin = () => {
     axios
       .get(`${ManagerBaseApi}/setting`, config)
@@ -87,6 +87,7 @@ export default function Login() {
       })
       .catch((err) => console.error(err));
   };
+
   const onSubmit = (e) => {
     e.preventDefault();
     submit({ username, password }, { method: 'POST' });
@@ -160,7 +161,7 @@ export default function Login() {
                 onBlur={verifyPassword}
               />
               {passwordError && (
-                <ErrorInform message="비밀번호는 최소 7자 이상이여야 합니다." />
+                <ErrorInform message="비밀번호는 최소 4자 이상이여야 합니다." />
               )}
 
               <>

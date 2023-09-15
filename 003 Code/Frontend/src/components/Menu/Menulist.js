@@ -28,43 +28,6 @@ import axios from 'axios';
 import Menu from '@mui/material/Menu';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 
-const TableName = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  span {
-    color: rgb(0, 171, 85);
-    font-size: 30px;
-    &:hover {
-      cursor: pointer;
-    }
-  }
-`;
-
-const MenuEdit = styled.div`
-  position: relative;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const MenuEditList = styled.div`
-  position: absolute;
-
-  width: 170px;
-  height: 160px;
-  border-radius: 10px;
-  box-shadow: 1px 1px 5px black;
-
-  background-color: white;
-  z-index: 9999;
-`;
-
-const Sale = styled.div`
-  margin-right: -5px;
-`;
-
 const Row = (props) => {
   const config = ConfigWithToken();
 
@@ -100,16 +63,17 @@ const Row = (props) => {
   const [open, setOpen] = React.useState(false);
   const [ingredients, setIngredients] = React.useState([]);
 
-  React.useEffect(() => {
-    getIngredients(row.id);
-  }, [regetIngreditents]);
-
   const getIngredients = (id) => {
     axios
       .get(`${ManagerBaseApi}/menu/${id}/food`, config)
       .then((res) => setIngredients(res.data))
       .catch((err) => console.error(err));
   };
+
+  React.useEffect(() => {
+    getIngredients(row.id);
+  }, [regetIngreditents]);
+
   const handlerOpen = (open, id) => {
     setOpen(!open);
     getIngredients(id);
@@ -232,24 +196,24 @@ const Row = (props) => {
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ fontWeight: 600, fontSize: '16px' }}>이름</TableCell>
+                    <TableCell sx={ingredientTableTitleStyle}>이름</TableCell>
                     <TableCell />
                     <TableCell />
-                    <TableCell sx={{ fontWeight: 600, fontSize: '16px' }} align="right">
+                    <TableCell sx={ingredientTableTitleStyle} align="right">
                       무게 (kg)
                     </TableCell>
                   </TableRow>
                 </TableHead>
 
                 <TableBody>
-                  {ingredients.map((ingredient) => (
-                    <TableRow key={ingredient.name}>
+                  {ingredients?.map((ingredient) => (
+                    <TableRow key={ingredient?.name}>
                       <TableCell component="th" scope="row">
-                        {ingredient.name}
+                        {ingredient?.name}
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell align="right"></TableCell>
-                      <TableCell align="right">{ingredient.kg}</TableCell>
+                      <TableCell align="right">{ingredient?.kg}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -303,3 +267,33 @@ export default function Menulist({
     </TableContainer>
   );
 }
+
+const TableName = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  span {
+    color: rgb(0, 171, 85);
+    font-size: 30px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
+
+const MenuEdit = styled.div`
+  position: relative;
+
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
+const Sale = styled.div`
+  margin-right: -5px;
+`;
+
+const ingredientTableTitleStyle = {
+  fontWeight: 600,
+  fontSize: '16px',
+};
