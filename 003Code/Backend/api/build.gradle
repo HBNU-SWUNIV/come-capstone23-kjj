@@ -1,0 +1,74 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.2'
+	id 'io.spring.dependency-management' version '1.1.0'
+}
+
+group = 'com.hanbat'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// spring boot
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// spring security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// env
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+	// DB
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// data jpa
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// JWT
+	implementation group: 'com.auth0', name: 'java-jwt', version: '3.10.3'
+
+	// tools
+	implementation 'commons-io:commons-io:2.11.0'
+	implementation 'org.modelmapper:modelmapper:2.4.2'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	// validation
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// QRCode
+	implementation 'com.google.zxing:javase:3.4.1'
+
+	// slack
+	implementation 'com.slack.api:slack-api-client:1.29.0'
+
+	// test
+	testImplementation 'org.projectlombok:lombok:1.18.22'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'junit:junit:4.13.1'
+
+	// view test
+	implementation 'org.springframework.boot:spring-boot-starter-mustache'
+
+	// actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus' // 마이크로미터 프로메테우스 구현체
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave' // Brave
+	implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // Zipkin
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
