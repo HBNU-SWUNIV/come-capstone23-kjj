@@ -129,12 +129,12 @@ public class StoreService {
     }
 
     @Transactional
-    public StoreStateDto setOff(Boolean off, int year, int month, int day) {
+    public StoreStateDto setOff(StoreOffDto dto, int year, int month, int day) {
         LocalDate date = DateTools.makeLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, off));
-        else storeState.setOff(off);
+        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto));
+        else storeState.setOff(dto);
         return StoreStateDto.of(storeState);
     }
 

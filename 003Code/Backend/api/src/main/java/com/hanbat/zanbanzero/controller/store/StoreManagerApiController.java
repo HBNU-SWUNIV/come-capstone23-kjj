@@ -133,7 +133,7 @@ public class StoreManagerApiController {
     @Operation(summary="휴무일 설정", description="n월 n일의 휴무일 설정")
     @PostMapping("store/off/{year}/{month}/{day}")
     public ResponseEntity<StoreStateDto> setOff(@RequestBody StoreOffDto off, @PathVariable int year, @PathVariable int month, @PathVariable int day) {
-        return ResponseEntity.ok(storeService.setOff(off.isOff(), year, month, day));
+        return ResponseEntity.ok(storeService.setOff(off, year, month, day));
     }
 
     /**
