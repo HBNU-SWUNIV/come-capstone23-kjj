@@ -206,7 +206,7 @@ const Row = (props) => {
                 </TableHead>
 
                 <TableBody>
-                  {ingredients?.map((ingredient) => (
+                  {/* {ingredients?.map((ingredient) => (
                     <TableRow key={ingredient?.name}>
                       <TableCell component="th" scope="row">
                         {ingredient?.name}
@@ -215,7 +215,7 @@ const Row = (props) => {
                       <TableCell align="right"></TableCell>
                       <TableCell align="right">{ingredient?.kg}</TableCell>
                     </TableRow>
-                  ))}
+                  ))} */}
                 </TableBody>
               </Table>
             </Box>

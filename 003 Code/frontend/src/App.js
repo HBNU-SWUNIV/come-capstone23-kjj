@@ -25,14 +25,12 @@ const CopyrightWrapper = styled.div`
   left: 0;
   right: 0;
 
-  height: 5vh;
+  height: 3vh;
   width: 100%;
 
   display: flex;
   justify-content: center;
   align-items: center;
-
-  z-index: 2;
 `;
 
 const OutletWrapper = styled.div`

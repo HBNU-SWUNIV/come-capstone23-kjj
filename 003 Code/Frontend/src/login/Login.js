@@ -37,6 +37,7 @@ export default function Login() {
   const { keycloak } = useKeycloak();
   const submit = useSubmit();
   const isSubmitting = navigation.state === 'submitting';
+  const [keycloakloading, setKeycloakLoading] = useState(false);
 
   useEffect(() => {
     if (actionData?.ok) {
@@ -53,12 +54,18 @@ export default function Login() {
   }, [actionData]);
 
   useEffect(() => {
-    if (keycloak.authenticated) {
-      (cookies.accesstoken == undefined || '') && setKeyCloakToken();
-      cookies.accesstoken !== '' && navigate('/home');
-    }
-    if ((islogin || keycloak.authenticated) && cookies.accesstoken !== '') {
+    const isFirstLogin =
+      islogin ||
+      (keycloak.authenticated &&
+        (cookies.accesstoken !== '' || cookies.accesstoken !== undefined));
+    const isCookieSetting = cookies.accesstoken == '' || cookies.accesstoken == undefined;
+
+    if (isFirstLogin) {
       verifyFirstLogin();
+    }
+    if (keycloak.authenticated) {
+      if (isCookieSetting) setKeyCloakToken();
+      else navigate('/home');
     }
   }, [keycloak.authenticated, cookies.accesstoken]);
 
@@ -67,9 +74,9 @@ export default function Login() {
   };
 
   const setKeyCloakToken = async () => {
+    setKeycloakLoading(true);
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
     const keycloaktoken = response.headers.authorization;
-    console.log(keycloaktoken);
     setCookie('accesstoken', keycloaktoken);
   };
 
@@ -212,7 +219,8 @@ export default function Login() {
                     }}
                     src={keycloakimg}
                   />
-                  Keycloak 로그인
+
+                  {keycloakloading ? <LoadingDots isGray={true} /> : 'Keycloak 로그인'}
                 </Button>
               </>
               <Copyright sx={{ mt: 5 }} />

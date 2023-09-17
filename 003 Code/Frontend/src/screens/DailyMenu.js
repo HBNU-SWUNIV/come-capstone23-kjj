@@ -22,6 +22,9 @@ import {
   TextField,
 } from '@mui/material';
 import Button from '@mui/material/Button';
+import MenuSlider from '../components/DailyMenu/MenuSlider';
+import ErrorInform from '../components/general/ErrorInform';
+import Copyright from '../components/general/Copyright';
 
 export default function DailyMenu() {
   const config = ConfigWithToken();
@@ -35,6 +38,7 @@ export default function DailyMenu() {
   const [image, setImage] = React.useState([]);
   const [isTodayMenu, setIsTodayMenu] = React.useState(false);
   const [openTodayMenu, setOpenTodayMenu] = React.useState(false);
+  const [todayMenuError, setTodayMenuError] = React.useState(false);
 
   React.useEffect(() => {
     axios
@@ -48,6 +52,11 @@ export default function DailyMenu() {
   };
   const closeTodayMenuModal = () => {
     setOpenTodayMenu(false);
+  };
+
+  const handleTodayMenuError = () => {
+    if (menuCostRef.current.value !== '') setTodayMenuError(false);
+    else setTodayMenuError(true);
   };
 
   const addTodayMenu = () => {
@@ -75,7 +84,7 @@ export default function DailyMenu() {
       })
       .catch((err) => {
         if (err.response.status === 400) {
-          alert('이미지 용량이 너무 큽니다.');
+          setTodayMenuError(true);
           return;
         }
       });
@@ -117,7 +126,7 @@ export default function DailyMenu() {
         >
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4 }}>
-            <Wrapper>
+            <Wrapper $isTodayMenu={isTodayMenu}>
               <CalanderText>
                 {isTodayMenu ? (
                   <>
@@ -159,8 +168,10 @@ export default function DailyMenu() {
                 </Typography>
                 {!isTodayMenu ? (
                   <>
-                    <span>요일 별 달라지는 기본 메뉴가 있다면</span>
-                    <span>오늘의 메뉴로 등록해보세요</span>
+                    <span>
+                      요일 별 달라지는 기본 메뉴가 있다면 오늘의 메뉴로 등록해보세요
+                    </span>
+
                     <Button
                       sx={{ width: '150px' }}
                       color="error"
@@ -168,6 +179,8 @@ export default function DailyMenu() {
                     >
                       오늘의 메뉴가 뭔가요?
                     </Button>
+
+                    <MenuSlider />
                   </>
                 ) : (
                   <>
@@ -177,7 +190,7 @@ export default function DailyMenu() {
                 )}
               </CalanderText>
 
-              <Calander />
+              {isTodayMenu && <Calander />}
             </Wrapper>
           </Container>
 
@@ -214,7 +227,9 @@ export default function DailyMenu() {
                 label="가격"
                 type="number"
                 placeholder="가격"
+                onBlur={handleTodayMenuError}
               />
+              {todayMenuError && <ErrorInform message="가격은 필수입니다." />}
             </DialogContent>
             <DialogActions>
               <Button sx={NanumFontStyle} onClick={addTodayMenu}>
@@ -259,7 +274,8 @@ export const Circle = styled.div`
 
 const Wrapper = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: ${({ $isTodayMenu }) => ($isTodayMenu ? 'space-between' : 'center')};
+  margin-top: ${({ $isTodayMenu }) => ($isTodayMenu ? '0' : '10vh')};
   @media screen and (max-width: 1200px) {
     justify-content: center;
   }

@@ -542,18 +542,16 @@ const SetNameWrapper = Cstyled.div`
   align-items:center;
   justify-content:center;
   line-height:25px;
+
   span{
     display:flex;
     justify-content:center;
     align-items:center;
-    font-family:Nanum;
   }
   span:first-child{
     font-size:16px;
     font-weight:600;
-
     animation:${blinkEffects} 1s ease infinite;
-
     &:hover{
       cursor:pointer;
     }
@@ -570,6 +568,7 @@ const AppbarUser = Cstyled.div`
   align-items:flex-end;
   padding:0 20px;
   flex-direction:column;
+
 `;
 
 const AppbarUserTitle = Cstyled.span`
@@ -589,7 +588,7 @@ const ListImageWrapper = Cstyled.div`
   align-items:center;
 `;
 
-const ListImage = Cstyled.image`
+const ListImage = Cstyled.img`
 width: 45%;
 maxWidth: 45%;
 `;

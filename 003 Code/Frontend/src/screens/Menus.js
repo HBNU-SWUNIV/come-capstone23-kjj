@@ -38,30 +38,22 @@ import ErrorInform from '../components/general/ErrorInform';
 
 export default function Menus() {
   const navigate = useNavigate();
-
   const [onDelete, setonDelete] = useState(false);
   const [deleteID, setDeleteId] = useState(0);
-
   const [addMenu, setAddMenu] = useState(false);
   const [menus, setMenus] = useState([]);
   const [image, setImage] = useState([]);
-
   const [update, setUpdate] = useState(null);
   const [updateMenu, setUpdatemenu] = useState(false);
 
   const [오늘의메뉴, set일품] = useState(false);
-
   const [식재료open, set식재료open] = useState(false);
   const [식재료, set식재료] = useState(null);
-
   const [success, setSuccess] = useState(false);
-
   const [inputfields, setInputfields] = useState([{ key: '', value: '' }]);
-
   const menuNameRef = useRef('');
   const menuDetailsRef = useRef('');
   const menuCostRef = useRef('');
-
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -89,7 +81,7 @@ export default function Menus() {
   };
   const handleAddClose = () => {
     setAddMenu(false);
-    setRequired(false);
+    setMenuInfoError(false);
   };
   const handleSuccessOpen = () => {
     setSuccess(true);
@@ -197,10 +189,22 @@ export default function Menus() {
   };
 
   const [nameDuplicate, setNameDuplicate] = useState(false);
-  const [required, setRequired] = useState(false);
-  const infoHandler = () => {
-    if (menuDetailsRef.current.value === '') setRequired(true);
-    else setRequired(false);
+  const [menuNameError, setMenuNameError] = useState(false);
+  const [menuInfoError, setMenuInfoError] = useState(false);
+  const [menuCostError, setMenuCostError] = useState(false);
+  const menuNameHandler = () => {
+    if (menuNameRef.current.value === '') setMenuNameError(true);
+    else setMenuNameError(false);
+  };
+
+  const menuInfoHandler = () => {
+    if (menuDetailsRef.current.value === '') setMenuInfoError(true);
+    else setMenuInfoError(false);
+  };
+
+  const menuCostHandler = () => {
+    if (menuCostRef.current.value === '') setMenuCostError(true);
+    else setMenuCostError(false);
   };
 
   const menuAdd = () => {
@@ -214,30 +218,40 @@ export default function Menus() {
     const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
     formdata.append('data', blob);
     formdata.append('file', image);
-    axios({
-      method: 'POST',
-      url: `${ManagerBaseApi}/menu`,
-      data: formdata,
-      ...formdataConfig,
-    })
-      .then((res) => res.status === 200 && handleSuccessOpen())
-      .then(() => {
-        axios.get(`${ManagerBaseApi}/menu`, config).then((res) => {
-          setMenus(res.data);
-          setAddMenu(false);
-          setImage(null);
-          setNameDuplicate(false);
-        });
+    menuNameHandler();
+    menuInfoHandler();
+    menuCostHandler();
+
+    if (
+      menuNameRef.current.value !== '' &&
+      menuDetailsRef.current.value !== '' &&
+      menuCostRef.current.value !== ''
+    ) {
+      axios({
+        method: 'POST',
+        url: `${ManagerBaseApi}/menu`,
+        data: formdata,
+        ...formdataConfig,
       })
-      .catch((err) => {
-        if (err.response.status === 400) {
-          alert('파일의 용량이 너무큽니다.');
-          return;
-        } else if (err.response.status === 409) {
-          setNameDuplicate(true);
-          return;
-        }
-      });
+        .then((res) => res.status === 200 && handleSuccessOpen())
+        .then(() => {
+          axios.get(`${ManagerBaseApi}/menu`, config).then((res) => {
+            setMenus(res.data);
+            setAddMenu(false);
+            setImage(null);
+            setNameDuplicate(false);
+          });
+        })
+        .catch((err) => {
+          if (err.response.status === 400) {
+            alert('이미지 파일 용량이 너무 큽니다.');
+            return;
+          } else if (err.response.status === 409) {
+            setNameDuplicate(true);
+            return;
+          }
+        });
+    }
   };
   const menuUpdate = () => {
     const formdata = new FormData();
@@ -527,7 +541,9 @@ export default function Menus() {
             id="outlined-required"
             label="required"
             placeholder="메뉴명"
+            onBlur={menuNameHandler}
           />
+          {menuNameError && <ErrorInform message="메뉴 명은 필수 입력입니다" />}
           {nameDuplicate && <ErrorInform message={'중복된 메뉴명이 있습니다'} />}
           <TextField
             inputRef={menuDetailsRef}
@@ -535,16 +551,19 @@ export default function Menus() {
             id="outlined-required2"
             label="required"
             placeholder="메뉴 소개"
-            onBlur={infoHandler}
+            onBlur={menuInfoHandler}
           />
-          {required && <ErrorInform message={'메뉴 소개는 필수 입력입니다'} />}
+          {menuInfoError && <ErrorInform message={'메뉴 소개는 필수 입력입니다'} />}
           <TextField
             inputRef={menuCostRef}
             id="outlined-number"
             label="가격"
             type="number"
+            required
             placeholder="가격 - 숫자만 입력해주세요."
+            onBlur={menuCostHandler}
           />
+          {menuCostError && <ErrorInform message="가격은 필수 입력입니다." />}
         </DialogContent>
         <DialogActions>
           <Button sx={NanumFontStyle} onClick={menuAdd}>
