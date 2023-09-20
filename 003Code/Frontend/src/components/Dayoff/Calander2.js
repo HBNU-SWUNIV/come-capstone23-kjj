@@ -209,7 +209,7 @@ function Calander2() {
   const [offday, setOffday] = useState([]);
   const [dayId, setDayId] = useState(0);
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
+  console.log(offday);
   const [success, setSuccess] = useState(false);
   const handleSuccessOpen = () => {
     setSuccess(true);

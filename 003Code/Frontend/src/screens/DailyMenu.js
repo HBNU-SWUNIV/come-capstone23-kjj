@@ -24,7 +24,6 @@ import {
 import Button from '@mui/material/Button';
 import MenuSlider from '../components/DailyMenu/MenuSlider';
 import ErrorInform from '../components/general/ErrorInform';
-import Copyright from '../components/general/Copyright';
 
 export default function DailyMenu() {
   const config = ConfigWithToken();
@@ -293,7 +292,6 @@ const CalanderText = styled.div`
   height:100%;
   span{
     font-size:25px;
-    font-family:NotoSans;
     white-space:nowrap;
     font-weight:600;
   }

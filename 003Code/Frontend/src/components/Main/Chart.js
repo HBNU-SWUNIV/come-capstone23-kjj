@@ -23,7 +23,7 @@ export default function Chart() {
     <React.Fragment>
       <Title>
         <span style={{ color: 'rgb(0, 171, 85)' }}>
-          예약자 수를 기반으로 통계 된 내일의 식재료 예측
+          예약자 수를 기반으로 통계 된 내일의 식재료 수
         </span>
       </Title>
       <ApexCharts
