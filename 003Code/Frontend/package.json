@@ -24,6 +24,7 @@
     "react-icons": "^4.10.1",
     "react-router-dom": "^6.15.0",
     "react-scripts": "5.0.1",
+    "react-swipeable-views": "^0.14.0",
     "recoil": "^0.7.7",
     "recoil-persist": "^5.1.0",
     "shortid": "^2.2.16",

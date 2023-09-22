@@ -17,9 +17,7 @@ function Main_Listitems() {
           <HomeIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
-            홈
-          </span>
+          <span style={ListItemTextStyle}>홈</span>
         </ListItemText>
       </ListItemButton>
       <ListItemButton onClick={() => navigate('/menu')}>
@@ -27,9 +25,7 @@ function Main_Listitems() {
           <RestaurantMenuIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
-            메뉴
-          </span>
+          <span style={ListItemTextStyle}>메뉴</span>
         </ListItemText>{' '}
       </ListItemButton>
       <ListItemButton onClick={() => navigate('/dailymenu')}>
@@ -37,9 +33,7 @@ function Main_Listitems() {
           <RiceBowlIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
-            오늘의 메뉴
-          </span>
+          <span style={ListItemTextStyle}>오늘의 메뉴</span>
         </ListItemText>
       </ListItemButton>
       <ListItemButton onClick={() => navigate('/dayoff')}>
@@ -47,9 +41,7 @@ function Main_Listitems() {
           <SettingsIcon />
         </ListItemIcon>
         <ListItemText>
-          <span style={{ fontFamily: 'NotoSans', fontWeight: '600', fontSize: '15px' }}>
-            휴일 설정
-          </span>
+          <span style={ListItemTextStyle}>휴일 설정</span>
         </ListItemText>{' '}
       </ListItemButton>
     </React.Fragment>
@@ -57,3 +49,8 @@ function Main_Listitems() {
 }
 
 export default Main_Listitems;
+
+const ListItemTextStyle = {
+  fontWeight: '600',
+  fontSize: '15px',
+};

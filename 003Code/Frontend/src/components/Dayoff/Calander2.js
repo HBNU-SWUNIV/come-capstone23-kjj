@@ -17,7 +17,6 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
@@ -26,12 +25,8 @@ import Circle from '../general/Circle';
 
 const holidayServiceKey = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holidayBaseApi = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
-const headSpanStyle = {
-  fontFamily: 'NotoSans',
-};
 
 const customButtonStyle = {
-  fontFamily: 'NotoSans',
   fontWeight: 600,
 };
 const ArrowCSS = {
@@ -86,7 +81,6 @@ const DaysWrapper = styled.div`
   display: flex;
   justify-content: space-between;
 
-  font-family: NotoSans;
   font-weight: 600;
 
   width: 100%;
@@ -390,10 +384,8 @@ function Calander2() {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle sx={{ width: '600px' }}>
           <HeadTextWrapper>
-            <span style={{ ...headSpanStyle, fontSize: '22px', fontWeight: 600 }}>
-              휴일등록
-            </span>
-            <span style={{ ...headSpanStyle, fontSize: '16px', color: 'gray' }}>
+            <span style={{ fontSize: '22px', fontWeight: 600 }}>휴일등록</span>
+            <span style={{ fontSize: '16px', color: 'gray' }}>
               우리 식당의 휴일을 지정합니다.
             </span>
           </HeadTextWrapper>
