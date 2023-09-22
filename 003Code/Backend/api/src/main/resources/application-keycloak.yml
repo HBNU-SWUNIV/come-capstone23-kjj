@@ -6,6 +6,10 @@ my:
     client_id: test-client
     redirect_uri: http://localhost:8080/api/user/login/keycloak/redirect
     client_secret: gYZn5vsg0tARjkjH0xMd77bt3rmiThTx
+keycloak:
+  realm: test-app
+  auth-server-url: http://kjj.kjj.r-e.kr:8081/auth
+  resource: test-client
 ---
 spring:
   config:

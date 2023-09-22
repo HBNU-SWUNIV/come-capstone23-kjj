@@ -29,6 +29,7 @@ out/
 ### Web Backend ###
 ../.env
 data
+application-slack.yml
 
 ### NetBeans ###
 /nbproject/private/

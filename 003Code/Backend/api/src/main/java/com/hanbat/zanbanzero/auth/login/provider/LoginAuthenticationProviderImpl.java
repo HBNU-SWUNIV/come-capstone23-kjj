@@ -39,7 +39,7 @@ public class LoginAuthenticationProviderImpl implements AuthenticationProvider {
         else if (uri.startsWith("/api/manager")) {
             principalDetails = managerService.loadUserByUsername(username);
         }
-        else throw new AuthenticationServiceException("wrong uri");
+        else throw new AuthenticationServiceException("wrong uri : " + uri);
 
         if (password == null || !bCryptPasswordEncoder.matches(password, principalDetails.getPassword())) {
             throw new AuthenticationServiceException("인증 실패");

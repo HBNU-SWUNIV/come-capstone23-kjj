@@ -46,7 +46,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         String roles = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("roles").asString();
 
         String managerApiPrefix = "/api/manager";
-        if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족");
+        if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족 (uri = " + request.getRequestURI() + ")");
 
         if (username != null) {
             User user = userRepository.findByUsername(username);

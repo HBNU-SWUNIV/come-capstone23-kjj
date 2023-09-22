@@ -59,7 +59,7 @@ public class OrderService {
 
     @Transactional
     public OrderDto cancelOrder(String username, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -70,7 +70,7 @@ public class OrderService {
 
     @Transactional
     public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -82,8 +82,7 @@ public class OrderService {
         return OrderDto.of(order);
     }
 
-    public int countPages(String username) {
-        Long id = userRepository.findByUsername(username).getId();
+    public int countPages(Long id) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
         return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
@@ -126,12 +125,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void getOrderQr(HttpServletResponse response, Long userId, Long id) throws WriterException, IOException, CantFindByIdException, WrongRequestDetails {
-        Long orderUserId = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getUser().getId();
-        if (orderUserId != userId) throw new WrongRequestDetails("orderUserId, userId : " + orderUserId + userId);
-
+    public void getOrderQr(HttpServletResponse response, Long id) throws WriterException, IOException{
         String domain = "http://kjj.kjj.r-e.kr:8080";
-        String endPoint = "/api/user/order/" + id;
+        String endPoint = "/api/user/order/" + id + "/qr";
         BufferedImage qrCode = createQRCode(domain + endPoint);
 
         response.setContentType("image/png");
@@ -145,11 +141,34 @@ public class OrderService {
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
-    public OrderDto getOrder(String username, int year, int month, int day) {
+    public List<OrderDto> getOrderMonth(Long id, int year, int month) {
+
+        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_MonthAndRecognize(id, year, month, true);
+        return order.stream()
+                .map(OrderDto::of)
+                .toList();
+    }
+
+    @Transactional
+    public OrderDto getOrderDay(String username, int year, int month, int day) {
         Long id = userRepository.findByUsername(username).getId();
 
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeDateFormatLocalDate(year, month, day));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);
+    }
+
+    @Transactional
+    public void checkOrder(Long id) throws CantFindByIdException {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+        if (order.isExpired()) return;
+        order.setExpired(true);
+    }
+
+    @Transactional
+    public OrderDto getOrderInfo(Long orderId) throws CantFindByIdException {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId : " + orderId));
+
+        return OrderDto.of(order);
     }
 }

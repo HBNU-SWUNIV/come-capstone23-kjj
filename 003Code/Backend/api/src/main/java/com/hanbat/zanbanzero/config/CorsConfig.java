@@ -11,6 +11,10 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig {
 
+    /**
+     * Spring Security 설정을 위한 CorsFilter 빈 생성
+     * @return CorsFilter 빈 객체
+     */
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

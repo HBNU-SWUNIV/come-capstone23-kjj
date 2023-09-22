@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.entity.store;
 
+import com.hanbat.zanbanzero.dto.store.StoreOffDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,17 +26,20 @@ public class StoreState {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private Boolean off;
+    private String name;
 
-    public void setOff(Boolean off) {
-        this.off = off;
+    public void setOff(StoreOffDto dto) {
+        off = dto.isOff();
+        name = dto.getName();
     }
 
-    public static StoreState createNewOffStoreState(Store store, LocalDate date, boolean off) {
+    public static StoreState createNewOffStoreState(Store store, LocalDate date, StoreOffDto dto) {
         return new StoreState(
                 null,
                 store,
                 date,
-                off
+                dto.isOff(),
+                dto.getName()
         );
     }
 }

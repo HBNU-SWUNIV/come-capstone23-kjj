@@ -16,6 +16,7 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -77,9 +79,10 @@ public class MenuService {
         return MenuFoodDto.of(menuFoodRepository.save(MenuFood.of(menu, data)));
     }
 
-    public Map<String, Integer> getFood(Long id) throws CantFindByIdException, JsonProcessingException {
-        String result = menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getFood();
-        return objectMapper.readValue(result, Map.class);
+    public Map<String, Integer> getFood(Long id) throws JsonProcessingException {
+        MenuFood result = menuFoodRepository.findById(id).orElse(null);
+        if (result == null) return Collections.emptyMap();
+        return objectMapper.readValue(result.getFood(), Map.class);
     }
 
     @Transactional
@@ -93,10 +96,8 @@ public class MenuService {
     }
 
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
-    })
+    @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
+    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, IOException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
@@ -111,6 +112,10 @@ public class MenuService {
         return MenuInfoDto.of(menuInfo);
     }
 
+    private void updateOrders() {
+
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
@@ -123,17 +128,24 @@ public class MenuService {
                 .peek(policy -> policy.setDefaultMenu(null))
                 .toList());
         menuRepository.delete(menu);
+        updateOrders();
 
         return MenuDto.of(menu);
     }
 
     @Transactional
-    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @Caching(evict = {
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    })
     public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         switch (type) {
-            case "n" -> menu.setSold(false);
+            case "n" -> {
+                menu.setSold(false);
+                updateOrders();
+            }
             case "y" -> menu.setSold(true);
             default -> throw new WrongParameter(type);
         }

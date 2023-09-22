@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: env
+    include: env, slack
 
 # Batch Table
   datasource:
