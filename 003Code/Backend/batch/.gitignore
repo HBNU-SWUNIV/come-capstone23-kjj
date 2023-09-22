@@ -27,7 +27,7 @@ out/
 !**/src/test/**/out/
 
 ### custom ###
-application-env.yml
+application-slack.yml
 
 
 ### NetBeans ###
