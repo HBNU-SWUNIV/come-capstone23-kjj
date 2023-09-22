@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.order.Order;
 import jakarta.persistence.*;
@@ -9,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
@@ -32,18 +32,7 @@ public class User {
     private String username;
     private String password;
     private String roles;
-
-    public static User of(UserDto dto) {
-        return new User(
-                dto.getId(),
-                null,
-                null,
-                null,
-                dto.getUsername(),
-                dto.getPassword(),
-                dto.getRoles()
-        );
-    }
+    private String loginDate;
 
     public static User of(UserJoinDto dto) {
         return new User(
@@ -53,7 +42,8 @@ public class User {
                 null,
                 dto.getUsername(),
                 dto.getPassword(),
-                "ROLE_USER"
+                "ROLE_USER",
+                null
         );
     }
 
@@ -74,7 +64,8 @@ public class User {
                 null,
                 userSub,
                 sb.toString(),
-                roles
+                roles,
+                null
         );
     }
 
@@ -83,5 +74,8 @@ public class User {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public void setLoginDate(LocalDate date) {
+        this.loginDate = date.toString();
     }
 }

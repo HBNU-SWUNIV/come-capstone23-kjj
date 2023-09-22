@@ -18,6 +18,10 @@ spring:
     init:
       mode: never
 
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
   # Actuator
 management:
   endpoints:
@@ -31,16 +35,6 @@ management:
       enabled: true
     prometheus:
       enabled: true
-
-  tracing:
-    sampling:
-      probability: 1.0
-    propagation:
-      consume: b3_single
-      produce: b3_multi
-  zipkin:
-    tracing:
-      endpoint: "http://kjj.kjj.r-e.kr:9411/api/v2/spans"
 ---
 spring:
   config:
@@ -57,11 +51,6 @@ spring:
     properties:
       hibernate:
         show_sql: false
-
-  # spring security
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
 
     # logging
     root: error

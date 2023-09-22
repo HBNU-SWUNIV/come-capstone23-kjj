@@ -99,8 +99,8 @@ public class OrderUserApiController {
     @Operation(summary="특정 유저의 전체 이용내역 개수 조회(페이지 구성용)", description="페이지 사이즈보다 작을 경우 null")
     @GetMapping("order/count")
     public ResponseEntity<Integer> countUserOrders(HttpServletRequest request) {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.countPages(username));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.countPages(id));
     }
 
     /**

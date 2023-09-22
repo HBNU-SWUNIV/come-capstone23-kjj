@@ -82,8 +82,7 @@ public class OrderService {
         return OrderDto.of(order);
     }
 
-    public int countPages(String username) {
-        Long id = userRepository.findByUsername(username).getId();
+    public int countPages(Long id) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
         return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
@@ -144,7 +143,7 @@ public class OrderService {
 
     public List<OrderDto> getOrderMonth(Long id, int year, int month) {
 
-        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
+        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_MonthAndRecognize(id, year, month, true);
         return order.stream()
                 .map(OrderDto::of)
                 .toList();

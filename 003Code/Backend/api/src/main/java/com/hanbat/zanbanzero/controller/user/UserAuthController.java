@@ -3,8 +3,8 @@ package com.hanbat.zanbanzero.controller.user;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.service.user.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserAuthController {
     private final UserService userService;
-    private final KeycloakProperties keycloakProperties;
 
     /**
      * username, password로 로그인
@@ -32,6 +31,14 @@ public class UserAuthController {
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.ok(userService.getInfoForUsername(username));
+    }
+
+    @Operation(summary="Keycloak 회원가입")
+    @PostMapping("join/keycloak")
+    public ResponseEntity<String> joinKeycloak(@RequestBody UserJoinDto dto) {
+        if (userService.existsByUsernameFromKeycloak(dto.getUsername())) throw new KeycloakJoinException("username already exists - username : " + dto.getUsername());
+        userService.joinKeycloak(dto);
+        return ResponseEntity.ok("join success");
     }
 
     /**

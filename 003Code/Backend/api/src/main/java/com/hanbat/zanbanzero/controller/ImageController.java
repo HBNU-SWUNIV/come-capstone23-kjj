@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.controller;
 
 import com.google.zxing.WriterException;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +26,6 @@ import java.nio.file.Paths;
 public class ImageController {
 
     private final OrderService orderService;
-    private final JwtUtil jwtUtil;
 
     /**
      * 이미지 조회

@@ -43,6 +43,14 @@ public class UserApiController {
         return ResponseEntity.ok("탈퇴되었습니다.");
     }
 
+    @Operation(summary="Keycloak 회원탈퇴")
+    @DeleteMapping("withdraw/keycloak")
+    public ResponseEntity<String> withdrawKeycloak(HttpServletRequest request) {
+        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        userService.withdrawKeycloak(username);
+        return ResponseEntity.ok("Keyclaok 탈퇴되었습니다.");
+    }
+
     /**
      * 일반 유저 대표정보(id, username) 조회
      *

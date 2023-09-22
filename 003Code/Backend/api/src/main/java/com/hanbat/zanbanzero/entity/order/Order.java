@@ -3,9 +3,12 @@ package com.hanbat.zanbanzero.entity.order;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Index;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 

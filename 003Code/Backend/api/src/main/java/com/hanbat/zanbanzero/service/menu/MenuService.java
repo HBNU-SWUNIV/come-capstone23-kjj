@@ -112,6 +112,10 @@ public class MenuService {
         return MenuInfoDto.of(menuInfo);
     }
 
+    private void updateOrders() {
+
+    }
+
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
@@ -124,6 +128,7 @@ public class MenuService {
                 .peek(policy -> policy.setDefaultMenu(null))
                 .toList());
         menuRepository.delete(menu);
+        updateOrders();
 
         return MenuDto.of(menu);
     }
@@ -137,7 +142,10 @@ public class MenuService {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         switch (type) {
-            case "n" -> menu.setSold(false);
+            case "n" -> {
+                menu.setSold(false);
+                updateOrders();
+            }
             case "y" -> menu.setSold(true);
             default -> throw new WrongParameter(type);
         }
