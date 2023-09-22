@@ -55,7 +55,7 @@ function Nav() {
   const { pathname } = location;
 
   return (
-    <footer style={Footer}>
+    <footer style={{...Footer, minWidth: '370px'}}>
       <nav style={Navbar}>
         <ul style={NavList} id="nav-list">
           <li style={NavListItem}>
