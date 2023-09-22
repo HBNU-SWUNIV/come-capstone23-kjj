@@ -71,16 +71,24 @@ const SignUp = () => {
                         })
                     }
                     if (res.data === false) {
-                        axios.post(`${UserBaseApi}/login/join`, body, config)
-                            .then(res => console.log(res))
-                            .catch(err => console.log(err))
-                        Swal.fire({
-                            icon: 'success',
-                            text: `회원가입이 완료되었습니다.`,
-                            confirmButtonText: "확인",
-                        })
-                        navigate('/login')
+                        axios.post(`${UserBaseApi}/login/join`, body)
+                            .then(res => {
+                                console.log(res.data);
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: `회원가입이 완료되었습니다.`,
+                                    confirmButtonText: "확인",
+                                });
+                                navigate('/login'); // 회원가입 성공 시에만 로그인 페이지로 이동
+                            })
+                            .catch(err => {
+                                console.log(err);
+                            });
                     }
+                })
+                .catch(error => {
+                    console.log(error);
+                    setIdMessage("회원가입 중 오류가 발생했습니다.");
                 });
         }
     };
@@ -148,12 +156,12 @@ const SignUp = () => {
 
     return (
         <motion.div
-        initial={{ y: '100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '100%' }}
-        transition={{ duration: 0.5, stiffness: 120 }}
-      >
-        <div></div>
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            transition={{ duration: 0.5, stiffness: 120 }}
+        >
+            <div></div>
             <div className='sigunup' style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <Link to='/login' style={{ color: 'inherit', textDecoration: 'none' }}>
                     <div style={{ marginTop: '30px', marginBottom: '40px', color: '#A93528' }}>

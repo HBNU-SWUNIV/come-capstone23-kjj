@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
-import { useSelector } from "react-redux";
 import axios from "axios";
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
@@ -11,31 +10,55 @@ function My() {
 
     const config = ConfigWithToken();
 
+    const today = new Date();
+    const QRyear = today.getFullYear();
+    const QRmonth = String(today.getMonth() + 1).padStart(2, '0');
+    const QRday = String(today.getDate()).padStart(2, '0');
+    const [useInfo, setUseInfo] = useState();
+    const [point, setPoint] = useState(0);
+
     useEffect(() => {
         axios
-        .get(`${UserBaseApi}/info`, config)
-        .then(res => {
-            setidnum(res.data.id);
-        })
+            .get(`${UserBaseApi}/info`, config)
+            .then(res => {
+                setidnum(res.data.id);
+            })
+        axios
+            .get(`${UserBaseApi}/page`, config)
+            .then(res => {
+                setPoint(res.data.point);
+            })
 
         axios
-        .get(`${UserBaseApi}/${idnum}/order/count`, config)
-        .then(res => {
-            setOrderCount(res.data);
-        })
-        .catch(error => {
-            console.error("주문 횟수 조회 실패", error);
-        });
+            .get(`${UserBaseApi}/${idnum}/order/count`, config)
+            .then(res => {
+                setOrderCount(res.data);
+            })
+            .catch(error => {
+                console.error("주문 횟수 조회 실패", error);
+            });
 
         axios
-        .get(`/api/user/store`, config)
-        .then(res => {
-            setStoreInfo(res.data.name);
-        })
-        .catch(error => {
-            console.error("식당 정보 조회 실패", error);
-        });
-        console.log(storeInfo);
+            .get(`/api/user/store`, config)
+            .then(res => {
+                setStoreInfo(res.data.name);
+            })
+            .catch(error => {
+                console.error("식당 정보 조회 실패", error);
+            });
+
+        axios
+            .get(`${UserBaseApi}/order/last`, config)
+            .then(res => {
+                console.log(res.data);
+            })
+
+        axios
+            .get(`${UserBaseApi}/order/${QRyear}/${QRmonth}/${QRday}`, config)
+            .then(res => {
+                setUseInfo(res.data);
+                console.log(useInfo);
+            })
 
     }, [])
 
@@ -134,43 +157,48 @@ function My() {
         <div>
             <div style={pointboxStyle}>
                 <div style={{ ...point1boxStyle, marginBottom: '20px', borderBottom: '2px dotted' }}>
-                <p style={{  margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{storeInfo}</p>
+                    <p style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{storeInfo}</p>
                     <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>{idnum}님</p>
                 </div>
                 <div style={point1boxStyle}>
                     <p style={ponifont}>누적 포인트</p>
-                    <p style={{ ...rightponifont, color: '#FF6347' }}>0원</p>
+                    <p style={{ ...rightponifont, color: '#FF6347' }}>{orderCount * 50}P</p>
                 </div>
                 <div style={point1boxStyle}>
                     <p style={ponifont}>사용 가능 포인트</p>
-                    <p style={rightponifont}>0원</p>
+                    <p style={rightponifont}>{point}P</p>
                 </div>
             </div>
 
             <div style={threeboxStyle}>
                 <div style={leftboxStyle}>
-                    <p style={{ ...threeboxfont, marginBottom: 0 }}>이번 달</p>
+                    <p style={{ ...threeboxfont, marginBottom: 0 }}>누적</p>
                     <p style={{ ...threeboxfont, marginTop: 0 }}>이용횟수</p>
                     <p style={underPointfont}>{orderCount}회</p>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'end' }}>
                     <div style={{ ...rightboxStyle, marginBottom: '5px', height: '100px' }}>
-                        <p><span style={threeboxfont}>이번 달 이용금액</span></p>
-                        <p style={underPointfont}>0원</p>
+                        <p><span style={threeboxfont}>누적 이용금액</span></p>
+                        <p style={underPointfont}>{orderCount !== null ? orderCount * 6000 + "원" : "이용급액 없음"}</p>
+
                     </div>
 
                     <div style={rightboxStyle}>
                         <Link to='/Graph' style={{ color: 'inherit', textDecoration: 'none' }}>
-                            <div style={{display: 'flex', flexDirection: 'row',}}>
+                            <div style={{ display: 'flex', flexDirection: 'row', }}>
                                 <p style={{ fontSize: '15px', fontWeight: 'bold' }}>지난달,</p>
-                                <p style={{right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold'}}>&lt;상세조회&gt;</p>
+                                <p style={{ right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold' }}>&lt;상세조회&gt;</p>
                             </div>
-                            <p style={{marginTop: 0}}>식단미리 통해 약 0KG의 음식물 쓰레기 저감 활동에 동참했어요!</p>
+                            <p style={{ marginTop: 0 }}>식단미리 통해 약 0KG의 음식물 쓰레기 저감 활동에 동참했어요!</p>
                         </Link>
                     </div>
                 </div>
             </div>
+
+            <button style={{ marginLeft: '20px' }}>
+                <Link to='/checkout'>결제 테스트</Link>
+            </button>
 
             {/* <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <Link to='/MyUse' style={buttonStyle}>이용내역 상세조회</Link>

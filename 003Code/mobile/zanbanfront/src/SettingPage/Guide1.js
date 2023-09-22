@@ -64,7 +64,7 @@ function Guide1() {
                             </Link>
                         </button>
                     </div>
-                    <p style={{  color: '#A93528' }}>(1/3)</p>
+                    <p style={{  color: '#A93528' }}>(1/4)</p>
                 </div>
             </div>
         </motion.div>

@@ -9,11 +9,16 @@ import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
 import Swal from "sweetalert2";
 import { motion } from 'framer-motion';
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 
 const Login = () => {
+    const config = ConfigWithToken();
+
     const [username, setusername] = useState('');
     const [password, setPassword] = useState('');
+    const [loginDate, setLoginDate] = useState('');
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     //로그인 여부 확인(리다이엑트)
@@ -29,7 +34,8 @@ const Login = () => {
 
     const setKeyCloakToken = async () => {
         try {
-            const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
+            const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`)
+            console.log('응답 데이터:', response.data);
             const keycloaktoken = response.headers.authorization;
             const [, accesstoken] = keycloaktoken.split('Bearer ');
             setCookie('accesstoken', accesstoken);
@@ -37,7 +43,10 @@ const Login = () => {
             const [, refreshtoken1] = refreshtoken.split('Bearer ');
             setCookie('refreshtoken', refreshtoken1);
             setIsLogin(true);
-            navigate('/home');
+            if(response.data.loginDate === null){
+                navigate('/FirstLogin')
+            }
+            else{navigate('/home')}
         } catch (error) {
             console.error('키클락 토큰 생성 에러 발생:', error);
         }
@@ -48,21 +57,27 @@ const Login = () => {
             if (!cookies.accesstoken) {
                 setKeyCloakToken();
             } else {
-                navigate('/home');
+                if(loginDate === null){
+                    navigate('/FirstLogin')
+                }
+                else{navigate('/home')}
             }
         }
     }, [keycloak.authenticated, cookies.accesstoken]);
 
+    const [activeDays, setActiveDays] = useState([]);
 
     //일반 로그인
     const handleLogin = async () => {
-        let body = { username, password };
+        let body = { username, password};
         try {
             const response = await axios({
                 method: 'POST',
                 url: `/api/user/login/id`,
                 data: body,
             });
+            console.log('응답 데이터:', response.data);
+            setLoginDate(response.data.loginDate);
 
             const token = response.headers.authorization;
             const [, accesstoken] = token.split('Bearer ');
@@ -71,7 +86,10 @@ const Login = () => {
             const [, refreshtoken1] = refreshtoken.split('Bearer ');
             setCookie('refreshtoken', refreshtoken1);
             setIsLogin(true);
-            navigate('/home')
+            if(response.data.loginDate === null){
+                navigate('/FirstLogin')
+            }
+            else{navigate('/home')}
 
         } catch (error) {
             console.log(error);
@@ -84,6 +102,7 @@ const Login = () => {
             }
         }
     };
+
 
     //엔터키 로그인
     const handleOnKeyPress = e => {
