@@ -1,12 +1,12 @@
 import React from 'react';
 import { keyframes, styled } from 'styled-components';
 
-const LoadingDots = () => {
+const LoadingDots = ({ isGray }) => {
   return (
     <DotsWrapper>
-      <Dots />
-      <Dots />
-      <Dots />
+      <Dots $isGray={isGray} />
+      <Dots $isGray={isGray} />
+      <Dots $isGray={isGray} />
     </DotsWrapper>
   );
 };
@@ -52,5 +52,5 @@ const Dots = styled.div`
   height: 5px;
 
   border-radius: 2.5px;
-  background-color: white;
+  background-color: ${({ $isGray }) => ($isGray ? 'gray' : 'white')};
 `;

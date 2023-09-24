@@ -10,22 +10,10 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Main_Listitems from './general/Main_Listitems';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
 import { useNavigate } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import {
   ConfigWithRefreshToken,
   ConfigWithToken,
@@ -37,51 +25,15 @@ import { useKeycloak } from '@react-keycloak/web';
 import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled, keyframes } from 'styled-components';
-
-const blinkEffects = keyframes`
-  50%{
-    opacity:0.3;
-  }
-`;
-
-const SetNameWrapper = Cstyled.div`
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  line-height:25px;
-  span{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Nanum;
-  }
-  span:first-child{
-    font-size:16px;
-    font-weight:600;
-
-    animation:${blinkEffects} 1s ease infinite;
-
-    &:hover{
-      cursor:pointer;
-    }
-  }
-  span:last-child{
-    font-size:13px;
-    font-weight:600;
-  }
-`;
+import UpdateInfoModal from './Drawerheader/UpdateInfoModal';
+import UpdateImgModal from './Drawerheader/UpdateImgModal';
+import UpdateNameModal from './Drawerheader/\bUpdateNameModal';
+import UserMenuModal from './Drawerheader/UserMenuModal';
 
 function Drawerheader(props) {
-  const navigate = useNavigate();
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
-
-  const { keycloak } = useKeycloak();
   const [cookies, setCookie] = useCookies();
-
-  const [isExpired, setIsExpired] = useState(false);
-  const isRefreshtoken = cookies.refreshtoken !== '';
-
+  const navigate = useNavigate();
   const reconfig = ConfigWithRefreshToken();
   const config = ConfigWithToken();
   const formdataConfig = {
@@ -90,19 +42,22 @@ function Drawerheader(props) {
       ...config.headers,
     },
   };
-
+  const { keycloak } = useKeycloak();
+  const [isExpired, setIsExpired] = useState(false);
+  const isRefreshtoken = cookies.refreshtoken !== '';
   const nameRef = useRef('');
   const InfoRef = useRef('');
-
   const [name, setName] = useState('');
   const [info, setInfo] = useState('');
   const [image, setImage] = useState('');
   const [isName, setIsName] = useState(false);
   const [newImage, setNewImage] = useState([]);
-
   const [updateInfo, setUpdateInfo] = useState(false);
   const [updateImage, setUpdateImage] = useState(false);
   const [updateName, setUpdateName] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [open1, setOpen] = useState(true);
 
   useEffect(() => {
     getMarketDetails();
@@ -127,7 +82,6 @@ function Drawerheader(props) {
         url: '/api/user/login/refresh',
         ...reconfig,
       });
-
       if (response.headers.authorization !== '') {
         setCookie('accesstoken', response.headers.authorization);
       }
@@ -136,20 +90,6 @@ function Drawerheader(props) {
     }
   };
 
-  const [success, setSuccess] = useState(false);
-  const handleSuccessOpen = () => {
-    setSuccess(true);
-  };
-  const handleSuccessClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess(false);
-  };
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [open1, setOpen] = useState(true);
   const menuOpenHandler = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -194,6 +134,7 @@ function Drawerheader(props) {
       }
     });
   };
+
   const onUpdateMarketInfo = () => {
     let body = {
       info: InfoRef.current.value,
@@ -205,10 +146,10 @@ function Drawerheader(props) {
       }
     });
   };
+
   const onUpdateMarketImage = () => {
     const formdata = new FormData();
     newImage !== null && formdata.append('file', newImage);
-
     axios({
       method: 'POST',
       url: `${ManagerBaseApi}/image`,
@@ -219,7 +160,7 @@ function Drawerheader(props) {
         if (res.status === 200) getMarketImage();
       })
       .catch((err) => alert('이미지 용량이 너무 큽니다.'));
-    handleSuccessOpen();
+
     closeUpdateImageModal();
   };
 
@@ -234,6 +175,7 @@ function Drawerheader(props) {
         if (err.response.status === 403) setIsExpired(true);
       });
   };
+
   const getMarketImage = () => {
     axios
       .get(`/api/user/store`, config)
@@ -248,18 +190,14 @@ function Drawerheader(props) {
       setIsLogin(false);
     }
     setCookie('accesstoken', '');
+    setCookie('refreshtoken', '');
     navigate('/');
   };
 
   return (
     <>
       <AppBar position="absolute" open={open1}>
-        <Toolbar
-          sx={{
-            backgroundColor: '#24292e',
-            pr: '24px',
-          }}
-        >
+        <Toolbar sx={headerToolbarStyle}>
           <IconButton
             edge="start"
             color="inherit"
@@ -277,12 +215,7 @@ function Drawerheader(props) {
             variant="h6"
             color="inherit"
             noWrap
-            sx={{
-              flexGrow: 1,
-              fontFamily: 'Nanum',
-              fontWeight: 600,
-              fontSize: '25px',
-            }}
+            sx={pagesNameStyle}
           >
             {props?.pages}
           </Typography>
@@ -305,237 +238,83 @@ function Drawerheader(props) {
             aria-expanded={open ? 'true' : undefined}
             onClick={menuOpenHandler}
           >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'end',
-                padding: '0 20px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: 'inherit',
-                  fontFamily: 'Nanum',
-                  marginBottom: '1px',
-                }}
-              >
-                관리자
-              </span>
+            <AppbarUser>
+              <AppbarUserTitle>관리자</AppbarUserTitle>
 
               {isName && (
                 <span
                   style={{
                     ...marketNameStyle,
                     fontSize: '18px',
-                    fontFamily: 'Nanum',
                   }}
                 >
                   {name}
                 </span>
               )}
-            </div>
+            </AppbarUser>
           </IconButton>
         </Toolbar>
       </AppBar>
 
       <Drawer variant="permanent" open={open1}>
-        <Toolbar
-          sx={{
-            backgroundColor: '#f5f5f5',
-            zIndex: 3,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            px: [1],
-          }}
-        >
+        <Toolbar sx={drawerToolbarStyle}>
           <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Divider />
 
-        <List component="nav" sx={{ backgroundColor: '#f5f5f5', height: '100%' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '20vh',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <img
-              style={{
-                width: '45%',
-                maxWidth: '45%',
-              }}
+        <List component="nav" sx={listStyle}>
+          <ListImageWrapper>
+            <ListImage
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
               alt="이미지 없음"
             />
-            <span
-              style={{
-                fontSize: '17px',
-                fontFamily: 'NotoSans',
-                color: '#0a376e',
-                fontWeight: '600',
-              }}
-            >
-              식재료 절약단
-            </span>
-          </div>
+            <ListImageText>식재료 절약단</ListImageText>
+          </ListImageWrapper>
           <Main_Listitems />
         </List>
 
-        <Menu
-          id="fade-menu"
-          MenuListProps={{
-            'aria-labelledby': 'fade-button',
-          }}
+        <UserMenuModal
           anchorEl={anchorEl}
           open={open}
           onClose={menuCloseHandler}
-          TransitionComponent={Fade}
-        >
-          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateNameModal}>
-            식당 이름 {isName ? '수정' : '설정'}
-          </MenuItem>
-          <MenuItem
-            sx={{ ...MenuItemTextStyle, width: '250px' }}
-            onClick={openUpdateInfoModal}
-          >
-            식당 소개 메시지 변경
-          </MenuItem>
-          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateImageModal}>
-            식당 이미지 변경
-          </MenuItem>
-          <Divider />
-          <MenuItem sx={MenuItemTextStyle} onClick={onLogout}>
-            로그아웃
-          </MenuItem>
-        </Menu>
+          Fade={Fade}
+          openUpdateImageModal={openUpdateImageModal}
+          openUpdateNameModal={openUpdateNameModal}
+          openUpdateInfoModal={openUpdateInfoModal}
+          isName={isName}
+          onLogout={onLogout}
+        />
 
-        <Dialog open={updateInfo} onClose={closeUpdateInfoModal}>
-          <DialogTitle sx={DialogTitleStyle}>식당 소개 메시지 변경</DialogTitle>
-          <DialogContent>
-            <DialogContentText sx={{ ...DialogTextStyle, marginBottom: '10px' }}>
-              소개 메시지를 변경할 수 있습니다.
-            </DialogContentText>
-            <div>
-              <TextField
-                id="outlined-multiline-static"
-                label="현재 식당 소개 메시지"
-                multiline
-                disabled
-                rows={5}
-                defaultValue={info}
-              />
-              <TextField
-                sx={{ ml: '2vw' }}
-                id="outlined-multiline-static"
-                label="식당 소개 메시지 변경"
-                multiline
-                inputRef={InfoRef}
-                rows={5}
-                placeholder={info}
-              />
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onUpdateMarketInfo}>등록</Button>
-            <Button color="error" onClick={closeUpdateInfoModal}>
-              닫기
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={updateImage} onClose={closeUpdateImageModal}>
-          <DialogTitle sx={DialogTitleStyle}>식당 이미지 변경하기</DialogTitle>
-          <DialogContent>
-            <DialogContentText sx={DialogTextStyle}>현재 이미지</DialogContentText>
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {image !== null ? (
-                  <img
-                    style={{
-                      width: '10vw',
-                      minWidth: '10vw',
-                    }}
-                    src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
-                    alt="이미지없음"
-                  />
-                ) : (
-                  <Skeleton variant="rectangular" width={210} height={118} />
-                )}
-                <input
-                  style={{ marginLeft: '2vw' }}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setNewImage(e.target.files[0])}
-                />
-              </div>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onUpdateMarketImage}>등록</Button>
-            <Button color="error" onClick={closeUpdateImageModal}>
-              닫기
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
-          <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-            성공!
-          </Alert>
-        </Snackbar>
+        <UpdateInfoModal
+          open={updateInfo}
+          onClose={closeUpdateInfoModal}
+          info={info}
+          InfoRef={InfoRef}
+          onUpdateMarketInfo={onUpdateMarketInfo}
+        />
+        <UpdateImgModal
+          open={updateImage}
+          onClose={closeUpdateImageModal}
+          image={image}
+          setNewImage={setNewImage}
+          onUpdateMarketImage={onUpdateMarketImage}
+        />
+        <UpdateNameModal
+          open={updateName}
+          onClose={closeUpdateNameModal}
+          isName={isName}
+          nameRef={nameRef}
+          name={name}
+          onUpdateMarketName={onUpdateMarketName}
+        />
       </Drawer>
-
-      <Dialog open={updateName} onClose={closeUpdateNameModal}>
-        <DialogTitle sx={DialogTitleStyle}>
-          식당 이름 {isName ? '수정' : '설정'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={DialogTextStyle}>
-            소비자도 쉽게 확인할 수 있는 방법으로 식당 이름을 {isName ? '수정' : '설정'}
-            해주세요
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="nameRef"
-            inputRef={nameRef}
-            placeholder={isName ? name : ''}
-            label={isName ? '기존 식당 이름' : '식당 이름'}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onUpdateMarketName}>등록</Button>
-          <Button color="error" onClick={closeUpdateNameModal}>
-            닫기
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }
 
 export default Drawerheader;
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -583,6 +362,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const screenWidth = window.innerWidth;
 const drawerWidth = screenWidth < 450 ? 20 : 220;
+const pagesNameStyle = { flexGrow: 1, fontWeight: 600, fontSize: '25px' };
+const listStyle = { backgroundColor: '#f5f5f5', height: '100%' };
+
+const headerToolbarStyle = {
+  backgroundColor: '#24292e',
+  pr: '24px',
+};
+
+const drawerToolbarStyle = {
+  backgroundColor: '#f5f5f5',
+  zIndex: 3,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  px: [1],
+};
 
 const marketNameStyle = {
   fontWeight: '600',
@@ -592,20 +387,72 @@ const marketNameStyle = {
   whiteSpace: 'nowrap',
   textAlign: 'right',
 };
-const MenuItemTextStyle = {
-  fontFamily: 'Nanum',
-  fontWeight: 500,
-  margin: '10px 0px',
-};
-const DialogTitleStyle = {
-  margin: '0 auto',
-  fontFamily: 'Nanum',
-  fontSize: '20px',
-  fontWeight: '600',
-};
-const DialogTextStyle = {
-  fontFamily: 'Nanum',
-  fontSize: '15px',
-  fontWeight: '600',
-  marginBottom: '10px',
-};
+
+const blinkEffects = keyframes`
+  50%{
+    opacity:0.3;
+  }
+`;
+
+const SetNameWrapper = Cstyled.div`
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  line-height:25px;
+
+  span{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  span:first-child{
+    font-size:16px;
+    font-weight:600;
+    animation:${blinkEffects} 1s ease infinite;
+    &:hover{
+      cursor:pointer;
+    }
+  }
+  span:last-child{
+    font-size:13px;
+    font-weight:600;
+  }
+`;
+
+const AppbarUser = Cstyled.div`
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  padding:0 20px;
+  flex-direction:column;
+
+`;
+
+const AppbarUserTitle = Cstyled.span`
+  font-size:20px;
+  font-weight:700;
+  color:inherit;
+  margin-bottom:1px;
+`;
+
+const ListImageWrapper = Cstyled.div`
+  width:100%;
+  height:20vh;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+`;
+
+const ListImage = Cstyled.img`
+width: 45%;
+maxWidth: 45%;
+`;
+
+const ListImageText = Cstyled.span`
+  font-size:16px;
+  color:#0a376e;
+  font-weight:600;
+`;
