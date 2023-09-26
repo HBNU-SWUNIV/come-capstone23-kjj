@@ -1,9 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
+import { useCookies } from 'react-cookie';
+import { isloginAtom } from '../atom/loginAtom';
+import { useRecoilState } from 'recoil';
+import Swal from "sweetalert2";
 
 function My() {
+    const navigate = useNavigate();
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+    if (cookies.accesstoken === undefined) {
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
+
     const [orderCount, setOrderCount] = useState("");
     const [storeInfo, setStoreInfo] = useState("");
     const [idnum, setidnum] = useState([]);
@@ -30,7 +47,7 @@ function My() {
             })
 
         axios
-            .get(`${UserBaseApi}/${idnum}/order/count`, config)
+            .get(`${UserBaseApi}/order/count`, config)
             .then(res => {
                 setOrderCount(res.data);
             })
@@ -61,6 +78,20 @@ function My() {
             })
 
     }, [])
+
+    //포인트 사용 테스트
+    const handlePointButtonClick = () => {
+        //value만큼 감소
+        axios
+            .post(`/api/user/page/point`, { value: -2000 }, config)
+            .then((res) => {
+                console.log('Axios 요청 성공:', res);
+            })
+            .catch((error) => {
+                console.error('Axios 요청 실패:', error);
+            });
+        window.location.reload();
+    };
 
 
     const pointboxStyle = {
@@ -160,8 +191,8 @@ function My() {
                     <p style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{storeInfo}</p>
                     <p style={{ ...rightponifont, fontSize: '20px', fontWeight: 'bold' }}>{idnum}님</p>
                 </div>
-                <div style={point1boxStyle}>
-                    <p style={ponifont}>누적 포인트</p>
+                <div onClick={handlePointButtonClick} style={point1boxStyle}>
+                    <p style={ponifont}>누적 적립 포인트</p>
                     <p style={{ ...rightponifont, color: '#FF6347' }}>{orderCount * 50}P</p>
                 </div>
                 <div style={point1boxStyle}>

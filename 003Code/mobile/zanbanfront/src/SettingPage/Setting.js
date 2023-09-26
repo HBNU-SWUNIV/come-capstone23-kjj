@@ -7,12 +7,24 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
+import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 
 function Setting() {
     const { keycloak } = useKeycloak();
+    const config = ConfigWithToken();
     const navigate = useNavigate();
     const [cookies, setCookie] = useCookies(['accesstoken']);
     const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+
+    if(cookies.accesstoken === undefined){
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
 
     const handleLogout = async () => {
         setIsLogin(false);
@@ -60,28 +72,36 @@ function Setting() {
 
     //회원탈퇴시
     const handledelete = () => {
+        if (password === "") {
+            Swal.fire({
+                icon: 'warning',
+                text: `비밀번호를 다시 확인해 주세요.`,
+                confirmButtonText: "확인",
+            });
+            return;
+        }
+    
         axios
-            .delete(`/api/user/withdraw`, {
-                params: {
-                    password: password,
-                },
-            })
+            .post(`/api/user/withdraw`, { password: password }, config)
             .then(res => {
-                if (password === "") {
-                    Swal.fire({
-                        icon: 'warning',
-                        text: `비밀번호를 다시 확인해 주세요.`,
-                        confirmButtonText: "확인",
-                    })
-                    return;
-                }
+                Swal.fire({
+                    icon: 'success',
+                    text: `이용해 주셔서 감사합니다.`,
+                    confirmButtonText: "확인",
+                });
                 setShowDialog(false);
                 navigate('/login');
             })
             .catch((error) => {
                 console.log("error", error);
-            })
+                Swal.fire({
+                    icon: 'warning',
+                    text: `비밀번호를 다시 확인해 주세요.`,
+                    confirmButtonText: "확인",
+                });
+            });
     }
+    
 
 
     return (
@@ -98,7 +118,7 @@ function Setting() {
                         <h3>정말 탈퇴하시겠습니까?</h3>
                         <p>탈퇴 즉시 계정이 삭제되며,<br />개인정보는 안전하게 파기됩니다.</p>
                         <div>
-                            <input style={{ borderRadius: '5px', textAlign: 'center' }} type="text" id="password" name="password" placeholder="비밀번호를 입력하세요."
+                            <input style={{ borderRadius: '5px', textAlign: 'center' }} type="password" id="password" name="password" placeholder="비밀번호를 입력하세요."
                                 onChange={(e) => setPassword(e.target.value)} />
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'space-around' }}>

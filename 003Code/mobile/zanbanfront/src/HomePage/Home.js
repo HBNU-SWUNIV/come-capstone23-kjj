@@ -7,33 +7,26 @@ import { format } from "date-fns";
 import { useMatch, useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
-import Swal from "sweetalert2";
 import { motion } from 'framer-motion';
-
-function BlinkingText({ text, onClick }) {
-    const textStyle = {
-        marginBottom: 0,
-        textAlign: 'center',
-        cursor: 'pointer',
-        height: '30px',
-        fontWeight: 'bold',
-        color: isRed ? 'red' : 'black',
-        border: '1px solid'
-    };
-
-    return (
-        <p
-            style={textStyle}
-            onClick={onClick}
-        >
-            {text}
-        </p>
-    );
-}
-
+import { useCookies } from 'react-cookie';
+import { isloginAtom } from '../atom/loginAtom';
+import { useRecoilState } from 'recoil';
+import Swal from "sweetalert2";
 
 const Home = () => {
     const navigate = useNavigate();
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+    if(cookies.accesstoken === undefined){
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
+
     let now = new Date();
     let t_year = format(now, 'yyyy');
     let t_month = format(now, 'MM');
@@ -195,12 +188,11 @@ const Home = () => {
 
     //이용일 조회
     const [useDays, setUseDays] = useState([]);
+    const [nextUseDays, setNextUseDays] = useState([]);
 
     const [showDialog, setShowDialog] = useState(false);
     const [qr, setQR] = useState([]);
     const [qrCodeImg, setQRCodeImg] = useState("");
-
-    const [qrInner, setQrInner] = useState("");
 
     const handleqr = () => {
         const orderID = useDays.id;
@@ -223,14 +215,6 @@ const Home = () => {
                 console.error("QR 이미지 생성 실패:", error);
             });
 
-        // axios.get(`/api/user/order/${orderID}/qr`, config)
-        //     .then(res => {
-        //         setQrInner(res.data);
-        //         console.log(qrInner);
-        //     })
-        //     .catch(error => {
-        //         console.error("QR 내부 정보 조회 실패:", error);
-        //     });
     }
 
     useEffect(() => {
@@ -240,9 +224,28 @@ const Home = () => {
             .catch(error => {
                 console.error("유저 이용일 조회 실패", error);
             });
+
+        //이용 예정
+        axios.get(`${UserBaseApi}/order/${QRyear}/${QRmonth}`, config)
+            .then(res => {
+                const currentDate = QRyear + QRmonth + QRday;
+                const filteredDates = res.data
+                    .filter(item => item.recognize === true)
+                    .map(item => item.orderDate)
+                    .filter(date => date > currentDate);
+
+                if (filteredDates.length > 0) {
+                    const MinDate = Math.min(...filteredDates).toString();
+                    const month11 = MinDate.slice(4, 6);
+                    const day11 = MinDate.slice(6, 8);
+                    const formattedDate = `${month11}월${day11}일`;
+                    setNextUseDays(formattedDate);
+                } else {
+                    setNextUseDays("");
+                }
+            });
     }, [])
 
-    // console.log(useDays)
     const handleqrCancel = () => {
         setShowDialog(false);
         window.location.reload();
@@ -479,7 +482,7 @@ const Home = () => {
                     </div>
                     <div id="nextusedate">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>다음 이용 예정일</p>
-                        <p style={{ lineHeight: 0 }}>정보 없음</p>
+                        <p style={{ lineHeight: 0 }}>{nextUseDays ? nextUseDays : "정보 없음"}</p>
                     </div>
                     <div id="menu">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>현재 기본 메뉴</p>
