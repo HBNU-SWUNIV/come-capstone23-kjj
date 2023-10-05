@@ -26,7 +26,7 @@ public class PlannerService {
 
     @Transactional
     public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
-        LocalDate dateString = DateTools.makeLocaldate(year, month, day);
+        LocalDate dateString = DateTools.makeLocalDate(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -38,7 +38,7 @@ public class PlannerService {
     }
 
     public PlannerDto getOnePlanner(int year, int month, int day) {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -46,8 +46,8 @@ public class PlannerService {
     }
 
     public List<PlannerDto> getPlanner(int year, int month) {
-        LocalDate start = DateTools.makeLocaldate(year, month, 1);
-        LocalDate end = DateTools.makeLocaldate(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = DateTools.makeLocalDate(year, month, 1);
+        LocalDate end = DateTools.makeLocalDate(year, month, DateTools.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
                 .map(PlannerDto::of)

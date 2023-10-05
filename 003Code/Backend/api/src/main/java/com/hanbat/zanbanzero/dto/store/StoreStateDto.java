@@ -11,11 +11,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StoreStateDto {
     private String date;
+    private String name;
     private Boolean off;
 
     public static StoreStateDto of(StoreState state) {
         return new StoreStateDto(
                 DateTools.makeLocaldateToFormatterString(state.getDate()),
+                state.getName(),
                 state.getOff()
         );
     }

@@ -38,6 +38,11 @@ public class SecurityConfig {
     private final LoginAuthenticationManagerImpl authenticationManager;
     private final KeycloakProperties properties;
 
+    /**
+     * Spring Security 설정을 무시하기 위한 빈
+     *
+     * @return WebSecurityCustomizer 빈
+     */
     @Bean
     public WebSecurityCustomizer customizer() {
         return web -> web.ignoring().requestMatchers(
@@ -47,6 +52,14 @@ public class SecurityConfig {
                 "/favicon.ico"
         );
     }
+
+    /**
+     * Spring Security 설정을 위한 빈
+     *
+     * @param http  HttpSecurity 객체
+     * @return SecurityFilterChain 빈
+     * @throws Exception http.sessionManagement()에서 throw 하는 예외
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -58,12 +71,13 @@ public class SecurityConfig {
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilter(authenticationManager, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtRefreshFilter(userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()
+                .requestMatchers("/api/user/order/**/qr").permitAll()
                 .requestMatchers("/api/manager/login/**").permitAll()
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "MANAGER")
                 .requestMatchers("/api/manager/**").hasRole("MANAGER")

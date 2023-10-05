@@ -3,9 +3,13 @@ package com.hanbat.zanbanzero.entity.order;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Index;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -33,7 +37,12 @@ public class Order {
     @Index(name = "order_date_index")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate orderDate;
+
+    @NotNull
     private boolean recognize;
+    @NotNull
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean expired;
 
     public void setMenu(Menu menu) {this.menu = menu.getName();}
 
@@ -43,6 +52,10 @@ public class Order {
 
     public void setRecognizeToUse() { recognize = true; }
 
+    public void setExpired(boolean expired) {
+        this.expired = expired;
+    }
+
     public static Order createNewOrder(User user, String menu, int cost, LocalDate date, boolean type) {
         return new Order(
                 null,
@@ -50,7 +63,8 @@ public class Order {
                 menu,
                 cost,
                 date,
-                type
+                type,
+                false
         );
     }
 }

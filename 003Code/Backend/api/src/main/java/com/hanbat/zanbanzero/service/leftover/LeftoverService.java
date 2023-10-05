@@ -6,7 +6,6 @@ import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
-import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverPreRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverRepository;
@@ -33,9 +32,10 @@ public class LeftoverService {
     private static final int DATA_SIZE = 5;
 
     @Transactional
-    public LeftoverDto setLeftover(LeftoverDto dto) throws WrongParameter {
-        Calculate target = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
-        if (target == null) throw new WrongParameter("Calculate : null");
+    public LeftoverDto setLeftover(LeftoverDto dto) {
+        Calculate target;
+        if (dto.getDate() == null) target = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
+        else target = calculateRepository.findByDate(LocalDate.parse(dto.getDate()));
 
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
         if (leftover != null) leftover.setLeftover(dto.getLeftover());
@@ -83,7 +83,7 @@ public class LeftoverService {
     }
 
     @Transactional
-    public List<LeftoverDto> getLastWeeksLeftovers(int type) throws WrongParameter {
+    public List<LeftoverDto> getLastWeeksLeftovers(int type) {
         List<LeftoverDto> result = new ArrayList<>();
         LocalDate date = DateTools.getLastWeeksMonday(type);
 

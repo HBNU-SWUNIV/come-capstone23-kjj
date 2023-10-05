@@ -13,11 +13,13 @@ import lombok.ToString;
 public class UserInfoDto {
     private Long id;
     private String username;
+    private String loginDate;
 
     public static UserInfoDto of(User user) {
         return new UserInfoDto(
                 user.getId(),
-                user.getUsername()
+                user.getUsername(),
+                user.getLoginDate()
         );
     }
 }

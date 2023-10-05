@@ -8,6 +8,8 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
+import com.hanbat.zanbanzero.repository.user.UserRepository;
+import com.hanbat.zanbanzero.service.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,20 +37,25 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public KeycloakLoginFilter(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
+    public KeycloakLoginFilter(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate, UserRepository userRepository, UserService userService) {
         super(filterProcessesUrl);
         this.restTemplate = restTemplate;
         this.properties = properties;
         this.jwtUtil = jwtUtil;
         this.jwtTemplate = jwtTemplate;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         KeycloakUserInfoDto userInfo = getUserInfoFromKeycloakServer(request.getParameter("token"));
-        User user;
-        user = User.of(userInfo, checkUserInfo(userInfo));
+        String userSub = userInfo.getSub() + "_keycloak";
+        User user = userRepository.findByUsername(userSub);
+        if (user == null) user = userService.join(User.of(userSub, checkUserInfo(userInfo)));
         request.setAttribute("user", user);
 
         UserDetailsInterfaceImpl userDetails = new UserDetailsInterfaceImpl(user);

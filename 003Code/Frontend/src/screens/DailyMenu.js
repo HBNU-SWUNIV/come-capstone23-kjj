@@ -22,40 +22,9 @@ import {
   TextField,
 } from '@mui/material';
 import Button from '@mui/material/Button';
-
-export const Circle = styled.div`
-  width: 0.313rem;
-  height: 0.313rem;
-  margin-right: 0.313rem;
-  border-radius: 0.656rem;
-  background-color: #b0b3bc;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  @media screen and (max-width: 1200px) {
-    justify-content: center;
-  }
-`;
-
-const CalanderText = styled.div`
-  @media screen and (max-width:1200px){
-    display:none;
-  }
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  max-width:5%:
-  height:100%;
-  span{
-    font-size:25px;
-    font-family:NotoSans;
-    white-space:nowrap;
-    font-weight:600;
-  }
-`;
+import MenuSlider from '../components/DailyMenu/MenuSlider';
+import ErrorInform from '../components/general/ErrorInform';
+import Copyright from '../components/general/Copyright';
 
 export default function DailyMenu() {
   const config = ConfigWithToken();
@@ -65,8 +34,12 @@ export default function DailyMenu() {
       ...config.headers,
     },
   };
-
+  const menuCostRef = React.useRef('');
+  const [image, setImage] = React.useState([]);
   const [isTodayMenu, setIsTodayMenu] = React.useState(false);
+  const [openTodayMenu, setOpenTodayMenu] = React.useState(false);
+  const [todayMenuError, setTodayMenuError] = React.useState(false);
+
   React.useEffect(() => {
     axios
       .get(`${ManagerBaseApi}/menu/planner`, config)
@@ -74,7 +47,6 @@ export default function DailyMenu() {
       .catch((err) => console.log('DailyMenu Error=', err));
   });
 
-  const [openTodayMenu, setOpenTodayMenu] = React.useState(false);
   const openTodayMenuModal = () => {
     setOpenTodayMenu(true);
   };
@@ -82,8 +54,11 @@ export default function DailyMenu() {
     setOpenTodayMenu(false);
   };
 
-  const menuCostRef = React.useRef('');
-  const [image, setImage] = React.useState([]);
+  const handleTodayMenuError = () => {
+    if (menuCostRef.current.value !== '') setTodayMenuError(false);
+    else setTodayMenuError(true);
+  };
+
   const addTodayMenu = () => {
     const formdata = new FormData();
     let body = {
@@ -109,7 +84,7 @@ export default function DailyMenu() {
       })
       .catch((err) => {
         if (err.response.status === 400) {
-          alert('이미지 용량이 너무 큽니다.');
+          setTodayMenuError(true);
           return;
         }
       });
@@ -121,6 +96,7 @@ export default function DailyMenu() {
     vertical: 'top',
     horizontal: 'center',
   });
+
   const { vertical, horizontal, openTip } = state;
   const handleTip = (newState) => () => {
     setState({ ...newState, openTip: true });
@@ -150,21 +126,11 @@ export default function DailyMenu() {
         >
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4 }}>
-            <Wrapper>
+            <Wrapper $isTodayMenu={isTodayMenu}>
               <CalanderText>
                 {isTodayMenu ? (
                   <>
-                    <Button
-                      sx={{
-                        fontFamily: 'NotoSans',
-                        fontWeight: '600',
-                        fontSize: '20px',
-                        marginBottom: '10px',
-                      }}
-                      disabled
-                      color="success"
-                      variant="contained"
-                    >
+                    <Button sx={ButtonStyle} disabled color="success" variant="contained">
                       오늘의메뉴가 등록되어있습니다.
                     </Button>
                     <span
@@ -180,11 +146,8 @@ export default function DailyMenu() {
                 ) : (
                   <Button
                     sx={{
-                      fontFamily: 'NotoSans',
-                      fontWeight: '600',
-                      fontSize: '20px',
+                      ...ButtonStyle,
                       backgroundColor: 'rgb(0, 171, 85)',
-                      marginBottom: '30px',
                     }}
                     onClick={openTodayMenuModal}
                     variant="contained"
@@ -195,7 +158,7 @@ export default function DailyMenu() {
                 )}
 
                 <Typography
-                  sx={{ fontFamily: 'NotoSans', fontWeight: '600' }}
+                  sx={{ fontWeight: '600' }}
                   variant="h2"
                   align="center"
                   color="rgb(0, 171, 85)"
@@ -205,8 +168,10 @@ export default function DailyMenu() {
                 </Typography>
                 {!isTodayMenu ? (
                   <>
-                    <span>요일 별 달라지는 기본 메뉴가 있다면</span>
-                    <span>오늘의 메뉴로 등록해보세요</span>
+                    <span>
+                      요일 별 달라지는 기본 메뉴가 있다면 오늘의 메뉴로 등록해보세요
+                    </span>
+
                     <Button
                       sx={{ width: '150px' }}
                       color="error"
@@ -214,6 +179,8 @@ export default function DailyMenu() {
                     >
                       오늘의 메뉴가 뭔가요?
                     </Button>
+
+                    <MenuSlider />
                   </>
                 ) : (
                   <>
@@ -223,7 +190,7 @@ export default function DailyMenu() {
                 )}
               </CalanderText>
 
-              <Calander />
+              {isTodayMenu && <Calander />}
             </Wrapper>
           </Container>
 
@@ -260,7 +227,9 @@ export default function DailyMenu() {
                 label="가격"
                 type="number"
                 placeholder="가격"
+                onBlur={handleTodayMenuError}
               />
+              {todayMenuError && <ErrorInform message="가격은 필수입니다." />}
             </DialogContent>
             <DialogActions>
               <Button sx={NanumFontStyle} onClick={addTodayMenu}>
@@ -285,6 +254,47 @@ export default function DailyMenu() {
   );
 }
 
+const ButtonStyle = {
+  fontWeight: '600',
+  fontSize: '20px',
+  marginBottom: '10px',
+};
+
 const defaultTheme = createTheme();
 const TodayMenuTip =
   '매일 매일 바뀌는 오늘의메뉴는 다양한 요리사나 조리사가 창의적인 아이디어로 준비하는 식사입니다. 이런 음식은 종종 "오늘의 특별 메뉴" 또는 "일일 특선"과 같은 이름으로 불립니다. 이러한 오늘의 메뉴는 식당의 메뉴 다양성을 높이고 고객들에게 새로운 맛과 경험을 제공하기 위해 마련되는 것이 일반적입니다 이렇게 매일 바뀌는 오늘의 메뉴는 고객들에게 루틴을 깨고 새로운 맛을 경험하게 해주며, 음식점의 업적을 증진시키고 경쟁력을 높이는데 도움을 줄 수 있습니다. 또한, 이렇게 다양한 음식을 맛보는 과정에서 식사를 더욱 즐겁게 함으로써 직원들과 손님들 간의 소통과 만족도도 향상시킬 수 있습니다';
+
+export const Circle = styled.div`
+  width: 0.313rem;
+  height: 0.313rem;
+  margin-right: 0.313rem;
+  border-radius: 0.656rem;
+  background-color: #b0b3bc;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: ${({ $isTodayMenu }) => ($isTodayMenu ? 'space-between' : 'center')};
+  margin-top: ${({ $isTodayMenu }) => ($isTodayMenu ? '0' : '10vh')};
+  @media screen and (max-width: 1200px) {
+    justify-content: center;
+  }
+`;
+
+const CalanderText = styled.div`
+  @media screen and (max-width:1200px){
+    display:none;
+  }
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  max-width:5%:
+  height:100%;
+  span{
+    font-size:25px;
+    font-family:NotoSans;
+    white-space:nowrap;
+    font-weight:600;
+  }
+`;

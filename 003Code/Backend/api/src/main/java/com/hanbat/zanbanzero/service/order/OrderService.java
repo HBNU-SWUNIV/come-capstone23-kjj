@@ -9,11 +9,13 @@ import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.order.Order;
+import com.hanbat.zanbanzero.entity.user.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
+import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateTools;
@@ -41,6 +43,7 @@ public class OrderService {
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
+    private final UserMyPageRepository userMyPageRepository;
 
     private static final int PAGE_SIZE = 10;
 
@@ -52,15 +55,15 @@ public class OrderService {
     }
 
     @Transactional
-    public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException {
+    public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException, WrongRequestDetails {
+        if (menuId == null) throw new WrongRequestDetails("menuId : " + menuId);
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
         return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
     @Transactional
-    public OrderDto cancelOrder(String username, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
-        Long id = userRepository.findByUsername(username).getId();
+    public OrderDto cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenuId(id), date, false));
@@ -69,8 +72,8 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException {
-        LocalDate date = DateTools.makeLocaldate(year, month, day);
+    public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
+        LocalDate date = DateTools.makeLocalDate(year, month, day);
         Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
@@ -82,8 +85,7 @@ public class OrderService {
         return OrderDto.of(order);
     }
 
-    public int countPages(String username) {
-        Long id = userRepository.findByUsername(username).getId();
+    public int countPages(Long id) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
         return orderRepository.findByUserIdOrderByIdDesc(id, pageable).getTotalPages();
@@ -126,12 +128,9 @@ public class OrderService {
     }
 
     @Transactional
-    public void getOrderQr(HttpServletResponse response, Long userId, Long id) throws WriterException, IOException, CantFindByIdException, WrongRequestDetails {
-        Long orderUserId = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)).getUser().getId();
-        if (orderUserId != userId) throw new WrongRequestDetails("orderUserId, userId : " + orderUserId + userId);
-
+    public void getOrderQr(HttpServletResponse response, Long id) throws WriterException, IOException{
         String domain = "http://kjj.kjj.r-e.kr:8080";
-        String endPoint = "/api/user/order/" + id;
+        String endPoint = "/api/user/order/" + id + "/qr";
         BufferedImage qrCode = createQRCode(domain + endPoint);
 
         response.setContentType("image/png");
@@ -145,11 +144,40 @@ public class OrderService {
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
-    public OrderDto getOrder(String username, int year, int month, int day) {
+    public List<OrderDto> getOrderMonth(Long id, int year, int month) {
+
+        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
+        return order.stream()
+                .map(OrderDto::of)
+                .toList();
+    }
+
+    @Transactional
+    public OrderDto getOrderDay(String username, int year, int month, int day) {
         Long id = userRepository.findByUsername(username).getId();
 
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeDateFormatLocalDate(year, month, day));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);
+    }
+
+    @Transactional
+    public void checkOrder(Long id) throws CantFindByIdException {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+        if (!order.isExpired()) {
+            order.setExpired(true);
+
+            Long userId = order.getUser().getId();
+            int point = 50;
+            UserMypage myPage = userMyPageRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userId : " + userId));
+            myPage.updatePoint(point);
+        }
+    }
+
+    @Transactional
+    public OrderDto getOrderInfo(Long orderId) throws CantFindByIdException {
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId : " + orderId));
+
+        return OrderDto.of(order);
     }
 }

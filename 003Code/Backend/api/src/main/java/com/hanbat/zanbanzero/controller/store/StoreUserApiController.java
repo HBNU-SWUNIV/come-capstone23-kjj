@@ -20,12 +20,26 @@ public class StoreUserApiController {
 
     private final StoreService storeService;
 
+    /**
+     * 식당 정보 조회
+     *
+     * @return StoreDto
+     * @throws CantFindByIdException - 식당 정보가 없을 때 발생
+     */
     @Operation(summary="식당 정보 조회")
     @GetMapping("store")
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException {
         return ResponseEntity.ok(storeService.getStoreData());
     }
 
+    /**
+     * 연, 월 받아 휴무일 조회
+     *
+     * @param year - 연
+     * @param month - 월
+     * @return List<StoreStateDto>
+     * @throws WrongParameter - month가 1 ~ 12가 아닐 때 발생
+     */
     @Operation(summary="월간 휴무일 조회", description="n월 한달의 휴무일 조회")
     @GetMapping("store/off/{year}/{month}")
     public ResponseEntity<List<StoreStateDto>> getClosedDays(@PathVariable int year, @PathVariable int month) throws WrongParameter {
@@ -33,6 +47,11 @@ public class StoreUserApiController {
         return ResponseEntity.ok(storeService.getClosedDays(year, month));
     }
 
+    /**
+     * 최근 5개의 정산 데이터로 상위 3개 메뉴별 판매량 집계
+     *
+     * @return List<CalculateMenuForGraphDto>
+     */
     @Operation(summary = "최근 5영업일 메뉴별 판매량 조회", description = "메뉴 3종류만")
     @GetMapping("state/menu")
     public ResponseEntity<List<CalculateMenuForGraphDto>> getPopularMenus() {

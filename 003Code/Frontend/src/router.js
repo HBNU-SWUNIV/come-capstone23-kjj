@@ -19,6 +19,10 @@ const router = createBrowserRouter([
         action: loginAction,
       },
       {
+        path: '/loginfirst',
+        element: <LoginFirst />,
+      },
+      {
         path: '/',
         element: <App />,
         children: [
@@ -30,10 +34,6 @@ const router = createBrowserRouter([
             path: '/home',
             element: <Dashboard />,
             index: true,
-          },
-          {
-            path: '/loginfirst',
-            element: <LoginFirst />,
           },
           {
             path: '/menu',
