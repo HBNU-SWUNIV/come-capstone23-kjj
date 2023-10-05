@@ -7,11 +7,26 @@ import { format } from "date-fns";
 import { useMatch, useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
-import Swal from "sweetalert2";
 import { motion } from 'framer-motion';
+import { useCookies } from 'react-cookie';
+import { isloginAtom } from '../atom/loginAtom';
+import { useRecoilState } from 'recoil';
+import Swal from "sweetalert2";
 
 const Home = () => {
     const navigate = useNavigate();
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+    if(cookies.accesstoken === undefined){
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
+
     let now = new Date();
     let t_year = format(now, 'yyyy');
     let t_month = format(now, 'MM');
@@ -83,7 +98,7 @@ const Home = () => {
             .then(res => setGoodmenu(res.data.map(menu => menu.name)))
 
         axios
-            .get(`${UserBaseApi}/info`, config)
+            .get(`/api/user/info`, config)
             .then(res => {
                 setTest(res.data.id);
             })
@@ -94,6 +109,8 @@ const Home = () => {
 
         return () => clearInterval(interval);
     }, [goodmenu.length]);
+
+
 
     const infoBox = {
         fontSize: '15px',
@@ -171,6 +188,7 @@ const Home = () => {
 
     //이용일 조회
     const [useDays, setUseDays] = useState([]);
+    const [nextUseDays, setNextUseDays] = useState([]);
 
     const [showDialog, setShowDialog] = useState(false);
     const [qr, setQR] = useState([]);
@@ -184,30 +202,19 @@ const Home = () => {
                 setShowDialog(true))
             .catch(error => {
                 setShowDialog(false);
-                console.error("QR 정보 조회 실패:", error);
-                Swal.fire({
-                    icon: 'warning',
-                    text: `발급된 정보가 없습니다.`,
-                    confirmButtonText: "확인",
-                })
+                console.error("QR 일반 정보 조회 실패:", error);
             });
 
-            //qr정보 이미지로 인코딩
-            axios.get(`/api/user/order/${orderID}/qr`, config)
+        axios.get(`/api/image/order/${orderID}`, { ...config, responseType: 'arraybuffer' })
             .then(res => {
-                // 이미지 데이터를 base64로 인코딩
-                const base64Image = btoa(
-                    new Uint8Array(res.data)
-                        .reduce((data, byte) => data + String.fromCharCode(byte), "")
-                );
+                const uint8Array = new Uint8Array(res.data);
+                const base64Image = btoa(String.fromCharCode.apply(null, uint8Array));
                 setQRCodeImg(`data:image/png;base64,${base64Image}`);
-                // setQRCodeImg(res.data);
             })
             .catch(error => {
                 console.error("QR 이미지 생성 실패:", error);
             });
 
-            console.log(qrCodeImg);
     }
 
     useEffect(() => {
@@ -217,11 +224,31 @@ const Home = () => {
             .catch(error => {
                 console.error("유저 이용일 조회 실패", error);
             });
-        //키클락 로그인은 적용X
+
+        //이용 예정
+        axios.get(`${UserBaseApi}/order/${QRyear}/${QRmonth}`, config)
+            .then(res => {
+                const currentDate = QRyear + QRmonth + QRday;
+                const filteredDates = res.data
+                    .filter(item => item.recognize === true)
+                    .map(item => item.orderDate)
+                    .filter(date => date > currentDate);
+
+                if (filteredDates.length > 0) {
+                    const MinDate = Math.min(...filteredDates).toString();
+                    const month11 = MinDate.slice(4, 6);
+                    const day11 = MinDate.slice(6, 8);
+                    const formattedDate = `${month11}월${day11}일`;
+                    setNextUseDays(formattedDate);
+                } else {
+                    setNextUseDays("");
+                }
+            });
     }, [])
 
     const handleqrCancel = () => {
         setShowDialog(false);
+        window.location.reload();
     }
 
 
@@ -322,7 +349,7 @@ const Home = () => {
                 console.error("패치 실패:", error);
             });
     };
-  
+
     const handlemenuSaveClick = () => {
         axios
             .patch(`${UserBaseApi}/policy/menu/${DetailPath.id}`, {}, config)
@@ -338,7 +365,6 @@ const Home = () => {
                 navigate('/home');
             });
     };
-
 
 
     const handleUsedatesetCancleClick = () => {
@@ -387,20 +413,32 @@ const Home = () => {
                         <p>안녕하세요😄</p>
                     </div>
 
-                    <div style={{ ...qrbox }} onClick={handleqr}>
+                    {/* QR발급 안됐으면 onclick 동작 x */}
+                    <div style={{ ...qrbox }} onClick={() => useDays.recognize && handleqr()}>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '10px' }}>
                             <img src={qrimg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto' }} />
                         </div>
                         <div style={{ marginTop: '10px', textAlign: 'center' }}>
-                            {useDays.length === 0 ? (
-                                <p style={{ margin: '0', color: "red" }}>발급 정보 없음</p>
+                            {useDays.recognize !== true ? (
+                                <>
+                                    <p style={{ margin: '0', color: "red" }}>발급 정보 없음</p>
+                                    {/* <button style={{ marginBottom: '10px' }}>
+                                        <Link to="/checkout" style={{ color: "black", textDecoration: "none" }}>결제하기</Link>
+                                    </button> */}
+                                </>
+                            ) : useDays.expired ? (
+                                <>
+                                    <p style={{ margin: '0', color: "red" }}>이용 완료</p>
+                                    <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p>
+                                </>
                             ) : (
                                 <>
                                     <p style={{ margin: '0' }}>{formattedDate}</p>
                                     <p style={{ margin: '0', color: 'green' }}>발급 완료</p>
+                                    <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p>
                                 </>
                             )}
-                            <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p>
+                            {/* <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p> */}
                         </div>
                     </div>
                 </div>
@@ -413,7 +451,18 @@ const Home = () => {
                         transition={{ duration: 0.5 }}
                         style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '50%', textAlign: 'center' }}>
-                            <img src={qrCodeImg} alt="QR코드" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%' }} />
+                            {!useDays.expired && (<img
+                                src={qrCodeImg}
+                                alt="QR코드"
+                                style={{ width: '50%', height: 'auto' }}
+                            />
+                            )}
+                            {useDays.expired && (
+                                <div>
+                                    <img src={qrimg} alt="QR코드" style={{ width: '50%', height: 'auto' }} />
+                                    <p style={{ color: 'red' }}>이용 완료</p>
+                                </div>
+                            )}
                             <p>예약자 ID : {test}님
                                 <br />가격 : {qr.cost}원
                                 <br />메뉴 : {qr.menu}</p>
@@ -433,13 +482,12 @@ const Home = () => {
                     </div>
                     <div id="nextusedate">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>다음 이용 예정일</p>
-                        <p style={{ lineHeight: 0 }}>정보 없음</p>
+                        <p style={{ lineHeight: 0 }}>{nextUseDays ? nextUseDays : "정보 없음"}</p>
                     </div>
                     <div id="menu">
                         <p style={{ fontWeight: 'bold', lineHeight: 0.5 }}>현재 기본 메뉴</p>
                         <p style={{ lineHeight: 0 }}>{defaultMenu ? defaultMenu : (<> 등록 안됨{" "} </>)}</p>
                     </div>
-
                 </div>
 
 
@@ -540,9 +588,9 @@ const Home = () => {
                     <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '400px', textAlign: 'center' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                             <img src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=${DetailPath?.image}`} alt="메뉴사진" style={{ maxWidth: '50%', height: 'auto', marginTop: '10%', border: "1px solid black", borderRadius: '10px', }} />
-                            <div style={{marginTop: '10%'}}>
-                                <h1 style={{marginBottom: '0'}}>{DetailPath.name}</h1>
-                                <p style={{marginTop: '0'}}>{DetailPath.cost}원</p>
+                            <div style={{ marginTop: '10%' }}>
+                                <h1 style={{ marginBottom: '0' }}>{DetailPath.name}</h1>
+                                <p style={{ marginTop: '0' }}>{DetailPath.cost}원</p>
                             </div>
                         </div>
                         <p>{DetailPath.details}</p>

@@ -6,11 +6,15 @@ import { useMatch, useNavigate } from 'react-router-dom';
 import shortid from 'shortid';
 import Switch from 'react-switch';
 import axios from "axios";
-import { useSelector } from "react-redux";
 import Select from 'react-select';
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 import Swal from "sweetalert2";
+import { useCookies } from 'react-cookie';
+import { isloginAtom } from '../atom/loginAtom';
+import { useRecoilState } from 'recoil';
 
+const holidayServiceKey = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
+const holidayBaseApi = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
 
 const ArrowCSS = { color: '#969696', fontSize: '20px' };
 
@@ -156,6 +160,22 @@ const selectStyles = {
 };
 
 function Calendar() {
+    const navigate = useNavigate();
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+    if(cookies.accesstoken === undefined){
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
+
+    const [holiday, setHoliday] = useState([]);
+    const isArray = holiday?.length !== undefined;
+
     const [activeDays, setActiveDays] = useState([]);
     const [menus, setMenus] = useState([]);
     const [menusId, setMenusId] = useState([]);
@@ -209,6 +229,7 @@ function Calendar() {
     const DayPathMatch = useMatch('/calendar/:id');
     //이용일 조회
     const [useDays, setUseDays] = useState([]);
+    const [notUseDays, setNotUseDays] = useState([]);
 
     useEffect(() => {
         if (DayPathMatch && DayPathMatch.params && DayPathMatch.params.id) {
@@ -239,7 +260,6 @@ function Calendar() {
     const currentHour = today.getHours();
     const currentMinute = today.getMinutes();
 
-    const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
     const days = [];
@@ -316,7 +336,7 @@ function Calendar() {
             //수동 이용함
             if (checkedStates[id]) {
                 axios
-                    .post(`${UserBaseApi}/order/add/${useMenuID}/${year}/${month}/${day}`, 'false', config)
+                    .post(`${UserBaseApi}/order/add/${useMenuID}/${year}/${month}/${day}`, 'true', config)
                     .then(() => {
                         console.log("수동 이용 성공");
                         setUseMenuIds(prevState => {
@@ -350,6 +370,7 @@ function Calendar() {
                     .post(`${UserBaseApi}/order/cancel/${year}/${month}/${day}`, 'false', config)
                     .then(() => {
                         console.log("수동 이용 안함 성공");
+                        setNotUseDays(id)
                         window.location.reload();
                     })
                     .catch((error) => {
@@ -370,6 +391,15 @@ function Calendar() {
             });
         //키클락 로그인은 적용X
 
+        //공공데이터 휴무 조회
+        axios
+            .get(
+                `${holidayBaseApi}solYear=${format(currentMonth, 'yyyy')}&solMonth=${format(currentMonth, 'MM')}&ServiceKey=${holidayServiceKey}`
+            )
+            .then((res) => {
+                setHoliday(res.data.response.body.items.item);
+            })
+            .catch((err) => console.log('dayoffError', err));
     }, [format(currentMonth, 'MM')])
 
     //이용일만 따로 저장
@@ -405,9 +435,15 @@ function Calendar() {
     function isHoliday(day) {
         const holidayDates = storeoff.filter(item => item.off).map(item => item.date);
         const formattedDay = format(day, 'yyyyMMdd');
-
         return holidayDates.includes(formattedDay);
     }
+
+    function isHoliday1(day) {
+        const holiday1 = holiday.map(item => item.locdate.toString());
+        const formattedDay1 = format(day, 'yyyyMMdd');
+        return holiday1.includes(formattedDay1);
+    }
+
 
     //10시30분 배경색 변환
     const isAfter1030 = currentHour > 10 || (currentHour === 10 && currentMinute >= 30);
@@ -434,21 +470,21 @@ function Calendar() {
                         // setCheckedStates[id] = 'true';
                         circlebackgroundColor = id < currentDate ? '#c0d4ab' : '#e0f7c8';
                         //주이용일 이용안함 설정시 원 배경색 변경
-                        if(recognizedNotUseDates.includes(id)){
+                        if (recognizedNotUseDates.includes(id)) {
                             circlebackgroundColor = id < currentDate ? '#dec8b4' : '#f7dfc8';
                         }
                         //나중에 추가로 주이용 설정한걸 10시30분에 마감하여 서버로 전송
                     }
 
 
-                } if (i === 0 || isHoliday(day)) {  //휴무 원 배경색 (사용안함), 글자색
-                    circlebackgroundColor = '#dec8f7';
-                    textcolor = '#f44336';
-
                 } if (i == 6) {
                     circlebackgroundColor = '#dec8f7';
                     textcolor = '#64b5f6';
-                }
+                } if (i === 0 || isHoliday(day) || isHoliday1(day)) {  //휴무 원 배경색 (사용안함), 글자색
+                    circlebackgroundColor = '#dec8f7';
+                    textcolor = '#f44336';
+
+                } 
 
 
                 dayss.push(
@@ -457,11 +493,11 @@ function Calendar() {
                             ...DivDay,
                             // 10시30분 이후에 배경색 변하게 설정
                             backgroundColor: (id < currentDate) || (id === currentDate && isAfter1030 === true) ? '#f5f5f5' : 'white',
-                            pointerEvents: isHoliday(day) || (i === 0 || i === 6) ? 'none' : 'auto'
+                            pointerEvents: isHoliday(day) || isHoliday1(day) || (i === 0 || i === 6) ? 'none' : 'auto'
                         }}
                         onClick={() => {
                             //마감 이후 클릭 불가능
-                            if (id >= currentDate && !isHoliday(day) && !(i === 0 || i === 6) && !(id === currentDate && isAfter1030 === true)) {
+                            if (id >= currentDate && !isHoliday(day) && !isHoliday1(day) && !(i === 0 || i === 6) && !(id === currentDate && isAfter1030 === true)) {
                                 onDay(id);
                             }
                         }}

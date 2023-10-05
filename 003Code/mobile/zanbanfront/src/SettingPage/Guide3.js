@@ -4,8 +4,9 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { ConfigWithToken } from '../auth/authConfig';
-import food_icon from "../img/food_icon.png"
 import { motion } from 'framer-motion';
+import guide3 from "../img/guide3.gif"
+
 
 function Guide3() {
     const [storeInfo, setStoreInfo] = useState("");
@@ -34,14 +35,14 @@ function Guide3() {
             <div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <h1 style={{ textAlign: 'center', color: '#A93528', marginTop: '50px', marginBottom: 0 }}>{storeInfo}</h1>
-                    <h2 style={{ textAlign: 'center', color: '#A93528' }}>발급된 QR코드 정보를 확인해 주세요.</h2>
+                    <h2 style={{ textAlign: 'center', color: '#A93528' }}>날짜별로 예약이 가능해요.</h2>
 
-                    <img src={food_icon} alt="QR코드 조회 가이드"></img>
+                    <img style={{ border: 'solid 1px', width: 'auto', height: '50vh', marginTop: '20px' }} src={guide3} alt="QR코드 조회 가이드"></img>
 
-                    <p style={{ textAlign: 'center', marginTop: '70px' }}>
-                        · 예약은 당일 오전 10시30분에 마감돼요.
-                        <br />· 이후에는 예약정보를 수정할 수 없어요.
-                        <br />· 발급된 QR코드 예약 정보를 확인해 주세요.</p>
+                    <p style={{ textAlign: 'center' }}>
+                        · 일정예약 페이지에서 예약할 수 있어요.
+                        <br />· 이용을 원하는 날을 선택하고 스위치를 클릭해주세요.
+                        <br />· 메뉴를 선택하고 저장 버튼을 눌러주세요.</p>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '90%', marginTop: 'auto' }}>
                         <button>
@@ -51,12 +52,12 @@ function Guide3() {
                         </button>
 
                         <button>
-                            <Link to='/setting' style={{ display: 'flex', alignItems: 'center' }}>
+                            <Link to='/Guide4' style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaArrowRight style={{ marginTop: '5px', marginBottom: '5px' }} />
                             </Link>
                         </button>
                     </div>
-                    <p style={{ color: '#A93528' }}>(2/3)</p>
+                    <p style={{ color: '#A93528' }}>(3/4)</p>
                 </div>
             </div>
         </motion.div>

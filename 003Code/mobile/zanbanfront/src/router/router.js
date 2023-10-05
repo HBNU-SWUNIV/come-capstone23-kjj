@@ -11,8 +11,13 @@ import Setting from "../SettingPage/Setting";
 import Guide1 from "../SettingPage/Guide1";
 import Guide2 from "../SettingPage/Guide2";
 import Guide3 from "../SettingPage/Guide3";
+import Guide4 from "../SettingPage/Guide4";
 import BestMenu from "../HomePage/BestMenu";
 import RootContainer from './RootContainer';
+import Checkout from '../toss/Checkout';
+import Success from "../toss/Success";
+import Fail from "../toss/Fail";
+import FirstLogin from "../SettingPage/FirtsLogin";
 
 
 
@@ -66,6 +71,10 @@ const router = createBrowserRouter([
                         element: <Setting />
                     },
                     {
+                        path: '/firstlogin',
+                        element: <FirstLogin />
+                    },
+                    {
                         path: '/guide1',
                         element: <Guide1 />
                     },
@@ -78,12 +87,28 @@ const router = createBrowserRouter([
                         element: <Guide3 />
                     },
                     {
+                        path: '/guide4',
+                        element: <Guide4 />
+                    },
+                    {
                         path: '/myuse',
                         element: <MyUse />
                     },
                     {
                         path: '/graph',
                         element: <Graph />
+                    },
+                    {
+                        path: '/checkout',
+                        element: <Checkout />
+                    },
+                    {
+                        path: '/success',
+                        element: <Success />
+                    },
+                    {
+                        path: '/fail',
+                        element: <Fail />
                     },
                 ]
             }

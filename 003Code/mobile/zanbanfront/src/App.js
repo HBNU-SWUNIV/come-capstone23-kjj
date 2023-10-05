@@ -10,7 +10,7 @@ function App() {
 
 
   return (
-    <div className="App">
+    <div className="App" style={{minWidth: '370px', minHeight: '675px', maxWidth: '800px', maxHeight: '765px'}}>
       <BrowserView>
         <h1>PC는 지원하지 않습니다.</h1>
         <h1>모바일 환경에서 접속해주세요.</h1>
@@ -18,7 +18,7 @@ function App() {
       <MobileView>
         <AnimatePresence>
           <Auth>
-            {!['/', '/login', '/SignUp', '/Guide1', '/Guide2', '/Guide3', '/MyUse'].includes(location.pathname) && <Nav />}
+            {!['/', '/login', '/SignUp', '/FirstLogin', '/Guide1', '/Guide2', '/Guide3',, '/Guide4', '/MyUse', '/checkout'].includes(location.pathname) && <Nav />}
             <Outlet />
           </Auth>
         </AnimatePresence>

@@ -4,10 +4,11 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from "axios";
 import { ConfigWithToken } from '../auth/authConfig';
-import guide2 from "../img/guide2.gif"
 import { motion } from 'framer-motion';
+import guide4 from "../img/guide4.gif"
 
-function Guide2() {
+
+function Guide4() {
     const [storeInfo, setStoreInfo] = useState("");
     const config = ConfigWithToken();
 
@@ -20,6 +21,7 @@ function Guide2() {
             .catch(error => {
                 console.error("식당 정보 조회 실패", error);
             });
+
     }, [])
 
     return (
@@ -33,34 +35,33 @@ function Guide2() {
             <div>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <h1 style={{ textAlign: 'center', color: '#A93528', marginTop: '50px', marginBottom: 0 }}>{storeInfo}</h1>
-                    <h2 style={{ textAlign: 'center', color: '#A93528' }}>주 이용 메뉴를 설정해주세요.</h2>
+                    <h2 style={{ textAlign: 'center', color: '#A93528' }}>발급된 QR코드 정보를 확인해 주세요.</h2>
 
-                    <img style={{ border: 'solid 1px', width: 'auto', height: '40vh', marginTop: '40px' }} src={guide2} alt="주 메뉴 설정 가이드"></img>
+                    <img style={{ border: 'solid 1px', width: 'auto', height: '40vh', marginTop: '20px' }} src={guide4} alt="QR코드 조회 가이드"></img>
 
                     <p style={{ textAlign: 'center' }}>
-                        · 기본으로 선택할 메뉴를 설정해주세요.
-                        <br />· 이용 요일마다 선택하신 메뉴를 자동으로 예약해드려요.
-                        <br />· 언제든지 변경할 수 있어요.
-                        <br />· 일정예약 페이지에서 매일 그날 먹고싶은 메뉴로 수정할 수 있어요.</p>
+                        · QR코드는 예약 당일 오전 10시 30분에 발급됩니다.
+                        <br />· 예약된 정보와 일치하는지 확인해 주세요.
+                        <br />· 매장에 방문하여 QR코드를 제시해 주세요.</p>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '90%', marginTop: 'auto' }}>
                         <button>
-                            <Link to='/Guide1' style={{ display: 'flex', alignItems: 'center' }}>
+                            <Link to='/Guide3' style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaArrowLeft style={{ marginTop: '5px', marginBottom: '5px' }} />
                             </Link>
                         </button>
 
                         <button>
-                            <Link to='/Guide3' style={{ display: 'flex', alignItems: 'center' }}>
+                            <Link to='/home' style={{ display: 'flex', alignItems: 'center' }}>
                                 <FaArrowRight style={{ marginTop: '5px', marginBottom: '5px' }} />
                             </Link>
                         </button>
                     </div>
-                    <p style={{ color: '#A93528' }}>(2/4)</p>
+                    <p style={{ color: '#A93528' }}>(4/4)</p>
                 </div>
             </div>
         </motion.div>
     );
 }
 
-export default Guide2;
+export default Guide4;
