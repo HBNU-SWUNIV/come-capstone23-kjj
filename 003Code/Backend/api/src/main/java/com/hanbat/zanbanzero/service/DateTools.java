@@ -74,14 +74,4 @@ public class DateTools {
     public static LocalDate getLastWeeksMonday(int type) {
         return LocalDateTime.now().minusWeeks(type + 1).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
     }
-
-    /**
-     * yyyy-MM-dd 포맷의 String 객체를 LocalDate로 변환
-     *
-     * @param date - 변환을 원하는 String 객체
-     * @return LocalDate
-     */
-    public static LocalDate toFormatterLocalDate(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ISO_DATE);
-    }
 }

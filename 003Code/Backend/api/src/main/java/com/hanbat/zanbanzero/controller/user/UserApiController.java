@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
+import com.hanbat.zanbanzero.dto.user.user.UsePointDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -35,8 +36,8 @@ public class UserApiController {
      * @throws WrongRequestDetails - 비밀번호가 맞지 않을 경우 발생
      */
     @Operation(summary="회원탈퇴")
-    @DeleteMapping("withdraw")
-    public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails {
+    @PostMapping("withdraw")
+    public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         userService.withdraw(username, dto);
 
@@ -78,6 +79,14 @@ public class UserApiController {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
         return ResponseEntity.ok(userService.getMyPage(username));
+    }
+
+    @Operation(summary="포인트 사용")
+    @PostMapping("page/point")
+    public ResponseEntity<Integer> usePoint(HttpServletRequest request, @RequestBody UsePointDto dto) throws CantFindByIdException {
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+
+        return ResponseEntity.ok(userService.usePoint(id, dto));
     }
 
     /**

@@ -38,8 +38,8 @@ public class StoreManagerApiController {
      * 식당 정보 데이터 추가
      *
      * @param dto - name, info
-     * @return
-     * @throws SameNameException
+     * @return StoreDto
+     * @throws SameNameException - 식당 정보 데이터가 이미 존재할 경우 발생
      */
     @Operation(summary="식당 정보 세팅", description="세팅정보 없을 시 세팅")
     @PostMapping("setting")

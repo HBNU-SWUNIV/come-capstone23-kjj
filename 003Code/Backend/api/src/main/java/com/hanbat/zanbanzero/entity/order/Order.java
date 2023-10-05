@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.entity.order;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +37,11 @@ public class Order {
     @Index(name = "order_date_index")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate orderDate;
+
+    @NotNull
     private boolean recognize;
+    @NotNull
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean expired;
 
     public void setMenu(Menu menu) {this.menu = menu.getName();}

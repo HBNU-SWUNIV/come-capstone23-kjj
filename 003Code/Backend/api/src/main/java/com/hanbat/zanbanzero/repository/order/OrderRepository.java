@@ -18,6 +18,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Page<Order> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
 
-    @Query("SELECT o FROM Order o WHERE o.user.id = :id AND YEAR(o.orderDate) = :year AND MONTH(o.orderDate) = :month AND o.recognize = :recognize")
-    List<Order> findByUserIdAndOrderDate_YearAndOrderDate_MonthAndRecognize(Long id, int year, int month, boolean recognize);
+    @Query("SELECT o FROM Order o WHERE o.user.id = :id AND YEAR(o.orderDate) = :year AND MONTH(o.orderDate) = :month")
+    List<Order> findByUserIdAndOrderDate_YearAndOrderDate_Month(Long id, int year, int month);
+
 }

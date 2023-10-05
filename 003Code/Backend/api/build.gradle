@@ -68,10 +68,6 @@ dependencies {
 	implementation 'io.micrometer:micrometer-tracing-bridge-brave' // Brave
 //	implementation 'io.zipkin.reporter2:zipkin-reporter-brave' // Zipkin
 
-	// rabbitMQ
-	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
-
 	// keycloak
 	implementation 'org.keycloak:keycloak-admin-client:17.0.1'
 }

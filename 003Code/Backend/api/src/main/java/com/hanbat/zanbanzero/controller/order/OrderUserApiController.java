@@ -35,9 +35,9 @@ public class OrderUserApiController {
      */
     @Operation(summary="수동으로 이용안함 설정")
     @PostMapping("order/cancel/{year}/{month}/{day}")
-    public ResponseEntity<OrderDto> cancelOrder(HttpServletRequest request, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws CantFindByIdException {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.cancelOrder(username, year, month, day));
+    public ResponseEntity<OrderDto> cancelOrder(HttpServletRequest request, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws CantFindByIdException, WrongRequestDetails {
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.cancelOrder(id, year, month, day));
     }
 
     /**
@@ -52,7 +52,7 @@ public class OrderUserApiController {
      */
     @Operation(summary="수동으로 이용함 설정")
     @PostMapping("order/add/{menuId}/{year}/{month}/{day}")
-    public ResponseEntity<OrderDto> addOrder(HttpServletRequest request, @PathVariable Long menuId, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws CantFindByIdException {
+    public ResponseEntity<OrderDto> addOrder(HttpServletRequest request, @PathVariable Long menuId, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws CantFindByIdException, WrongRequestDetails {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         return ResponseEntity.ok(orderService.addOrder(username, menuId, year, month, day));
     }

@@ -88,11 +88,9 @@ public class MenuService {
     @Transactional
     public Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, JsonProcessingException {
         MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        Map<String, Integer> old = objectMapper.readValue(menuFood.getFood(), Map.class);
-        old.putAll(map);
 
-        menuFood.setFood(objectMapper.writeValueAsString(old));
-        return old;
+        menuFood.setFood(objectMapper.writeValueAsString(map));
+        return map;
     }
 
     @Transactional
@@ -112,10 +110,6 @@ public class MenuService {
         return MenuInfoDto.of(menuInfo);
     }
 
-    private void updateOrders() {
-
-    }
-
     @Transactional
     @Caching(evict = {
             @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
@@ -128,7 +122,6 @@ public class MenuService {
                 .peek(policy -> policy.setDefaultMenu(null))
                 .toList());
         menuRepository.delete(menu);
-        updateOrders();
 
         return MenuDto.of(menu);
     }
@@ -142,10 +135,7 @@ public class MenuService {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         switch (type) {
-            case "n" -> {
-                menu.setSold(false);
-                updateOrders();
-            }
+            case "n" -> menu.setSold(false);
             case "y" -> menu.setSold(true);
             default -> throw new WrongParameter(type);
         }

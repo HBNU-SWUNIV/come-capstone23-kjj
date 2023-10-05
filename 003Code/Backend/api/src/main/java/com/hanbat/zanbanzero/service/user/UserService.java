@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
+import com.hanbat.zanbanzero.dto.user.user.UsePointDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
@@ -25,8 +26,6 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,17 +44,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
-    @Value("${rabbitmq.exchange.name}")
-    private String exchangeName;
-
-    @Value("${rabbitmq.routing.key}")
-    private String routingKey;
-
     @Value("${keycloak.realm}")
     private String realm;
-
-    @Value("${keycloak.resource}")
-    private String clientId;
 
     private final UserRepository userRepository;
     private final UserMyPageRepository userMypageRepository;
@@ -64,16 +54,14 @@ public class UserService implements UserDetailsService {
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtUtil jwtUtil;
-    private final RabbitTemplate rabbitTemplate;
     private final Keycloak keycloak;
 
     @Transactional
-    public User join(UserJoinDto dto) {
+    public void join(UserJoinDto dto) {
         dto.setEncodePassword(bCryptPasswordEncoder);
         User user = userRepository.save(User.of(dto));
         userMypageRepository.save(UserMypage.createNewUserMyPage(user));
         userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
-        return user;
     }
 
     @Transactional
@@ -130,15 +118,10 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
+    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
         User user = userRepository.findByUsername(username);
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) rabbitTemplate.convertAndSend(exchangeName, routingKey, user.getId());
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(userRepository.findById(user.getId()).orElseThrow(() -> new CantFindByIdException("userId : " + user.getId())));
         else throw new WrongRequestDetails("error");
-    }
-
-    @RabbitListener(queues = "${rabbitmq.queue.name}")
-    public void reciveMessage(Long userId) throws CantFindByIdException {
-        userRepository.delete(userRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userId : " + userId)));
     }
 
     public boolean check(String username) {
@@ -157,6 +140,14 @@ public class UserService implements UserDetailsService {
         UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         return UserMypageDto.createUserMyPageDto(userMypage);
+    }
+
+    @Transactional
+    public Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException {
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        userMypage.updatePoint(-1 * dto.getValue());
+
+        return userMypage.getPoint();
     }
 
     @Override

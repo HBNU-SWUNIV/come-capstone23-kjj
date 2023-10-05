@@ -61,11 +61,12 @@ public class BatchScheduler {
         boolean off = isOffDay(date);
         if (!today.equals("SATURDAY") && !today.equals("SUNDAY") && !off) {
             JobExecution run = jobLauncher.run(firstJob, getFirstJobParameters());
-            if (run.getStatus() != BatchStatus.FAILED && !today.equals("FRIDAY")) {
+            if (run.getStatus() != BatchStatus.FAILED) {
                 slackTools.sendSlackMessage("firstJob");
-                JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
-                if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
-
+                if (!today.equals("FRIDAY")) {
+                    JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
+                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
+                }
             }
         }
     }
