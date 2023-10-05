@@ -15,6 +15,7 @@ import axios from 'axios';
 import Skeleton from '@mui/material/Skeleton';
 import { useState } from 'react';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
+import ErrorInform from '../components/general/ErrorInform';
 
 export default function Loginfirst() {
   const navigate = useNavigate();
@@ -25,32 +26,45 @@ export default function Loginfirst() {
       ...config.headers,
     },
   };
-
   const [name, setname] = useState('');
   const [info, setInfo] = useState('');
   const [image, setImage] = useState([]);
+  const [nameError, setNameError] = useState(false);
+  const [infoError, setInfoError] = useState(false);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    onName();
-    onInfo();
-    onImage();
-    navigate('/home');
+    if (name === '' || info === '') return;
+    try {
+      if (image !== null) setMarketImage();
+      setMarketName();
+      setMarketInfo();
+      navigate('/home');
+    } catch {
+      console.log('초기설정 에러');
+    }
   };
 
-  const onName = () => {
+  const handleError = () => {
+    name === '' ? setNameError(true) : setNameError(false);
+    info === '' ? setInfoError(true) : setInfoError(false);
+  };
+
+  const setMarketName = () => {
     const body = {
       name,
     };
     axios.patch(`${ManagerBaseApi}/store/title`, body, config);
   };
-  const onInfo = () => {
+
+  const setMarketInfo = () => {
     const body = {
       info,
     };
     axios.patch(`${ManagerBaseApi}/store/info`, body, config);
   };
-  const onImage = () => {
+
+  const setMarketImage = () => {
     const formdata = new FormData();
     image != null && formdata.append('file', image);
     if (image.length !== 0) {
@@ -94,11 +108,7 @@ export default function Loginfirst() {
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <Typography
-              sx={{ fontFamily: 'NotoSans', fontWeight: 600 }}
-              component="h1"
-              variant="h4"
-            >
+            <Typography sx={{ fontWeight: 600 }} component="h1" variant="h4">
               초기 설정
             </Typography>
 
@@ -106,7 +116,7 @@ export default function Loginfirst() {
               <Typography
                 sx={{
                   cursor: 'pointer',
-                  fontFamily: 'NotoSans',
+
                   fontSize: '15px',
                 }}
                 color="error"
@@ -123,28 +133,32 @@ export default function Loginfirst() {
                 label="식당명"
                 name="식당명"
                 value={name}
+                onBlur={handleError}
                 onChange={(e) => setname(e.target.value)}
                 autoComplete="name"
                 autoFocus
               />
+              {nameError && <ErrorInform message="식당명을 입력해주세요." />}
               <TextField
                 margin="normal"
                 required
                 fullWidth
                 value={info}
+                onBlur={handleError}
                 onChange={(e) => setInfo(e.target.value)}
                 name="소개"
                 label="식당 소개"
                 id="info"
                 autoComplete="current-info"
               />
+              {infoError && <ErrorInform message="식당 소개를 입력해주세요." />}
 
               <Typography
-                sx={{ fontFamily: 'Nanum', fontWeight: 500, marginTop: '20px' }}
+                sx={{ fontWeight: 500, marginTop: '20px' }}
                 component="h1"
                 variant="h6"
               >
-                이미지
+                이미지(선택)
               </Typography>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Skeleton variant="rectangular" width={210} height={118} />
@@ -160,7 +174,7 @@ export default function Loginfirst() {
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2, fontFamily: 'NotoSans', fontWeight: 600 }}
+                sx={{ mt: 3, mb: 2, fontWeight: 600 }}
               >
                 등록
               </Button>

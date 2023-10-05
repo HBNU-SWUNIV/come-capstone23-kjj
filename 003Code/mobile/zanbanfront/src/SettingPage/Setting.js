@@ -3,21 +3,28 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
+import Swal from "sweetalert2";
+import axios from "axios";
+import { useRecoilState } from 'recoil';
+import { isloginAtom } from '../atom/loginAtom';
 
 function Setting() {
     const { keycloak } = useKeycloak();
     const navigate = useNavigate();
     const [cookies, setCookie] = useCookies(['accesstoken']);
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
 
     const handleLogout = async () => {
+        setIsLogin(false);
         if (keycloak.authenticated) {
             navigate('/');
-            //setCookie('accesstoken', '');
             await keycloak.logout();
         }
+        setCookie('accesstoken', '');
+        setCookie('refreshtoken', '');
         navigate('/');
     }
-    
+
 
     const buttonStyle = {
         backgroundColor: 'white',
@@ -53,17 +60,27 @@ function Setting() {
 
     //회원탈퇴시
     const handledelete = () => {
-        // if (password === "") {
-        //     alert("비밀번호를 입력하세요.");
-        //     return;
-        // }
-        setShowDialog(false);
-        navigate('/login');
-        // axios
-        // .delete(`/api/user/withdraw`)
-        // .then(res => {
-        //     setOrderCount(res.data);
-        // })
+        axios
+            .delete(`/api/user/withdraw`, {
+                params: {
+                    password: password,
+                },
+            })
+            .then(res => {
+                if (password === "") {
+                    Swal.fire({
+                        icon: 'warning',
+                        text: `비밀번호를 다시 확인해 주세요.`,
+                        confirmButtonText: "확인",
+                    })
+                    return;
+                }
+                setShowDialog(false);
+                navigate('/login');
+            })
+            .catch((error) => {
+                console.log("error", error);
+            })
     }
 
 

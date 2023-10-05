@@ -38,50 +38,10 @@ import { isloginAtom } from '../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled, keyframes } from 'styled-components';
 
-const blinkEffects = keyframes`
-  50%{
-    opacity:0.3;
-  }
-`;
-
-const SetNameWrapper = Cstyled.div`
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  line-height:25px;
-  span{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    font-family:Nanum;
-  }
-  span:first-child{
-    font-size:16px;
-    font-weight:600;
-
-    animation:${blinkEffects} 1s ease infinite;
-
-    &:hover{
-      cursor:pointer;
-    }
-  }
-  span:last-child{
-    font-size:13px;
-    font-weight:600;
-  }
-`;
-
 function Drawerheader(props) {
-  const navigate = useNavigate();
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
-
-  const { keycloak } = useKeycloak();
   const [cookies, setCookie] = useCookies();
-
-  const [isExpired, setIsExpired] = useState(false);
-  const isRefreshtoken = cookies.refreshtoken !== '';
-
+  const navigate = useNavigate();
   const reconfig = ConfigWithRefreshToken();
   const config = ConfigWithToken();
   const formdataConfig = {
@@ -90,16 +50,16 @@ function Drawerheader(props) {
       ...config.headers,
     },
   };
-
+  const { keycloak } = useKeycloak();
+  const [isExpired, setIsExpired] = useState(false);
+  const isRefreshtoken = cookies.refreshtoken !== '';
   const nameRef = useRef('');
   const InfoRef = useRef('');
-
   const [name, setName] = useState('');
   const [info, setInfo] = useState('');
   const [image, setImage] = useState('');
   const [isName, setIsName] = useState(false);
   const [newImage, setNewImage] = useState([]);
-
   const [updateInfo, setUpdateInfo] = useState(false);
   const [updateImage, setUpdateImage] = useState(false);
   const [updateName, setUpdateName] = useState(false);
@@ -127,24 +87,12 @@ function Drawerheader(props) {
         url: '/api/user/login/refresh',
         ...reconfig,
       });
-
       if (response.headers.authorization !== '') {
         setCookie('accesstoken', response.headers.authorization);
       }
     } catch (err) {
       console.error(err);
     }
-  };
-
-  const [success, setSuccess] = useState(false);
-  const handleSuccessOpen = () => {
-    setSuccess(true);
-  };
-  const handleSuccessClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess(false);
   };
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -194,6 +142,7 @@ function Drawerheader(props) {
       }
     });
   };
+
   const onUpdateMarketInfo = () => {
     let body = {
       info: InfoRef.current.value,
@@ -205,10 +154,10 @@ function Drawerheader(props) {
       }
     });
   };
+
   const onUpdateMarketImage = () => {
     const formdata = new FormData();
     newImage !== null && formdata.append('file', newImage);
-
     axios({
       method: 'POST',
       url: `${ManagerBaseApi}/image`,
@@ -234,6 +183,7 @@ function Drawerheader(props) {
         if (err.response.status === 403) setIsExpired(true);
       });
   };
+
   const getMarketImage = () => {
     axios
       .get(`/api/user/store`, config)
@@ -249,6 +199,17 @@ function Drawerheader(props) {
     }
     setCookie('accesstoken', '');
     navigate('/');
+  };
+
+  const [success, setSuccess] = useState(false);
+  const handleSuccessOpen = () => {
+    setSuccess(true);
+  };
+  const handleSuccessClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccess(false);
   };
 
   return (
@@ -279,7 +240,7 @@ function Drawerheader(props) {
             noWrap
             sx={{
               flexGrow: 1,
-              fontFamily: 'Nanum',
+
               fontWeight: 600,
               fontSize: '25px',
             }}
@@ -305,39 +266,20 @@ function Drawerheader(props) {
             aria-expanded={open ? 'true' : undefined}
             onClick={menuOpenHandler}
           >
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'center',
-                alignItems: 'end',
-                padding: '0 20px',
-              }}
-            >
-              <span
-                style={{
-                  fontSize: '20px',
-                  fontWeight: '700',
-                  color: 'inherit',
-                  fontFamily: 'Nanum',
-                  marginBottom: '1px',
-                }}
-              >
-                관리자
-              </span>
+            <AppbarUser>
+              <AppbarUserTitle>관리자</AppbarUserTitle>
 
               {isName && (
                 <span
                   style={{
                     ...marketNameStyle,
                     fontSize: '18px',
-                    fontFamily: 'Nanum',
                   }}
                 >
                   {name}
                 </span>
               )}
-            </div>
+            </AppbarUser>
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -360,35 +302,13 @@ function Drawerheader(props) {
         <Divider />
 
         <List component="nav" sx={{ backgroundColor: '#f5f5f5', height: '100%' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '20vh',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <img
-              style={{
-                width: '45%',
-                maxWidth: '45%',
-              }}
+          <ListImageWrapper>
+            <ListImage
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
               alt="이미지 없음"
             />
-            <span
-              style={{
-                fontSize: '17px',
-                fontFamily: 'NotoSans',
-                color: '#0a376e',
-                fontWeight: '600',
-              }}
-            >
-              식재료 절약단
-            </span>
-          </div>
+            <ListImageText>식재료 절약단</ListImageText>
+          </ListImageWrapper>
           <Main_Listitems />
         </List>
 
@@ -609,3 +529,72 @@ const DialogTextStyle = {
   fontWeight: '600',
   marginBottom: '10px',
 };
+
+const blinkEffects = keyframes`
+  50%{
+    opacity:0.3;
+  }
+`;
+
+const SetNameWrapper = Cstyled.div`
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  line-height:25px;
+
+  span{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+  span:first-child{
+    font-size:16px;
+    font-weight:600;
+    animation:${blinkEffects} 1s ease infinite;
+    &:hover{
+      cursor:pointer;
+    }
+  }
+  span:last-child{
+    font-size:13px;
+    font-weight:600;
+  }
+`;
+
+const AppbarUser = Cstyled.div`
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+  padding:0 20px;
+  flex-direction:column;
+
+`;
+
+const AppbarUserTitle = Cstyled.span`
+  font-size:20px;
+  font-weight:700;
+  color:inherit;
+  margin-bottom:1px;
+`;
+
+const ListImageWrapper = Cstyled.div`
+  width:100%;
+  height:20vh;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+`;
+
+const ListImage = Cstyled.img`
+width: 45%;
+maxWidth: 45%;
+`;
+
+const ListImageText = Cstyled.span`
+  font-size:16px;
+  color:#0a376e;
+  font-weight:600;
+`;

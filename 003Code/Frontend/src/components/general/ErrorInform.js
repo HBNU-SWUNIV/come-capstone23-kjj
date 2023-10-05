@@ -2,6 +2,17 @@ import { FaExclamationCircle } from 'react-icons/fa';
 import React from 'react';
 import { styled } from 'styled-components';
 
+const ErrorInform = ({ message }) => {
+  return (
+    <ErrorWrapper>
+      <FaExclamationCircle />
+      <span>{message}</span>
+    </ErrorWrapper>
+  );
+};
+
+export default ErrorInform;
+
 const ErrorWrapper = styled.div`
   padding: 0 10px;
 
@@ -16,14 +27,3 @@ const ErrorWrapper = styled.div`
     font-size: 14px;
   }
 `;
-
-const ErrorInform = ({ message }) => {
-  return (
-    <ErrorWrapper>
-      <FaExclamationCircle />
-      <span>{message}</span>
-    </ErrorWrapper>
-  );
-};
-
-export default ErrorInform;

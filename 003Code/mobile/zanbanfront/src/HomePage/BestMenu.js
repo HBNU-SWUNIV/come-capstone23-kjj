@@ -5,6 +5,7 @@ import ApexCharts from "react-apexcharts";
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
+import { motion } from 'framer-motion';
 
 const boldP = {
     fontWeight: 'bold',
@@ -39,13 +40,15 @@ function BestMenu() {
             .then(res => setGoodmenu(res.data))
     }, [])
 
+    const names = [];
 
-    const first = goodmenu.length > 0 ? goodmenu[0].name : '';
-    const second = goodmenu.length > 0 ? goodmenu[1].name : '';
-    const third = goodmenu.length > 0 ? goodmenu[2].name : '';
-    // const fourth = goodmenu.length > 0 ? goodmenu[3].name : '';
-    // const fifth = goodmenu.length > 0 ? goodmenu[4].name : '';
-    // const sixth = goodmenu.length > 0 ? goodmenu[5].name : '';
+    for (let i = 0; i < 5; i++) {
+        if (goodmenu[i]) {
+            names[i] = goodmenu[i].name;
+        } else {
+            names[i] = '';
+        }
+    }
 
     return (
         <div>
@@ -61,19 +64,30 @@ function BestMenu() {
                 <div style={{ lineHeight: "0.5", width: '80%', marginTop: '30px' }}>
                     <p style={boldP}>주간 인기 메뉴</p>
                     <div style={menulistboxStyle}>
-                        <div style={{...menuboxStyle, fontSize: '12px'}}>
-                            <p style={{ margin: '5px' }}>1위 {first}</p>
-                            <p style={{ margin: '5px' }}>2위 {second}</p>
-                            <p style={{ margin: '5px' }}>3위 {third}</p>
-                            <p style={{ margin: '5px' }}>4위 </p>
-                            <p style={{ margin: '5px' }}>5위 </p>
-                            <p style={{ margin: '5px' }}>6위 </p>
+                        <div style={{ ...menuboxStyle, fontSize: '12px' }}>
+                            <p style={{ margin: '5px' }}>1위 {names[0]}</p>
+                            <p style={{ margin: '5px' }}>2위 {names[1]}</p>
+                            <p style={{ margin: '5px' }}>3위 {names[2]}</p>
+                            <p style={{ margin: '5px' }}>4위 {names[3]}</p>
+                            <p style={{ margin: '5px' }}>5위 {names[4]}</p>
+                            <p style={{ margin: '5px' }}>6위 {names[5]}</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div style={{ marginTop: '20px', width: '90%' }}>
+            <motion.div
+                initial={{ scale: 0, opacity: 0.5 }}
+                animate={{
+                    scale: 1,
+                    opacity: 1,
+                }}
+                transition={{
+                    duration: 1,
+                    type: "spring",
+                    stiffness: 110,
+                }}
+                style={{ marginTop: '20px', width: '90%' }}>
                 <ApexCharts
                     type='pie'
                     series={goodmenu.map(menu => menu.count)}
@@ -85,9 +99,8 @@ function BestMenu() {
                         labels: goodmenu.map(menu => menu.name)
                     }}
                 />
-            </div>
+            </motion.div>
         </div>
-
     );
 }
 
