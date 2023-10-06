@@ -2,11 +2,12 @@ package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
-import com.hanbat.zanbanzero.auth.login.authenticationManager.LoginAuthenticationManagerImpl;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
+import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
+import com.hanbat.zanbanzero.auth.login.authentication_impl.AuthenticationManagerImpl;
 import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilter;
-import com.hanbat.zanbanzero.auth.login.filter.LoginFilter;
+import com.hanbat.zanbanzero.auth.login.filter.LoginFilterV2;
+import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.filter.ExceptionHandlerBeforeUsernamePassword;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
@@ -35,7 +36,7 @@ public class SecurityConfig {
     private final JwtTemplate jwtTemplate = new JwtTemplate();
     private final UserService userService;
     private final UserRepository userRepository;
-    private final LoginAuthenticationManagerImpl authenticationManager;
+    private final AuthenticationManagerImpl authenticationManager;
     private final KeycloakProperties properties;
 
     /**
@@ -69,10 +70,11 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilter(authenticationManager, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+//                .addFilterBefore(new LoginFilterV1("/login/id", authenticationManager, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilterV2("/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new KeycloakLoginFilter("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtRefreshFilter(userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()

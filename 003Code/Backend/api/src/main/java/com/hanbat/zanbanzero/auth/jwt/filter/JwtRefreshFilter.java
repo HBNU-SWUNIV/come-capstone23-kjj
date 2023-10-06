@@ -16,8 +16,10 @@ public class JwtRefreshFilter implements Filter {
     private final UserService service;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
+    private final String uri;
 
-    public JwtRefreshFilter(UserService service, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
+    public JwtRefreshFilter(String uri, UserService service, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
+        this.uri = uri;
         this.service = service;
         this.jwtTemplate = jwtTemplate;
         this.jwtUtil = jwtUtil;
@@ -28,8 +30,7 @@ public class JwtRefreshFilter implements Filter {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         HttpServletResponse servletResponse = (HttpServletResponse) response;
 
-        String refreshUri = "/api/user/login/refresh";
-        if (!(servletRequest.getRequestURI().equals(refreshUri))) chain.doFilter(request, response);
+        if (!(servletRequest.getRequestURI().equals(uri))) chain.doFilter(request, response);
         else {
             String token = servletRequest.getHeader(jwtTemplate.getHeaderString());
             if (token == null) servletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

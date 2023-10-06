@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.login.provider;
+package com.hanbat.zanbanzero.auth.login.authentication_impl;
 
 import com.hanbat.zanbanzero.service.user.ManagerService;
 import com.hanbat.zanbanzero.service.user.UserService;
@@ -19,7 +19,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class LoginAuthenticationProviderImpl implements AuthenticationProvider {
+public class AuthenticationProviderImpl implements AuthenticationProvider {
 
     private final ManagerService managerService;
     private final UserService userService;
@@ -33,10 +33,11 @@ public class LoginAuthenticationProviderImpl implements AuthenticationProvider {
 
         UserDetails principalDetails;
 
-        if (uri.startsWith("/api/user")) {
+        String prefix = "/api/";
+        if (uri.startsWith(prefix + "user")) {
             principalDetails = userService.loadUserByUsername(username);
         }
-        else if (uri.startsWith("/api/manager")) {
+        else if (uri.startsWith(prefix + "manager")) {
             principalDetails = managerService.loadUserByUsername(username);
         }
         else throw new AuthenticationServiceException("wrong uri : " + uri);

@@ -10,7 +10,7 @@ import java.util.Collection;
 @Data
 public class UserDetailsInterfaceImpl implements UserDetailsInterface {
 
-    private User user;
+    private final User user;
 
     public UserDetailsInterfaceImpl(User user) {
         this.user = user;
@@ -19,7 +19,7 @@ public class UserDetailsInterfaceImpl implements UserDetailsInterface {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> user.getRoles());
+        authorities.add(user::getRoles);
         return authorities;
     }
 

@@ -4,13 +4,13 @@ import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 
-public class CustomUriMapper {
+public class CustomUriMapperV1 {
     private final CreateTokenInterface createTokenInterface;
 
-    public CustomUriMapper(ServletRequest request) throws WrongParameter {
+    public CustomUriMapperV1(ServletRequest request) throws WrongParameter {
         String loginEndPath = "/login/id";
         if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {
-            createTokenInterface = new CreateUserTokenImpl();
+            createTokenInterface = new CreateTokenInterfaceUserImpl();
         }
         else {
             throw new WrongParameter("잘못된 주소입니다.");

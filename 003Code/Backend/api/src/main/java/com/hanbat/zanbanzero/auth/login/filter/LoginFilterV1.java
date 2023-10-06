@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
-import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapper;
+import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapperV1;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
@@ -16,24 +16,26 @@ import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 
-public class LoginFilter implements Filter {
+public class LoginFilterV1 implements Filter {
     private final AuthenticationManager authenticationManager;
-    private CustomUriMapper customUriMapper;
+    private CustomUriMapperV1 customUriMapperV1;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
 
-    public LoginFilter(AuthenticationManager authenticationManager, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
+    private final String loginEndPath;
+
+    public LoginFilterV1(String loginEndPath, AuthenticationManager authenticationManager, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.jwtTemplate = jwtTemplate;
+        this.loginEndPath = loginEndPath;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String loginEndPath = "/login/id";
         if (((HttpServletRequest) request).getRequestURI().endsWith(loginEndPath)) {
             try {
-                customUriMapper = new CustomUriMapper(request);
+                customUriMapperV1 = new CustomUriMapperV1(request);
             } catch (WrongParameter e) {
                 throw new LoginFilterException(((HttpServletRequest) request).getRequestURI(), e);
             }
@@ -45,7 +47,7 @@ public class LoginFilter implements Filter {
     }
 
     public void attemptAuthentication(HttpServletRequest request, HttpServletResponse response){
-        CreateTokenInterface createTokenInterface = customUriMapper.getLoginFilter();
+        CreateTokenInterface createTokenInterface = customUriMapperV1.getLoginFilter();
 
         UsernamePasswordAuthenticationToken token = createTokenInterface.createToken(request);
         token.setDetails(request.getRequestURI());
