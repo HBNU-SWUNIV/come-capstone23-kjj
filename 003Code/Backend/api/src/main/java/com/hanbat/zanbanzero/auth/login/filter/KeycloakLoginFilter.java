@@ -53,12 +53,15 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         KeycloakUserInfoDto userInfo = getUserInfoFromKeycloakServer(request.getParameter("token"));
-        String userSub = userInfo.getSub() + "_keycloak";
+        String sub = userInfo.getSub();
+        if (sub == null) throw new KeycloakLoginException("keycloak user sub is null");
+
+        String userSub = sub + "_keycloak";
         User user = userRepository.findByUsername(userSub);
         if (user == null) user = userService.join(User.of(userSub, checkUserInfo(userInfo)));
         request.setAttribute("user", user);
 
-        UserDetailsInterfaceImpl userDetails = new UserDetailsInterfaceImpl(user);
+        UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);
         return new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
@@ -93,7 +96,9 @@ public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter 
                 entity,
                 KeycloakUserInfoDto.class
         );
-        return response.getBody();
+        KeycloakUserInfoDto body = response.getBody();
+        if (body == null) throw new KeycloakLoginException("keycloak userInfo is null");
+        return body;
     }
 
     private String checkUserInfo(KeycloakUserInfoDto dao) throws KeycloakLoginException {
