@@ -54,7 +54,7 @@ public class BatchScheduler {
                 .toJobParameters();
     }
 
-    @Scheduled(cron = "10 7 11 * * ?")
+    @Scheduled(cron = "0 30 1 * * ?")
     public void runOrderJob() throws SQLException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String today = DateTools.getToday();
         String date = DateTools.getDate();
@@ -63,9 +63,10 @@ public class BatchScheduler {
             JobExecution run = jobLauncher.run(firstJob, getFirstJobParameters());
             if (run.getStatus() != BatchStatus.FAILED) {
                 slackTools.sendSlackMessage("firstJob");
-                JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
-                if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
-
+                if (!today.equals("FRIDAY")) {
+                    JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
+                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
+                }
             }
         }
     }

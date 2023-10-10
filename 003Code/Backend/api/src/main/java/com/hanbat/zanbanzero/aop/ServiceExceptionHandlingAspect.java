@@ -14,7 +14,11 @@ public class ServiceExceptionHandlingAspect {
 
     private final SlackTools slackTools;
 
-    @AfterThrowing(pointcut = "execution(* com.hanbat.zanbanzero.service..*.*(..))", throwing = "ex")
+    /**
+     * 에러 발생 시 slack 메시지 알림 전송하는 AOP
+     */
+    @AfterThrowing(pointcut = "execution(* com.hanbat.zanbanzero.auth..*.*(..)) || execution(* com.hanbat.zanbanzero.controller..*.*(..)) || execution(* com.hanbat.zanbanzero.service..*.*(..))",
+            throwing = "ex")
     public void handleException(JoinPoint joinPoint, Exception ex) {
         slackTools.sendSlackMessage(ex, joinPoint.getSignature().getName(), ex.getMessage());
     }

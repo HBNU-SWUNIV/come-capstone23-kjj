@@ -8,6 +8,11 @@ import org.springframework.core.io.ClassPathResource;
 @Configuration
 public class EnvConfig {
 
+    /**
+     * application-db 파일에서 환경변수 env를 읽어 빈 객체 생성
+     * 
+     * @return PropertiesFactoryBean 빈
+     */
     @Bean(name = "env")
     public PropertiesFactoryBean propertiesFactoryBean() {
         PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();

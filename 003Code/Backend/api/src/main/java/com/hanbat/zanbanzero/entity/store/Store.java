@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.entity.store;
 
 import com.hanbat.zanbanzero.dto.store.StoreDto;
+import com.hanbat.zanbanzero.dto.store.StoreSettingDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,9 +28,18 @@ public class Store {
         );
     }
 
-    public void setInfo(StoreDto dto) {
-        info = dto.getInfo();
+    public static Store of(Long id, StoreSettingDto dto) {
+        return new Store(
+                id,
+                dto.getName(),
+                dto.getInfo(),
+                null
+        );
     }
-    public void setName(StoreDto dto) { name = dto.getName(); }
+
+    public void setInfo(String info) {
+        this.info = info;
+    }
+    public void setName(String name) { this.name = name; }
     public void setImage(String path) { image = path; }
 }

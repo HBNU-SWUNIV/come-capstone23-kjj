@@ -16,7 +16,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -75,16 +77,32 @@ public class CreateCalculatePreTasklet implements Tasklet {
     }
 
     private void checkOrders(Connection connection, String date, Map<String, Integer> result) throws SQLException {
-        String query = "select menu, recognize from orders where order_date = ?";
+        String query = "select id, menu, recognize from orders where order_date = ?";
 
+        List<Long> updateRecognizeIds = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, date);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
+                Long id = resultSet.getLong("id");
                 String menu = resultSet.getString("menu");
                 int type = resultSet.getInt("recognize");
-                if (type == 1) result.put(menu, result.get(menu) + 1);
-                else result.put(menu, result.get(menu) - 1);
+                if (!result.containsKey(menu)) updateRecognizeIds.add(id);
+                else {
+                    if (type == 1) result.put(menu, result.get(menu) + 1);
+                    else result.put(menu, result.get(menu) - 1);
+                }
+            }
+        }
+        updateOrderRecognize(connection, updateRecognizeIds);
+    }
+
+    private void updateOrderRecognize(Connection connection, List<Long> ids) throws SQLException {
+        for (Long id : ids) {
+            String query = "update orders set recognize = 0 where id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setLong(1, id);
+                preparedStatement.executeUpdate();
             }
         }
     }
@@ -137,7 +155,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
             return null;
         }
         initMenu(connection);
-        log.info("execute - initMenu END: " + menuIdToNameMap.toString());
+        log.info("execute - initMenu END: " + menuIdToNameMap);
 
         Map<String, Integer> result = getUserPolicy(connection, jobParameters.getString("day"));
         log.info("execute - getUserPolicy END: " + result);

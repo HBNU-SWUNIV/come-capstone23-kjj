@@ -11,6 +11,10 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig {
 
+    /**
+     * Spring Security 설정을 위한 CorsFilter 빈 생성
+     * @return CorsFilter 빈 객체
+     */
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -19,7 +23,7 @@ public class CorsConfig {
         config.setAllowedOriginPatterns(Arrays.asList("*")); // 모든 ip(*)에 응답을 허용
         config.addAllowedHeader("*"); // 모든 헤더(*)에 응답을 허용
         config.addAllowedMethod("*"); // 모든 method(post, get, put, delete, patch) 허용
-        source.registerCorsConfiguration("*", config); // /api/* 주소에 대해 config 적용
+        source.registerCorsConfiguration("*", config); // * 주소에 대해 config 적용
         return new CorsFilter(source);
     }
 }

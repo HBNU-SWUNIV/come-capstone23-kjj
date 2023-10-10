@@ -21,7 +21,7 @@ class UserServiceTest {
     private String username = "test";
     @BeforeEach
     void setup() {
-        final User user = new User(null, null, null, null, username, "1234", "ROLE_USER");
+        final User user = new User(null, null, null, null, username, "1234", "ROLE_USER", null);
 
         userRepository.save(user);
     }
@@ -37,7 +37,7 @@ class UserServiceTest {
     void getInfo() {
         User user = userRepository.findByUsername(username);
 
-        UserInfoDto expected = new UserInfoDto(user.getId(), user.getUsername());
+        UserInfoDto expected = new UserInfoDto(user.getId(), user.getUsername(), null);
         UserInfoDto result = UserInfoDto.of(user);
 
         assertEquals(expected.toString(), result.toString());

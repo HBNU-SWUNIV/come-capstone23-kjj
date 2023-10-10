@@ -8,7 +8,7 @@ import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UsernameDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.service.user.UserService;
+import com.hanbat.zanbanzero.service.user.UserServiceImplV1;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserApiControllerTest extends ControllerTestClass {
 
     @MockBean
-    private UserService userService;
+    private UserServiceImplV1 userService;
 
     private final UserDto dto = new UserDto(1L, "test username", "1234", null);
     private final UserJoinDto dto2 = new UserJoinDto("test username", "1234");

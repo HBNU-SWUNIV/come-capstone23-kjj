@@ -19,7 +19,7 @@ public class UserDetailsInterfaceImpl implements UserDetailsInterface {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(() -> user.getRoles());
+        authorities.add(user::getRoles);
         return authorities;
     }
 

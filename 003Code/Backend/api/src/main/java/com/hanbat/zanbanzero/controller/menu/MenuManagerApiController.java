@@ -29,30 +29,64 @@ public class MenuManagerApiController {
 
     private final String uploadDir = "img/menu";
 
+    /**
+     * Manager용 전체 메뉴 조회
+     *
+     * @return List<MenuManagerInfoDto>
+     */
     @Operation(summary="전체 메뉴 조회 - 관리자 전용")
     @GetMapping("menu")
     public ResponseEntity<List<MenuManagerInfoDto>> getMenusForManager() {
         return ResponseEntity.ok(menuService.getMenusForManager());
     }
 
+    /**
+     * 식단표 사용중인 메뉴 유무
+     * 
+     * @return bool
+     */
     @Operation(summary="식단표 사용 메뉴 유무 조회", description="true / false")
     @GetMapping("menu/planner")
-    public ResponseEntity<Boolean> isPlanner() {
+    public ResponseEntity<Boolean> isPlanned() {
         return ResponseEntity.ok(menuService.isPlanned());
     }
 
+    /**
+     * 식단표 사용 설정
+     * 
+     * @param id - menu ID
+     * @return MenuDto
+     * @throws CantFindByIdException - menu가 없을 때 발생
+     * @throws WrongParameter - 이미 식단표를 사용중일 때 발생
+     */
     @Operation(summary="식단표 사용 설정")
     @PostMapping("menu/{id}/planner")
     public ResponseEntity<MenuDto> setPlanner(@PathVariable Long id) throws CantFindByIdException, WrongParameter {
         return ResponseEntity.ok(menuService.setPlanner(id));
     }
 
+    /**
+     * 식단표 교체
+     * @param id - menu ID
+     * @return MenuDto
+     * @throws CantFindByIdException - 메뉴가 없을 때 발생
+     */
     @Operation(summary="식단표 교체 설정")
     @PatchMapping("menu/{id}/change/planner")
     public ResponseEntity<MenuDto> changePlanner(@PathVariable Long id) throws CantFindByIdException {
         return ResponseEntity.ok(menuService.changePlanner(id));
     }
 
+    /**
+     * 메뉴 추가
+     * form-data 형식 필요
+     * @param dto - name, cost, info, details, usePlanner
+     * @param file - 이미지 파일
+     * @return MenuDto
+     * @throws SameNameException - 동일 이름 메뉴가 존재할 때 발생
+     * @throws WrongParameter - 하나라도 null이 존재할 때 발생
+     * @throws UploadFileException - 이미지 업로드 도중 에러 발생
+     */
     @Operation(summary="관리자 - 메뉴 추가")
     @PostMapping("menu")
     public ResponseEntity<MenuDto> addMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file) throws SameNameException, WrongParameter, UploadFileException {
@@ -63,6 +97,15 @@ public class MenuManagerApiController {
         return ResponseEntity.ok(menuService.addMenu(dto, filePath));
     }
 
+    /**
+     * 식자재 정보 추가
+     * 
+     * @param data - key-value 형식
+     * @param id - menu ID
+     * @return MenuFoodDto
+     * @throws JsonProcessingException - data 형식이 잘못되었을 때 발생
+     * @throws CantFindByIdException - 메뉴가 없을 때 발생
+     */
     @Operation(summary="관리자 - 식자재 정보 추가")
     @PostMapping("menu/{id}/food")
     public ResponseEntity<MenuFoodDto> addFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
@@ -71,30 +114,74 @@ public class MenuManagerApiController {
         return ResponseEntity.ok(menuService.addFood(id, objectMapper.writeValueAsString(data)));
     }
 
+    /**
+     * 식자재 정보 조회
+     * 
+     * @param id - menu ID 
+     * @return Map<String, Integer>
+     * @throws JsonProcessingException - Map 형식으로 형변환할 때 발생
+     * @throws CantFindByIdException - 메뉴가 없을 때
+     */
     @Operation(summary="관리자 - 식자재 정보 조회")
     @GetMapping("menu/{id}/food")
-    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
+    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException {
         return ResponseEntity.ok(menuService.getFood(id));
     }
 
+    /**
+     * 식자재 정보 수정
+     * 
+     * @param data - Map<String, Integer> 타입
+     * @param id - menu ID
+     * @return Map<String, Integer>
+     * @throws JsonProcessingException - data 형식이 잘못되었을 때 발생
+     * @throws CantFindByIdException - 메뉴가 없을 때 발생
+     */
     @Operation(summary="관리자 - 식자재 정보 수정")
     @PatchMapping("menu/{id}/food")
     public ResponseEntity<Map<String, Integer>> updateFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
         return ResponseEntity.ok(menuService.updateFood(id, data));
     }
 
+    /**
+     * 메뉴 수정
+     * form-data 필요
+     * 
+     * @param dto - name, cost, info, details, usePlanner
+     * @param file - 이미지 파일
+     * @param id - menu ID
+     * @return MenuInfoDto
+     * @throws CantFindByIdException - 메뉴가 없을 때 발생
+     * @throws IOException - 이미지 업로드 중 에러 발생
+     */
     @Operation(summary="관리자 - 메뉴 수정")
     @PatchMapping("menu/{id}")
-    public ResponseEntity<MenuInfoDto> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException, UploadFileException {
+    public ResponseEntity<MenuInfoDto> updateMenu(@RequestPart("data") MenuUpdateDto dto, @RequestPart(value = "file", required = false)MultipartFile file, @PathVariable Long id) throws CantFindByIdException, IOException{
         return ResponseEntity.ok(menuService.updateMenu(dto, file, id, uploadDir));
     }
 
+    /**
+     * 메뉴 삭제
+     * 
+     * @param id - menu ID
+     * @return MenuDto
+     * @throws CantFindByIdException - 메뉴가 없을 경우 발생
+     */
     @Operation(summary="관리자 - 메뉴 삭제")
     @DeleteMapping("menu/{id}")
     public ResponseEntity<MenuDto> deleteMenu(@PathVariable Long id) throws CantFindByIdException {
         return ResponseEntity.ok(menuService.deleteMenu(id));
     }
 
+    /**
+     * 품절 지정
+     * 
+     * @param id - menu ID
+     * @param type - y / n
+     * @return MenuDto
+     * @throws CantFindByIdException - 메뉴가 없을 때 발생
+     * @throws WrongParameter - type이 y, n이 아닐 때 발생
+     */
     @Operation(summary="관리자 - 품절 지정")
     @PatchMapping("menu/{id}/sold/{type}")
     public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {

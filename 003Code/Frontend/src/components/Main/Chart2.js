@@ -6,19 +6,6 @@ import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import axios from 'axios';
 import styled from 'styled-components';
 
-const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
-  @media (max-width: 1000px) {
-    flex-direction: column;
-  }
-`;
-const ChartWrapper = styled.div`
-  width: 40%;
-  display: flex;
-  flex-direction: column;
-`;
-
 export default function Chart2() {
   const config = ConfigWithToken();
   const [reservationInfo, setReservationInfo] = useState([]);
@@ -43,7 +30,7 @@ export default function Chart2() {
       <Wrapper>
         <ChartWrapper>
           <Title>
-            <span style={{ color: 'rgb(0, 171, 85)' }}>요즘 가장 🔥한 메뉴는?</span>
+            <ChartTitle>요즘 가장 🔥한 메뉴는?</ChartTitle>
           </Title>
           <ApexCharts
             type="pie"
@@ -60,9 +47,10 @@ export default function Chart2() {
             style={{ margin: '3vh' }}
           />
         </ChartWrapper>
+
         <ChartWrapper>
           <Title>
-            <span style={{ color: 'rgb(0, 171, 85)' }}>내일 예약 메뉴들 🍽️</span>
+            <ChartTitle>내일 예약 메뉴들 🍽️</ChartTitle>
           </Title>
           <ApexCharts
             style={{ marginTop: '-3vh' }}
@@ -104,3 +92,20 @@ export default function Chart2() {
     </React.Fragment>
   );
 }
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  @media (max-width: 1000px) {
+    flex-direction: column;
+  }
+`;
+const ChartWrapper = styled.div`
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+`;
+
+const ChartTitle = styled.span`
+  color: rgb(0, 171, 85);
+`;
