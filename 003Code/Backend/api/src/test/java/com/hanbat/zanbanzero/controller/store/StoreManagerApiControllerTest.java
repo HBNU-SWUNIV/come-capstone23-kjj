@@ -1,9 +1,7 @@
 package com.hanbat.zanbanzero.controller.store;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
-import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.service.store.StoreService;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,15 +12,4 @@ class StoreManagerApiControllerTest extends ControllerTestClass {
 
     @MockBean
     private StoreService storeService;
-
-    private final StoreDto dto = new StoreDto("test store", "store info");
-
-
-    @Test
-    void setCongestion() throws Exception{
-    }
-
-    @Test
-    void getCongestion() throws Exception{
-    }
 }

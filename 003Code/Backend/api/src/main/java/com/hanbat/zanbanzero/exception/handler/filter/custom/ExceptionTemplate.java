@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.exception.filter;
+package com.hanbat.zanbanzero.exception.handler.filter.custom;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

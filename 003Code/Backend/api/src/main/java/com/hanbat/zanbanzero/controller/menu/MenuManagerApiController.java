@@ -47,7 +47,7 @@ public class MenuManagerApiController {
      */
     @Operation(summary="식단표 사용 메뉴 유무 조회", description="true / false")
     @GetMapping("menu/planner")
-    public ResponseEntity<Boolean> isPlanner() {
+    public ResponseEntity<Boolean> isPlanned() {
         return ResponseEntity.ok(menuService.isPlanned());
     }
 

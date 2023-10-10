@@ -9,7 +9,7 @@ import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.UserService;
+import com.hanbat.zanbanzero.service.user.service.UserSsoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,16 +31,16 @@ import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
-public class KeycloakLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class KeycloakLoginFilterV1 extends AbstractAuthenticationProcessingFilter {
 
     private final KeycloakProperties properties;
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
     private final UserRepository userRepository;
-    private final UserService userService;
+    private final UserSsoService userService;
 
-    public KeycloakLoginFilter(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate, UserRepository userRepository, UserService userService) {
+    public KeycloakLoginFilterV1(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate, UserRepository userRepository, UserSsoService userService) {
         super(filterProcessesUrl);
         this.restTemplate = restTemplate;
         this.properties = properties;

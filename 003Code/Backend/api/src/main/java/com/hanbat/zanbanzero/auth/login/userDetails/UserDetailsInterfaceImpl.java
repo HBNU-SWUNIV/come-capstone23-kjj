@@ -10,7 +10,7 @@ import java.util.Collection;
 @Data
 public class UserDetailsInterfaceImpl implements UserDetailsInterface {
 
-    private final User user;
+    private User user;
 
     public UserDetailsInterfaceImpl(User user) {
         this.user = user;

@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.controller.user;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.service.user.ManagerService;
+import com.hanbat.zanbanzero.service.user.ManagerServiceImplV1;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/manager/")
 public class ManagerApiController {
-    private final ManagerService managerService;
+    private final ManagerServiceImplV1 managerService;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate = new JwtTemplate();
 

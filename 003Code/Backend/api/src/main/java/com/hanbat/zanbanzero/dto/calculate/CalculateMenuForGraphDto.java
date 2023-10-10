@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.dto.calculate;
 
-import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;

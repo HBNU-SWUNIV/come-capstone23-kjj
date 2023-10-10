@@ -10,7 +10,8 @@ import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.service.user.UserService;
+import com.hanbat.zanbanzero.service.user.UserServiceImplV1;
+import com.hanbat.zanbanzero.service.user.service.UserSsoService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,8 @@ import java.util.Map;
 @RequestMapping("/api/user/")
 public class UserApiController {
 
-    private final UserService userService;
+    private final UserServiceImplV1 userService;
+    private final UserSsoService userSsoService;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate = new JwtTemplate();
 
@@ -48,7 +50,7 @@ public class UserApiController {
     @DeleteMapping("withdraw/keycloak")
     public ResponseEntity<String> withdrawKeycloak(HttpServletRequest request) {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        userService.withdrawKeycloak(username);
+        userSsoService.withdrawSso(username);
         return ResponseEntity.ok("Keyclaok 탈퇴되었습니다.");
     }
 
