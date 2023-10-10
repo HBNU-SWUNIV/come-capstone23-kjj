@@ -108,9 +108,10 @@ function Setting() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", marginTop: '50px' }}>
 
             <Link to='/Guide1' style={buttonStyle}>이용 가이드</Link>
-            <Link to='/setting' style={buttonStyle}>비밀번호 변경</Link>
+            {/* <Link to='/setting' style={buttonStyle}>비밀번호 변경</Link> */}
             <div style={buttonStyle} onClick={handleLogout}>로그아웃</div>
             <Link to='' style={buttonStyle} onClick={handleWithdrawal}>회원탈퇴</Link>
+            <Link to='/Developers' style={buttonStyle}>개발자 정보</Link>
 
             {showDialog && (
                 <div style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

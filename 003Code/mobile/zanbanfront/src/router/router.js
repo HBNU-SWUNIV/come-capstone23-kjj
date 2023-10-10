@@ -18,6 +18,7 @@ import Checkout from '../toss/Checkout';
 import Success from "../toss/Success";
 import Fail from "../toss/Fail";
 import FirstLogin from "../SettingPage/FirtsLogin";
+import Developers from "../SettingPage/Developers";
 
 
 
@@ -109,6 +110,10 @@ const router = createBrowserRouter([
                     {
                         path: '/fail',
                         element: <Fail />
+                    },
+                    {
+                        path: '/developers',
+                        element: <Developers />
                     },
                 ]
             }

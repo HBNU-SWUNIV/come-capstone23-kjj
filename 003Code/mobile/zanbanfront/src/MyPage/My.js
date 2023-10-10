@@ -218,10 +218,11 @@ function My() {
                     <div style={rightboxStyle}>
                         <Link to='/Graph' style={{ color: 'inherit', textDecoration: 'none' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', }}>
-                                <p style={{ fontSize: '15px', fontWeight: 'bold' }}>지난달,</p>
-                                <p style={{ right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold' }}>&lt;상세조회&gt;</p>
+                                <p style={{ fontSize: '15px', fontWeight: 'bold' }}>탄소감축의 중요성,</p>
+                                {/* <p style={{ right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold' }}>&lt;상세조회&gt;</p> */}
                             </div>
-                            <p style={{ marginTop: 0 }}>식단미리 통해 약 0KG의 음식물 쓰레기 저감 활동에 동참했어요!</p>
+                            <p style={{ marginTop: 0 }}>여러분은 식단미리 통해 음식물 쓰레기 저감 활동에 동참하고 있습니다.</p>
+                            <p style={{right: 0, position: 'absoulte', fontWeight: 'bold'}}>-🌲자세히 보기-</p>
                         </Link>
                     </div>
                 </div>

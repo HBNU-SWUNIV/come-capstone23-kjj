@@ -80,7 +80,7 @@ function Nav() {
           </li>
 
           <li style={NavListItem}>
-            <NavLink to="/setting" style={{ ...NavLink1, ...((pathname === "/setting" || pathname === "/Setting") && ActiveLink) }}>
+            <NavLink to="/setting" style={{ ...NavLink1, ...((pathname === "/setting" || pathname === "/Setting" || pathname === "/Developers") && ActiveLink) }}>
               <i className="fas fa-cog" style={Icon}></i>
               <div style={Text}>설정</div>
             </NavLink>
