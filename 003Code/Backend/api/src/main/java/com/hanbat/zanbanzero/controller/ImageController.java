@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -56,6 +57,8 @@ public class ImageController {
     @Operation(summary="QR코드 이미지 조회")
     @GetMapping("/order/{id}")
     public void getOrderQr(HttpServletResponse response, @PathVariable Long id) throws WriterException, IOException {
-        orderService.getOrderQr(response, id);
+        response.setContentType("image/png");
+        response.setHeader("Content-Disposition", "inline; filename=qrcode.png");
+        ImageIO.write(orderService.getOrderQr(id), "png", response.getOutputStream());
     }
 }

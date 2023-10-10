@@ -1,5 +1,6 @@
-package com.hanbat.zanbanzero.exception.filter;
+package com.hanbat.zanbanzero.exception.handler.filter;
 
+import com.hanbat.zanbanzero.exception.handler.filter.custom.SetFilterErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

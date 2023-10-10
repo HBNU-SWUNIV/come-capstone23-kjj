@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.entity.user.user.User;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
+import com.hanbat.zanbanzero.service.user.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,15 +16,17 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-public class ManagerService implements UserDetailsService {
+public class ManagerServiceImplV1 implements UserDetailsService, ManagerService {
 
     private final UserRepository repository;
     private final JwtUtil jwtUtil;
 
+    @Override
     public ManagerInfoDto getInfoForUsername(String username) {
         return ManagerInfoDto.of(repository.findByUsername(username));
     }
 
+    @Override
     public ManagerInfoDto getInfo(String username) {
         return ManagerInfoDto.of(repository.findByUsername(username));
     }

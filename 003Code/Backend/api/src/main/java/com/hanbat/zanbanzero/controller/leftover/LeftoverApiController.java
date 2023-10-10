@@ -56,7 +56,7 @@ public class LeftoverApiController {
      */
     @Operation(summary="특정 페이지 잔반 발생량 데이터 조회", description="페이지 사이즈 = 5")
     @GetMapping("leftover/{page}")
-    public ResponseEntity<List<LeftoverDto>> getAllLeftover(@PathVariable int page) {
+    public ResponseEntity<List<LeftoverDto>> getLeftoverPage(@PathVariable int page) {
         return ResponseEntity.ok(leftoverService.getLeftoverPage(page));
     }
 

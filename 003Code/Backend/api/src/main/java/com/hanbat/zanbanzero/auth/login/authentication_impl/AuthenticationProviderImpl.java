@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.auth.login.authentication_impl;
 
-import com.hanbat.zanbanzero.service.user.ManagerService;
-import com.hanbat.zanbanzero.service.user.UserService;
+import com.hanbat.zanbanzero.service.user.ManagerServiceImplV1;
+import com.hanbat.zanbanzero.service.user.UserServiceImplV1;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -21,8 +21,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthenticationProviderImpl implements AuthenticationProvider {
 
-    private final ManagerService managerService;
-    private final UserService userService;
+    private final ManagerServiceImplV1 managerService;
+    private final UserServiceImplV1 userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
