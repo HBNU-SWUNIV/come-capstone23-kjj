@@ -25,7 +25,7 @@ export function CheckoutPage() {
     const [menuName, setMenuName] = useState('');
     const [userId, setUserId] = useState('');
     const [point, setPoint] = useState(0);
-    const [checked, setChecked] = useState('');
+    const [checked, setChecked] = useState(false);
 
     useEffect(() => {
         // 이용일 조회
@@ -58,14 +58,16 @@ export function CheckoutPage() {
     const [price, setPrice] = useState(10);
 
     const handlePointButtonClick = () => {
-        axios
+        if(checked){
+            axios
           .post(`/api/user/page/point`, { value: point }, config)
           .then((res) => {
-            console.log('Axios 요청 성공:', res);
+            console.log('포인트 사용 성공:', res);
           })
           .catch((error) => {
-            console.error('Axios 요청 실패:', error);
+            console.error('포인트 사용 실패:', error);
           });
+        }
       };
 
     useEffect(() => {
