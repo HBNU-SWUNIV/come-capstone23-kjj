@@ -7,10 +7,6 @@ public class JwtTemplate {
         return 30;
     }
 
-    public long getRefreshExpiration() {
-        return 30;
-    }
-
     public String getTokenPrefix() {
         return "Bearer ";
     }

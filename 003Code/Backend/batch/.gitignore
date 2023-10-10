@@ -27,6 +27,7 @@ out/
 !**/src/test/**/out/
 
 ### custom ###
+application-slack.yml
 
 
 ### NetBeans ###

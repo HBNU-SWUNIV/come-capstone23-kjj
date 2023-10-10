@@ -18,6 +18,11 @@ public class MenuUserApiController {
 
     private final MenuService menuService;
 
+    /**
+     * User용 전체 메뉴 조회 api
+     *
+     * @return List<MenuUserInfoDto>
+     */
     @Operation(summary="전체 메뉴 조회")
     @GetMapping("menu")
     public ResponseEntity<List<MenuUserInfoDto>> getMenus() {

@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.service.user.ManagerService;
+import com.hanbat.zanbanzero.service.user.ManagerServiceImplV1;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -20,12 +20,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ManagerApiControllerTest extends ControllerTestClass {
 
     @MockBean
-    private ManagerService managerService;
+    private ManagerServiceImplV1 managerService;
 
     @Test
     void getInfo() throws Exception{
         ManagerInfoDto managerInfoDto = new ManagerInfoDto();
-        Mockito.when(managerService.getInfo()).thenReturn(managerInfoDto);
+        Mockito.when(managerService.getInfo(null)).thenReturn(managerInfoDto);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/info")
                         .content(objectMapper.writeValueAsString(null))
@@ -33,6 +33,6 @@ class ManagerApiControllerTest extends ControllerTestClass {
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(objectMapper.writeValueAsString(managerInfoDto)));
 
-        Mockito.verify(managerService, Mockito.times(1)).getInfo();
+        Mockito.verify(managerService, Mockito.times(1)).getInfo(null);
     }
 }

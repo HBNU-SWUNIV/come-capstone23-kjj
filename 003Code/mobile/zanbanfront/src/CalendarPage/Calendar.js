@@ -6,10 +6,12 @@ import { useMatch, useNavigate } from 'react-router-dom';
 import shortid from 'shortid';
 import Switch from 'react-switch';
 import axios from "axios";
-import { useSelector } from "react-redux";
 import Select from 'react-select';
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
 import Swal from "sweetalert2";
+import { useCookies } from 'react-cookie';
+import { isloginAtom } from '../atom/loginAtom';
+import { useRecoilState } from 'recoil';
 
 const holidayServiceKey = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holidayBaseApi = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
@@ -158,6 +160,19 @@ const selectStyles = {
 };
 
 function Calendar() {
+    const navigate = useNavigate();
+    const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+    const [cookies, setCookie] = useCookies(['accesstoken']);
+    if (cookies.accesstoken === undefined) {
+        setIsLogin(false);
+        Swal.fire({
+            icon: 'error',
+            text: `다시 로그인해 주세요.`,
+            confirmButtonText: "확인",
+        });
+        navigate("/login")
+    }
+
     const [holiday, setHoliday] = useState([]);
     const isArray = holiday?.length !== undefined;
 
@@ -214,6 +229,7 @@ function Calendar() {
     const DayPathMatch = useMatch('/calendar/:id');
     //이용일 조회
     const [useDays, setUseDays] = useState([]);
+    const [notUseDays, setNotUseDays] = useState([]);
 
     useEffect(() => {
         if (DayPathMatch && DayPathMatch.params && DayPathMatch.params.id) {
@@ -244,7 +260,6 @@ function Calendar() {
     const currentHour = today.getHours();
     const currentMinute = today.getMinutes();
 
-    const navigate = useNavigate();
     const [currentMonth, setCurrentMonth] = useState(new Date());
 
     const days = [];
@@ -321,7 +336,7 @@ function Calendar() {
             //수동 이용함
             if (checkedStates[id]) {
                 axios
-                    .post(`${UserBaseApi}/order/add/${useMenuID}/${year}/${month}/${day}`, 'false', config)
+                    .post(`${UserBaseApi}/order/add/${useMenuID}/${year}/${month}/${day}`, 'true', config)
                     .then(() => {
                         console.log("수동 이용 성공");
                         setUseMenuIds(prevState => {
@@ -355,6 +370,7 @@ function Calendar() {
                     .post(`${UserBaseApi}/order/cancel/${year}/${month}/${day}`, 'false', config)
                     .then(() => {
                         console.log("수동 이용 안함 성공");
+                        setNotUseDays(id)
                         window.location.reload();
                     })
                     .catch((error) => {
@@ -384,8 +400,6 @@ function Calendar() {
                 setHoliday(res.data.response.body.items.item);
             })
             .catch((err) => console.log('dayoffError', err));
-        console.log(holiday)
-
     }, [format(currentMonth, 'MM')])
 
     //이용일만 따로 저장
@@ -425,6 +439,11 @@ function Calendar() {
     }
 
     function isHoliday1(day) {
+        if (!Array.isArray(holiday)) {
+            // holiday 변수가 배열이 아닌 경우 처리
+            return false;
+        }
+
         const holiday1 = holiday.map(item => item.locdate.toString());
         const formattedDay1 = format(day, 'yyyyMMdd');
         return holiday1.includes(formattedDay1);
@@ -452,7 +471,7 @@ function Calendar() {
 
                 if (i >= 1 && i <= 5) {
                     const dayIndex = i - 1;
-                    if (Object.values(activeDays)[dayIndex] || checkedStates[id] || recognizedOrderDates.includes(id)) {  //이용일 원 배경색
+                    if ((Object.values(activeDays)[dayIndex] && defaultMenu !== '') || checkedStates[id] || recognizedOrderDates.includes(id)) {  //이용일 원 배경색
                         // setCheckedStates[id] = 'true';
                         circlebackgroundColor = id < currentDate ? '#c0d4ab' : '#e0f7c8';
                         //주이용일 이용안함 설정시 원 배경색 변경
@@ -462,7 +481,6 @@ function Calendar() {
                         //나중에 추가로 주이용 설정한걸 10시30분에 마감하여 서버로 전송
                     }
 
-
                 } if (i == 6) {
                     circlebackgroundColor = '#dec8f7';
                     textcolor = '#64b5f6';
@@ -470,7 +488,7 @@ function Calendar() {
                     circlebackgroundColor = '#dec8f7';
                     textcolor = '#f44336';
 
-                } 
+                }
 
 
                 dayss.push(

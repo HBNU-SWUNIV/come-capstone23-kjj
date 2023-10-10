@@ -3,3 +3,32 @@ my:
   mysqlPassword: api1234
   mysqluri_local: jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
   mysqluri_docker: jdbc:mysql://db-mysql:3306/zanbanzero?useSSL=false
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${my.mysqluri_local}
+    username: ${my.mysqlUsername}
+    password: ${my.mysqlPassword}
+
+  # Redis
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 6379
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${my.mysqluri_docker}
+
+  # Redis
+  data:
+    redis:
+      host: db-redis
+      port: 6379

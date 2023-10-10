@@ -1,12 +1,14 @@
 package com.hanbat.zanbanzero.entity.user.user;
 
-import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.order.Order;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 
@@ -30,18 +32,7 @@ public class User {
     private String username;
     private String password;
     private String roles;
-
-    public static User of(UserDto dto) {
-        return new User(
-                dto.getId(),
-                null,
-                null,
-                null,
-                dto.getUsername(),
-                dto.getPassword(),
-                dto.getRoles()
-        );
-    }
+    private String loginDate;
 
     public static User of(UserJoinDto dto) {
         return new User(
@@ -51,11 +42,12 @@ public class User {
                 null,
                 dto.getUsername(),
                 dto.getPassword(),
-                dto.getRoles()
+                "ROLE_USER",
+                null
         );
     }
 
-    public static User of(KeycloakUserInfoDto dao, String roles) {
+    public static User of(String userSub, String roles) {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
         int length = 10;
@@ -70,13 +62,20 @@ public class User {
                 null,
                 null,
                 null,
-                dao.getSub() + "_keycloak",
+                userSub,
                 sb.toString(),
-                roles
+                roles,
+                null
         );
     }
 
     public void setUsername(String username) {
         this.username = username;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    public void setLoginDate(LocalDate date) {
+        this.loginDate = date.toString();
     }
 }

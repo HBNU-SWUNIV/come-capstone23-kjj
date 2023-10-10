@@ -20,6 +20,10 @@ public class UserMypage {
 
     private int point;
 
+    public void updatePoint(int value) {
+        point += value;
+    }
+
     public static UserMypage createNewUserMyPage(User user) {
         return new UserMypage(
                 user.getId(),

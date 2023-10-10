@@ -14,6 +14,15 @@ public class PlannerManagerApiController {
 
     private final PlannerService service;
 
+    /**
+     * 연, 월, 일의 식단표 추가, 수정
+     *
+     * @param dto - date(yyyy-MM-dd), JSON 포맷 menus
+     * @param year - 연
+     * @param month - 월
+     * @param day - 일
+     * @return PlannerDto
+     */
     @Operation(summary="식단표 관리", description="n월 n일의 식단표 업로드(추가, 수정)")
     @PostMapping("planner/{year}/{month}/{day}")
     public ResponseEntity<PlannerDto> setPlanner(@RequestBody PlannerDto dto,@PathVariable int year, @PathVariable int month, @PathVariable int day) {

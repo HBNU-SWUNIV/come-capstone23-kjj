@@ -1,13 +1,7 @@
 my:
-  mysqlUsername:  batchuser
-  mysqlPassword:  batch1234
-
-  mysqluri_local:  jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
-  mysqluri_docker:  jdbc:mysql://db-mysql:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
-
-  batchuri_local:  jdbc:mysql://localhost:3306/zanbanzero_batch?useSSL=false&allowPublicKeyRetrieval=true
-  batchuri_docker:  jdbc:mysql://db-mysql:3306/zanbanzero_batch?useSSL=false&allowPublicKeyRetrieval=true
-
-slack:
-  webhook:
-    url :  https://hooks.slack.com/services/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
+  batchuri_docker: jdbc:mysql://db-mysql:3306/zanbanzero_batch?useSSL=false
+  mysqluri_docker: jdbc:mysql://db-mysql:3306/zanbanzero?useSSL=false
+  mysqlUsername: batchuser
+  mysqlPassword: batch1234
+  batchuri_local: jdbc:mysql://localhost:3306/zanbanzero_batch?useSSL=false&allowPublicKeyRetrieval=true
+  mysqluri_local: jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
