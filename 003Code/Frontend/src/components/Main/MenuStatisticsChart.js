@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import axios from 'axios';
 import styled from 'styled-components';
+import { c_color } from './chartTitleColors';
 
-export default function Chart2() {
+export default function MenuStatisticsChart() {
   const config = ConfigWithToken();
   const [reservationInfo, setReservationInfo] = useState([]);
   const [predictMenus, setPredictMenus] = useState([]);
@@ -26,11 +27,11 @@ export default function Chart2() {
   }, []);
 
   return (
-    <React.Fragment>
+    <>
       <Wrapper>
         <ChartWrapper>
           <Title>
-            <ChartTitle>요즘 가장 🔥한 메뉴는?</ChartTitle>
+            <span style={c_color}>요즘 가장 🔥한 메뉴는?</span>
           </Title>
           <ApexCharts
             type="pie"
@@ -50,7 +51,7 @@ export default function Chart2() {
 
         <ChartWrapper>
           <Title>
-            <ChartTitle>내일 예약 메뉴들 🍽️</ChartTitle>
+            <span style={c_color}>익일 예약 메뉴들 🍽️</span>
           </Title>
           <ApexCharts
             style={{ marginTop: '-3vh' }}
@@ -89,7 +90,7 @@ export default function Chart2() {
           />
         </ChartWrapper>
       </Wrapper>
-    </React.Fragment>
+    </>
   );
 }
 
@@ -104,8 +105,4 @@ const ChartWrapper = styled.div`
   width: 40%;
   display: flex;
   flex-direction: column;
-`;
-
-const ChartTitle = styled.span`
-  color: rgb(0, 171, 85);
 `;

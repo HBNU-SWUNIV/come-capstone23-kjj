@@ -4,8 +4,9 @@ import ApexCharts from 'react-apexcharts';
 import { useState, useEffect } from 'react';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import axios from 'axios';
+import { c_color } from './chartTitleColors';
 
-export default function Chart() {
+export default function PredictFoodChart() {
   const [predictitems, setPredictItems] = useState([]);
   const config = ConfigWithToken();
 
@@ -20,12 +21,11 @@ export default function Chart() {
         }
       });
   }, []);
+
   return (
     <>
       <Title>
-        <span style={{ color: 'rgb(0, 171, 85)' }}>
-          예약자 수를 기반으로 통계 된 내일의 식재료 수
-        </span>
+        <span style={c_color}>익월 필요 식재료 양</span>
       </Title>
       <ApexCharts
         type="bar"
@@ -35,7 +35,7 @@ export default function Chart() {
             data: predictItemsArray.map((items) => items[1]),
           },
         ]}
-        height={270}
+        height={300}
         options={{
           chart: {
             toolbar: { show: false },
@@ -48,10 +48,18 @@ export default function Chart() {
             type: 'category',
             categories: predictItemsArray.map((items) => items[0]),
           },
+          yaxis: {
+            labels: {
+              formatter: (val) => {
+                return val + 'kg';
+              },
+            },
+          },
           fill: {
-            colors: 'black',
+            colors: '#fea897',
             opacity: 1,
           },
+          colors: ['#fea897'],
         }}
       />
     </>
