@@ -15,6 +15,7 @@ public class MenuManagerInfoDto {
     private String image;
     private Boolean sold;
     private Boolean usePlanner;
+    private Long foodId;
 
     private String info;
     private String details;
@@ -27,6 +28,7 @@ public class MenuManagerInfoDto {
                 menu.getImage(),
                 menu.getSold(),
                 menu.isUsePlanner(),
+                menu.getFoodId(),
                 menu.getInfo(),
                 menu.getDetails()
         );

@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.menu;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.exception.exceptions.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,9 +19,9 @@ public interface MenuService {
 
     MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException;
 
-    MenuFoodDto addFood(Long id, String data) throws CantFindByIdException;
+    void setFood(Long menuId, Long foodId) throws CantFindByIdException;
 
-    Map<String, Integer> getFood(Long id) throws MapToStringException;
+    List<MenuFoodDto> getFood();
 
     Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, MapToStringException;
 
@@ -33,4 +34,8 @@ public interface MenuService {
     MenuDto setPlanner(Long id) throws CantFindByIdException, WrongParameter;
 
     MenuDto changePlanner(Long id) throws CantFindByIdException;
+
+    MenuFoodDto addFood(String name, Map<String, Integer> data) throws JsonProcessingException;
+
+    MenuFoodDto getOneFood(Long id) throws CantFindByIdException;
 }

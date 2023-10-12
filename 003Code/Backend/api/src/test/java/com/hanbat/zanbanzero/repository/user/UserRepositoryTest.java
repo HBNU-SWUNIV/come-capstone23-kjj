@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.repository.user;
 
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

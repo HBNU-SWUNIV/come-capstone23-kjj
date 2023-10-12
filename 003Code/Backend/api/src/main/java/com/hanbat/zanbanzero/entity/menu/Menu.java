@@ -24,7 +24,7 @@ public class Menu {
     @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
     private MenuInfo menuInfo;
 
-    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     private MenuFood menuFood;
 
     private String name;
@@ -62,6 +62,9 @@ public class Menu {
     public void setImage(String path) { image = path; }
     public void setSold(boolean type) {
         sold = type;
+    }
+    public void setMenuFood(MenuFood food) {
+        menuFood = food;
     }
     public void setUsePlanner(Boolean usePlanner) {
         this.usePlanner = usePlanner;

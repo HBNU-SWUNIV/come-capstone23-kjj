@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.service.store;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
+import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
@@ -14,6 +15,7 @@ import com.hanbat.zanbanzero.exception.exceptions.StringToMapException;
 import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
 import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
+import com.hanbat.zanbanzero.repository.calculate.CalculatePreWeekRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
@@ -39,6 +41,7 @@ public class StoreServiceImplV1 implements StoreService {
     private final StoreRepository storeRepository;
     private final CalculateRepository calculateRepository;
     private final CalculateMenuRepository calculateMenuRepository;
+    private final CalculatePreWeekRepository calculatePreWeekRepository;
     private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
 
@@ -190,5 +193,11 @@ public class StoreServiceImplV1 implements StoreService {
         } catch (JsonProcessingException e) {
             throw new StringToMapException("PredictFood : " + calculatePre.getPredictFood() ,e);
         }
+    }
+
+    @Override
+    @Transactional
+    public CalculatePreWeekDto getNextWeeksUser() {
+        return CalculatePreWeekDto.of(calculatePreWeekRepository.findFirstByOrderByIdDesc());
     }
 }

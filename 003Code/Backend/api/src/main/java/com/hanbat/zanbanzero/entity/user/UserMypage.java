@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.entity.user.user;
+package com.hanbat.zanbanzero.entity.user;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

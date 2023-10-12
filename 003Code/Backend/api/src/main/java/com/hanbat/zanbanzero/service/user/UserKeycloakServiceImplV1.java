@@ -2,9 +2,9 @@ package com.hanbat.zanbanzero.service.user;
 
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
-import com.hanbat.zanbanzero.entity.user.user.UserMypage;
-import com.hanbat.zanbanzero.entity.user.user.UserPolicy;
+import com.hanbat.zanbanzero.entity.user.User;
+import com.hanbat.zanbanzero.entity.user.UserMypage;
+import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakWithdrawException;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;

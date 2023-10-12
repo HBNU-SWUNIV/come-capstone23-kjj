@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.service.user;
 
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;

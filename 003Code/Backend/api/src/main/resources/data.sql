@@ -58,10 +58,10 @@ INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (2, "돼지고�
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "옛날방식 그대로 튀겼습니다.", "닭고기 알레르기, 닭:국산");
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (4, "부찌입니다.", "햄:리챔");
 
-INSERT INTO zanbanzero.menu_food(menu_id, food) VALUES (1, '{"고기":300,"삼겹살":260}');
-INSERT INTO zanbanzero.menu_food(menu_id, food) VALUES (2, '{"쌀":190,"고추장":20}');
-INSERT INTO zanbanzero.menu_food(menu_id, food) VALUES (3, '{"고기":200,"삼겹살":100}');
-INSERT INTO zanbanzero.menu_food(menu_id, food) VALUES (4, '{"대파":300,"삼겹살":170}');
+INSERT INTO zanbanzero.menu_food(name, food) VALUES ("짜장면", '{"고기":300,"삼겹살":260}');
+INSERT INTO zanbanzero.menu_food(name, food) VALUES ("고추장밥", '{"쌀":190,"고추장":20}');
+INSERT INTO zanbanzero.menu_food(name, food) VALUES ("삼겹정식", '{"고기":200,"삼겹살":100}');
+INSERT INTO zanbanzero.menu_food(name, food) VALUES ("대파삼겹", '{"대파":300,"삼겹살":170}');
 
 INSERT INTO zanbanzero.planner(menu_id, date, menus) VALUES (1, '2023-03-02', '닭발 콩나무물무침 계란말이');
 INSERT INTO zanbanzero.planner(menu_id, date, menus) VALUES (1, '2023-03-03', '닭발 잭과콩나무');

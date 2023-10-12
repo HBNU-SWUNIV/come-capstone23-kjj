@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.entity.menu;
+package com.hanbat.zanbanzero.entity.calculate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,28 +8,21 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-public class MenuFood {
+public class CalculatePreWeek {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
-    private String food;
-
-    public void setFood(String food) {
-        this.food = food;
-    }
-
-    public static MenuFood of(String name, String food) {
-        return new MenuFood(
-                null,
-                name,
-                food
-        );
-    }
+    private LocalDate date;
+    private int monday;
+    private int tuesday;
+    private int wednesday;
+    private int thursday;
+    private int friday;
 }
