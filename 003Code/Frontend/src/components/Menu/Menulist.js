@@ -62,6 +62,7 @@ const Row = (props) => {
 
   const [open, setOpen] = React.useState(false);
   const [ingredients, setIngredients] = React.useState([]);
+  const ingredientsArray = Object.entries(ingredients);
 
   const getIngredients = (id) => {
     axios
@@ -206,16 +207,16 @@ const Row = (props) => {
                 </TableHead>
 
                 <TableBody>
-                  {/* {ingredients?.map((ingredient) => (
-                    <TableRow key={ingredient?.name}>
+                  {ingredientsArray?.map(([key, value]) => (
+                    <TableRow key={key}>
                       <TableCell component="th" scope="row">
-                        {ingredient?.name}
+                        {key}
                       </TableCell>
                       <TableCell></TableCell>
                       <TableCell align="right"></TableCell>
-                      <TableCell align="right">{ingredient?.kg}</TableCell>
+                      <TableCell align="right">{value}</TableCell>
                     </TableRow>
-                  ))} */}
+                  ))}
                 </TableBody>
               </Table>
             </Box>
@@ -250,7 +251,7 @@ export default function Menulist({
         </TableHead>
 
         <TableBody>
-          {menus.map((row) => (
+          {menus?.map((row) => (
             <Row
               key={row.name}
               row={row}
