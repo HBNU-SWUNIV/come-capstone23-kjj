@@ -5,7 +5,6 @@ import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
-import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverPreRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverRepository;
@@ -68,7 +67,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
 
     @Override
     @Transactional
-    public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) throws CantFindByIdException {
+    public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) {
         Pageable pageable = PageRequest.of(page, DATA_SIZE);
         List<Long> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
                 .getContent().stream()
@@ -78,7 +77,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
         List<LeftoverAndPreDto> result = new ArrayList<>();
         for (Long id : calculates) {
             Leftover leftover = leftoverRepository.findById(id).orElse(new Leftover(null, null, 0));
-            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElse(new LeftoverPre(null, null, 0));
 
             result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
         }

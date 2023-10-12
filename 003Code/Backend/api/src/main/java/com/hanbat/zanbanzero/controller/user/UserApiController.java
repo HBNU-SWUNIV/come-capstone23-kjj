@@ -85,7 +85,7 @@ public class UserApiController {
 
     @Operation(summary="포인트 사용")
     @PostMapping("page/point")
-    public ResponseEntity<Integer> usePoint(HttpServletRequest request, @RequestBody UsePointDto dto) throws CantFindByIdException {
+    public ResponseEntity<Integer> usePoint(HttpServletRequest request, @RequestBody UsePointDto dto) throws CantFindByIdException, WrongRequestDetails {
         Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
         return ResponseEntity.ok(userService.usePoint(id, dto));

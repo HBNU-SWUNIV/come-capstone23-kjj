@@ -66,11 +66,10 @@ public class LeftoverApiController {
      *
      * @param page - 몇 페이지인지 (0~)
      * @return List<LeftoverAndPreDto>
-     * @throws CantFindByIdException - 예측 데이터가 존재하지 않을 경우 발생
      */
     @Operation(summary="특정 페이지 예측량 & 발생량 데이터 조회", description="페이지 사이즈 = 5")
     @GetMapping("leftover/group/{page}")
-    public ResponseEntity<List<LeftoverAndPreDto>> getAllLeftoverAndPre(@PathVariable int page) throws CantFindByIdException {
+    public ResponseEntity<List<LeftoverAndPreDto>> getAllLeftoverAndPre(@PathVariable int page)  {
         return ResponseEntity.ok(leftoverService.getAllLeftoverAndPre(page));
     }
 
