@@ -1,7 +1,6 @@
 package com.hanbat.zanbanzero.controller.menu;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
@@ -100,36 +99,37 @@ public class MenuManagerApiController {
     /**
      * 식자재 정보 추가
      * 
-     * @param data - key-value 형식
-     * @param id - menu ID
+     * @param menuId - 메뉴 아이디
+     * @param foodId - 식재료 아이디
      * @return MenuFoodDto
-     * @throws JsonProcessingException - data 형식이 잘못되었을 때 발생
      * @throws CantFindByIdException - 메뉴가 없을 때 발생
      */
-    @Operation(summary="관리자 - 식자재 정보 추가")
-    @PostMapping("menu/{id}/food")
-    public ResponseEntity<MenuFoodDto> addFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        return ResponseEntity.ok(menuService.addFood(id, objectMapper.writeValueAsString(data)));
+    @Operation(summary="관리자 - 식재료 정보 수정", description = "foodId가 0이면 식재료 정보 삭제")
+    @PatchMapping("menu/{menuId}/food/{foodId}")
+    public ResponseEntity<String> setFood(@PathVariable Long menuId, @PathVariable Long foodId) throws CantFindByIdException {
+        menuService.setFood(menuId, foodId);
+        return ResponseEntity.ok("등록 완료");
     }
 
     /**
      * 식자재 정보 조회
-     * 
-     * @param id - menu ID 
+     *
      * @return Map<String, Integer>
-     * @throws JsonProcessingException - Map 형식으로 형변환할 때 발생
-     * @throws CantFindByIdException - 메뉴가 없을 때
      */
-    @Operation(summary="관리자 - 식자재 정보 조회")
-    @GetMapping("menu/{id}/food")
-    public ResponseEntity<Map<String, Integer>> getFood(@PathVariable Long id) throws JsonProcessingException {
-        return ResponseEntity.ok(menuService.getFood(id));
+    @Operation(summary="관리자 - 전체 식재료 정보 조회")
+    @GetMapping("menu/food")
+    public ResponseEntity<List<MenuFoodDto>> getFood() {
+        return ResponseEntity.ok(menuService.getFood());
+    }
+
+    @Operation(summary="관리자 - 특정 식재료 정보 조회")
+    @GetMapping("menu/food/{id}")
+    public ResponseEntity<MenuFoodDto> getOneFood(@PathVariable Long id) throws CantFindByIdException {
+        return ResponseEntity.ok(menuService.getOneFood(id));
     }
 
     /**
-     * 식자재 정보 수정
+     * 식자재 정보 수정 - 사용되지 않음
      * 
      * @param data - Map<String, Integer> 타입
      * @param id - menu ID
@@ -137,10 +137,16 @@ public class MenuManagerApiController {
      * @throws JsonProcessingException - data 형식이 잘못되었을 때 발생
      * @throws CantFindByIdException - 메뉴가 없을 때 발생
      */
-    @Operation(summary="관리자 - 식자재 정보 수정")
+    @Operation(summary="관리자 - 식자재 정보 수정 / 사용불가")
     @PatchMapping("menu/{id}/food")
     public ResponseEntity<Map<String, Integer>> updateFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
         return ResponseEntity.ok(menuService.updateFood(id, data));
+    }
+
+    @Operation(summary="관리자 - 식자재 정보 추가")
+    @PostMapping("menu/food")
+    public ResponseEntity<MenuFoodDto> addFood(@RequestParam("name") String name, @RequestBody Map<String, Integer> data) throws JsonProcessingException {
+        return ResponseEntity.ok(menuService.addFood(name, data));
     }
 
     /**

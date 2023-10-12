@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.service.user.service;
 
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserSsoService {

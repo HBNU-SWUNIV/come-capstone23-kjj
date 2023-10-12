@@ -4,7 +4,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.user.service.ManagerService;
 import lombok.RequiredArgsConstructor;

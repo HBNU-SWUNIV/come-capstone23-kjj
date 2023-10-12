@@ -12,10 +12,10 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     Boolean existsByName(String name);
 
-    @Query("select new com.hanbat.zanbanzero.entity.menu.MenuWithInfo(m.id, m.name, m.cost, m.image, m.sold, m.usePlanner, i.info, i.details) from Menu m join m.menuInfo i")
+    @Query("select new com.hanbat.zanbanzero.entity.menu.MenuWithInfo(m.id, m.name, m.cost, m.image, m.sold, m.usePlanner, m.menuFood.id, i.info, i.details) from Menu m join m.menuInfo i")
     List<MenuWithInfo> findAllWithMenuInfo();
 
-    @Query("select new com.hanbat.zanbanzero.entity.menu.MenuWithInfo(m.id, m.name, m.cost, m.image, m.sold, m.usePlanner, i.info, i.details) from Menu m join m.menuInfo i where m.id = :id")
+    @Query("select new com.hanbat.zanbanzero.entity.menu.MenuWithInfo(m.id, m.name, m.cost, m.image, m.sold, m.usePlanner, m.menuFood.id, i.info, i.details) from Menu m join m.menuInfo i where m.id = :id")
     MenuWithInfo findOneWithMenuInfoById(@Param("id") Long id);
 
     Menu findByUsePlanner(boolean b);

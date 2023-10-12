@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.controller.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
@@ -83,6 +84,12 @@ public class StoreManagerApiController {
     @GetMapping("state/last-week/user")
     public ResponseEntity<List<StoreWeekendDto>> getLastWeeksUser() {
         return ResponseEntity.ok(storeService.getLastWeeksUser());
+    }
+
+    @Operation(summary="다음 주 이용자 수 조회", description="월~금 5개 데이터, 일요일 10시 30분 정산")
+    @GetMapping("state/next-week/user")
+    public ResponseEntity<CalculatePreWeekDto> getNextWeeksUser() {
+        return ResponseEntity.ok(storeService.getNextWeeksUser());
     }
 
     /**

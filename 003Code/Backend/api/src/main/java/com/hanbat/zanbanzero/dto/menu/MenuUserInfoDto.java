@@ -14,6 +14,7 @@ public class MenuUserInfoDto {
     private int cost;
     private String image;
     private Boolean sold;
+    private Long foodId;
 
     private String info;
     private String details;
@@ -25,6 +26,7 @@ public class MenuUserInfoDto {
                 menu.getCost(),
                 menu.getImage(),
                 menu.getSold(),
+                menu.getFoodId(),
                 menu.getInfo(),
                 menu.getDetails()
         );

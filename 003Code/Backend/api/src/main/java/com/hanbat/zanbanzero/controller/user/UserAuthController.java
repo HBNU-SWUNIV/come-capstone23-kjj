@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.service.UserService;
