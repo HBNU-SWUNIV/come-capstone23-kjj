@@ -77,7 +77,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     public void setFood(Long menuId, Long foodId) throws CantFindByIdException {
-        Menu menu = menuRepository.findById(foodId).orElseThrow(() -> new CantFindByIdException("foodId : " + menuId));
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
         if (foodId == 0) menu.setMenuFood(null);
         else menu.setMenuFood(menuFoodRepository.getReferenceById(foodId));
     }
