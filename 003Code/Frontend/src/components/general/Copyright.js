@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { styled as cStyled } from 'styled-components';
-import Developers from './\bDevelopers';
+import Developers from './Developers';
 
 function Copyright(props) {
   const [open, setOpen] = useState(false);
@@ -21,7 +21,7 @@ function Copyright(props) {
         <Info onClick={handleClickOpen}>개발자 정보</Info>
         <span> · </span>
         <Developers onClose={handleClose} open={open} />
-        <span>Capston Design KJJ Team / 모비젠-송영관 멘토님 / 김차종 교수님</span>
+        <span>Capstone Design KJJ Team / 모비젠-송영관 멘토님 / 김차종 교수님</span>
       </Typography>
     </Wrapper>
   );

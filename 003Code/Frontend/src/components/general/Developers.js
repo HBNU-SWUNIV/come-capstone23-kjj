@@ -19,13 +19,13 @@ const developers = [
     position: 'Web Frontend',
   },
   {
-    name: 'HeongMok',
+    name: 'HyeongMok',
     github: 'https://github.com/HyeongMokJeong',
     imgsrc: Heongmok,
     position: 'Web&App Backend',
   },
   {
-    name: 'Seonghun',
+    name: 'SeongHoon',
     github: 'https://github.com/joseonghoon',
     imgsrc: Seonghun,
     position: 'App Frontend',
@@ -48,7 +48,7 @@ const Developers = ({ onClose, open }) => {
           ))}
         </DeveloperInfoWrapper>
 
-        <span style={{ fontSize: '20px' }}>Capston Design 2023 KJJ Team</span>
+        <span style={{ fontSize: '20px' }}>Capstone Design 2023 KJJ Team</span>
       </DialogContent>
     </BootstrapDialog>
   );

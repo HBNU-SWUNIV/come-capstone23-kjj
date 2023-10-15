@@ -1,66 +1,59 @@
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Input from '@mui/material/Input';
 import Button from '@mui/material/Button';
+import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import IngredientsTable from './ingredients/IngredientsTable';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const IngredientsContentStyle = {
   display: 'flex',
-  flexDirection: 'column',
   gap: '1vh',
-  overflow: 'auto',
   height: '40vh',
   minWidth: '45vw',
 };
 
-const IngredientsContentTextStyle = {
-  marginTop: '-10px',
-  marginBottom: '20px',
-  fontSize: '12px',
-};
+const IngredientsDialog = ({ open, onClose, updateId }) => {
+  const config = ConfigWithToken();
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notSettinged, setNotSettinged] = useState(false);
 
-const IngredientsDialog = ({
-  open,
-  onClose,
-  ingredientsInputFields,
-  handleRemoveFields,
-  handleAddFields,
-  addIngredients,
-  ingredientsID,
-  handleInputChange,
-}) => {
+  useEffect(() => {
+    if (updateId !== '') {
+      axios
+        .get(`${ManagerBaseApi}/menu/food/${updateId}`, config)
+        .then((res) => setData(res.data))
+        .then(() => {
+          setIsLoading(false);
+          setNotSettinged(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          setNotSettinged(true);
+        });
+    }
+  }, [updateId]);
+  const ingredientsArray = !isLoading && Object.entries(data?.food);
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>식재료 등록</DialogTitle>
-      <DialogContent sx={IngredientsContentStyle}>
-        <DialogContentText>식재료무게는 KG단위로 등록해주세요.</DialogContentText>
-        <DialogContentText sx={IngredientsContentTextStyle}>
-          식재료 정보를 수정하면 이전 정보는 덮어쓰입니다.
-        </DialogContentText>
-        {ingredientsInputFields.map((field, index) => (
-          <div key={index}>
-            <Input
-              name="key"
-              value={field.key}
-              onChange={(e) => handleInputChange(index, e)}
-              placeholder="식재료 이름"
-            />
-            <Input
-              name="value"
-              value={field.value}
-              onChange={(e) => handleInputChange(index, e)}
-              placeholder="식재료 무게"
-              type="number"
-            />
-            <Button onClick={() => handleRemoveFields(index)}>삭제</Button>
-          </div>
-        ))}
-      </DialogContent>
+    <Dialog maxWidth={'lg'} open={open} onClose={onClose}>
+      {!notSettinged ? (
+        <>
+          <DialogTitle>식재료 - {data?.name}</DialogTitle>
+          <DialogContent sx={IngredientsContentStyle}>
+            <IngredientsTable data={ingredientsArray} />
+          </DialogContent>
+        </>
+      ) : (
+        <>
+          <DialogTitle>식재료가 등록되지 않았습니다.</DialogTitle>
+        </>
+      )}
+
       <DialogActions>
-        <Button onClick={handleAddFields}>식재료 추가하기</Button>
-        <Button onClick={() => addIngredients(ingredientsID)}>등록</Button>
         <Button color="error" onClick={onClose}>
           닫기
         </Button>

@@ -5,10 +5,55 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Chart from '../components/Main/Chart';
-import Statistics from '../components/Main/Statistics';
-import Chart2 from '../components/Main/Chart2';
-import Drawerheader from '../components/Drawerheader';
+import NeedFoodChart from '../components/Main/NeedFoodChart';
+import StatisticsChart from '../components/Main/StatisticsChart';
+import Drawerheader from '../components/Drawerheader/Drawerheader';
+import FoodSavingStatusChart from '../components/Main/FoodSavingStatusChart';
+import ReservationChart from '../components/Main/ReservationChart';
+
+const GridItem = ({ xs, md, lg, chart }) => {
+  return (
+    <Grid item xs={xs} md={md} lg={lg}>
+      <Paper sx={paperStyle}>{chart}</Paper>
+    </Grid>
+  );
+};
+
+const gridItems = [
+  {
+    id: 0,
+    xs: 12,
+    md: 8,
+    lg: 9,
+    chart: <FoodSavingStatusChart />,
+  },
+  {
+    id: 1,
+    xs: 12,
+    md: 4,
+    lg: 3,
+    chart: <StatisticsChart />,
+  },
+  {
+    id: 2,
+    xs: 12,
+    md: 6,
+    lg: 6,
+    chart: <NeedFoodChart />,
+  },
+  {
+    id: 3,
+    xs: 12,
+    md: 6,
+    lg: 6,
+    chart: <ReservationChart />,
+  },
+  // {
+  //   id: 4,
+  //   xs: 12,
+  //   chart: <MenuStatisticsChart />,
+  // },
+];
 
 export default function Dashboard() {
   return (
@@ -17,61 +62,19 @@ export default function Dashboard() {
         <CssBaseline />
         <Drawerheader pages={'홈'} />
 
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: 'white',
-            flexGrow: 1,
-            minHeight: '100vh',
-            overflow: 'scroll',
-            boxSizing: 'border-box',
-            paddingBottom: 'var(--copyright-height)',
-          }}
-        >
+        <Box component="main" sx={boxStyle}>
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} md={8} lg={9}>
-                <Paper
-                  sx={{
-                    height: '100%',
-                    minHeight: '30vh',
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Chart />
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12} md={4} lg={3}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: '36vh',
-                    height: '100%',
-                  }}
-                >
-                  <Statistics />
-                </Paper>
-              </Grid>
-
-              <Grid item xs={12}>
-                <Paper
-                  sx={{
-                    height: '100%',
-                    minHeight: '30vh',
-                    p: 2,
-                    display: 'flex',
-                    flexDirection: 'column',
-                  }}
-                >
-                  <Chart2 />
-                </Paper>
-              </Grid>
+              {gridItems.map((item) => (
+                <GridItem
+                  key={item.id}
+                  xs={item.xs}
+                  md={item.md}
+                  lg={item.lg}
+                  chart={item.chart}
+                />
+              ))}
             </Grid>
           </Container>
         </Box>
@@ -81,3 +84,20 @@ export default function Dashboard() {
 }
 
 const defaultTheme = createTheme();
+
+const boxStyle = {
+  backgroundColor: 'white',
+  flexGrow: 1,
+  minHeight: '100vh',
+  overflow: 'scroll',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+};
+
+const paperStyle = {
+  height: '100%',
+  minHeight: '30vh',
+  p: 2,
+  display: 'flex',
+  flexDirection: 'column',
+};
