@@ -1,52 +1,54 @@
-import * as React from 'react';
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { useState, useEffect } from 'react';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import axios from 'axios';
 import { c_color } from './chartTitleColors';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 
-export default function PredictFoodChart() {
-  const [predictitems, setPredictItems] = useState([]);
+const NeedFoodChart = () => {
+  const [predict, setPredict] = useState([]);
   const config = ConfigWithToken();
-
-  const predictItemsArray = Object.entries(predictitems);
-
+  const predictArray = Object.entries(predict);
+  console.log(predict);
   useEffect(() => {
     axios
       .get(`${ManagerBaseApi}/state/predict/food`, config)
-      .then((res) => setPredictItems(res.data))
+      .then((res) => setPredict(res.data))
       .catch((err) => {
         if (err.response.status === 403) {
         }
       });
   }, []);
-
   return (
     <>
       <Title>
-        <span style={c_color}>익월 필요 식재료 양</span>
+        <span style={c_color}>익일 필요 식재료</span>
       </Title>
       <ApexCharts
         type="bar"
         series={[
           {
-            name: '',
-            data: predictItemsArray.map((items) => items[1]),
+            name: '무게',
+            data: predictArray.map((a) => a[1]),
           },
         ]}
-        height={300}
+        height={270}
         options={{
           chart: {
             toolbar: { show: false },
+            stacked: true,
           },
           stroke: {
-            curve: 'smooth',
             width: 1,
+            colors: ['#fff'],
+          },
+          plotOptions: {
+            bar: {
+              horizontal: false,
+            },
           },
           xaxis: {
-            type: 'category',
-            categories: predictItemsArray.map((items) => items[0]),
+            categories: predictArray.map((a) => a[0]),
           },
           yaxis: {
             labels: {
@@ -56,12 +58,13 @@ export default function PredictFoodChart() {
             },
           },
           fill: {
-            colors: '#fea897',
             opacity: 1,
           },
-          colors: ['#fea897'],
+          colors: ['#8D95EB'],
         }}
       />
     </>
   );
-}
+};
+
+export default NeedFoodChart;

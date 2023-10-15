@@ -111,9 +111,7 @@ const MenuCard = ({
             <CardActions>
               {menu.sold === true ? (
                 <MenuButtonWrapper>
-                  {menu.usePlanner ? (
-                    ''
-                  ) : (
+                  {menu.usePlanner === false && (
                     <>
                       <Button onClick={() => handleIngredientsOpen(menu)} size="small">
                         식재료

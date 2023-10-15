@@ -49,7 +49,7 @@ export default function MenuStatisticsChart() {
           />
         </ChartWrapper>
 
-        <ChartWrapper>
+        {/* <ChartWrapper>
           <Title>
             <span style={c_color}>익일 예약 메뉴들 🍽️</span>
           </Title>
@@ -88,7 +88,7 @@ export default function MenuStatisticsChart() {
               },
             }}
           />
-        </ChartWrapper>
+        </ChartWrapper> */}
       </Wrapper>
     </>
   );

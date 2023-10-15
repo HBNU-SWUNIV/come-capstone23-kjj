@@ -5,12 +5,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import PredictFoodChart from '../components/Main/PredictFoodChart';
+import NeedFoodChart from '../components/Main/NeedFoodChart';
 import StatisticsChart from '../components/Main/StatisticsChart';
-import MenuStatisticsChart from '../components/Main/MenuStatisticsChart';
 import Drawerheader from '../components/Drawerheader/Drawerheader';
-import OrderingFoodStatusChart from '../components/Main/OrderingFoodStatusChart';
-import RevenueChart from '../components/Main/RevenueChart';
+import FoodSavingStatusChart from '../components/Main/FoodSavingStatusChart';
+import ReservationChart from '../components/Main/ReservationChart';
 
 const GridItem = ({ xs, md, lg, chart }) => {
   return (
@@ -26,7 +25,7 @@ const gridItems = [
     xs: 12,
     md: 8,
     lg: 9,
-    chart: <OrderingFoodStatusChart />,
+    chart: <FoodSavingStatusChart />,
   },
   {
     id: 1,
@@ -40,20 +39,20 @@ const gridItems = [
     xs: 12,
     md: 6,
     lg: 6,
-    chart: <PredictFoodChart />,
+    chart: <NeedFoodChart />,
   },
   {
     id: 3,
     xs: 12,
     md: 6,
     lg: 6,
-    chart: <RevenueChart />,
+    chart: <ReservationChart />,
   },
-  {
-    id: 4,
-    xs: 12,
-    chart: <MenuStatisticsChart />,
-  },
+  // {
+  //   id: 4,
+  //   xs: 12,
+  //   chart: <MenuStatisticsChart />,
+  // },
 ];
 
 export default function Dashboard() {

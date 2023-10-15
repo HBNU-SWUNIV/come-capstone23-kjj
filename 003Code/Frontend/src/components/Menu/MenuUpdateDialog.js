@@ -8,6 +8,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Skeleton from '@mui/material/Skeleton';
 import ErrorInform from '../general/ErrorInform';
+import SelectIngredients from './ingredients/SelectIngredients';
 
 const weightFontStyle = {
   fontWeight: 600,
@@ -25,6 +26,8 @@ const MenuUpdateDialog = ({
   menuDetailsRef,
   menuCostRef,
   menuUpdate,
+  selectedFood,
+  setSelectedFood,
 }) => {
   return (
     <Dialog open={open} onClose={onClose}>
@@ -69,7 +72,7 @@ const MenuUpdateDialog = ({
           required
           inputRef={menuNameRef}
           id="outlined-required"
-          placeholder={updateID?.name}
+          placeholder={updateID?.name + ''}
         />
 
         {nameDuplicate && <ErrorInform message={'중복된 메뉴명이 있습니다'} />}
@@ -78,15 +81,17 @@ const MenuUpdateDialog = ({
           inputRef={menuDetailsRef}
           required
           id="outlined-required2"
-          placeholder={updateID?.details}
+          placeholder={updateID?.details + ''}
         />
         <TextField
           inputRef={menuCostRef}
-          placeholder={updateID?.cost}
+          placeholder={updateID?.cost + ''}
           id="outlined-number"
           label="가격"
           type="number"
         />
+
+        <SelectIngredients selectedItem={selectedFood} setFn={setSelectedFood} />
       </DialogContent>
       <DialogActions>
         <Button sx={weightFontStyle} onClick={menuUpdate}>

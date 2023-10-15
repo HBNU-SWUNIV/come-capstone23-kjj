@@ -42,8 +42,8 @@ export default function StatisticsChart() {
       id: 1,
       isAddDate: false,
       isAddBottomDivider: false,
-      userPop: '30%',
-      title: '월 평균 낭비되는 식재료',
+      userPop: '90kg',
+      title: '금주 절약된 식재료',
     },
   ];
 

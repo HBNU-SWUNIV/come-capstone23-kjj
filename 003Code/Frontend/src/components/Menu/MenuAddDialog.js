@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -8,10 +8,11 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Skeleton from '@mui/material/Skeleton';
 import ErrorInform from '../general/ErrorInform';
+import SelectIngredients from './ingredients/SelectIngredients';
 
-const weightFontStyle = {
-  fontWeight: 600,
-};
+const weightFontStyle = { fontWeight: 600 };
+const dialogContentStyle = { display: 'flex', flexDirection: 'column', gap: '1vh' };
+const dialogContentTextStyle = { ...weightFontStyle, fontSize: '15px' };
 
 const MenuAddDialog = ({
   open,
@@ -19,22 +20,32 @@ const MenuAddDialog = ({
   selectedImg,
   handleImageChange,
   menuNameRef,
-  menuNameHandler,
-  menuNameError,
   nameDuplicate,
   menuDetailsRef,
-  menuInfoHandler,
-  menuInfoError,
   menuCostRef,
-  menuCostHandler,
-  menuCostError,
   menuAdd,
+  selectedFood,
+  setSelectedFood,
 }) => {
+  const [validate, setValidate] = useState({
+    name: false,
+    details: false,
+    cost: false,
+  });
+
+  const errorHandler = (e) => {
+    const { name, value } = e.target;
+    setValidate((prev) => ({
+      ...prev,
+      [name]: value === '',
+    }));
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle sx={weightFontStyle}>메뉴 등록</DialogTitle>
-      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1vh' }}>
-        <DialogContentText sx={{ ...weightFontStyle, fontSize: '15px' }}>
+      <DialogContent sx={dialogContentStyle}>
+        <DialogContentText sx={dialogContentTextStyle}>
           이미지 파일을 추가하여 이미지를 등록해주세요.
         </DialogContentText>
 
@@ -58,9 +69,10 @@ const MenuAddDialog = ({
           id="outlined-required"
           label="required"
           placeholder="메뉴명"
-          onBlur={menuNameHandler}
+          name="name"
+          onBlur={errorHandler}
         />
-        {menuNameError && <ErrorInform message="메뉴 명은 필수 입력입니다" />}
+        {validate.name && <ErrorInform message="메뉴 명은 필수 입력입니다" />}
         {nameDuplicate && <ErrorInform message={'중복된 메뉴명이 있습니다'} />}
         <TextField
           inputRef={menuDetailsRef}
@@ -68,19 +80,21 @@ const MenuAddDialog = ({
           id="outlined-required2"
           label="required"
           placeholder="메뉴 소개"
-          onBlur={menuInfoHandler}
+          name="details"
+          onBlur={errorHandler}
         />
-        {menuInfoError && <ErrorInform message={'메뉴 소개는 필수 입력입니다'} />}
+        {validate.details && <ErrorInform message={'메뉴 소개는 필수 입력입니다'} />}
         <TextField
           inputRef={menuCostRef}
           id="outlined-number"
           label="가격"
           type="number"
           required
+          name="cost"
           placeholder="가격 - 숫자만 입력해주세요."
-          onBlur={menuCostHandler}
+          onBlur={errorHandler}
         />
-        {menuCostError && <ErrorInform message="가격은 필수 입력입니다." />}
+        {validate.cost && <ErrorInform message="가격은 필수 입력입니다." />}
       </DialogContent>
       <DialogActions>
         <Button sx={weightFontStyle} onClick={menuAdd}>
