@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {
   Box,
@@ -10,44 +9,74 @@ import {
   Toolbar,
 } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
-import Drawerheader from '../components/Drawerheader';
-import { useState, useRef } from 'react';
+import Drawerheader from '../components/Drawerheader/Drawerheader';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
-import Menulist from '../components/Menu/Menulist';
+import Menulist from '../components/Menu/list/Menulist';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
-import { useMutation, useQuery } from 'react-query';
-import { getMenus } from '../api/apis';
-import IngredientsDialog from '../components/Menu/IngredientsDialog';
-import MenuAddDialog from '../components/Menu/MenuAddDialog';
-import MenuUpdateDialog from '../components/Menu/MenuUpdateDialog';
+import { useMutation } from 'react-query';
+import IngredientsDialog from '../components/Menu/dialog/IngredientsDialog';
+import MenuAddDialog from '../components/Menu/dialog/MenuAddDialog';
+import MenuUpdateDialog from '../components/Menu/dialog/MenuUpdateDialog';
 import DeleteDialog from '../components/general/DeleteDialog';
 import MenuCard from '../components/Menu/\bMenuCard';
-import UseErrorHandler from '../hooks/UseErrorHandler';
 import UseImageHandler from '../hooks/UseImageHandler';
+import UseOnOffHandler from '../hooks/UseOnOffHandler';
+import Menu_api from '../components/Menu/api_update/Menu_api';
+const defaultTheme = createTheme();
+export const NanumFontStyle = {
+  fontWeight: '600',
+};
+const MenusBoxStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: 'white',
+  flexGrow: 1,
+  height: '100%',
+  minHeight: '100vh',
+  overflow: 'auto',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+};
+const MenusButtonStyle = {
+  fontWeight: '500',
+  fontSize: '16px',
+  backgroundColor: 'rgb(0, 171, 85)',
+};
+const toggle_button_list_data = [
+  {
+    id: 0,
+    value: 'card',
+    aria_label: 'card',
+    icon: <ViewModuleIcon />,
+  },
+  {
+    id: 1,
+    value: 'list',
+    aria_label: 'list',
+    icon: <ViewListIcon />,
+  },
+];
 
 export default function Menus() {
-  const [deleteID, setDeleteID] = useState(0);
-  const [updateID, setUpdateID] = useState(0);
-  const [ingredientsID, setIngredientsID] = useState(0);
+  const [selectedFoodId, setSelectedFood] = useState('');
+  const [updateID, setUpdateID] = useState('');
   const [addMenu, setAddMenu] = useState(false);
   const [updateMenu, setUpdatemenu] = useState(false);
   const [deleteMenu, setDeleteMenu] = useState(false);
-  const [refreshIngredients, setRefreshIngredients] = useState(false);
   const [openIngredients, setOpenIngredients] = useState(false);
-  const [ingredientsInputFields, setIngredientsInputFields] = useState([
-    { key: '', value: '' },
-  ]);
+  const [nameDuplicate, setNameDuplicate] = useState(false);
+  const [image, setImage] = useState([]);
+  const [selectedImg, setSelectedImg] = useState(null);
   const menuNameRef = useRef('');
   const menuDetailsRef = useRef('');
   const menuCostRef = useRef('');
-  const [image, setImage] = useState([]);
-  const [selectedImg, setSelectedImg] = useState(null);
-  const [nameDuplicate, setNameDuplicate] = useState(false);
-  const [menuNameError, setMenuNameError] = useState(false);
-  const [menuInfoError, setMenuInfoError] = useState(false);
-  const [menuCostError, setMenuCostError] = useState(false);
+  const [view, setView] = useState('card');
+  const handleView = (event, nextView) => {
+    if (nextView !== null) setView(nextView);
+  };
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -55,84 +84,26 @@ export default function Menus() {
       ...config.headers,
     },
   };
-  const [view, setView] = useState('card');
-  const handleView = (event, nextView) => {
-    if (nextView !== null) setView(nextView);
-  };
+  const {
+    menus,
+    refreshMenus,
+    deleteMenus,
+    soldoutMenus,
+    resaleMenus,
+    addMenus,
+    success,
+  } = Menu_api();
 
-  const { data: menus, refetch: refreshMenus } = useQuery(['getMenus', config], () =>
-    getMenus(config)
-  );
-  const deleteMenus = useMutation(
-    (deleteID) => axios.delete(`${ManagerBaseApi}/menu/${deleteID}`, config),
-    {
-      onSuccess: () => {
-        refreshMenus();
-      },
-      onError: (error) => {
-        console.log('deleteMenu Error =', error);
-      },
-    }
-  );
-  const soldoutMenus = useMutation(
-    (id) =>
-      axios({
-        method: 'PATCH',
-        url: `${ManagerBaseApi}/menu/${id}/sold/n`,
-        ...formdataConfig,
-      }),
-    {
-      onSuccess: () => {
-        refreshMenus();
-      },
-      onError: (err) => {
-        console.log('soldoutMenu Error=', err);
-      },
-    }
-  );
-  const resaleMenus = useMutation(
-    (id) =>
-      axios({
-        method: 'PATCH',
-        url: `${ManagerBaseApi}/menu/${id}/sold/y`,
-        ...formdataConfig,
-      }),
-    {
-      onSuccess: () => {
-        refreshMenus();
-      },
-      onError: (err) => {
-        console.log('resaleMenu Error =', err);
-      },
-    }
-  );
-  const addMenus = useMutation(
-    (addData) =>
-      axios({
-        method: 'POST',
-        url: `${ManagerBaseApi}/menu`,
-        data: addData,
-        ...formdataConfig,
-      }),
-    {
-      onSuccess: () => {
-        refreshMenus();
-        setAddMenu(false);
-        setImage(null);
-        setNameDuplicate(false);
-        setSelectedImg(null);
-      },
-      onError: (err) => {
-        if (err.response.status === 400) {
-          alert('이미지 파일 용량이 너무 큽니다.');
-          return;
-        } else if (err.response.status === 409) {
-          setNameDuplicate(true);
-          return;
-        }
-      },
-    }
-  );
+  const menuInputsIsNotNull =
+    menuNameRef?.current?.value !== '' &&
+    menuDetailsRef?.current?.value !== '' &&
+    menuCostRef?.current?.value !== '';
+
+  useEffect(() => {
+    if (success.addmenus) handleAddClose();
+    else if (success.isDuplicatedName) setNameDuplicate(true);
+  }, [success]);
+
   const updateMenus = useMutation(
     (updateData) =>
       axios({
@@ -149,8 +120,6 @@ export default function Menus() {
           return;
         }
         handleUpdateClose();
-        setNameDuplicate(false);
-        refreshMenus();
       },
       onError: (err) => {
         console.log('updateMenu Error=', err);
@@ -162,67 +131,38 @@ export default function Menus() {
     UseImageHandler(event, setImage, setSelectedImg);
   };
   const handleDeleteOpen = (id) => {
-    setDeleteID(id);
+    setUpdateID(id);
     setDeleteMenu(true);
-  };
-  const handleDeleteClose = () => {
-    setDeleteMenu(false);
-  };
-  const handleAddOpen = () => {
-    setAddMenu(true);
   };
   const handleAddClose = () => {
     setAddMenu(false);
-    setMenuInfoError(false);
     setSelectedImg(null);
+    setImage(null);
+    setNameDuplicate(false);
   };
   const handleUpdateOpen = (menu) => {
     setUpdateID(menu);
     setUpdatemenu(true);
   };
   const handleUpdateClose = () => {
+    refreshMenus();
     setUpdatemenu(false);
     setNameDuplicate(false);
     setSelectedImg(null);
+    setUpdateID('');
   };
-
   const handleIngredientsOpen = (menu) => {
-    setIngredientsID(menu?.id);
-    onNowIngredients(menu?.id);
+    const foodId = menus.filter((item) => item.id == menu.id)[0].foodId;
+    setUpdateID(foodId);
     setOpenIngredients(true);
   };
   const handleIngredientsClose = () => {
-    setIngredientsInputFields([{ key: '', value: '' }]);
     setOpenIngredients(false);
-  };
-  const onNowIngredients = async (id) => {
-    try {
-      const res = await axios.get(`${ManagerBaseApi}/menu/${id}/food`, config);
-      const ingredients = Object.entries(res.data);
-      const nowIngredients = ingredients.map(([key, value]) => ({ key, value }));
-      setIngredientsInputFields(nowIngredients);
-    } catch (err) {
-      console.log('ingredients Error', err);
-    }
-  };
-  const handleInputChange = (index, e) => {
-    const { name, value } = e.target;
-    const fields = [...ingredientsInputFields];
-    fields[index][name] = value;
-    setIngredientsInputFields(fields);
-  };
-  const handleAddFields = (e) => {
-    e.preventDefault();
-    setIngredientsInputFields([...ingredientsInputFields, { key: '', value: '' }]);
-  };
-  const handleRemoveFields = (index) => {
-    const fields = [...ingredientsInputFields];
-    fields.splice(index, 1);
-    setIngredientsInputFields(fields);
+    setUpdateID('');
   };
 
   const menuDelete = () => {
-    deleteMenus.mutate(deleteID);
+    deleteMenus.mutate(updateID);
     setDeleteMenu(false);
   };
   const soldout = (id) => {
@@ -231,65 +171,40 @@ export default function Menus() {
   const resale = (id) => {
     resaleMenus.mutate(id);
   };
-  const menuNameHandler = () => {
-    UseErrorHandler({
-      condition: menuNameRef.current.value === '',
-      setFn: setMenuNameError,
-    });
-  };
-  const menuInfoHandler = () => {
-    UseErrorHandler({
-      condition: menuDetailsRef.current.value === '',
-      setFn: setMenuInfoError,
-    });
-  };
-  const menuCostHandler = () => {
-    UseErrorHandler({
-      condition: menuCostRef.current.value === '',
-      setFn: setMenuCostError,
-    });
-  };
-
-  const menuAdd = () => {
+  const onAddMenu = () => {
     const formdata = new FormData();
-    const menuInputsIsNotNull =
-      menuNameRef.current.value !== '' &&
-      menuDetailsRef.current.value !== '' &&
-      menuCostRef.current.value !== '';
-
     const body = {
-      name: menuNameRef.current.value,
-      cost: menuCostRef.current.value,
-      details: menuDetailsRef.current.value,
+      name: menuNameRef?.current?.value,
+      cost: menuCostRef?.current?.value,
+      details: menuDetailsRef?.current?.value,
       usePlanner: false,
     };
     const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
     formdata.append('data', blob);
     formdata.append('file', image);
-    menuNameHandler();
-    menuInfoHandler();
-    menuCostHandler();
-
     if (menuInputsIsNotNull) addMenus.mutate(formdata);
   };
-  const menuUpdate = () => {
+  const onUpdateMenu = () => {
     const formdata = new FormData();
     const validateDuplicatedName =
+      updateID !== '' &&
       menus
-        .filter((f_menu) => f_menu.id != updateID.id)
-        .filter((n) => n.name === menuNameRef.current.value).length != 0;
+        .filter((item) => item.id != updateID.id)
+        .filter((n) => n.name === menuNameRef?.current?.value).length != 0;
+    const nameValue =
+      menuNameRef?.current?.value === '' ? updateID.name : menuNameRef?.current?.value;
+    const detailsValue =
+      menuDetailsRef?.current?.value === ''
+        ? updateID.details
+        : menuDetailsRef?.current?.value;
+    const costValue =
+      menuCostRef?.current?.value === '' ? updateID.cost : menuCostRef?.current?.value;
 
-    if (validateDuplicatedName) {
-      setNameDuplicate(true);
-      return;
-    }
+    if (validateDuplicatedName) return setNameDuplicate(true);
     const body = {
-      name: menuNameRef.current.value === '' ? updateID.name : menuNameRef.current.value,
-      details:
-        menuDetailsRef.current.value === ''
-          ? updateID.details
-          : menuDetailsRef.current.value,
-      cost: menuCostRef.current.value === '' ? updateID.cost : menuCostRef.current.value,
+      name: nameValue,
+      details: detailsValue,
+      cost: costValue,
       usePlanner: false,
     };
 
@@ -297,41 +212,16 @@ export default function Menus() {
     formdata.append('data', blob);
     image != null && formdata.append('file', image);
     updateMenus.mutate(formdata);
-  };
-  const addIngredients = (id) => {
-    const body = {};
-    ingredientsInputFields.forEach((field) => {
-      const { key, value } = field;
-      if (key && value) {
-        body[key] = value;
-      }
-    });
-    axios
-      .get(`${ManagerBaseApi}/menu/${id}/food`, config)
-      .then((res) => {
-        if (Object.keys(res.data).length === 0) {
-          axios.post(`${ManagerBaseApi}/menu/${id}/food`, body, config).then((res) => {
-            if (res.status === 200) {
-              setRefreshIngredients((prev) => !prev);
-              handleIngredientsClose();
-            }
-          });
-        } else {
-          axios.patch(`${ManagerBaseApi}/menu/${id}/food`, body, config).then((res) => {
-            if (res.status === 200) {
-              setRefreshIngredients((prev) => !prev);
-              handleIngredientsClose();
-            }
-          });
-        }
+
+    if (selectedFoodId !== undefined) {
+      axios({
+        method: 'PATCH',
+        url: `${ManagerBaseApi}/menu/${updateID.id}/food/${selectedFoodId}`,
+        ...formdataConfig,
       })
-      .catch((err) => {
-        if (err.response.status === 400) {
-          console.error('ingredientsID add Error =', err);
-        }
-      });
-    setIngredientsInputFields([{ key: '', value: '' }]);
-    handleIngredientsClose();
+        .then((res) => console.log(res))
+        .catch((err) => console.error(err));
+    }
   };
 
   return (
@@ -356,16 +246,20 @@ export default function Menus() {
                 exclusive
                 onChange={handleView}
               >
-                <ToggleButton value="card" aria-label="card">
-                  <ViewModuleIcon />
-                </ToggleButton>
-                <ToggleButton value="list" aria-label="list">
-                  <ViewListIcon />
-                </ToggleButton>
+                {toggle_button_list_data.map((item) => (
+                  <ToggleButton
+                    value={item.value}
+                    key={item.id}
+                    aria-label={item.aria_label}
+                  >
+                    {item.icon}
+                  </ToggleButton>
+                ))}
               </ToggleButtonGroup>
+
               <Button
                 sx={MenusButtonStyle}
-                onClick={handleAddOpen}
+                onClick={() => UseOnOffHandler(true, setAddMenu)}
                 variant="contained"
                 color="success"
               >
@@ -389,10 +283,9 @@ export default function Menus() {
             {view === 'list' && (
               <Menulist
                 addIngredients={handleIngredientsOpen}
-                regetIngreditents={refreshIngredients}
                 soldout={soldout}
                 resale={resale}
-                deleteMenu={handleDeleteOpen}
+                onDelete={handleDeleteOpen}
                 onUpdate={handleUpdateOpen}
                 menus={menus}
               />
@@ -401,7 +294,11 @@ export default function Menus() {
         </Box>
       </Box>
 
-      <DeleteDialog open={deleteMenu} onClose={handleDeleteClose} onDelete={menuDelete} />
+      <DeleteDialog
+        open={deleteMenu}
+        onClose={() => UseOnOffHandler(false, setDeleteMenu)}
+        onDelete={menuDelete}
+      />
 
       <MenuAddDialog
         open={addMenu}
@@ -409,16 +306,10 @@ export default function Menus() {
         selectedImg={selectedImg}
         handleImageChange={handleImageChange}
         menuNameRef={menuNameRef}
-        menuNameHandler={menuNameHandler}
-        menuNameError={menuNameError}
-        nameDuplicate={nameDuplicate}
         menuDetailsRef={menuDetailsRef}
-        menuInfoHandler={menuInfoHandler}
-        menuInfoError={menuInfoError}
         menuCostRef={menuCostRef}
-        menuCostHandler={menuCostHandler}
-        menuCostError={menuCostError}
-        menuAdd={menuAdd}
+        nameDuplicate={nameDuplicate}
+        onAddMenu={onAddMenu}
       />
 
       <MenuUpdateDialog
@@ -427,47 +318,20 @@ export default function Menus() {
         selectedImg={selectedImg}
         updateID={updateID}
         handleImageChange={handleImageChange}
-        setImage={setImage}
         menuNameRef={menuNameRef}
-        nameDuplicate={nameDuplicate}
         menuDetailsRef={menuDetailsRef}
         menuCostRef={menuCostRef}
-        menuUpdate={menuUpdate}
+        nameDuplicate={nameDuplicate}
+        onUpdateMenu={onUpdateMenu}
+        selectedFood={selectedFoodId}
+        setSelectedFood={setSelectedFood}
       />
+
       <IngredientsDialog
         open={openIngredients}
         onClose={handleIngredientsClose}
-        ingredientsID={ingredientsID}
-        addIngredients={addIngredients}
-        handleAddFields={handleAddFields}
-        handleRemoveFields={handleRemoveFields}
-        ingredientsInputFields={ingredientsInputFields}
-        handleInputChange={handleInputChange}
+        updateId={updateID}
       />
     </ThemeProvider>
   );
 }
-
-const defaultTheme = createTheme();
-
-export const NanumFontStyle = {
-  fontWeight: '600',
-};
-
-const MenusBoxStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: 'white',
-  flexGrow: 1,
-  height: '100%',
-  minHeight: '100vh',
-  overflow: 'auto',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
-};
-
-const MenusButtonStyle = {
-  fontWeight: '500',
-  fontSize: '16px',
-  backgroundColor: 'rgb(0, 171, 85)',
-};

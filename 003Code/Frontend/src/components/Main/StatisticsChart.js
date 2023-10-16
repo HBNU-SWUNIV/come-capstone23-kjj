@@ -6,8 +6,9 @@ import Divider from '@mui/material/Divider';
 import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import { styled } from 'styled-components';
+import { c_color } from './chartTitleColors';
 
-export default function Statistics() {
+export default function StatisticsChart() {
   const [Todaypop, setTodaypop] = useState(0);
   const [predictUsers, setPredictUsers] = useState(0);
   const config = ConfigWithToken();
@@ -29,33 +30,60 @@ export default function Statistics() {
       .catch((err) => console.log(err));
   }, []);
 
+  const userArray = [
+    {
+      id: 0,
+      isAddDate: true,
+      isAddBottomDivider: true,
+      userPop: Todaypop,
+      title: '금일 이용자',
+    },
+    {
+      id: 1,
+      isAddDate: false,
+      isAddBottomDivider: false,
+      userPop: '90kg',
+      title: '금주 절약된 식재료',
+    },
+  ];
+
+  const ShowUser = ({ isAddDate, isAddBottomDivider, userPop, title }) => {
+    return (
+      <>
+        <Div>
+          <Title>
+            <span style={c_color}>{title}</span>
+          </Title>
+          <Typography sx={StatisticsTextStyle} component="p" variant="h6">
+            {userPop}
+            {isAddDate && '명'}
+          </Typography>
+        </Div>
+
+        {isAddDate && (
+          <Typography
+            sx={{ position: 'relative', marginTop: '-4rem' }}
+            color="text.secondary"
+          >
+            on {day} {month}, {year}
+          </Typography>
+        )}
+        {isAddBottomDivider && <Divider sx={{ width: '100%', height: '1rem' }} />}
+      </>
+    );
+  };
+
   return (
     <Wrapper>
-      <Div>
-        <Title>
-          <StatisticsTitle>금일 이용자 수</StatisticsTitle>
-        </Title>
-        <Typography sx={StatisticsTextStyle} component="p" variant="h6">
-          {Todaypop}명
-        </Typography>
-      </Div>
-      <Typography
-        sx={{ position: 'relative', marginTop: '-4rem' }}
-        color="text.secondary"
-      >
-        on {day} {month}, {year}
-      </Typography>
-
-      <Divider sx={{ width: '100%', height: '1rem' }} />
-
-      <Div>
-        <Title>
-          <StatisticsTitle>내일 예약자 수</StatisticsTitle>
-        </Title>
-        <Typography sx={StatisticsTextStyle} component="p" variant="h6">
-          {predictUsers}명
-        </Typography>
-      </Div>
+      {userArray.map((item) => (
+        <ShowUser
+          key={item.id}
+          isAddDate={item.isAddDate}
+          isAddBottomDivider={item.isAddBottomDivider}
+          userPop={item.userPop}
+          title={item.title}
+        />
+      ))}
     </Wrapper>
   );
 }
@@ -73,10 +101,6 @@ const Div = styled.div`
   width: 100%;
   justify-content: space-between;
   align-items: center;
-`;
-
-const StatisticsTitle = styled.span`
-  color: rgb(0, 171, 85);
 `;
 
 const StatisticsTextStyle = {

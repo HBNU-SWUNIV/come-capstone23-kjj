@@ -274,15 +274,6 @@ function Calendar() {
         );
     }
 
-    //id마다 스위치 값 다르게 적용
-    const [checkedStates, setCheckedStates] = useState({});
-    const handleChange = (id) => {
-        setCheckedStates((prevState) => ({
-            ...prevState,
-            [id]: !prevState[id],
-        }));
-    };
-
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
     const startDate = startOfWeek(monthStart);
@@ -292,23 +283,11 @@ function Calendar() {
     let dayss = [];
     let line = [];
 
-    const [idUseCheck, SetIdUseCheck] = useState([]);
     //달력 일 클릭시 해당 id페이지 출력
     const onDay = (id) => {
         const idYear = id.substring(0, 4);
         const idMonth = id.substring(4, 6);
         const idDay = id.substring(6, 8);
-
-        axios
-            .get(`${UserBaseApi}/order/${idYear}/${idMonth}/${idDay}`, config)
-            .then(res => {
-                SetIdUseCheck(res.data.recognize);
-            })
-        //일 단위 이용일 검사해서 true이면 스위치 true로 설정하는건데 잘 동작 안됨(우선 순위는 아님)
-        if (idUseCheck === true) {
-            setCheckedStates[id] = 'true';
-            console.log(checkedStates[id]);
-        }
 
         navigate(`/calendar/${id}`);
     }
@@ -334,7 +313,7 @@ function Calendar() {
             const day = id.slice(6, 8);
 
             //수동 이용함
-            if (checkedStates[id]) {
+            if (useMenuID !== 0) {
                 axios
                     .post(`${UserBaseApi}/order/add/${useMenuID}/${year}/${month}/${day}`, 'true', config)
                     .then(() => {
@@ -352,7 +331,6 @@ function Calendar() {
                     });
 
                 if (!useMenuID) {
-                    setCheckedStates(originalCheckedStates);
                     Swal.fire({
                         icon: 'info',
                         text: `이용 메뉴를 선택해주세요.`,
@@ -360,12 +338,11 @@ function Calendar() {
                     })
                     return;
                 }
-                setOriginalCheckedStates(checkedStates);
                 navigate('/calendar');
             }
 
             //수동 이용안함
-            if (!checkedStates[id]) {
+            if (useMenuID === 0) {
                 axios
                     .post(`${UserBaseApi}/order/cancel/${year}/${month}/${day}`, 'false', config)
                     .then(() => {
@@ -376,7 +353,6 @@ function Calendar() {
                     .catch((error) => {
                         console.error("수동 이용 안함 에러");
                     });
-                setOriginalCheckedStates(checkedStates);
                 navigate('/calendar');
             }
         }
@@ -425,10 +401,7 @@ function Calendar() {
     const recognizedNotUseDates = getRecognizedNotUseDates(useDays);
 
 
-    //취소버튼 클릭시 스위치 기본값으로
-    const [originalCheckedStates, setOriginalCheckedStates] = useState({});
     const handleCancel = () => {
-        setCheckedStates(originalCheckedStates);
         navigate('/calendar');
     };
 
@@ -471,8 +444,7 @@ function Calendar() {
 
                 if (i >= 1 && i <= 5) {
                     const dayIndex = i - 1;
-                    if ((Object.values(activeDays)[dayIndex] && defaultMenu !== '') || checkedStates[id] || recognizedOrderDates.includes(id)) {  //이용일 원 배경색
-                        // setCheckedStates[id] = 'true';
+                    if ((Object.values(activeDays)[dayIndex] && defaultMenu !== '') || recognizedOrderDates.includes(id)) {  //이용일 원 배경색
                         circlebackgroundColor = id < currentDate ? '#c0d4ab' : '#e0f7c8';
                         //주이용일 이용안함 설정시 원 배경색 변경
                         if (recognizedNotUseDates.includes(id)) {
@@ -563,6 +535,7 @@ function Calendar() {
                             value: menu.id.toString(),
                             id: menu.id
                         }));
+                        updatedAquaticCreatures.unshift({ label: '예약 취소', value: '메뉴를 선택해주세요.', id: 0 });
                         setAquaticCreatures(updatedAquaticCreatures);
 
                         const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
@@ -579,6 +552,7 @@ function Calendar() {
             });
 
     }, [format(currentMonth, 'MM')])
+
 
     //메뉴 리스트
     const [selectedOption, setSelectedOption] = useState(aquaticCreatures[0]);
@@ -613,15 +587,6 @@ function Calendar() {
                 <div style={WriteWrapper}>
                     <div style={WriteTitle}>
                         <span style={{ marginRight: '5px' }}>{`${DayPathMatch.params.id.slice(0, 4)}년 ${DayPathMatch.params.id.slice(4, 6)}월 ${DayPathMatch.params.id.slice(6, 8)}일`}</span>
-                        {/* 스위치 */}
-                        <Switch
-                            checked={checkedStates[DayPathMatch.params.id] || false}
-                            onChange={() => handleChange(DayPathMatch.params.id)}
-                            onColor="#91f321"
-                            offColor="#ccc"
-                            checkedIcon={true}
-                            uncheckedIcon={true}
-                        />
                     </div>
                     <div>
                         <Select

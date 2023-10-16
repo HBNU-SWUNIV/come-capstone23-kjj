@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { R_login } from '../store';
 import { useDispatch } from 'react-redux';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
@@ -39,9 +38,9 @@ const Login = () => {
             const keycloaktoken = response.headers.authorization;
             const [, accesstoken] = keycloaktoken.split('Bearer ');
             setCookie('accesstoken', accesstoken);
-            const refreshtoken = response.headers.refresh_token;
-            const [, refreshtoken1] = refreshtoken.split('Bearer ');
-            setCookie('refreshtoken', refreshtoken1);
+            const token = response.headers.refresh_token;
+            const [, refreshtoken] = token.split('Bearer ');
+            setCookie('refreshtoken', refreshtoken);
             setIsLogin(true);
             if(response.data.loginDate === null){
                 navigate('/FirstLogin')
@@ -65,7 +64,6 @@ const Login = () => {
         }
     }, [keycloak.authenticated, cookies.accesstoken]);
 
-    const [activeDays, setActiveDays] = useState([]);
 
     //일반 로그인
     const handleLogin = async () => {
@@ -82,9 +80,9 @@ const Login = () => {
             const token = response.headers.authorization;
             const [, accesstoken] = token.split('Bearer ');
             setCookie('accesstoken', accesstoken);
-            const refreshtoken = response.headers.refresh_token;
-            const [, refreshtoken1] = refreshtoken.split('Bearer ');
-            setCookie('refreshtoken', refreshtoken1);
+            const token1 = response.headers.refresh_token;
+            const [, refreshtoken] = token1.split('Bearer ');
+            setCookie('refreshtoken', refreshtoken);
             setIsLogin(true);
             if(response.data.loginDate === null){
                 navigate('/FirstLogin')

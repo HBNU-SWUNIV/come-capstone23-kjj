@@ -8,7 +8,7 @@ import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Main_Listitems from './general/Main_Listitems';
+import Main_Listitems from '../general/Main_Listitems';
 import Typography from '@mui/material/Typography';
 import Fade from '@mui/material/Fade';
 import { useNavigate } from 'react-router-dom';
@@ -18,17 +18,17 @@ import {
   ConfigWithRefreshToken,
   ConfigWithToken,
   ManagerBaseApi,
-} from '../auth/authConfig';
+} from '../../auth/authConfig';
 import { useCookies } from 'react-cookie';
 import { useRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
-import { isloginAtom } from '../atom/loginAtom';
+import { isloginAtom } from '../../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled, keyframes } from 'styled-components';
-import UpdateInfoModal from './Drawerheader/UpdateInfoModal';
-import UpdateImgModal from './Drawerheader/UpdateImgModal';
-import UpdateNameModal from './Drawerheader/\bUpdateNameModal';
-import UserMenuModal from './Drawerheader/UserMenuModal';
+import UpdateInfoModal from './UpdateInfoModal';
+import UpdateImgModal from './UpdateImgModal';
+import UpdateNameModal from './UpdateNameModal';
+import UserMenuModal from './UserMenuModal';
 
 function Drawerheader(props) {
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
@@ -72,6 +72,7 @@ function Drawerheader(props) {
   useEffect(() => {
     if (isExpired && isRefreshtoken && islogin) {
       reIssueToken();
+      alert('세션이 만료되었습니다. 새로고침 후 이용해주세요.');
     }
   }, [isExpired]);
 

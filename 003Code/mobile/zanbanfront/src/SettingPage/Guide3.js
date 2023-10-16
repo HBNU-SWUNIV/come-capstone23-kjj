@@ -41,7 +41,7 @@ function Guide3() {
 
                     <p style={{ textAlign: 'center' }}>
                         · 일정예약 페이지에서 예약할 수 있어요.
-                        <br />· 이용을 원하는 날을 선택하고 스위치를 클릭해주세요.
+                        <br />· 예약 취소를 원하신다면 리스트에서 예약 취소를 선택해주세요.
                         <br />· 메뉴를 선택하고 저장 버튼을 눌러주세요.</p>
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', width: '90%', marginTop: 'auto' }}>

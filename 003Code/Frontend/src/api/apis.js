@@ -4,6 +4,25 @@ import { ManagerBaseApi } from '../auth/authConfig';
 const holiday_service_key = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holiday_base_api = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
 
+// charts
+export async function getReservation(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/state/next-week/user`, config);
+    return response.data;
+  } catch (err) {
+    console.error('getReservation_Error=', err);
+  }
+}
+
+export async function getIngredientsInfo(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/menu/food`, config);
+    return response.data;
+  } catch (err) {
+    console.error('getIngredientsInfo_Error=', err);
+  }
+}
+
 // menus
 export async function getMenus(config) {
   try {
