@@ -29,7 +29,7 @@ export default function SelectIngredients({ setFn }) {
   return (
     <Box sx={{ minWidth: 120 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">식재료 등록</InputLabel>
+        <InputLabel id="demo-simple-select-label">식재료 선택</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"

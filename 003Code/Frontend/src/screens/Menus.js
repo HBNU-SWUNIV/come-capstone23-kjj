@@ -13,13 +13,13 @@ import Drawerheader from '../components/Drawerheader/Drawerheader';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
-import Menulist from '../components/Menu/Menulist';
+import Menulist from '../components/Menu/list/Menulist';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { useMutation } from 'react-query';
-import IngredientsDialog from '../components/Menu/IngredientsDialog';
-import MenuAddDialog from '../components/Menu/MenuAddDialog';
-import MenuUpdateDialog from '../components/Menu/MenuUpdateDialog';
+import IngredientsDialog from '../components/Menu/dialog/IngredientsDialog';
+import MenuAddDialog from '../components/Menu/dialog/MenuAddDialog';
+import MenuUpdateDialog from '../components/Menu/dialog/MenuUpdateDialog';
 import DeleteDialog from '../components/general/DeleteDialog';
 import MenuCard from '../components/Menu/\bMenuCard';
 import UseImageHandler from '../hooks/UseImageHandler';
@@ -45,7 +45,6 @@ const MenusButtonStyle = {
   fontSize: '16px',
   backgroundColor: 'rgb(0, 171, 85)',
 };
-
 const toggle_button_list_data = [
   {
     id: 0,
@@ -172,7 +171,7 @@ export default function Menus() {
   const resale = (id) => {
     resaleMenus.mutate(id);
   };
-  const menuAdd = () => {
+  const onAddMenu = () => {
     const formdata = new FormData();
     const body = {
       name: menuNameRef?.current?.value,
@@ -185,7 +184,7 @@ export default function Menus() {
     formdata.append('file', image);
     if (menuInputsIsNotNull) addMenus.mutate(formdata);
   };
-  const menuUpdate = () => {
+  const onUpdateMenu = () => {
     const formdata = new FormData();
     const validateDuplicatedName =
       updateID !== '' &&
@@ -307,12 +306,10 @@ export default function Menus() {
         selectedImg={selectedImg}
         handleImageChange={handleImageChange}
         menuNameRef={menuNameRef}
-        nameDuplicate={nameDuplicate}
         menuDetailsRef={menuDetailsRef}
         menuCostRef={menuCostRef}
-        menuAdd={menuAdd}
-        selectedFood={selectedFoodId}
-        setSelectedFood={setSelectedFood}
+        nameDuplicate={nameDuplicate}
+        onAddMenu={onAddMenu}
       />
 
       <MenuUpdateDialog
@@ -321,12 +318,11 @@ export default function Menus() {
         selectedImg={selectedImg}
         updateID={updateID}
         handleImageChange={handleImageChange}
-        setImage={setImage}
         menuNameRef={menuNameRef}
-        nameDuplicate={nameDuplicate}
         menuDetailsRef={menuDetailsRef}
         menuCostRef={menuCostRef}
-        menuUpdate={menuUpdate}
+        nameDuplicate={nameDuplicate}
+        onUpdateMenu={onUpdateMenu}
         selectedFood={selectedFoodId}
         setSelectedFood={setSelectedFood}
       />

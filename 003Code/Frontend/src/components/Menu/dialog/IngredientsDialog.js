@@ -3,8 +3,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import IngredientsTable from './ingredients/IngredientsTable';
+import { ConfigWithToken, ManagerBaseApi } from '../../../auth/authConfig';
+import IngredientsTable from '../ingredients/IngredientsTable';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
@@ -15,16 +15,16 @@ const IngredientsContentStyle = {
   minWidth: '45vw',
 };
 
-const IngredientsDialog = ({ open, onClose, updateId }) => {
+const IngredientsDialog = (props) => {
   const config = ConfigWithToken();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [notSettinged, setNotSettinged] = useState(false);
 
   useEffect(() => {
-    if (updateId !== '') {
+    if (props.updateId !== '') {
       axios
-        .get(`${ManagerBaseApi}/menu/food/${updateId}`, config)
+        .get(`${ManagerBaseApi}/menu/food/${props.updateId}`, config)
         .then((res) => setData(res.data))
         .then(() => {
           setIsLoading(false);
@@ -35,11 +35,11 @@ const IngredientsDialog = ({ open, onClose, updateId }) => {
           setNotSettinged(true);
         });
     }
-  }, [updateId]);
+  }, [props.updateId]);
   const ingredientsArray = !isLoading && Object.entries(data?.food);
 
   return (
-    <Dialog maxWidth={'lg'} open={open} onClose={onClose}>
+    <Dialog maxWidth={'lg'} open={props.open} onClose={props.onClose}>
       {!notSettinged ? (
         <>
           <DialogTitle>식재료 - {data?.name}</DialogTitle>
@@ -54,7 +54,7 @@ const IngredientsDialog = ({ open, onClose, updateId }) => {
       )}
 
       <DialogActions>
-        <Button color="error" onClick={onClose}>
+        <Button color="error" onClick={props.onClose}>
           닫기
         </Button>
       </DialogActions>

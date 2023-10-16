@@ -1,44 +1,26 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { styled } from 'styled-components';
-import List from '@mui/material/List';
-import Chip from '@mui/material/Chip';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import NoMealsIcon from '@mui/icons-material/NoMeals';
 import axios from 'axios';
-import Menu from '@mui/material/Menu';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../../../auth/authConfig';
 import { useState } from 'react';
-import Menu_ListItemButton from './list/Menu_ListItemButton';
+import List_Up_Down_Arrow from './List_Up_Down_Arrow';
+import List_Sale_Status from './List_Sale_Status';
+import List_menu_bar from './List_menu_bar';
 
-const fontWeight500 = { fontWeight: 500 };
-const fontWeight600 = { fontWeight: 600 };
 const ingredientTableTitleStyle = {
   fontWeight: 600,
   fontSize: '16px',
-};
-
-const menuListStyle = {
-  width: '170px',
-  maxWidth: '180px',
-  height: '150px',
-  whiteSpace: 'nowrap',
-  display: 'flex',
-  flexDirection: 'column',
 };
 
 const TableName = styled.div`
@@ -53,46 +35,6 @@ const TableName = styled.div`
     }
   }
 `;
-
-const MenuEdit = styled.div`
-  position: relative;
-
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const Sale = styled.div`
-  margin-right: -5px;
-`;
-
-const table_header_data = [
-  {
-    id: 0,
-  },
-  {
-    id: 1,
-    text: '이름',
-  },
-  {
-    id: 2,
-    text: '정보',
-    align: 'left',
-  },
-  {
-    id: 3,
-    text: '가격',
-    align: 'right',
-  },
-  {
-    id: 4,
-    text: '상태',
-    align: 'right',
-  },
-  {
-    id: 5,
-  },
-];
 
 const table_head_data = [
   {
@@ -131,8 +73,7 @@ const table_body_data = [
     align: 'right',
   },
 ];
-
-const Row = (props) => {
+const Menulist_Row = (props) => {
   const { row, onDelete, soldout, resale, onUpdate } = props;
   const config = ConfigWithToken();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -211,72 +152,55 @@ const Row = (props) => {
     },
   ];
 
+  const menu_table_row_cell_datas = [
+    {
+      text: <List_Up_Down_Arrow open={open} onClick={handlerOpen} />,
+    },
+    {
+      sx_fontWeight: 600,
+      sx_color: row.usePlanner ? '#1565c0' : 'inherit',
+      text: row.name,
+    },
+    {
+      sx_fontWeight: 500,
+      text: row.details,
+      align: 'left',
+    },
+    {
+      sx_fontWeight: 600,
+      text: row.cost,
+      align: 'right',
+    },
+    {
+      text: <List_Sale_Status condition={row.sold === true} />,
+      align: 'right',
+    },
+    {
+      text: (
+        <List_menu_bar
+          onClick={onOpenEdit}
+          anchorEl={anchorEl}
+          open={openEdit}
+          onClose={onOffEdit}
+          listData={menu_list_Items_data}
+        />
+      ),
+      align: 'right',
+    },
+  ];
+
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => handlerOpen(open)}
+        {menu_table_row_cell_datas.map((item, idx) => (
+          <TableCell
+            key={idx}
+            sx={{ fontWeight: item.sx_fontWeight, color: item.sx_color }}
+            align={item.align}
           >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-
-        <TableCell
-          component="th"
-          scope="row"
-          sx={{ ...fontWeight600, color: row.usePlanner ? '#1565c0' : 'inherit' }}
-        >
-          {row.name}
-        </TableCell>
-
-        <TableCell sx={fontWeight500} align="left">
-          {row.details}
-        </TableCell>
-
-        <TableCell sx={fontWeight600} align="right">
-          {row.cost}
-        </TableCell>
-
-        <TableCell align="right">
-          {row.sold === true ? (
-            <Sale>
-              <Chip label="판매중" color="success" />
-            </Sale>
-          ) : (
-            <Chip label="품 절" color="error" />
-          )}
-        </TableCell>
-
-        <TableCell align="right">
-          <MenuEdit onClick={onOpenEdit}>
-            <MoreVertIcon />
-          </MenuEdit>
-
-          <Menu anchorEl={anchorEl} open={openEdit} onClose={onOffEdit}>
-            <List
-              sx={menuListStyle}
-              component="nav"
-              aria-labelledby="nested-list-subheader"
-            >
-              {menu_list_Items_data.map(
-                (item) =>
-                  item.condition && (
-                    <Menu_ListItemButton
-                      key={item.id}
-                      isAllData={item.isAllData}
-                      onClick={item.onClick}
-                      icon={item.icon}
-                      text={item.text}
-                      data={item.data}
-                    />
-                  )
-              )}
-            </List>
-          </Menu>
-        </TableCell>
+            {item.text}
+          </TableCell>
+        ))}
       </TableRow>
 
       <TableRow>
@@ -325,31 +249,4 @@ const Row = (props) => {
   );
 };
 
-export default function Menulist({ menus, onDelete, soldout, resale, onUpdate }) {
-  return (
-    <TableContainer component={Paper}>
-      <Table aria-label="collapsible table">
-        <TableHead>
-          <TableRow>
-            {table_header_data.map((item) => (
-              <TableCell align={item.align}>{item.text}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {menus?.map((row) => (
-            <Row
-              key={row.name}
-              row={row}
-              onDelete={onDelete}
-              soldout={soldout}
-              resale={resale}
-              onUpdate={onUpdate}
-            />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
+export default Menulist_Row;

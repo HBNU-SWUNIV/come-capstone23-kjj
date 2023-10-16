@@ -9,7 +9,7 @@ const NeedFoodChart = () => {
   const [predict, setPredict] = useState([]);
   const config = ConfigWithToken();
   const predictArray = Object.entries(predict);
-  console.log(predict);
+
   useEffect(() => {
     axios
       .get(`${ManagerBaseApi}/state/predict/food`, config)
@@ -19,6 +19,7 @@ const NeedFoodChart = () => {
         }
       });
   }, []);
+
   return (
     <>
       <Title>
@@ -28,7 +29,7 @@ const NeedFoodChart = () => {
         type="bar"
         series={[
           {
-            name: '무게',
+            name: '무게(g)',
             data: predictArray.map((a) => a[1]),
           },
         ]}
@@ -53,7 +54,7 @@ const NeedFoodChart = () => {
           yaxis: {
             labels: {
               formatter: (val) => {
-                return val + 'kg';
+                return val + 'g';
               },
             },
           },

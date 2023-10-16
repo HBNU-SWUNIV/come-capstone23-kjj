@@ -1,12 +1,21 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import { c_color } from './chartTitleColors';
-import { ConfigWithToken } from '../../auth/authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import { useQuery } from 'react-query';
 import { getIngredientsInfo } from '../../api/apis';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 const FoodSavingStatusChart = () => {
   const config = ConfigWithToken();
+
+  useEffect(() => {
+    axios
+      .get(`${ManagerBaseApi}/state/predict/menu`, config)
+      .then((res) => console.log(res.data))
+      .catch((err) => console.log(err));
+  }, []);
 
   return (
     <>
