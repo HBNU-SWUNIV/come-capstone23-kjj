@@ -14,6 +14,7 @@ public class MenuWithInfo {
     private String image;
     private Boolean sold;
     private boolean usePlanner;
+    private Long foodId;
 
     private String info;
     private String details;

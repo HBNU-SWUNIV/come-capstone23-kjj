@@ -1,6 +1,9 @@
 package com.hanbat.zanbanzero.entity.menu;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,9 +17,7 @@ public class MenuFood {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Menu menu;
+    private String name;
 
     private String food;
 
@@ -24,10 +25,10 @@ public class MenuFood {
         this.food = food;
     }
 
-    public static MenuFood of(Menu menu, String food) {
+    public static MenuFood of(String name, String food) {
         return new MenuFood(
                 null,
-                menu,
+                name,
                 food
         );
     }

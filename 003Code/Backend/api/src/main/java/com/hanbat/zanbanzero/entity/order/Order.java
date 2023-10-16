@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.entity.order;
 
 import com.hanbat.zanbanzero.entity.menu.Menu;
-import com.hanbat.zanbanzero.entity.user.user.User;
+import com.hanbat.zanbanzero.entity.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

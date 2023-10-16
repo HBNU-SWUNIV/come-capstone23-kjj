@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.entity.user.user;
+package com.hanbat.zanbanzero.entity.user;
 
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.order.Order;

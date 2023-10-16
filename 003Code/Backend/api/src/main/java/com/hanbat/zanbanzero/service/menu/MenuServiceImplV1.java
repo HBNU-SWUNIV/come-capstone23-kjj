@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -77,20 +76,17 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Transactional
-    public MenuFoodDto addFood(Long id, String data) throws CantFindByIdException {
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        return MenuFoodDto.of(menuFoodRepository.save(MenuFood.of(menu, data)));
+    public void setFood(Long menuId, Long foodId) throws CantFindByIdException {
+        Menu menu = menuRepository.findById(foodId).orElseThrow(() -> new CantFindByIdException("foodId : " + menuId));
+        if (foodId == 0) menu.setMenuFood(null);
+        else menu.setMenuFood(menuFoodRepository.getReferenceById(foodId));
     }
 
     @Override
-    public Map<String, Integer> getFood(Long id) throws MapToStringException {
-        MenuFood result = menuFoodRepository.findById(id).orElse(null);
-        if (result == null) return Collections.emptyMap();
-        try {
-            return objectMapper.readValue(result.getFood(), Map.class);
-        } catch (JsonProcessingException e) {
-            throw new MapToStringException("Food : " + result.getFood() ,e);
-        }
+    public List<MenuFoodDto> getFood() {
+        return menuFoodRepository.findAll().stream()
+                .map(MenuFoodDto::of)
+                .toList();
     }
 
     @Override
@@ -177,5 +173,16 @@ public class MenuServiceImplV1 implements MenuService{
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         menu.setUsePlanner(true);
         return MenuDto.of(menu);
+    }
+
+    @Override
+    public MenuFoodDto addFood(String name, Map<String, Integer> data) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return MenuFoodDto.of(menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data))));
+    }
+
+    @Override
+    public MenuFoodDto getOneFood(Long id) throws CantFindByIdException {
+        return MenuFoodDto.of(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)));
     }
 }

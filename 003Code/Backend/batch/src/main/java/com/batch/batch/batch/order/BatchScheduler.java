@@ -25,14 +25,16 @@ public class BatchScheduler {
     private final JobLauncher jobLauncher;
     private final Job firstJob;
     private final Job secondJob;
+    private final Job predictWeekJob;
     private final DataSource dataSource;
 
     private final SlackTools slackTools;
 
-    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("dataDataSource") DataSource dataSource, SlackTools slackTools) {
+    public BatchScheduler(JobLauncher jobLauncher, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("createPredictWeekJob") Job predictWeekJob, @Qualifier("dataDataSource") DataSource dataSource, SlackTools slackTools) {
         this.jobLauncher = jobLauncher;
         this.firstJob = firstJob;
         this.secondJob = secondJob;
+        this.predictWeekJob = predictWeekJob;
         this.dataSource = dataSource;
         this.slackTools = slackTools;
     }
@@ -46,6 +48,15 @@ public class BatchScheduler {
     }
 
     private JobParameters getSecondJobParameters() {
+        return new JobParametersBuilder()
+                .addString("date", DateTools.getDatePlusOneDay())
+                .addString("time", String.valueOf(System.currentTimeMillis()))
+                .addString("today", DateTools.getDate())
+                .addString("day", DateTools.getTodayPlusOneDay().toLowerCase())
+                .toJobParameters();
+    }
+
+    private JobParameters getpredictWeekJobParameters() {
         return new JobParametersBuilder()
                 .addString("date", DateTools.getDatePlusOneDay())
                 .addString("time", String.valueOf(System.currentTimeMillis()))
@@ -82,5 +93,17 @@ public class BatchScheduler {
             }
         }
         return false;
+    }
+
+    @Scheduled(cron = "0 30 1 ? * SUN")
+    public void predictWeekJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobExecution run = jobLauncher.run(predictWeekJob, getpredictWeekJobParameters());
+        if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("predictWeekJob");
+    }
+
+    @Scheduled(cron = "0 44 14 * * ?")
+    public void t() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        JobExecution run = jobLauncher.run(predictWeekJob, getpredictWeekJobParameters());
+        if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("predictWeekJob");
     }
 }

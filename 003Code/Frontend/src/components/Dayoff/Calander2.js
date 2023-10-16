@@ -8,27 +8,165 @@ import {
   endOfWeek,
   addDays,
 } from 'date-fns';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import shortid from 'shortid';
 import axios from 'axios';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Circle from '../general/Circle';
+import DayoffDialog from './\bDayoffDialog';
+import { useMutation, useQuery } from 'react-query';
+import { getHoliday, getOffDay } from '../../api/apis';
 
-const holidayServiceKey = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
-const holidayBaseApi = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
+function Calander2() {
+  const config = ConfigWithToken();
+  const [dayId, setDayId] = useState(0);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [open, setOpen] = useState(false);
+  const monthStart = startOfMonth(currentMonth);
+  const monthEnd = endOfMonth(monthStart);
+  const startDate = startOfWeek(monthStart);
+  const endDate = endOfWeek(monthEnd);
+  let day = startDate;
+  let formattedDate = '';
+  let dayss = [];
+  let line = [];
+  const days = [];
+  const date = ['일', '월', '화', '수', '목', '금', '토'];
+  const thisyear = format(currentMonth, 'yyyy');
+  const thismonth = format(currentMonth, 'MM');
+  const offNameRef = useRef('');
 
-const customButtonStyle = {
+  const handleOpen = (id) => {
+    setOpen(true);
+    setDayId(id);
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const prevMonth = () => {
+    setCurrentMonth(subMonths(currentMonth, 1));
+  };
+  const nextMonth = () => {
+    setCurrentMonth(addMonths(currentMonth, 1));
+  };
+
+  const { data: offday, refetch: refreshOffday } = useQuery(
+    ['getOffDay', config, thisyear, thismonth],
+    () => getOffDay(config, thisyear, thismonth)
+  );
+
+  const { data: holiday } = useQuery(['getHoliday', thisyear, thismonth], () =>
+    getHoliday(thisyear, thismonth)
+  );
+  const isArray = holiday?.length !== undefined;
+
+  const setOnOffDay = useMutation(
+    (data) => {
+      const { body, year, month, day } = data;
+      axios.post(`${ManagerBaseApi}/store/off/${year}/${month}/${day}`, body, config);
+    },
+    {
+      // network탭에서 폭포 확인해봤을 때, onSuccess랑 위에 post api가 동시에 요청됨.. QueryClient에서 defualt값을 설정해줘야 하나?
+      onSuccess: () => {
+        setTimeout(() => {
+          refreshOffday();
+        }, 200);
+      },
+    }
+  );
+
+  const onOffday = (year, month, day) => {
+    const body = { off: true, name: offNameRef?.current?.value };
+    const data = { body, year, month, day };
+    setOnOffDay.mutate(data);
+    handleClose();
+  };
+
+  const onOnday = (year, month, day) => {
+    let body = { off: false };
+    const data = { body, year, month, day };
+    setOnOffDay.mutate(data);
+    handleClose();
+  };
+
+  for (let i = 0; i < 7; i++) {
+    days.push(<DaysDiv key={shortid.generate()}>{date[i]}</DaysDiv>);
+  }
+
+  while (day <= endDate) {
+    for (let i = 0; i < 7; i++) {
+      formattedDate = format(day, 'd').padStart(2, '0').toString();
+      const id = format(day, 'yyyyMMdd').toString();
+
+      if (format(monthStart, 'M') != format(day, 'M')) {
+        dayss.push(
+          <DivDay key={shortid.generate()}>
+            <span style={divDaySpanStyle}>{formattedDate}</span>
+          </DivDay>
+        );
+      } else {
+        dayss.push(
+          <DivDay onClick={() => handleOpen(id)} key={shortid.generate()}>
+            <span>{formattedDate}</span>
+            <span style={{ color: customRed }}>
+              {!isArray && holiday?.locdate == id && holiday?.dateName}
+              {isArray && holiday?.map((hol) => hol?.locdate == id && hol?.dateName)}
+              {offday?.filter((offday) => offday.date === id)[0]?.name}
+            </span>
+            {offday?.filter((offday) => offday.date == id)[0]?.off == true ? (
+              <Circle color="red" />
+            ) : null}
+            {!isArray
+              ? holiday?.locdate == id && <Circle color="red" />
+              : holiday?.map((hol) => hol?.locdate == id && <Circle color="red" />)}
+          </DivDay>
+        );
+      }
+      day = addDays(day, 1);
+    }
+    line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
+    dayss = [];
+  }
+
+  return (
+    <Wrapper>
+      <HeaderW>
+        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
+        <span>
+          {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}
+        </span>
+        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
+      </HeaderW>
+
+      <DaysWrapper>{days}</DaysWrapper>
+      <DivWrapper>{line}</DivWrapper>
+
+      <DayoffDialog
+        open={open}
+        onClose={handleClose}
+        dayId={dayId}
+        offNameRef={offNameRef}
+        isArray={isArray}
+        holiday={holiday}
+        offday={offday}
+        onOnday={onOnday}
+        onOffday={onOffday}
+      />
+    </Wrapper>
+  );
+}
+
+export default Calander2;
+
+const divDaySpanStyle = {
+  fontSize: '13px',
   fontWeight: 600,
+  margin: '5px 5px',
+  color: 'rgba(0,0,0,0.3)',
 };
+
 const ArrowCSS = {
   color: '#969696',
   fontSize: '18px',
@@ -39,7 +177,6 @@ const ArrowCSS = {
 
 const customBlue = '#64b5f6';
 const customRed = '#f44336';
-const customGray = 'rgba(0,0,0,0.2)';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -130,351 +267,3 @@ const DivWrapper = styled.div`
 
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
-
-const HeadTextWrapper = styled.div`
-  width: 100%;
-
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-
-  span:last-child {
-    margin-left: 15px;
-  }
-`;
-
-const BodyWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-
-  border-top: 2px solid black;
-
-  div {
-    display: flex;
-    align-items: center;
-
-    div:first-child {
-      height: 100px;
-      width: 150px;
-
-      background-color: #e3f2fd;
-
-      border-right: 1px solid ${customGray};
-      border-left: 1px solid ${customGray};
-
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-
-      box-sizing: border-box;
-      padding-left: 20px;
-
-      font-weight: 600;
-    }
-  }
-`;
-
-const OffHr = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: ${customGray};
-`;
-
-const OffDay = styled.div`
-  width: 120px;
-  height: 30px;
-
-  margin-left: 20px;
-  border-radius: 10px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  background-color: ${customGray};
-`;
-
-const OffInput = styled.input`
-  margin-left: 20px;
-
-  width: 250px;
-  height: 30px;
-
-  border: 1px solid ${customGray};
-`;
-
-function Calander2() {
-  const config = ConfigWithToken();
-
-  const [offday, setOffday] = useState([]);
-  const [dayId, setDayId] = useState(0);
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  const [success, setSuccess] = useState(false);
-  const handleSuccessOpen = () => {
-    setSuccess(true);
-  };
-  const handleSuccessClose = () => {
-    setSuccess(false);
-  };
-
-  const [open, setOpen] = useState(false);
-  const handleClickOpen = (id) => {
-    setOpen(true);
-    setDayId(id);
-  };
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  useEffect(() => {
-    axios
-      .get(
-        `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
-          currentMonth,
-          'MM'
-        )}`,
-        config
-      )
-      .then((res) => setOffday(res.data))
-      .catch((err) => {
-        if (err.response.status === 403) {
-        } else {
-          console.log('휴일 조회 에러:', err);
-        }
-      });
-  }, [currentMonth]);
-
-  const [holiday, setHoliday] = useState([]);
-  const isArray = holiday?.length !== undefined;
-  const thisyear = format(currentMonth, 'yyyy');
-  const thismonth = format(currentMonth, 'MM');
-  useEffect(() => {
-    axios
-      .get(
-        `${holidayBaseApi}solYear=${thisyear}&solMonth=${thismonth}&ServiceKey=${holidayServiceKey}`
-      )
-      .then((res) => {
-        setHoliday(res.data.response.body.items.item);
-      })
-      .catch((err) => console.log('dayoffError', err));
-  }, [thisyear, thismonth]);
-
-  const offNameRef = useRef('');
-  const onOffday = (year, month, day) => {
-    let body = { off: true, name: offNameRef?.current?.value };
-    axios
-      .post(`${ManagerBaseApi}/store/off/${year}/${month}/${day}`, body, config)
-      .then((res) => {
-        res.status == 200 &&
-          axios
-            .get(
-              `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
-                currentMonth,
-                'MM'
-              )}`,
-              config
-            )
-            .then((re) => setOffday(re.data));
-      });
-    handleClose();
-    handleSuccessOpen();
-  };
-  const onOnday = (year, month, day) => {
-    let body = { off: false };
-    axios
-      .post(`${ManagerBaseApi}/store/off/${year}/${month}/${day}`, body, config)
-      .then((res) => {
-        res.status == 200 &&
-          axios
-            .get(
-              `/api/user/store/off/${format(currentMonth, 'yyyy')}/${format(
-                currentMonth,
-                'MM'
-              )}`,
-              config
-            )
-            .then((re) => setOffday(re.data));
-      });
-    handleClose();
-    handleSuccessOpen();
-  };
-
-  const days = [];
-  const date = ['일', '월', '화', '수', '목', '금', '토'];
-
-  for (let i = 0; i < 7; i++) {
-    days.push(<DaysDiv key={shortid.generate()}>{date[i]}</DaysDiv>);
-  }
-
-  const monthStart = startOfMonth(currentMonth);
-  const monthEnd = endOfMonth(monthStart);
-  const startDate = startOfWeek(monthStart);
-  const endDate = endOfWeek(monthEnd);
-
-  let day = startDate;
-  let formattedDate = '';
-  let dayss = [];
-  let line = [];
-
-  while (day <= endDate) {
-    for (let i = 0; i < 7; i++) {
-      formattedDate = format(day, 'd').padStart(2, '0').toString();
-      const id = format(day, 'yyyyMMdd').toString();
-
-      if (format(monthStart, 'M') != format(day, 'M')) {
-        dayss.push(
-          <DivDay key={shortid.generate()}>
-            <span
-              style={{
-                fontSize: '13px',
-                fontWeight: 600,
-                margin: '5px 5px',
-                color: 'rgba(0,0,0,0.3)',
-              }}
-            >
-              {formattedDate}
-            </span>
-          </DivDay>
-        );
-      } else {
-        dayss.push(
-          <DivDay onClick={() => handleClickOpen(id)} key={shortid.generate()}>
-            <span>{formattedDate}</span>
-            <span style={{ color: customRed }}>
-              {!isArray && holiday?.locdate == id && holiday?.dateName}
-              {isArray && holiday?.map((hol) => hol?.locdate == id && hol?.dateName)}
-              {offday?.filter((offday) => offday.date === id)[0]?.name}
-            </span>
-            {offday.filter((offday) => offday.date == id)[0]?.off == true ? (
-              <Circle color="red" />
-            ) : null}
-            {!isArray
-              ? holiday?.locdate == id && <Circle color="red" />
-              : holiday?.map((hol) => hol?.locdate == id && <Circle color="red" />)}
-          </DivDay>
-        );
-      }
-      day = addDays(day, 1);
-    }
-    line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
-    dayss = [];
-  }
-
-  const prevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
-  const nextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
-
-  return (
-    <Wrapper>
-      <HeaderW>
-        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
-        <span>
-          {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}
-        </span>
-        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
-      </HeaderW>
-
-      <DaysWrapper>{days}</DaysWrapper>
-      <DivWrapper>{line}</DivWrapper>
-
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle sx={{ width: '600px' }}>
-          <HeadTextWrapper>
-            <span style={{ fontSize: '22px', fontWeight: 600 }}>휴일등록</span>
-            <span style={{ fontSize: '16px', color: 'gray' }}>
-              우리 식당의 휴일을 지정합니다.
-            </span>
-          </HeadTextWrapper>
-        </DialogTitle>
-
-        <DialogContent>
-          <BodyWrapper>
-            <div>
-              <div>선택일자</div>
-              <OffDay>{dayId}</OffDay>
-            </div>
-            <OffHr />
-            <div>
-              <div>휴일명</div>
-              <OffInput ref={offNameRef} placeholder="휴일 명칭을 입력하세요" />
-            </div>
-            <OffHr />
-          </BodyWrapper>
-        </DialogContent>
-
-        <DialogActions
-          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-          {!isArray
-            ? holiday?.locdate == dayId && (
-                <span
-                  style={{
-                    ...customButtonStyle,
-                    fontSize: '16px',
-                    color: customRed,
-                    marginRight: '10px',
-                  }}
-                >
-                  '{holiday?.dateName}' 입니다
-                </span>
-              )
-            : holiday?.map(
-                (hol) =>
-                  hol?.locdate == dayId && (
-                    <span
-                      style={{
-                        ...customButtonStyle,
-                        fontSize: '16px',
-                        color: customRed,
-                        marginRight: '10px',
-                      }}
-                    >
-                      '{hol?.dateName}' 입니다
-                    </span>
-                  )
-              )}
-
-          {offday.filter((offday) => offday.date == dayId)[0]?.off == true ? (
-            <Button
-              sx={customButtonStyle}
-              onClick={() =>
-                onOnday(dayId.slice(0, 4), dayId.slice(4, 6), dayId.slice(6, 8))
-              }
-            >
-              영업일 등록
-            </Button>
-          ) : (
-            <Button
-              sx={customButtonStyle}
-              disabled={
-                (!isArray && holiday?.locdate == dayId) ||
-                (isArray && holiday.some((hol) => hol?.locdate == dayId))
-              }
-              onClick={() =>
-                onOffday(dayId.slice(0, 4), dayId.slice(4, 6), dayId.slice(6, 8))
-              }
-            >
-              휴일 등록
-            </Button>
-          )}
-
-          <Button sx={customButtonStyle} color="error" onClick={handleClose}>
-            닫기
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
-        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-          성공!
-        </Alert>
-      </Snackbar>
-    </Wrapper>
-  );
-}
-
-export default Calander2;

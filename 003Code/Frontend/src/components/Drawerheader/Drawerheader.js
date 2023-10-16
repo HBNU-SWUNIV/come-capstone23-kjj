@@ -8,35 +8,27 @@ import List from '@mui/material/List';
 import { styled } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Main_Listitems from './general/Main_Listitems';
+import Main_Listitems from '../general/Main_Listitems';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
 import { useNavigate } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
 import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
-import Skeleton from '@mui/material/Skeleton';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
 import {
   ConfigWithRefreshToken,
   ConfigWithToken,
   ManagerBaseApi,
-} from '../auth/authConfig';
+} from '../../auth/authConfig';
 import { useCookies } from 'react-cookie';
 import { useRecoilState } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
-import { isloginAtom } from '../atom/loginAtom';
+import { isloginAtom } from '../../atom/loginAtom';
 import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled, keyframes } from 'styled-components';
+import UpdateInfoModal from './UpdateInfoModal';
+import UpdateImgModal from './UpdateImgModal';
+import UpdateNameModal from './UpdateNameModal';
+import UserMenuModal from './UserMenuModal';
 
 function Drawerheader(props) {
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
@@ -63,6 +55,9 @@ function Drawerheader(props) {
   const [updateInfo, setUpdateInfo] = useState(false);
   const [updateImage, setUpdateImage] = useState(false);
   const [updateName, setUpdateName] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [open1, setOpen] = useState(true);
 
   useEffect(() => {
     getMarketDetails();
@@ -77,6 +72,7 @@ function Drawerheader(props) {
   useEffect(() => {
     if (isExpired && isRefreshtoken && islogin) {
       reIssueToken();
+      alert('세션이 만료되었습니다. 새로고침 후 이용해주세요.');
     }
   }, [isExpired]);
 
@@ -95,9 +91,6 @@ function Drawerheader(props) {
     }
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const [open1, setOpen] = useState(true);
   const menuOpenHandler = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -168,7 +161,7 @@ function Drawerheader(props) {
         if (res.status === 200) getMarketImage();
       })
       .catch((err) => alert('이미지 용량이 너무 큽니다.'));
-    handleSuccessOpen();
+
     closeUpdateImageModal();
   };
 
@@ -198,29 +191,14 @@ function Drawerheader(props) {
       setIsLogin(false);
     }
     setCookie('accesstoken', '');
+    setCookie('refreshtoken', '');
     navigate('/');
-  };
-
-  const [success, setSuccess] = useState(false);
-  const handleSuccessOpen = () => {
-    setSuccess(true);
-  };
-  const handleSuccessClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSuccess(false);
   };
 
   return (
     <>
       <AppBar position="absolute" open={open1}>
-        <Toolbar
-          sx={{
-            backgroundColor: '#24292e',
-            pr: '24px',
-          }}
-        >
+        <Toolbar sx={headerToolbarStyle}>
           <IconButton
             edge="start"
             color="inherit"
@@ -238,12 +216,7 @@ function Drawerheader(props) {
             variant="h6"
             color="inherit"
             noWrap
-            sx={{
-              flexGrow: 1,
-
-              fontWeight: 600,
-              fontSize: '25px',
-            }}
+            sx={pagesNameStyle}
           >
             {props?.pages}
           </Typography>
@@ -285,23 +258,14 @@ function Drawerheader(props) {
       </AppBar>
 
       <Drawer variant="permanent" open={open1}>
-        <Toolbar
-          sx={{
-            backgroundColor: '#f5f5f5',
-            zIndex: 3,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'flex-end',
-            px: [1],
-          }}
-        >
+        <Toolbar sx={drawerToolbarStyle}>
           <IconButton onClick={toggleDrawer}>
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
         <Divider />
 
-        <List component="nav" sx={{ backgroundColor: '#f5f5f5', height: '100%' }}>
+        <List component="nav" sx={listStyle}>
           <ListImageWrapper>
             <ListImage
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
@@ -312,150 +276,46 @@ function Drawerheader(props) {
           <Main_Listitems />
         </List>
 
-        <Menu
-          id="fade-menu"
-          MenuListProps={{
-            'aria-labelledby': 'fade-button',
-          }}
+        <UserMenuModal
           anchorEl={anchorEl}
           open={open}
           onClose={menuCloseHandler}
-          TransitionComponent={Fade}
-        >
-          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateNameModal}>
-            식당 이름 {isName ? '수정' : '설정'}
-          </MenuItem>
-          <MenuItem
-            sx={{ ...MenuItemTextStyle, width: '250px' }}
-            onClick={openUpdateInfoModal}
-          >
-            식당 소개 메시지 변경
-          </MenuItem>
-          <MenuItem sx={MenuItemTextStyle} onClick={openUpdateImageModal}>
-            식당 이미지 변경
-          </MenuItem>
-          <Divider />
-          <MenuItem sx={MenuItemTextStyle} onClick={onLogout}>
-            로그아웃
-          </MenuItem>
-        </Menu>
+          Fade={Fade}
+          openUpdateImageModal={openUpdateImageModal}
+          openUpdateNameModal={openUpdateNameModal}
+          openUpdateInfoModal={openUpdateInfoModal}
+          isName={isName}
+          onLogout={onLogout}
+        />
 
-        <Dialog open={updateInfo} onClose={closeUpdateInfoModal}>
-          <DialogTitle sx={DialogTitleStyle}>식당 소개 메시지 변경</DialogTitle>
-          <DialogContent>
-            <DialogContentText sx={{ ...DialogTextStyle, marginBottom: '10px' }}>
-              소개 메시지를 변경할 수 있습니다.
-            </DialogContentText>
-            <div>
-              <TextField
-                id="outlined-multiline-static"
-                label="현재 식당 소개 메시지"
-                multiline
-                disabled
-                rows={5}
-                defaultValue={info}
-              />
-              <TextField
-                sx={{ ml: '2vw' }}
-                id="outlined-multiline-static"
-                label="식당 소개 메시지 변경"
-                multiline
-                inputRef={InfoRef}
-                rows={5}
-                placeholder={info}
-              />
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onUpdateMarketInfo}>등록</Button>
-            <Button color="error" onClick={closeUpdateInfoModal}>
-              닫기
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Dialog open={updateImage} onClose={closeUpdateImageModal}>
-          <DialogTitle sx={DialogTitleStyle}>식당 이미지 변경하기</DialogTitle>
-          <DialogContent>
-            <DialogContentText sx={DialogTextStyle}>현재 이미지</DialogContentText>
-            <div>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
-                {image !== null ? (
-                  <img
-                    style={{
-                      width: '10vw',
-                      minWidth: '10vw',
-                    }}
-                    src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
-                    alt="이미지없음"
-                  />
-                ) : (
-                  <Skeleton variant="rectangular" width={210} height={118} />
-                )}
-                <input
-                  style={{ marginLeft: '2vw' }}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setNewImage(e.target.files[0])}
-                />
-              </div>
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={onUpdateMarketImage}>등록</Button>
-            <Button color="error" onClick={closeUpdateImageModal}>
-              닫기
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        <Snackbar open={success} autoHideDuration={6000} onClose={handleSuccessClose}>
-          <Alert onClose={handleSuccessClose} severity="success" sx={{ width: '100%' }}>
-            성공!
-          </Alert>
-        </Snackbar>
+        <UpdateInfoModal
+          open={updateInfo}
+          onClose={closeUpdateInfoModal}
+          info={info}
+          InfoRef={InfoRef}
+          onUpdateMarketInfo={onUpdateMarketInfo}
+        />
+        <UpdateImgModal
+          open={updateImage}
+          onClose={closeUpdateImageModal}
+          image={image}
+          setNewImage={setNewImage}
+          onUpdateMarketImage={onUpdateMarketImage}
+        />
+        <UpdateNameModal
+          open={updateName}
+          onClose={closeUpdateNameModal}
+          isName={isName}
+          nameRef={nameRef}
+          name={name}
+          onUpdateMarketName={onUpdateMarketName}
+        />
       </Drawer>
-
-      <Dialog open={updateName} onClose={closeUpdateNameModal}>
-        <DialogTitle sx={DialogTitleStyle}>
-          식당 이름 {isName ? '수정' : '설정'}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText sx={DialogTextStyle}>
-            소비자도 쉽게 확인할 수 있는 방법으로 식당 이름을 {isName ? '수정' : '설정'}
-            해주세요
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="nameRef"
-            inputRef={nameRef}
-            placeholder={isName ? name : ''}
-            label={isName ? '기존 식당 이름' : '식당 이름'}
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onUpdateMarketName}>등록</Button>
-          <Button color="error" onClick={closeUpdateNameModal}>
-            닫기
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 }
 
 export default Drawerheader;
-
-const Alert = React.forwardRef(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -503,6 +363,22 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const screenWidth = window.innerWidth;
 const drawerWidth = screenWidth < 450 ? 20 : 220;
+const pagesNameStyle = { flexGrow: 1, fontWeight: 600, fontSize: '25px' };
+const listStyle = { backgroundColor: '#f5f5f5', height: '100%' };
+
+const headerToolbarStyle = {
+  backgroundColor: '#24292e',
+  pr: '24px',
+};
+
+const drawerToolbarStyle = {
+  backgroundColor: '#f5f5f5',
+  zIndex: 3,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  px: [1],
+};
 
 const marketNameStyle = {
   fontWeight: '600',
@@ -511,23 +387,6 @@ const marketNameStyle = {
   textDecorationThickness: '1px',
   whiteSpace: 'nowrap',
   textAlign: 'right',
-};
-const MenuItemTextStyle = {
-  fontFamily: 'Nanum',
-  fontWeight: 500,
-  margin: '10px 0px',
-};
-const DialogTitleStyle = {
-  margin: '0 auto',
-  fontFamily: 'Nanum',
-  fontSize: '20px',
-  fontWeight: '600',
-};
-const DialogTextStyle = {
-  fontFamily: 'Nanum',
-  fontSize: '15px',
-  fontWeight: '600',
-  marginBottom: '10px',
 };
 
 const blinkEffects = keyframes`
