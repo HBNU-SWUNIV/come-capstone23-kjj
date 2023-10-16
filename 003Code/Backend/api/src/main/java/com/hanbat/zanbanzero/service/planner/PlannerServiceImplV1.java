@@ -46,7 +46,6 @@ public class PlannerServiceImplV1 implements PlannerService{
 
         return PlannerDto.of(planner);
     }
-
     @Override
     public List<PlannerDto> getPlannerByMonth(int year, int month) {
         LocalDate start = DateTools.makeLocalDate(year, month, 1);

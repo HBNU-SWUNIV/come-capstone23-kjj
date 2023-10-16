@@ -13,6 +13,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuFoodDto {
+    private Long id;
     private String name;
     private Map<String, Integer> food;
 
@@ -25,6 +26,7 @@ public class MenuFoodDto {
             food = null;
         }
         return new MenuFoodDto(
+                menuFood.getId(),
                 menuFood.getName(),
                 food
         );

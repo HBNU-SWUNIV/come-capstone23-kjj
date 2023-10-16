@@ -44,4 +44,6 @@ public interface StoreService {
     Map<String, Integer> getCalculatePreMenu() throws StringToMapException;
 
     CalculatePreWeekDto getNextWeeksUser();
+
+    CalculatePreWeekDto getNextWeeksFood();
 }

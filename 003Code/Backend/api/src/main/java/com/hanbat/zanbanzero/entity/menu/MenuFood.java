@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.entity.menu;
 
+import com.hanbat.zanbanzero.auto_init.dto.Recipe;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -30,6 +31,14 @@ public class MenuFood {
                 null,
                 name,
                 food
+        );
+    }
+
+    public static MenuFood of(Recipe recipe) {
+        return new MenuFood(
+                null,
+                recipe.getName(),
+                recipe.getFood()
         );
     }
 }

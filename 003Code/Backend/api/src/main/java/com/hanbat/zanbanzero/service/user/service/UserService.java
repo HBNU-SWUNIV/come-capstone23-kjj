@@ -24,7 +24,7 @@ public interface UserService extends UserDetailsService {
 
     UserMypageDto getMyPage(String username) throws CantFindByIdException;
 
-    Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException;
+    Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException, WrongRequestDetails;
 
     UserPolicyDto setUserDatePolicy(UserPolicyDto dto, String username) throws CantFindByIdException;
 

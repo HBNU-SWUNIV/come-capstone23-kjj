@@ -48,20 +48,20 @@ INSERT INTO zanbanzero.store_state(store_id, date, off) VALUES (1, "2023-05-07",
 INSERT INTO zanbanzero.store_state(store_id, date, off) VALUES (1, "2023-05-09", false);
 INSERT INTO zanbanzero.store_state(store_id, date, off) VALUES (1, "2023-05-10", true);
 
-INSERT INTO zanbanzero.menu(cost, name, sold, use_planner) VALUES (5000, "백반 정식", true, true);
-INSERT INTO zanbanzero.menu(cost, name, sold, use_planner) VALUES (6000, "촌돼지 김치찌개", true, false);
-INSERT INTO zanbanzero.menu(cost, name, sold, use_planner) VALUES (8000, "가마치통닭", true, false);
-INSERT INTO zanbanzero.menu(cost, name, sold, use_planner) VALUES (6000, "부대찌개", true, false);
+INSERT INTO zanbanzero.menu_food(food) VALUES ('{"고기":300,"삼겹살":260}');
+INSERT INTO zanbanzero.menu_food(food) VALUES ('{"쌀":190,"고추장":20}');
+INSERT INTO zanbanzero.menu_food(food) VALUES ('{"고기":200,"삼겹살":100}');
+INSERT INTO zanbanzero.menu_food(food) VALUES ('{"대파":300,"삼겹살":170}');
+
+INSERT INTO zanbanzero.menu(cost, name, sold, use_planner, menu_food_id) VALUES (5000, "백반 정식", true, true, 1);
+INSERT INTO zanbanzero.menu(cost, name, sold, use_planner, menu_food_id) VALUES (6000, "촌돼지 김치찌개", true, false, 2);
+INSERT INTO zanbanzero.menu(cost, name, sold, use_planner, menu_food_id) VALUES (8000, "가마치통닭", true, false, 3);
+INSERT INTO zanbanzero.menu(cost, name, sold, use_planner, menu_food_id) VALUES (6000, "부대찌개", true, false, 1);
 
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (1, "매일 메뉴가 바뀝니다.", "배추:중국산");
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (2, "돼지고기 듬뿍 김치찌개", "돼지고기 알레르기");
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (3, "옛날방식 그대로 튀겼습니다.", "닭고기 알레르기, 닭:국산");
 INSERT INTO zanbanzero.menu_info(menu_id, details, info) VALUES (4, "부찌입니다.", "햄:리챔");
-
-INSERT INTO zanbanzero.menu_food(name, food) VALUES ("짜장면", '{"고기":300,"삼겹살":260}');
-INSERT INTO zanbanzero.menu_food(name, food) VALUES ("고추장밥", '{"쌀":190,"고추장":20}');
-INSERT INTO zanbanzero.menu_food(name, food) VALUES ("삼겹정식", '{"고기":200,"삼겹살":100}');
-INSERT INTO zanbanzero.menu_food(name, food) VALUES ("대파삼겹", '{"대파":300,"삼겹살":170}');
 
 INSERT INTO zanbanzero.planner(menu_id, date, menus) VALUES (1, '2023-03-02', '닭발 콩나무물무침 계란말이');
 INSERT INTO zanbanzero.planner(menu_id, date, menus) VALUES (1, '2023-03-03', '닭발 잭과콩나무');

@@ -16,10 +16,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,8 +25,11 @@ public class CreateCalculatePreTasklet implements Tasklet {
     private final DataSource dataSource;
     private static final Map<Long, String> menuIdToNameMap = new HashMap<>();
     private static final Map<String, Long> menuNameToIdMap = new HashMap<>();
+    private static final Map<String, Long> menuNameToFoodIdMap = new HashMap<>();
 
+    // calculate 데이터 id 확인
     private Long calculateCheck(Connection connection, String today, String day) throws SQLException {
+        // 만약 일요일이여서 월요일 calculate 데이터가 없다면 생성
         if (day.equals("monday")) {
             String query = "insert into calculate(date, today, sales) values(?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -39,6 +39,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
                 statement.executeUpdate();
             }
         }
+        // calculate id 조회
         String query = "select id from calculate where date = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, today);
@@ -50,18 +51,22 @@ public class CreateCalculatePreTasklet implements Tasklet {
         return null;
     }
 
+    // Map 초기화
     private void initMenu(Connection connection) throws SQLException {
-        String query = "select id, name from menu";
+        String query = "select id, menu_food_id, name from menu";
         try (ResultSet resultSet = connection.prepareStatement(query).executeQuery()) {
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
+                Long foodId = resultSet.getLong("menu_food_id");
                 String name = resultSet.getString("name");
                 menuIdToNameMap.put(id, name);
                 menuNameToIdMap.put(name, id);
+                if (foodId != null) menuNameToFoodIdMap.put(name, foodId);
             }
         }
     }
 
+    // 유저 정책으로 익일 사용자 수 계산
     private Map<String, Integer> getUserPolicy(Connection connection, String day) throws SQLException {
         Map<String, Integer> result = new HashMap<>();
         String query = "select default_menu, COUNT(*) as count from user_policy where " + day + " = 1 and default_menu group by default_menu";
@@ -73,24 +78,28 @@ public class CreateCalculatePreTasklet implements Tasklet {
                 result.put(defaultMenu, count);
             }
         }
+        // result는 defaultMenu 이름, count
         return result;
     }
 
+    // 정책 이외에 수동 설정된 예약 내역 조회
     private void checkOrders(Connection connection, String date, Map<String, Integer> result) throws SQLException {
         String query = "select id, menu, recognize from orders where order_date = ?";
 
         List<Long> updateRecognizeIds = new ArrayList<>();
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, date);
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                Long id = resultSet.getLong("id");
-                String menu = resultSet.getString("menu");
-                int type = resultSet.getInt("recognize");
-                if (!result.containsKey(menu)) updateRecognizeIds.add(id);
-                else {
-                    if (type == 1) result.put(menu, result.get(menu) + 1);
-                    else result.put(menu, result.get(menu) - 1);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Long id = resultSet.getLong("id");
+                    String menu = resultSet.getString("menu");
+                    int type = resultSet.getInt("recognize");
+                    // 만약 수동 설정한 이후 해당 메뉴가 삭제되었을 경우 업데이트
+                    if (!result.containsKey(menu)) updateRecognizeIds.add(id);
+                    else {
+                        if (type == 1) result.put(menu, result.get(menu) + 1);
+                        else result.put(menu, result.get(menu) - 1);
+                    }
                 }
             }
         }
@@ -107,15 +116,15 @@ public class CreateCalculatePreTasklet implements Tasklet {
         }
     }
 
-    private Map<String, Integer> getPredictFood(Connection connection, Map<String, Integer> map) throws SQLException, JsonProcessingException {
+    private Map<String, Integer> getPredictFoodV1(Connection connection, Map<String, Integer> map) throws SQLException, JsonProcessingException {
         Map<String, Integer> result = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        String query = "select menu_id, food from menu_food";
+        String query = "select id, food from menu_food";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
-                Long id = resultSet.getLong("menu_id");
+                Long id = resultSet.getLong("id");
                 String menuName = menuIdToNameMap.get(id);
                 if (map.get(menuName) == null || map.get(menuName) == 0) continue;
 
@@ -130,6 +139,36 @@ public class CreateCalculatePreTasklet implements Tasklet {
             }
         }
 
+        return result;
+    }
+
+    // 식재료 계산
+    // map = result
+    private Map<String, Integer> getPredictFoodV2(Connection connection, Map<String, Integer> map) throws SQLException, JsonProcessingException {
+        Map<String, Integer> result = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        for (Map.Entry<String, Integer> data : map.entrySet()) {
+            String menuName = data.getKey();
+            Long foodId = menuNameToFoodIdMap.get(menuName);
+            String query = "select food from menu_food where id = ?";
+
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setLong(1, foodId);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        String menu = resultSet.getString("food");
+                        Map<String, Integer> foods = objectMapper.readValue(menu, Map.class);
+                        for (Map.Entry<String, Integer> food : foods.entrySet()) {
+                            String key = food.getKey();
+                            Integer value = food.getValue();
+                            if (result.containsKey(key)) result.put(key, result.get(key) + value * map.get(menuName));
+                            else result.put(key, value * map.get(menuName));
+                        }
+                    }
+                }
+            }
+        }
         return result;
     }
 
@@ -163,7 +202,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         log.info("execute - checkOrders END: " + result);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Integer> predict = getPredictFood(connection, result);
+        Map<String, Integer> predict = getPredictFoodV2(connection, result);
         log.info("execute - getPredictFood END: " + predict);
         savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict), objectMapper.writeValueAsString(result));
 
@@ -175,5 +214,6 @@ public class CreateCalculatePreTasklet implements Tasklet {
     private void clear() {
         menuNameToIdMap.clear();
         menuIdToNameMap.clear();
+        menuNameToFoodIdMap.clear();
     }
 }

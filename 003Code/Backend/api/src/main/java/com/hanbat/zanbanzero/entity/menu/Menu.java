@@ -27,6 +27,7 @@ public class Menu {
     @ManyToOne(fetch = FetchType.LAZY)
     private MenuFood menuFood;
 
+    @org.hibernate.annotations.Index(name = "menu_name_index")
     private String name;
     private int cost;
     private String image;

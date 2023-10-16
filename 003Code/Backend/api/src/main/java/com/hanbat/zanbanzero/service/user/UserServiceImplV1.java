@@ -84,9 +84,11 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException {
+    public Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException, WrongRequestDetails {
         UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        userMypage.updatePoint(-1 * dto.getValue());
+        int data = -1 * dto.getValue();
+        if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("point : " + userMypage.getPoint());
+        userMypage.updatePoint(data);
 
         return userMypage.getPoint();
     }

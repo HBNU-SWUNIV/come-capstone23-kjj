@@ -104,7 +104,7 @@ public class MenuManagerApiController {
      * @return MenuFoodDto
      * @throws CantFindByIdException - 메뉴가 없을 때 발생
      */
-    @Operation(summary="관리자 - 식재료 정보 수정", description = "foodId가 0이면 식재료 정보 삭제")
+    @Operation(summary="관리자 - 메뉴에 식재료 정보 등록", description = "foodId가 0이면 식재료 정보 삭제")
     @PatchMapping("menu/{menuId}/food/{foodId}")
     public ResponseEntity<String> setFood(@PathVariable Long menuId, @PathVariable Long foodId) throws CantFindByIdException {
         menuService.setFood(menuId, foodId);

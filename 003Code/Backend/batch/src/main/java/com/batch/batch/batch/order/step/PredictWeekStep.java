@@ -1,5 +1,6 @@
 package com.batch.batch.batch.order.step;
 
+import com.batch.batch.batch.order.task.CreatePredictUserWeekTasklet;
 import com.batch.batch.batch.order.task.CreatePredictWeekTasklet;
 import com.batch.batch.tools.ConnectionHandler;
 import org.springframework.batch.core.Step;
@@ -28,6 +29,15 @@ public class PredictWeekStep {
     public Step createPredictWeekData(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
         Tasklet tasklet = new CreatePredictWeekTasklet(dataDataSource, connectionHandler);
         return new StepBuilder("createPredictWeekData", jobRepository)
+                .tasklet(tasklet, transactionManager)
+                .allowStartIfComplete(true)
+                .build();
+    }
+
+    @Bean
+    public Step createPredictUserWeekData(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
+        Tasklet tasklet = new CreatePredictUserWeekTasklet(dataDataSource, connectionHandler);
+        return new StepBuilder("createPredictUserWeekData", jobRepository)
                 .tasklet(tasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();

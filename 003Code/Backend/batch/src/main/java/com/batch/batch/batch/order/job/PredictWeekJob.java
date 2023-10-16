@@ -17,10 +17,11 @@ public class PredictWeekJob {
     private final JobRepository jobRepository;
 
     @Bean
-    public Job createPredictWeekJob(@Qualifier("createPredictWeekData") Step step)  {
+    public Job createPredictWeekJob(@Qualifier("createPredictWeekData") Step step, @Qualifier("createPredictUserWeekData") Step step2)  {
         return new JobBuilder("predictWeekJob")
                 .repository(jobRepository)
                 .start(step)
+                .next(step2)
                 .build();
     }
 }
