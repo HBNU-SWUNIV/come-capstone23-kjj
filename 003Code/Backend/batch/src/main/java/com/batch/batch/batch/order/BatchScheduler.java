@@ -17,6 +17,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Component
 @EnableScheduling
@@ -101,8 +104,8 @@ public class BatchScheduler {
         if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("predictWeekJob");
     }
 
-    @Scheduled(cron = "10 27 11 * * ?")
+    @Scheduled(cron = "0 55 15 * * ?")
     public void t() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, SQLException {
-//        runOrderJob();
+        predictWeekJob();
     }
 }

@@ -200,4 +200,9 @@ public class StoreServiceImplV1 implements StoreService {
     public CalculatePreWeekDto getNextWeeksUser() {
         return CalculatePreWeekDto.of(calculatePreWeekRepository.findFirstByOrderByIdDesc());
     }
+
+    @Override
+    public CalculatePreWeekDto getNextWeeksFood() {
+        return null;
+    }
 }

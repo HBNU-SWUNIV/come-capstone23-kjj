@@ -92,6 +92,12 @@ public class StoreManagerApiController {
         return ResponseEntity.ok(storeService.getNextWeeksUser());
     }
 
+    @Operation(summary="다음 주 매출액 기반, 예약 기반 이용자 수 조회", description="월~금 5개 데이터, 일요일 10시 30분 정산")
+    @GetMapping("state/next-week/food")
+    public ResponseEntity<CalculatePreWeekDto> getNextWeeksFood() {
+        return ResponseEntity.ok(storeService.getNextWeeksFood());
+    }
+
     /**
      * 총 누적 이용자 수 조회
      *

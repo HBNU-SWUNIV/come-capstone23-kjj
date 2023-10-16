@@ -79,7 +79,7 @@ public class OrderServiceImplV1 implements OrderService{
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
-            order.setMenu(menuRepository.findById(menuId).orElseThrow(CantFindByIdException::new));
+            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId)));
             order.setRecognizeToUse();
         }
         return OrderDto.of(order);

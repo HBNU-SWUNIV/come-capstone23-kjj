@@ -1,4 +1,4 @@
-package com.batch.batch.entity;
+package com.batch.batch.object;
 
 import lombok.Data;
 
