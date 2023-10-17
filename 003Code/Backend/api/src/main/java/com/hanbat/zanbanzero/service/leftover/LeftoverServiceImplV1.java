@@ -69,15 +69,14 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     @Transactional
     public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) {
         Pageable pageable = PageRequest.of(page, DATA_SIZE);
-        List<Long> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
+        List<Calculate> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
                 .getContent().stream()
-                .map(Calculate::getId)
                 .toList();
 
         List<LeftoverAndPreDto> result = new ArrayList<>();
-        for (Long id : calculates) {
-            Leftover leftover = leftoverRepository.findById(id).orElse(new Leftover(null, null, 0));
-            LeftoverPre leftoverPre = leftoverPreRepository.findById(id).orElse(new LeftoverPre(null, null, 0));
+        for (Calculate c : calculates) {
+            Leftover leftover = leftoverRepository.findById(c.getId()).orElse(new Leftover(null, null, 0));
+            LeftoverPre leftoverPre = leftoverPreRepository.findById(c.getId()).orElse(new LeftoverPre(null, c, 0));
 
             result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
         }

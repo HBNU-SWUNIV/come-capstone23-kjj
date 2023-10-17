@@ -61,7 +61,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
                 String name = resultSet.getString("name");
                 menuIdToNameMap.put(id, name);
                 menuNameToIdMap.put(name, id);
-                if (foodId != null) menuNameToFoodIdMap.put(name, foodId);
+                menuNameToFoodIdMap.put(name, foodId);
             }
         }
     }
@@ -151,6 +151,7 @@ public class CreateCalculatePreTasklet implements Tasklet {
         for (Map.Entry<String, Integer> data : map.entrySet()) {
             String menuName = data.getKey();
             Long foodId = menuNameToFoodIdMap.get(menuName);
+            if (foodId == null) continue;
             String query = "select food from menu_food where id = ?";
 
             try (PreparedStatement statement = connection.prepareStatement(query)) {

@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.core.Response;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -99,7 +98,7 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
     public UserInfoDto login(User u) {
         User user = userRepository.findByUsername(u.getUsername());
         UserInfoDto userInfoDto = UserInfoDto.of(user);
-        user.setLoginDate(LocalDate.now());
+        user.updateLoginDate();
         return userInfoDto;
     }
 

@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.*;
 import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
@@ -78,7 +79,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Transactional
     public void setFood(Long menuId, Long foodId) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
-        if (foodId == 0) menu.setMenuFood(null);
+        if (foodId == 0) menu.clearMenuFood();
         else menu.setMenuFood(menuFoodRepository.getReferenceById(foodId));
     }
 
@@ -130,7 +131,7 @@ public class MenuServiceImplV1 implements MenuService{
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         userPolicyRepository.saveAll(userPolicyRepository.findAllByDefaultMenu(id).stream()
-                .peek(policy -> policy.setDefaultMenu(null))
+                .peek(UserPolicy::clearDefaultMenu)
                 .toList());
         menuRepository.delete(menu);
 
@@ -147,8 +148,8 @@ public class MenuServiceImplV1 implements MenuService{
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         switch (type) {
-            case "n" -> menu.setSold(false);
-            case "y" -> menu.setSold(true);
+            case "n" -> menu.setSoldFalse();
+            case "y" -> menu.setSoldTrue();
             default -> throw new WrongParameter(type);
         }
         return MenuDto.of(menu);
@@ -160,7 +161,7 @@ public class MenuServiceImplV1 implements MenuService{
         if (menuRepository.existsByUsePlannerTrue()) throw new WrongParameter("이미 식단표를 사용하고 있습니다. id : " + id);
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        menu.setUsePlanner(true);
+        menu.usePlanner();
         return MenuDto.of(menu);
     }
 
@@ -168,10 +169,10 @@ public class MenuServiceImplV1 implements MenuService{
     @Transactional
     public MenuDto changePlanner(Long id) throws CantFindByIdException {
         Menu old = menuRepository.findByUsePlanner(true);
-        if (old != null) old.setUsePlanner(false);
+        if (old != null) old.notUsePlanner();
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        menu.setUsePlanner(true);
+        menu.usePlanner();
         return MenuDto.of(menu);
     }
 
