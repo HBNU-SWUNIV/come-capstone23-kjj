@@ -52,8 +52,8 @@ public class Order {
 
     public void setRecognizeToUse() { recognize = true; }
 
-    public void setExpired(boolean expired) {
-        this.expired = expired;
+    public void setExpiredTrue() {
+        expired = true;
     }
 
     public static Order createNewOrder(User user, String menu, int cost, LocalDate date, boolean type) {

@@ -27,7 +27,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 @Service
@@ -133,7 +132,7 @@ public class UserServiceImplV1 implements UserService {
     public UserInfoDto getInfoForUsername(String username) {
         User user = userRepository.findByUsername(username);
         UserInfoDto userInfoDto = UserInfoDto.of(user);
-        user.setLoginDate(LocalDate.now());
+        user.updateLoginDate();
         return userInfoDto;
     }
 

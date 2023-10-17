@@ -163,7 +163,7 @@ public class OrderServiceImplV1 implements OrderService{
     public void checkOrder(Long id) throws CantFindByIdException {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
         if (!order.isExpired()) {
-            order.setExpired(true);
+            order.setExpiredTrue();
 
             Long userId = order.getUser().getId();
             int point = 50;

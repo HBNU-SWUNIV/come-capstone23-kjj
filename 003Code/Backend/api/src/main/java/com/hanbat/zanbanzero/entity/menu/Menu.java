@@ -61,13 +61,22 @@ public class Menu {
     }
 
     public void setImage(String path) { image = path; }
-    public void setSold(boolean type) {
-        sold = type;
+    public void setSoldTrue() {
+        sold = true;
+    }
+    public void setSoldFalse() {
+        sold = false;
     }
     public void setMenuFood(MenuFood food) {
         menuFood = food;
     }
-    public void setUsePlanner(Boolean usePlanner) {
-        this.usePlanner = usePlanner;
+    public void clearMenuFood() {
+        menuFood = null;
+    }
+    public void usePlanner() {
+        usePlanner = true;
+    }
+    public void notUsePlanner() {
+        usePlanner = false;
     }
 }

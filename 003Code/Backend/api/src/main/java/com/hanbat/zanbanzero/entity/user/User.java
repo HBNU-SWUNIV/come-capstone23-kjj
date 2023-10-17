@@ -75,7 +75,7 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
-    public void setLoginDate(LocalDate date) {
-        this.loginDate = date.toString();
+    public void updateLoginDate() {
+        loginDate = LocalDate.now().toString();
     }
 }

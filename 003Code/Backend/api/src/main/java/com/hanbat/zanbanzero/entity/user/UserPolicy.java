@@ -52,4 +52,7 @@ public class UserPolicy {
     public void setDefaultMenu(Long id) {
         defaultMenu = id;
     }
+    public void clearDefaultMenu() {
+        defaultMenu = null;
+    }
 }
