@@ -79,9 +79,9 @@ public class UserApiController {
     @Operation(summary="일반 유저 마이페이지 조회", description="유저 상세정보 조회")
     @GetMapping("page")
     public ResponseEntity<UserMypageDto> getMyPage(HttpServletRequest request) throws CantFindByIdException {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
-        return ResponseEntity.ok(userService.getMyPage(username));
+        return ResponseEntity.ok(userService.getMyPage(id));
     }
 
     @Operation(summary="포인트 사용")
@@ -133,9 +133,9 @@ public class UserApiController {
     @Operation(summary="일반 유저 정책 조회", description="유저 요일정책 조회")
     @GetMapping("policy/date")
     public ResponseEntity<UserPolicyDto> getUserPolicy(HttpServletRequest request) throws CantFindByIdException {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
-        return ResponseEntity.ok(userService.getUserPolicy(username));
+        return ResponseEntity.ok(userService.getUserPolicy(id));
     }
 
     @GetMapping("login/test")

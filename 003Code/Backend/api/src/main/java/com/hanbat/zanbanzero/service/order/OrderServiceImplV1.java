@@ -72,9 +72,8 @@ public class OrderServiceImplV1 implements OrderService{
 
     @Override
     @Transactional
-    public OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
+    public OrderDto addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
         LocalDate date = DateTools.makeLocalDate(year, month, day);
-        Long id = userRepository.findByUsername(username).getId();
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
@@ -104,8 +103,7 @@ public class OrderServiceImplV1 implements OrderService{
 
     @Override
     @Transactional
-    public List<OrderDto> getOrdersPage(String username, int page) {
-        Long id = userRepository.findByUsername(username).getId();
+    public List<OrderDto> getOrdersPage(Long id, int page) {
         Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, PAGE_SIZE));
 
         return orderPage.getContent()
@@ -116,8 +114,7 @@ public class OrderServiceImplV1 implements OrderService{
 
     @Override
     @Transactional
-    public LastOrderDto getLastOrder(String username){
-        Long id = userRepository.findByUsername(username).getId();
+    public LastOrderDto getLastOrder(Long id){
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
@@ -150,9 +147,7 @@ public class OrderServiceImplV1 implements OrderService{
 
     @Override
     @Transactional
-    public OrderDto getOrderDay(String username, int year, int month, int day) {
-        Long id = userRepository.findByUsername(username).getId();
-
+    public OrderDto getOrderDay(Long id, int year, int month, int day) {
         Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);

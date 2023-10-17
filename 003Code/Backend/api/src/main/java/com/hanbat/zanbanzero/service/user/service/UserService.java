@@ -19,7 +19,7 @@ public interface UserService extends UserDetailsService {
 
     UserInfoDto getInfo(String username) throws CantFindByIdException;
 
-    UserMypageDto getMyPage(String username) throws CantFindByIdException;
+    UserMypageDto getMyPage(Long id) throws CantFindByIdException;
 
     Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException, WrongRequestDetails;
 
@@ -27,7 +27,7 @@ public interface UserService extends UserDetailsService {
 
     UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws CantFindByIdException, WrongParameter;
 
-    UserPolicyDto getUserPolicy(String username) throws CantFindByIdException;
+    UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException;
 
     UserInfoDto getInfoForUsername(String username);
 

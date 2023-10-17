@@ -16,15 +16,15 @@ public interface OrderService {
 
     OrderDto cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails;
 
-    OrderDto addOrder(String username, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails;
+    OrderDto addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails;
 
     int countPages(Long id);
 
     List<OrderDto> getOrders(Long id);
 
-    List<OrderDto> getOrdersPage(String username, int page);
+    List<OrderDto> getOrdersPage(Long id, int page);
 
-    LastOrderDto getLastOrder(String username);
+    LastOrderDto getLastOrder(Long id);
 
     BufferedImage getOrderQr(Long id) throws WriterException;
 
@@ -32,7 +32,7 @@ public interface OrderService {
 
     List<OrderDto> getOrderMonth(Long id, int year, int month);
 
-    OrderDto getOrderDay(String username, int year, int month, int day);
+    OrderDto getOrderDay(Long id, int year, int month, int day);
 
     void checkOrder(Long id) throws CantFindByIdException;
 

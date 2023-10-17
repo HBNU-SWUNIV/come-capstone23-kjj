@@ -53,8 +53,8 @@ public class OrderUserApiController {
     @Operation(summary="수동으로 이용함 설정")
     @PostMapping("order/add/{menuId}/{year}/{month}/{day}")
     public ResponseEntity<OrderDto> addOrder(HttpServletRequest request, @PathVariable Long menuId, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws CantFindByIdException, WrongRequestDetails {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.addOrder(username, menuId, year, month, day));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.addOrder(id, menuId, year, month, day));
     }
 
     /**
@@ -86,8 +86,8 @@ public class OrderUserApiController {
     @GetMapping("order/{year}/{month}/{day}")
     public ResponseEntity<OrderDto> getOrderDay(HttpServletRequest request, @PathVariable int year, @PathVariable int month, @PathVariable int day) throws WrongRequestDetails {
         if (month <= 0 || month > 12) throw new WrongRequestDetails("month(1 ~ 12) : " + month);
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.getOrderDay(username, year, month, day));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.getOrderDay(id, year, month, day));
     }
 
     /**
@@ -112,8 +112,8 @@ public class OrderUserApiController {
     @Operation(summary="유저의 n번 페이지 이용내역 조회", description="페이지 사이즈 = 10")
     @GetMapping("order/show/{page}")
     public ResponseEntity<List<OrderDto>> getOrders(HttpServletRequest request, @PathVariable int page) {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.getOrdersPage(username, page));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.getOrdersPage(id, page));
     }
 
     /**
@@ -124,8 +124,8 @@ public class OrderUserApiController {
     @Operation(summary="유저의 가장 최근 이용내역 조회")
     @GetMapping("order/last")
     public ResponseEntity<LastOrderDto> getLastOrder(HttpServletRequest request) {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(orderService.getLastOrder(username));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.getLastOrder(id));
     }
 
     @Operation(summary="예약 내역 정보 조회", description = "본인 예약이 아니면 예외 발생")

@@ -71,8 +71,7 @@ public class UserServiceImplV1 implements UserService {
     }
 
     @Override
-    public UserMypageDto getMyPage(String username) throws CantFindByIdException {
-        Long id = userRepository.findByUsername(username).getId();
+    public UserMypageDto getMyPage(Long id) throws CantFindByIdException {
         UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
 
         return UserMypageDto.createUserMyPageDto(userMypage);
@@ -116,8 +115,7 @@ public class UserServiceImplV1 implements UserService {
     }
 
     @Override
-    public UserPolicyDto getUserPolicy(String username) throws CantFindByIdException {
-        Long id = userRepository.findByUsername(username).getId();
+    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         return UserPolicyDto.of(policy);
     }
