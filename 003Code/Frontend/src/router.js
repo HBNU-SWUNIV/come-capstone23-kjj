@@ -7,6 +7,7 @@ import TodayMenu from './domains/pages/TodayMenu';
 import Dashboard from './domains/pages/Dashboard';
 import Menus from './domains/pages/Menus';
 import Dayoff from './domains/pages/Dayoff';
+import ErrorBoundary from './router/ErrorBoundary';
 
 const router = createBrowserRouter([
   {
@@ -24,7 +25,11 @@ const router = createBrowserRouter([
       },
       {
         path: '/',
-        element: <App />,
+        element: (
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        ),
         children: [
           {
             path: '/',
