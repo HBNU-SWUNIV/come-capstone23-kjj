@@ -1,12 +1,12 @@
 import React from 'react';
 import { keyframes, styled } from 'styled-components';
 
-const LoadingDots = ({ isGray }) => {
+const LoadingDots = (props) => {
   return (
     <DotsWrapper>
-      <Dots $isGray={isGray} />
-      <Dots $isGray={isGray} />
-      <Dots $isGray={isGray} />
+      {[1, 2, 3].map((item, idx) => (
+        <Dots key={idx} $isGray={props.isGray} />
+      ))}
     </DotsWrapper>
   );
 };

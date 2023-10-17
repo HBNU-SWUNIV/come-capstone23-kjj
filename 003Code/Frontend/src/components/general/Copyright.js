@@ -1,7 +1,7 @@
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import { styled as cStyled } from 'styled-components';
-import Developers from './Developers';
+import Developers from '../../domains/developerInfos/Developers';
 
 function Copyright(props) {
   const [open, setOpen] = useState(false);
