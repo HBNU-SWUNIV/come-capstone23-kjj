@@ -106,6 +106,6 @@ public class BatchScheduler {
 
     @Scheduled(cron = "0 55 15 * * ?")
     public void t() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, SQLException {
-        predictWeekJob();
+//        predictWeekJob();
     }
 }
