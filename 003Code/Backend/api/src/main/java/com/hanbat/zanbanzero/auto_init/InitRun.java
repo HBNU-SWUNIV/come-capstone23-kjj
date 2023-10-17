@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 //@RestController
 @RequiredArgsConstructor
-public class main {
+public class InitRun {
 
     private final RestTemplate restTemplate;
     private final MenuFoodRepository menuFoodRepository;
@@ -128,7 +128,6 @@ public class main {
                                     extractedNumber = number * 10;
                                     break;
                                 default:
-//                                    System.out.println("Unsupported unit: " + foodName + unit);
                                     break;
                             }
                         }

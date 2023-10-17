@@ -5,10 +5,7 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
-import com.hanbat.zanbanzero.dto.user.user.UsePointDto;
-import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
-import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
-import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
@@ -100,8 +97,7 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public UserPolicyDto setUserDatePolicy(UserPolicyDto dto, String username) throws CantFindByIdException {
-        Long id = userRepository.findByUsername(username).getId();
+    public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         policy.setPolicy(dto);
 
@@ -110,10 +106,9 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public UserPolicyDto setUserMenuPolicy(String username, Long menuId) throws CantFindByIdException, WrongParameter {
+    public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws CantFindByIdException, WrongParameter {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
 
-        Long id = userRepository.findByUsername(username).getId();
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
         policy.setDefaultMenu(menuId);
 

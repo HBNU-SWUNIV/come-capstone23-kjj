@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UsePointDto;
+import com.hanbat.zanbanzero.dto.user.user.UserDatePolicyDto;
 import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -94,15 +95,16 @@ public class UserApiController {
     /**
      * 일반 유저 요일 정책 설정
      *
-     * @param dto - monday ~ friday bool값 / defaultMenu menuID
+     * @param dto - monday ~ friday bool값
      * @return UserPolicyDto
      * @throws CantFindByIdException - userPolicy가 없을 경우 발생
      */
     @Operation(summary="일반 유저 요일정책 설정", description="유저 요일정책 설정")
     @PatchMapping("policy/date")
-    public ResponseEntity<UserPolicyDto> setUserDatePolicy(HttpServletRequest request, @RequestBody UserPolicyDto dto) throws CantFindByIdException {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
-        return ResponseEntity.ok(userService.setUserDatePolicy(dto, username));
+    public ResponseEntity<UserPolicyDto> setUserDatePolicy(HttpServletRequest request, @RequestBody UserDatePolicyDto dto) throws CantFindByIdException {
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+
+        return ResponseEntity.ok(userService.setUserDatePolicy(dto, id));
     }
 
     /**
@@ -116,9 +118,9 @@ public class UserApiController {
     @Operation(summary="일반 유저 메뉴정책 설정", description="유저 메뉴정책 설정")
     @PatchMapping("policy/menu/{menuId}")
     public ResponseEntity<UserPolicyDto> setUserMenuPolicy(HttpServletRequest request, @PathVariable Long menuId) throws CantFindByIdException, WrongParameter {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
-        return ResponseEntity.ok(userService.setUserMenuPolicy(username, menuId));
+        return ResponseEntity.ok(userService.setUserMenuPolicy(id, menuId));
     }
 
     /**

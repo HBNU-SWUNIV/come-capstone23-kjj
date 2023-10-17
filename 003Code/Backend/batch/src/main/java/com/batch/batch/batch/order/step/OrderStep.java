@@ -3,7 +3,7 @@ package com.batch.batch.batch.order.step;
 import com.batch.batch.batch.order.task.CountOrdersByDateTasklet;
 import com.batch.batch.object.Order;
 import com.batch.batch.object.UserPolicy;
-import com.batch.batch.tools.ConnectionHandler;
+import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -21,13 +21,13 @@ import javax.sql.DataSource;
 @Component
 public class OrderStep {
 
-    private final ConnectionHandler connectionHandler;
+    private final ConnectionHandlerV1 connectionHandler;
     private final DataSource dataDataSource;
     private final JdbcCursorItemReader<UserPolicy> itemReader;
     private final ItemProcessor<UserPolicy, Order> itemProcessor;
     private final ItemWriter<Order> itemWriter;
 
-    public OrderStep(ConnectionHandler connectionHandler, @Qualifier("dataDataSource") DataSource dataDataSource, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
+    public OrderStep(ConnectionHandlerV1 connectionHandler, @Qualifier("dataDataSource") DataSource dataDataSource, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
         this.connectionHandler = connectionHandler;
         this.dataDataSource = dataDataSource;
         this.itemReader = itemReader;

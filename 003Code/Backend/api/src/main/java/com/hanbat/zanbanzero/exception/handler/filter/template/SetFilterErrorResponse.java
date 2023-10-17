@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.exception.handler.filter.custom;
+package com.hanbat.zanbanzero.exception.handler.filter.template;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.exception.exceptions.SetFilterErrorResponseException;

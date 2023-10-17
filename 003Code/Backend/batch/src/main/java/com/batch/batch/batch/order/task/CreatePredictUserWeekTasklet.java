@@ -1,8 +1,7 @@
 package com.batch.batch.batch.order.task;
 
 import com.batch.batch.object.FoodPredict;
-import com.batch.batch.tools.ConnectionHandler;
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -16,15 +15,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 public class CreatePredictUserWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final ConnectionHandler connectionHandler;
+    private final ConnectionHandlerV1 connectionHandler;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {

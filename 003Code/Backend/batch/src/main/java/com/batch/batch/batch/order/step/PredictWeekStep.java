@@ -2,7 +2,7 @@ package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.task.CreatePredictUserWeekTasklet;
 import com.batch.batch.batch.order.task.CreatePredictWeekTasklet;
-import com.batch.batch.tools.ConnectionHandler;
+import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -18,9 +18,9 @@ import javax.sql.DataSource;
 public class PredictWeekStep {
 
     private final DataSource dataDataSource;
-    private final ConnectionHandler connectionHandler;
+    private final ConnectionHandlerV1 connectionHandler;
 
-    public PredictWeekStep(@Qualifier("dataDataSource") DataSource dataDataSource, ConnectionHandler connectionHandler) {
+    public PredictWeekStep(@Qualifier("dataDataSource") DataSource dataDataSource, ConnectionHandlerV1 connectionHandler) {
         this.dataDataSource = dataDataSource;
         this.connectionHandler = connectionHandler;
     }

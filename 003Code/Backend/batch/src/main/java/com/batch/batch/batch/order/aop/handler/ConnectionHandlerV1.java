@@ -1,5 +1,6 @@
-package com.batch.batch.tools;
+package com.batch.batch.batch.order.aop.handler;
 
+import com.batch.batch.tools.SlackTools;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -7,8 +8,10 @@ import java.sql.Connection;
 
 @Component
 @RequiredArgsConstructor
-public class ConnectionHandler {
+public class ConnectionHandlerV1 implements ConnectionHandler {
     private final SlackTools slackTools;
+
+    @Override
     public void execute(Connection connection, ExceptionRunnable runnable) throws Exception {
         try {
             connection.setAutoCommit(false);

@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.entity.user;
 
-import com.hanbat.zanbanzero.dto.user.user.UserPolicyDto;
+import com.hanbat.zanbanzero.dto.user.user.UserDatePolicyDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,13 +40,12 @@ public class UserPolicy {
         );
     }
 
-    public void setPolicy(UserPolicyDto dto) {
+    public void setPolicy(UserDatePolicyDto dto) {
         monday = dto.isMonday();
         tuesday = dto.isTuesday();
         wednesday = dto.isWednesday();
         thursday = dto.isThursday();
         friday = dto.isFriday();
-        defaultMenu = dto.getDefaultMenu();
     }
 
     public void setDefaultMenu(Long id) {

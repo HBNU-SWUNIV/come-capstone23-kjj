@@ -1,6 +1,6 @@
 package com.batch.batch.batch.order.task;
 
-import com.batch.batch.tools.ConnectionHandler;
+import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CountOrdersByDateTasklet implements Tasklet {
 
-    private final ConnectionHandler connectionHandler;
+    private final ConnectionHandlerV1 connectionHandler;
     private final DataSource dataSource;
     private final Map<String, Integer> resultMap = new HashMap<>();
 
