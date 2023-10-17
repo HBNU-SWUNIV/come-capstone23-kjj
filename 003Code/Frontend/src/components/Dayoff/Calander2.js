@@ -15,9 +15,9 @@ import shortid from 'shortid';
 import axios from 'axios';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Circle from '../general/Circle';
-import DayoffDialog from './\bDayoffDialog';
 import { useMutation, useQuery } from 'react-query';
 import { getHoliday, getOffDay } from '../../api/apis';
+import DayoffDialog from './DayoffDialog';
 
 function Calander2() {
   const config = ConfigWithToken();

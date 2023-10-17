@@ -9,17 +9,10 @@ import { c_color } from './chartTitleColors';
 
 export default function MenuStatisticsChart() {
   const config = ConfigWithToken();
-  const [reservationInfo, setReservationInfo] = useState([]);
   const [predictMenus, setPredictMenus] = useState([]);
   const predictMenusArray = Object.entries(predictMenus);
 
   useEffect(() => {
-    axios
-      .get(`/api/user/state/menu`, config)
-      .then((res) => setReservationInfo(res.data))
-      .catch((err) => {
-        console.log(err);
-      });
     axios
       .get(`${ManagerBaseApi}/state/predict/menu`, config)
       .then((res) => setPredictMenus(res.data))
@@ -31,64 +24,21 @@ export default function MenuStatisticsChart() {
       <Wrapper>
         <ChartWrapper>
           <Title>
-            <span style={c_color}>요즘 가장 🔥한 메뉴는?</span>
+            <span style={c_color}>익일 예약 메뉴</span>
           </Title>
           <ApexCharts
-            type="pie"
-            series={reservationInfo.map((menu) => menu.count)}
-            options={{
-              chart: {
-                type: 'pie',
-                toolbar: { show: false },
-              },
-              labels: reservationInfo.map((menu) => menu.name),
-            }}
             width={400}
             height={400}
-            style={{ margin: '3vh' }}
-          />
-        </ChartWrapper>
-
-        {/* <ChartWrapper>
-          <Title>
-            <span style={c_color}>익일 예약 메뉴들 🍽️</span>
-          </Title>
-          <ApexCharts
-            style={{ marginTop: '-3vh' }}
-            width={400}
-            height={300}
-            type="bar"
-            series={[
-              {
-                name: '',
-                data: predictMenusArray.map((items) => items[1]),
-              },
-            ]}
+            type="pie"
+            series={predictMenusArray.map((items) => items[1])}
             options={{
               chart: {
-                toolbar: { show: false },
+                toolbar: { show: false, type: 'pie' },
               },
-              plotOptions: {
-                bar: {
-                  borderRadius: 4,
-                  horizontal: true,
-                },
-              },
-              stroke: {
-                curve: 'smooth',
-                width: 1,
-              },
-              xaxis: {
-                type: 'category',
-                categories: predictMenusArray.map((items) => items[0]),
-              },
-              fill: {
-                colors: 'green',
-                opacity: 1,
-              },
+              labels: predictMenusArray.map((items) => items[0]),
             }}
           />
-        </ChartWrapper> */}
+        </ChartWrapper>
       </Wrapper>
     </>
   );

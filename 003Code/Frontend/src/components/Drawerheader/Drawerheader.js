@@ -27,7 +27,7 @@ import { MdTouchApp } from 'react-icons/md';
 import { styled as Cstyled, keyframes } from 'styled-components';
 import UpdateInfoModal from './UpdateInfoModal';
 import UpdateImgModal from './UpdateImgModal';
-import UpdateNameModal from './UpdateNameModal';
+import UpdateNameModal from './UpdateNameModal';
 import UserMenuModal from './UserMenuModal';
 
 function Drawerheader(props) {
