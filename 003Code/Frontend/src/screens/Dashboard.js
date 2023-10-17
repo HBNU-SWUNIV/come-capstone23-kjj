@@ -10,6 +10,7 @@ import StatisticsChart from '../components/Main/StatisticsChart';
 import Drawerheader from '../components/Drawerheader/Drawerheader';
 import FoodSavingStatusChart from '../components/Main/FoodSavingStatusChart';
 import ReservationChart from '../components/Main/ReservationChart';
+import MenuStatisticsChart from '../components/Main/MenuStatisticsChart';
 
 const GridItem = ({ xs, md, lg, chart }) => {
   return (
@@ -37,8 +38,8 @@ const gridItems = [
   {
     id: 2,
     xs: 12,
-    md: 6,
-    lg: 6,
+    md: 12,
+    lg: 12,
     chart: <NeedFoodChart />,
   },
   {
@@ -48,11 +49,13 @@ const gridItems = [
     lg: 6,
     chart: <ReservationChart />,
   },
-  // {
-  //   id: 4,
-  //   xs: 12,
-  //   chart: <MenuStatisticsChart />,
-  // },
+  {
+    id: 4,
+    xs: 12,
+    md: 6,
+    lg: 6,
+    chart: <MenuStatisticsChart />,
+  },
 ];
 
 export default function Dashboard() {
