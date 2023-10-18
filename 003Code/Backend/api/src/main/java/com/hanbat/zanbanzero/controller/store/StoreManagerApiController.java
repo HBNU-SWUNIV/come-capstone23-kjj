@@ -86,7 +86,7 @@ public class StoreManagerApiController {
         return ResponseEntity.ok(storeService.getLastWeeksUser());
     }
 
-    @Operation(summary="다음 주 이용자 수 조회", description="월~금 5개 데이터, 일요일 10시 30분 정산")
+    @Operation(summary="다음 주 이용자 수 조회", description="월~금 5개 데이터, 매일 오전 9시마다 계산")
     @GetMapping("state/next-week/user")
     public ResponseEntity<CalculatePreWeekDto> getNextWeeksUser() {
         return ResponseEntity.ok(storeService.getNextWeeksUser());

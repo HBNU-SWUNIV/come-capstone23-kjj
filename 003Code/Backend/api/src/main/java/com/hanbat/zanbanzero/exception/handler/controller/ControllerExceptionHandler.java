@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.exception.handler.controller;
 
 import com.hanbat.zanbanzero.exception.exceptions.*;
-import com.hanbat.zanbanzero.exception.handler.filter.custom.ExceptionTemplate;
+import com.hanbat.zanbanzero.exception.handler.filter.template.ExceptionTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

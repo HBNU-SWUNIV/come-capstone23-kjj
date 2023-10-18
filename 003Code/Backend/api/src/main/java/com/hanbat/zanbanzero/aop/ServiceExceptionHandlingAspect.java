@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 @Aspect
@@ -14,10 +15,20 @@ public class ServiceExceptionHandlingAspect {
 
     private final SlackTools slackTools;
 
+    // 접근제어자(생략) / 반환타입(*) / 선언타입(com.hanbat.zanbanzero.auth..) 및 하위 모든 패키지 / 클래스명, 메소드이름(*.*) / 파라미터(..)
+    @Pointcut("execution(* com.hanbat.zanbanzero.auth..*.*(..))")
+    private void authPointcut() {}
+
+    @Pointcut("execution(* com.hanbat.zanbanzero.controller..*.*(..))")
+    private void controllerPointcut() {}
+
+    @Pointcut("execution(* com.hanbat.zanbanzero.service..*.*(..))")
+    private void servicePointcut() {}
+
     /**
      * 에러 발생 시 slack 메시지 알림 전송하는 AOP
      */
-    @AfterThrowing(pointcut = "execution(* com.hanbat.zanbanzero.auth..*.*(..)) || execution(* com.hanbat.zanbanzero.controller..*.*(..)) || execution(* com.hanbat.zanbanzero.service..*.*(..))",
+    @AfterThrowing(pointcut = "authPointcut() && controllerPointcut() && servicePointcut()",
             throwing = "ex")
     public void handleException(JoinPoint joinPoint, Exception ex) {
         slackTools.sendSlackMessage(ex, joinPoint.getSignature().getName(), ex.getMessage());

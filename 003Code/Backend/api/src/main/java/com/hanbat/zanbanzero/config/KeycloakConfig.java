@@ -18,14 +18,20 @@ public class KeycloakConfig {
     @Value("${keycloak.resource}")
     private String clientId;
 
+    @Value("${keycloak.admin.username}")
+    private String adminUsername;
+
+    @Value("${keycloak.admin.password}")
+    private String adminPassword;
+
     @Bean
     public Keycloak keycloak() {
         return KeycloakBuilder.builder()
                 .serverUrl(authServerUrl)
                 .realm(realm)
                 .grantType(OAuth2Constants.PASSWORD)
-                .username("admin")
-                .password("admin")
+                .username(adminUsername)
+                .password(adminPassword)
                 .clientId(clientId)
                 .build();
     }

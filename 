@@ -1,0 +1,260 @@
+[33mcommit f68deacec74d48195ae9fb28f6cdf7c7867edb11[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: HyeongMokJeong <jhm1062@naver.com>
+Date:   Fri Oct 13 21:04:43 2023 +0900
+
+    fix: fix setFood
+
+[33mcommit c50c54b8fa6885e40c897a660afc90eb5323c9a5[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Fri Oct 13 17:32:12 2023 +0900
+
+    feat: create db init logic
+
+[33mcommit c7ebb33e2fabe8baac601f4d77795113bf648b7a[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Fri Oct 13 15:08:05 2023 +0900
+
+    fix: api update
+
+[33mcommit 0c5c4b25c55d88e947ff169175da06a8cd78337a[m
+Merge: 9b3c394 42d53bc
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 12 18:40:29 2023 +0900
+
+    Merge branch 'main' of https://github.com/HyeongMokJeong/come-capstone23-kjj
+
+[33mcommit 42d53bcb405fa2b3ae8aa21594c58973f4e2f232[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 12 18:40:15 2023 +0900
+
+    Rename MenuCard.js to MenuCard.js
+
+[33mcommit af39d830d4e305eb116a5da0d3d9d28581048cc6[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 12 18:40:00 2023 +0900
+
+    Rename UpdateNameModal.js to UpdateNameModal.js
+
+[33mcommit 5f0ef0efd8c7fff514fe9a9e33b932d4ee04b931[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 12 18:39:46 2023 +0900
+
+    Rename DayoffDialog.js to DayoffDialog.js
+
+[33mcommit 9b3c3948fd7d5600b660ae3aa25b73e9a1b139de[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 12 18:38:33 2023 +0900
+
+    refactor: api code refactoring
+
+[33mcommit 22eac5e4d8e664efc4f28f6348ec1991b5bb949c[m
+Merge: c726767 7c2e405
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 12 16:29:31 2023 +0900
+
+    23-10-12
+    
+    1. 식재료 관련 로직 수정, api 추가
+    2. 차주 이용인원 계산 batch 로직 추가
+
+[33mcommit 7c2e40580f9ff0ee95567af745a55e843da047ca[m
+Merge: 3be15a7 0269ad9
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 12 16:27:32 2023 +0900
+
+    Merge branch 'main' of https://github.com/HyeongMokJeong/come-capstone23-kjj
+
+[33mcommit 3be15a78ac4dc99d0ec72b2d31b73f76169bbe8f[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 12 16:27:19 2023 +0900
+
+    feat: create batch logic for week predict
+
+[33mcommit c7267675e06fb35c9da1e884f0a18f6978171ba5[m
+Merge: b5cd1ca 0269ad9
+Author: gibeom <101088024+kkb4363@users.noreply.github.com>
+Date:   Tue Oct 10 17:29:57 2023 +0900
+
+    Merge branch 'main' of https://github.com/HBNU-SWUNIV/come-capstone23-kjj
+
+[33mcommit 0269ad91207176ff472815b8ce0246d145303d3d[m
+Merge: df2ed09 9efff93
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Oct 10 16:41:15 2023 +0900
+
+    Merge branch 'main' of https://github.com/HBNU-SWUNIV/come-capstone23-kjj
+
+[33mcommit df2ed090ba3b9234e116bed697c4240a2a6f05ae[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Oct 10 16:41:11 2023 +0900
+
+    10/10
+
+[33mcommit e0c1dfd2dda3e142fec223a241a453e7716343c0[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Oct 10 16:41:03 2023 +0900
+
+    개발자 정보
+
+[33mcommit 9efff93633b46f30e7e3b0e010e93479d6b2de39[m
+Merge: 77b6914 8656961
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Tue Oct 10 14:45:02 2023 +0900
+
+    feat: apply Service Interface
+    
+    feat: apply Service Interface
+
+[33mcommit 8656961b8ed761cc34b0e78cd713ca6159aa730d[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Tue Oct 10 14:44:07 2023 +0900
+
+    feat: apply Service Interface
+
+[33mcommit 77b6914737f239f27dedacc4391a2560f1cc17c8[m
+Merge: 1e768a6 c23f5f4
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Fri Oct 6 17:37:33 2023 +0900
+
+    Merge pull request #70 from HyeongMokJeong/main
+    
+    23-10-06
+
+[33mcommit c23f5f41cb95e7aaa6f23465afbf554ea5fd9f36[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Fri Oct 6 17:35:54 2023 +0900
+
+    feat: update LoginFilterV2
+
+[33mcommit f0a457a1289526238769d4991d9fa33b457b579d[m
+Merge: a271648 1e768a6
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 5 10:18:29 2023 +0900
+
+    Merge branch 'HBNU-SWUNIV:main' into main
+
+[33mcommit 1e768a6ad36ea847c6b5cb9c7dd93aa7792d5679[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 5 10:10:39 2023 +0900
+
+    23-10-05 (#69)
+    
+    - batch로직 정합성 문제 해결
+    - Keycloak 연동 회원가입, 회원탈퇴
+    - Slack webhook 주소 노출 관련 jenkins 업데이트
+    
+    - Rename Developers.js to Developers.js
+
+[33mcommit a2716486a8a8569da8625a8859f7d23e26886015[m
+Merge: 10adc9f df94d2c
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 5 10:09:04 2023 +0900
+
+    Merge branch 'main' of https://github.com/HyeongMokJeong/come-capstone23-kjj
+
+[33mcommit df94d2c95b98210bb52dac0f4c29f88725acffbf[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Thu Oct 5 10:08:38 2023 +0900
+
+    Rename Developers.js to Developers.js
+
+[33mcommit 10adc9f9e016c8b2c095cf392c2293aa885d3cba[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Thu Oct 5 10:06:56 2023 +0900
+
+    feat: fix db(orders-expired)
+
+[33mcommit 0e4ff67f20f8b0bfd24f2c95bc6f4edef0769dc5[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Sep 26 17:54:57 2023 +0900
+
+    9/26
+
+[33mcommit 467cfe08b6bc9f35dcec48e99e0cbee2d73b95db[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Sep 26 17:54:48 2023 +0900
+
+    토스페이먼츠 연동
+
+[33mcommit e3e234701c892b9040a84a4d4e30390f4c3514b3[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Sep 26 17:54:34 2023 +0900
+
+    토큰 만료 리다이렉트
+
+[33mcommit d13d5c4990ce293b401d9c7f3ef55cee007bd80e[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Tue Sep 26 17:54:15 2023 +0900
+
+    최소 최대 화면 사이즈
+
+[33mcommit b5cd1ca48ab52a41614ede820ac98f2e52a5d17a[m
+Merge: 2855133 0464880
+Author: Gibeom <101088024+kkb4363@users.noreply.github.com>
+Date:   Sun Sep 24 16:52:49 2023 +0900
+
+    Merge pull request #67 from HBNU-SWUNIV/66-code
+    
+    Feat: useQuery사용, 이미지 추가시 바로 뜨게 반영
+
+[33mcommit 0464880d1cee802babdc175c552147e999b8bbf1[m
+Author: gibeom <101088024+kkb4363@users.noreply.github.com>
+Date:   Sun Sep 24 16:52:02 2023 +0900
+
+    Feat : useQuery적용, Custom Hook적용, dialog 분리
+
+[33mcommit 2855133a78eb4602c062b1d22eed273aa06f3502[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Fri Sep 22 16:50:32 2023 +0900
+
+    화면 사이즈 수정
+
+[33mcommit 4490ba580b1594e61694d405ee72a9a76395ae82[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Fri Sep 22 16:50:19 2023 +0900
+
+    화면 사이즈 조절
+
+[33mcommit c1ec4cfe41f924ab93088ebcf59d484465162836[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Fri Sep 22 16:50:08 2023 +0900
+
+    초기 로그인 가이드
+
+[33mcommit 83b5616656c4307ec2b0efc6192e96ffd1ff7090[m
+Author: SeongHoon Jo <tjd0544@naver.com>
+Date:   Fri Sep 22 16:49:47 2023 +0900
+
+    토스페이먼츠 적용
+
+[33mcommit 86aef812102ac8679ac90a90410a4c042ed80dca[m
+Author: Jeong Hyeong Mok <jhm1062@naver.com>
+Date:   Fri Sep 22 15:50:32 2023 +0900
+
+    update batch gitignore
+
+[33mcommit 7530e370fa4fa11104009d08991fbc4920daca5e[m
+Merge: 078c980 90f14b0
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Fri Sep 22 15:39:16 2023 +0900
+
+    Merge branch 'HBNU-SWUNIV:main' into main
+
+[33mcommit 90f14b07237af6dc77f25910bb9ffa486e645e02[m
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Fri Sep 22 15:38:35 2023 +0900
+
+    23.09.22 (#68)
+    
+    - batch로직 정합성 문제 해결
+    - Keycloak 연동 회원가입, 회원탈퇴
+    - Slack webhook 주소 노출 관련 jenkins 업데이트
+
+[33mcommit 078c9802e1cd8bdf004eb2892d08814e031ada55[m
+Merge: 970389e b006ffc
+Author: HyeongMok-Jeong <94634916+HyeongMokJeong@users.noreply.github.com>
+Date:   Fri Sep 22 15:36:09 2023 +0900
+
+    Merge branch 'HBNU-SWUNIV:main' into main
+
+[33mcommit
