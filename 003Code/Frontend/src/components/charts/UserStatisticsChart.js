@@ -32,18 +32,18 @@ export default function UserStatisticsChart() {
 
   const userArray = [
     {
-      id: 0,
-      isAddDate: true,
-      isAddBottomDivider: true,
-      userPop: Todaypop,
-      title: '금일 이용자',
-    },
-    {
       id: 1,
       isAddDate: false,
-      isAddBottomDivider: false,
+      isAddBottomDivider: true,
       userPop: '90kg',
       title: '금주 절약된 식재료',
+    },
+    {
+      id: 0,
+      isAddDate: true,
+      isAddBottomDivider: false,
+      userPop: Todaypop,
+      title: '금일 이용자',
     },
   ];
 
