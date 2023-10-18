@@ -10,8 +10,6 @@ import java.sql.Timestamp;
 @ToString
 @AllArgsConstructor
 public class FoodPredict {
-    private Timestamp date;
-
     private double monday;
     private double tuesday;
     private double wednesday;
