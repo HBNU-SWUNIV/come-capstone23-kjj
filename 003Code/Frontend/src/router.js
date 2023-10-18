@@ -1,12 +1,13 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import App from './App';
-import Dashboard from './screens/Dashboard';
-import DailyMenu from './screens/DailyMenu';
-import Dayoff from './screens/Dayoff';
-import Menus from './screens/Menus';
-import Login, { action as loginAction } from './login/Login';
-import LoginFirst from './login/LoginFirst';
+import App from './router/App';
 import RootContainer from './router/RootContainer';
+import Login, { action as loginAction } from './domains/accounts/Login';
+import InitialLogin from './domains/accounts/InitialLogin';
+import TodayMenu from './domains/pages/TodayMenu';
+import Dashboard from './domains/pages/Dashboard';
+import Menus from './domains/pages/Menus';
+import Dayoff from './domains/pages/Dayoff';
+import ErrorBoundary from './router/ErrorBoundary';
 
 const router = createBrowserRouter([
   {
@@ -19,12 +20,16 @@ const router = createBrowserRouter([
         action: loginAction,
       },
       {
-        path: '/loginfirst',
-        element: <LoginFirst />,
+        path: '/initialLogin',
+        element: <InitialLogin />,
       },
       {
         path: '/',
-        element: <App />,
+        element: (
+          <ErrorBoundary>
+            <App />
+          </ErrorBoundary>
+        ),
         children: [
           {
             path: '/',
@@ -41,7 +46,7 @@ const router = createBrowserRouter([
           },
           {
             path: '/dailymenu',
-            element: <DailyMenu />,
+            element: <TodayMenu />,
           },
           {
             path: '/dayoff',
