@@ -11,7 +11,6 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useKeycloak } from '@react-keycloak/web';
 import axios from 'axios';
-import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { MdTouchApp } from 'react-icons/md';
@@ -19,22 +18,18 @@ import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { styled as Cstyled, keyframes } from 'styled-components';
 import { isloginAtom } from '../../atom/loginAtom';
-import {
-  ConfigWithRefreshToken,
-  ConfigWithToken,
-  ManagerBaseApi,
-} from '../../auth/authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import NavLists from '../../components/nav/NavLists';
 import UpdateImgModal from '../../components/nav/UpdateImgModal';
 import UpdateInfoModal from '../../components/nav/UpdateInfoModal';
 import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
-import NavLists from '../../components/nav/NavLists';
 
 function Nav(props) {
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
+  const { keycloak } = useKeycloak();
   const [cookies, setCookie] = useCookies();
   const navigate = useNavigate();
-  const reconfig = ConfigWithRefreshToken();
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -42,11 +37,16 @@ function Nav(props) {
       ...config.headers,
     },
   };
-  const { keycloak } = useKeycloak();
-  const [isExpired, setIsExpired] = useState(false);
-  const isRefreshtoken = cookies.refreshtoken !== '';
+
   const nameRef = useRef('');
   const InfoRef = useRef('');
+
+  const [form, setForm] = useState({
+    name: '',
+    info: '',
+    image: '',
+  });
+
   const [name, setName] = useState('');
   const [info, setInfo] = useState('');
   const [image, setImage] = useState('');
@@ -68,28 +68,6 @@ function Nav(props) {
     if (name !== '') setIsName(true);
     else if (name === '') setIsName(false);
   }, [name]);
-
-  useEffect(() => {
-    if (isExpired && isRefreshtoken && islogin) {
-      reIssueToken();
-      alert('세션이 만료되었습니다. 새로고침 후 이용해주세요.');
-    }
-  }, [isExpired]);
-
-  const reIssueToken = async () => {
-    try {
-      const response = await axios({
-        method: 'POST',
-        url: '/api/user/login/refresh',
-        ...reconfig,
-      });
-      if (response.headers.authorization !== '') {
-        setCookie('accesstoken', response.headers.authorization);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const menuOpenHandler = (event) => {
     setAnchorEl(event.currentTarget);
@@ -172,9 +150,7 @@ function Nav(props) {
         setInfo(res.data.info);
         setName(res.data.name);
       })
-      .catch((err) => {
-        if (err.response.status === 403) setIsExpired(true);
-      });
+      .catch((err) => console.log(err));
   };
 
   const getMarketImage = () => {

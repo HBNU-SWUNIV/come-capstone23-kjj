@@ -1,35 +1,40 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { c_color } from '../../styles/global';
 
 const FoodSavingStatusChart = () => {
   const config = ConfigWithToken();
+  const [marketname, setMarketname] = useState('');
 
   useEffect(() => {
     axios
-      .get(`${ManagerBaseApi}/state/predict/menu`, config)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
+      .get(`${ManagerBaseApi}/setting`, config)
+      .then((res) => {
+        setMarketname(res.data.name);
+      })
+      .catch((err) => {
+        if (err.response.status === 403) console.log(err);
+      });
   }, []);
 
   return (
     <>
       <Title>
-        <span style={c_color}>금주 식재료 절약 현황</span>
+        <span style={c_color}>식재료를 이정도나 절약했어요!</span>
       </Title>
       <ApexCharts
         type="line"
         series={[
           {
-            name: '서비스 기반 예상 총 식재료 양',
+            name: '서비스 기반 식재료 발주량',
             data: [24, 35, 5, 30, 12],
             type: 'column',
           },
           {
-            name: '매출액 기반 예상 총 식재료 양',
+            name: `기존 ${marketname} 식재료 발주량`,
             data: [44, 55, 11, 66, 25],
             type: 'line',
           },

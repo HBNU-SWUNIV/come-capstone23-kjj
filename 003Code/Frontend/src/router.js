@@ -13,6 +13,7 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <RootContainer />,
+    errorElement: <ErrorBoundary />,
     children: [
       {
         path: '/login',
@@ -25,11 +26,7 @@ const router = createBrowserRouter([
       },
       {
         path: '/',
-        element: (
-          <ErrorBoundary>
-            <App />
-          </ErrorBoundary>
-        ),
+        element: <App />,
         children: [
           {
             path: '/',
