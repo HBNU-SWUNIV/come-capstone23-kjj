@@ -5,7 +5,7 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Menulist_Row from './Menulist_Row';
+import MenulistRow from './MenulistRow';
 
 const table_header_data = [
   {
@@ -49,7 +49,7 @@ export default function Menulist({ menus, onDelete, soldout, resale, onUpdate })
 
         <TableBody>
           {menus?.map((row) => (
-            <Menulist_Row
+            <MenulistRow
               key={row.name}
               row={row}
               onDelete={onDelete}

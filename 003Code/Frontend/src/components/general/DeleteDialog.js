@@ -1,18 +1,13 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import React from 'react';
+import ConfirmButton from './ConfirmButton';
 
-const DeleteDialog = ({ open, onClose, onDelete }) => {
+const DeleteDialog = (props) => {
   return (
     <Dialog
       width="md"
-      open={open}
-      onClose={onClose}
+      open={props.open}
+      onClose={props.onClose}
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description"
     >
@@ -21,13 +16,16 @@ const DeleteDialog = ({ open, onClose, onDelete }) => {
           정말 삭제하시겠습니까?
         </DialogContentText>
       </DialogContent>
+
       <DialogActions>
-        <Button sx={deleteButtonStyle} color="error" onClick={onDelete}>
-          네
-        </Button>
-        <Button sx={deleteButtonStyle} onClick={onClose} autoFocus>
-          아니요
-        </Button>
+        <ConfirmButton
+          sx={deleteButtonStyle}
+          first_color="error"
+          first_onClick={props.onDelete}
+          last_onClick={props.onClose}
+          first_text={'네'}
+          last_text={'아니요'}
+        />
       </DialogActions>
     </Dialog>
   );

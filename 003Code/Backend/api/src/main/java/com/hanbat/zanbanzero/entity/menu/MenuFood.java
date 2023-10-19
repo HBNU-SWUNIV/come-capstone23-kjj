@@ -1,13 +1,12 @@
 package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.auto_init.dto.Recipe;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @AllArgsConstructor
@@ -17,6 +16,9 @@ public class MenuFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @OneToMany(mappedBy = "menuFood")
+    private List<Menu> menu;
 
     private String name;
 
@@ -29,6 +31,7 @@ public class MenuFood {
     public static MenuFood of(String name, String food) {
         return new MenuFood(
                 null,
+                null,
                 name,
                 food
         );
@@ -36,6 +39,7 @@ public class MenuFood {
 
     public static MenuFood of(Recipe recipe) {
         return new MenuFood(
+                null,
                 null,
                 recipe.getName(),
                 recipe.getFood()

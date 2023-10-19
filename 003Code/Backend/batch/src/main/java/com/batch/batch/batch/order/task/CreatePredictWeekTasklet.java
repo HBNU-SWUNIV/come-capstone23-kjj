@@ -33,12 +33,16 @@ public class CreatePredictWeekTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Map<String, Integer> result = new HashMap<>();
-        for (String d : day) result.put(d, 0);
+        Map<String, List<Long>> doubleCheckMap = new HashMap<>();
+        for (String d : day) {
+            result.put(d, 0);
+            doubleCheckMap.put(d, new ArrayList<>());
+        }
         Connection connection = dataSource.getConnection();
 
         connectionHandler.execute(connection, () -> {
-            countOrders(connection, result);
-            checkPolicy(connection, result);
+            countOrders(connection, result, doubleCheckMap);
+            checkPolicy(connection, result, doubleCheckMap);
 
             String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
@@ -54,32 +58,38 @@ public class CreatePredictWeekTasklet implements Tasklet {
         return RepeatStatus.FINISHED;
     }
 
-    private void countOrders(Connection connection, Map<String, Integer> result) throws SQLException {
-        LocalDate thisMonday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
+    private void countOrders(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
+        LocalDate today = LocalDate.now();
+        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (String d : day) {
             String formatted = thisMonday.format(format);
+            int count = 0;
 
-            String getQuery = "select count(*) as count from orders where order_date = ? and recognize = 1;";
+            String getQuery = "select user_id from orders where order_date = ? and recognize = 1;";
             try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
                 statement.setString(1, formatted);
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        result.put(d, result.get(d) + resultSet.getInt("count"));
+                        count += 1;
+                        doubleCheckMap.get(d).add(resultSet.getLong("user_id"));
                     }
                 }
             }
+            result.put(d, count);
             thisMonday = thisMonday.plusDays(1);
         }
     }
 
-    private void checkPolicy(Connection connection, Map<String, Integer> result) throws SQLException {
+    private void checkPolicy(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
         for (String d : day) {
-            String getQuery = "select count(*) as count from user_policy where " + d + " = 1 and default_menu;";
+            String getQuery = "select user_id from user_policy where " + d + " = 1 and default_menu;";
             try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
-                        result.put(d, result.get(d) + resultSet.getInt("count"));
+                        Long userId = resultSet.getLong("user_id");
+                        if (doubleCheckMap.get(d).contains(userId)) continue;
+                        result.put(d, result.get(d) + 1);
                     }
                 }
             }

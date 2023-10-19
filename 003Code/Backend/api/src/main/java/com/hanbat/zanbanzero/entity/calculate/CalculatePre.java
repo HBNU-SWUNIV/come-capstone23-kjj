@@ -19,6 +19,7 @@ public class CalculatePre {
     private Calculate calculate;
 
     private Integer predictUser;
+    @Column(columnDefinition = "TEXT")
     private String predictFood;
     private String predictMenu;
 }
