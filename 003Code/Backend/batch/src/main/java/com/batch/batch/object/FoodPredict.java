@@ -2,6 +2,7 @@ package com.batch.batch.object;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.sql.Timestamp;
@@ -9,6 +10,7 @@ import java.sql.Timestamp;
 @Data
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class FoodPredict {
     private double monday;
     private double tuesday;

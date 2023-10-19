@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
+import com.hanbat.zanbanzero.dto.sbiz.WeeklyFoodPredictDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
@@ -17,6 +18,7 @@ import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculatePreWeekRepository;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
+import com.hanbat.zanbanzero.repository.sbiz.SbizRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateTools;
@@ -44,6 +46,7 @@ public class StoreServiceImplV1 implements StoreService {
     private final CalculatePreWeekRepository calculatePreWeekRepository;
     private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
+    private final SbizRepository sbizRepository;
 
     private static final Long FINAL_ID = 1L;
 
@@ -202,7 +205,7 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
-    public CalculatePreWeekDto getNextWeeksFood() {
-        return null;
+    public WeeklyFoodPredictDto getNextWeeksFood() {
+        return WeeklyFoodPredictDto.of(sbizRepository.findFirstByOrderByIdDesc());
     }
 }

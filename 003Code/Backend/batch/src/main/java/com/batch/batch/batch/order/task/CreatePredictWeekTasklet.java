@@ -27,8 +27,9 @@ public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final ConnectionHandlerV1 connectionHandler;
-    private String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
+    private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
 
+    // 이번 주 월~금 이용인원 계산
     @Override
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Map<String, Integer> result = new HashMap<>();
