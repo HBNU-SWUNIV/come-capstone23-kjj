@@ -5,10 +5,10 @@ import { useRecoilValue } from 'recoil';
 import { useKeycloak } from '@react-keycloak/web';
 
 const Auth = (props) => {
-  const loginauth = useRecoilValue(isloginAtom);
+  const islogin = useRecoilValue(isloginAtom);
   const { keycloak } = useKeycloak();
 
-  if (!loginauth && !keycloak.authenticated) {
+  if (!islogin && !keycloak.authenticated) {
     return <Navigate to="/login" replace />;
   }
 
