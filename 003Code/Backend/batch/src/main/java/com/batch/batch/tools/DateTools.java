@@ -42,4 +42,9 @@ public class DateTools {
     public static String getDateAndTime() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
     }
+
+    public static boolean isNotBefore(LocalDate date) {
+        LocalDate today = LocalDate.now();
+        return !date.isBefore(today);
+    }
 }

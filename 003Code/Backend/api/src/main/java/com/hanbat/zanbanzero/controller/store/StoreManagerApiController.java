@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.controller.store;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
+import com.hanbat.zanbanzero.dto.sbiz.WeeklyFoodPredictDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
@@ -92,9 +93,9 @@ public class StoreManagerApiController {
         return ResponseEntity.ok(storeService.getNextWeeksUser());
     }
 
-    @Operation(summary="다음 주 매출액 기반, 예약 기반 이용자 수 조회", description="월~금 5개 데이터, 일요일 10시 30분 정산")
+    @Operation(summary="다음 주 매출액 기반, 예약 기반 식재료 필요량 조회", description="월~금 5개 데이터, 매일 9시마다 계산")
     @GetMapping("state/next-week/food")
-    public ResponseEntity<CalculatePreWeekDto> getNextWeeksFood() {
+    public ResponseEntity<WeeklyFoodPredictDto> getNextWeeksFood() {
         return ResponseEntity.ok(storeService.getNextWeeksFood());
     }
 

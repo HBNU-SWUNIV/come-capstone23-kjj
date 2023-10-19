@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.service.store;
 
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
+import com.hanbat.zanbanzero.dto.sbiz.WeeklyFoodPredictDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
@@ -45,5 +46,5 @@ public interface StoreService {
 
     CalculatePreWeekDto getNextWeeksUser();
 
-    CalculatePreWeekDto getNextWeeksFood();
+    WeeklyFoodPredictDto getNextWeeksFood();
 }

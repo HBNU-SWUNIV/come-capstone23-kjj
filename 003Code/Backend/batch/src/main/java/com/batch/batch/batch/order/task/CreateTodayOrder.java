@@ -16,10 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,6 +104,9 @@ public class CreateTodayOrder {
                         insertStatement.setBoolean(5, true);
 
                         insertStatement.executeUpdate();
+                    } catch (SQLIntegrityConstraintViolationException e) {
+                        log.warn("TRASH DATA FOUND : userId = {}", userId);
+                        return null;
                     }
                     return new Order(userId, cost, defaultMenu, date, true);
                 }

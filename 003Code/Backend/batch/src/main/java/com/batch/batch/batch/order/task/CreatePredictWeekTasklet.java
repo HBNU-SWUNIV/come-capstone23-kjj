@@ -27,8 +27,9 @@ public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final ConnectionHandlerV1 connectionHandler;
-    private String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
+    private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
 
+    // 이번 주 월~금 이용인원 계산
     @Override
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Map<String, Integer> result = new HashMap<>();
@@ -54,8 +55,7 @@ public class CreatePredictWeekTasklet implements Tasklet {
     }
 
     private void countOrders(Connection connection, Map<String, Integer> result) throws SQLException {
-        LocalDate today = LocalDate.now();
-        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
+        LocalDate thisMonday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (String d : day) {
             String formatted = thisMonday.format(format);
