@@ -17,6 +17,7 @@ public class OrderDto {
     private String orderDate;
     private boolean recognize;
     private boolean expired;
+    private boolean payment;
 
     public static OrderDto of(Order order) {
         return new OrderDto(
@@ -25,7 +26,8 @@ public class OrderDto {
                 order.getCost(),
                 DateTools.makeLocaldateToFormatterString(order.getOrderDate()),
                 order.isRecognize(),
-                order.isExpired()
+                order.isExpired(),
+                order.isPayment()
         );
     }
 }

@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.task;
+package com.batch.batch.batch.order.task.order;
 
 import com.batch.batch.object.Order;
 import com.batch.batch.object.UserPolicy;

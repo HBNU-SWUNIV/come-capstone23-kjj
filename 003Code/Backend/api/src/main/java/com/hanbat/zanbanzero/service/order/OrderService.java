@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 
 import java.awt.image.BufferedImage;
@@ -36,5 +37,7 @@ public interface OrderService {
 
     void checkOrder(Long id) throws CantFindByIdException;
 
-    OrderDto getOrderInfo(Long orderId) throws CantFindByIdException;
+    OrderDto getOrderInfo(Long id, Long orderId) throws CantFindByIdException, WrongParameter;
+
+    OrderDto setPaymentTrue(Long orderId) throws CantFindByIdException, WrongParameter;
 }

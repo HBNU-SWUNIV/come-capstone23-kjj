@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.task.CountOrdersByDateTasklet;
+import com.batch.batch.batch.order.aop.handler.ConnectionHandler;
+import com.batch.batch.batch.order.task.order.CountOrdersByDateTasklet;
 import com.batch.batch.object.Order;
 import com.batch.batch.object.UserPolicy;
 import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
@@ -21,13 +22,13 @@ import javax.sql.DataSource;
 @Component
 public class OrderStep {
 
-    private final ConnectionHandlerV1 connectionHandler;
+    private final ConnectionHandler connectionHandler;
     private final DataSource dataDataSource;
     private final JdbcCursorItemReader<UserPolicy> itemReader;
     private final ItemProcessor<UserPolicy, Order> itemProcessor;
     private final ItemWriter<Order> itemWriter;
 
-    public OrderStep(ConnectionHandlerV1 connectionHandler, @Qualifier("dataDataSource") DataSource dataDataSource, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
+    public OrderStep(ConnectionHandler connectionHandler, @Qualifier("dataDataSource") DataSource dataDataSource, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
         this.connectionHandler = connectionHandler;
         this.dataDataSource = dataDataSource;
         this.itemReader = itemReader;
@@ -47,7 +48,7 @@ public class OrderStep {
 
     @Bean
     public Step countOrdersByDateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CountOrdersByDateTasklet(connectionHandler, dataDataSource);
+        Tasklet tasklet = new CountOrdersByDateTasklet(dataDataSource);
         return new StepBuilder("countOrdersByDateStep", jobRepository)
                 .tasklet(tasklet, transactionManager)
                 .allowStartIfComplete(true)

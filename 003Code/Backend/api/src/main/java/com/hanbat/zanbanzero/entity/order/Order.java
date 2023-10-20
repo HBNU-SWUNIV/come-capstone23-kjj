@@ -43,6 +43,9 @@ public class Order {
     @NotNull
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean expired;
+    @NotNull
+    @Column(columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean payment;
 
     public void setMenu(Menu menu) {this.menu = menu.getName();}
 
@@ -56,6 +59,10 @@ public class Order {
         expired = true;
     }
 
+    public void setPaymentTrue() {
+        payment = true;
+    }
+
     public static Order createNewOrder(User user, String menu, int cost, LocalDate date, boolean type) {
         return new Order(
                 null,
@@ -64,6 +71,7 @@ public class Order {
                 cost,
                 date,
                 type,
+                false,
                 false
         );
     }
