@@ -9,6 +9,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 
 @Aspect
 @Component
@@ -21,7 +22,21 @@ public class SlackAspect {
     @Pointcut("execution(* com.batch.batch.batch.order.task..*.*(..))")
     private void taskPointcut() {}
 
-//    @Around("taskPointcut()")
-//    public Object connectionHandlerAop(ProceedingJoinPoint joinPoint) throws Throwable{
-//    }
+    @Around("taskPointcut()")
+    public Object connectionHandlerAop(ProceedingJoinPoint joinPoint) throws Throwable {
+        Connection connection = dataSource.getConnection();
+        try {
+            connection.setAutoCommit(false);
+            Object proceed = joinPoint.proceed();
+            connection.commit();
+
+            return proceed;
+        } catch (Exception e) {
+            connection.rollback();
+            slackTools.sendSlackErrorMessage(e, joinPoint.getClass().getName());
+            throw e;
+        } finally {
+            connection.close();
+        }
+    }
 }

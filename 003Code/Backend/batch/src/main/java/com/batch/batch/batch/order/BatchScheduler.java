@@ -78,6 +78,7 @@ public class BatchScheduler {
                     JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
                     if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
                 }
+                else slackTools.sendSlackMessage("Friday! SecondJob is resting");
             }
         }
     }

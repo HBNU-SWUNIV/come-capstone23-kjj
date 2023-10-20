@@ -12,6 +12,7 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.user.service.UserService;
 import com.hanbat.zanbanzero.service.user.service.UserSsoService;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
@@ -26,7 +27,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.List;
 

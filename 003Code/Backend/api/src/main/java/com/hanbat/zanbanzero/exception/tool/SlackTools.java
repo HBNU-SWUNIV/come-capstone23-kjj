@@ -19,20 +19,20 @@ public class SlackTools {
     @Value("${slack.webhook.url}") private String slackUrl;
     private final Slack slack = Slack.getInstance();
 
-    public void sendSlackMessage(Exception e, String method, String properties) {
+    public void sendSlackMessage(Exception e, String pointcut, String method, String properties) {
         try {
-            slack.send(slackUrl, payload(p -> p.text(method)
-                    .attachments(List.of(generateSlackAttachment(e, properties)))));
+            slack.send(slackUrl, payload(p -> p.text("[API] " + method)
+                    .attachments(List.of(generateSlackAttachment(e, properties, pointcut)))));
         } catch (IOException exception) {
             log.warn("Slack 전송 에러");
         }
     }
 
-    private Attachment generateSlackAttachment(Exception e, String properties) {
+    private Attachment generateSlackAttachment(Exception e, String properties, String pointcut) {
         LocalDate time = LocalDate.now();
         return Attachment.builder()
                 .color("ff0000")
-                .title("[API] " + time + " 발생 에러 로그")
+                .title(pointcut + time + " 발생 에러 로그")
                 .fields(List.of(
                                 generateSlackField("Class", e.getClass().getSimpleName()),
                                 generateSlackField("Error Message", e.getMessage()),

@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.task;
+package com.batch.batch.batch.order.task.order;
 
 import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
@@ -21,13 +21,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CountOrdersByDateTasklet implements Tasklet {
 
-    private final ConnectionHandlerV1 connectionHandler;
     private final DataSource dataSource;
     private final Map<String, Integer> resultMap = new HashMap<>();
 
-    private Long initOrder(Connection connection, String date, int today, int sales) throws SQLException{
-        Long id;
-
+    private Long initOrder(Connection connection, String date, int today, int sales) throws SQLException {
         String initQuery = "insert into calculate(date, today, sales) value(?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(initQuery)) {
             statement.setString(1, date);
@@ -40,10 +37,9 @@ public class CountOrdersByDateTasklet implements Tasklet {
             statement.setString(1, date);
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.next();
-                id = resultSet.getLong("id");
+                return resultSet.getLong("id");
             }
         }
-        return id;
     }
 
     private int countTodayOrders(Connection connection, String date) throws SQLException {
@@ -67,7 +63,8 @@ public class CountOrdersByDateTasklet implements Tasklet {
     private int getSales() {
         int sales = 0;
         Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
-        for (Map.Entry<String, Integer> entry : resultMap.entrySet()) sales += nameToCostMap.get(entry.getKey()) * entry.getValue();
+        for (Map.Entry<String, Integer> entry : resultMap.entrySet())
+            sales += nameToCostMap.get(entry.getKey()) * entry.getValue();
 
         return sales;
     }
@@ -82,22 +79,20 @@ public class CountOrdersByDateTasklet implements Tasklet {
         Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
         Connection connection = dataSource.getConnection();
 
-        connectionHandler.execute(connection, () -> {
-            int count = countTodayOrders(connection, date);
-            int sales = getSales();
-            Long id = initOrder(connection, date, count, sales);
-            for (Map.Entry<String, Integer> data : resultMap.entrySet()) {
-                String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
-                try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                    insertStatement.setLong(1, id);
-                    insertStatement.setString(2, data.getKey());
-                    insertStatement.setInt(3, data.getValue());
-                    insertStatement.setInt(4, data.getValue() * nameToCostMap.get(data.getKey()));
-                    insertStatement.executeUpdate();
-                }
+        int count = countTodayOrders(connection, date);
+        int sales = getSales();
+        Long id = initOrder(connection, date, count, sales);
+        for (Map.Entry<String, Integer> data : resultMap.entrySet()) {
+            String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                insertStatement.setLong(1, id);
+                insertStatement.setString(2, data.getKey());
+                insertStatement.setInt(3, data.getValue());
+                insertStatement.setInt(4, data.getValue() * nameToCostMap.get(data.getKey()));
+                insertStatement.executeUpdate();
             }
-            clear();
-        });
+        }
+        clear();
 
         CreateTodayOrder.clearNameToCostMap();
         return RepeatStatus.FINISHED;

@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.task;
+package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
@@ -26,7 +26,6 @@ import java.util.*;
 public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final ConnectionHandlerV1 connectionHandler;
     private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
 
     // 이번 주 월~금 이용인원 계산
@@ -40,21 +39,19 @@ public class CreatePredictWeekTasklet implements Tasklet {
         }
         Connection connection = dataSource.getConnection();
 
-        connectionHandler.execute(connection, () -> {
-            countOrders(connection, result, doubleCheckMap);
-            checkPolicy(connection, result, doubleCheckMap);
+        countOrders(connection, result, doubleCheckMap);
+        checkPolicy(connection, result, doubleCheckMap);
 
-            String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setString(1, DateTools.getDate());
-                insertStatement.setInt(2, result.get(day[0]));
-                insertStatement.setInt(3, result.get(day[1]));
-                insertStatement.setInt(4, result.get(day[2]));
-                insertStatement.setInt(5, result.get(day[3]));
-                insertStatement.setInt(6, result.get(day[4]));
-                insertStatement.executeUpdate();
-            }
-        });
+        String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            insertStatement.setString(1, DateTools.getDate());
+            insertStatement.setInt(2, result.get(day[0]));
+            insertStatement.setInt(3, result.get(day[1]));
+            insertStatement.setInt(4, result.get(day[2]));
+            insertStatement.setInt(5, result.get(day[3]));
+            insertStatement.setInt(6, result.get(day[4]));
+            insertStatement.executeUpdate();
+        }
         return RepeatStatus.FINISHED;
     }
 

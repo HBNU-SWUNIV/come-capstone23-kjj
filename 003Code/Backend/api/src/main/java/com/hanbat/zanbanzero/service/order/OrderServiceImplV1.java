@@ -12,6 +12,7 @@ import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
@@ -169,9 +170,18 @@ public class OrderServiceImplV1 implements OrderService{
 
     @Override
     @Transactional
-    public OrderDto getOrderInfo(Long orderId) throws CantFindByIdException {
+    public OrderDto getOrderInfo(Long id, Long orderId) throws CantFindByIdException, WrongParameter {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId : " + orderId));
+//        if (order.getId().intValue() != id.intValue()) throw new WrongParameter("not yours - id : " + id + " orderId : " + order);
+        return OrderDto.of(order);
+    }
 
+    @Override
+    @Transactional
+    public OrderDto setPaymentTrue(Long id) throws CantFindByIdException, WrongParameter {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+//        if (order.getId().intValue() != id.intValue()) throw new WrongParameter("not yours - id : " + id + " orderId : " + order);
+        order.setPaymentTrue();
         return OrderDto.of(order);
     }
 }

@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -128,10 +129,17 @@ public class OrderUserApiController {
         return ResponseEntity.ok(orderService.getLastOrder(id));
     }
 
-    @Operation(summary="예약 내역 정보 조회", description = "본인 예약이 아니면 예외 발생")
+    @Operation(summary="예약 내역 정보 조회")
     @GetMapping("order/{orderId}")
-    public ResponseEntity<OrderDto> getOrderInfo(@PathVariable Long orderId) throws CantFindByIdException {
-        return ResponseEntity.ok(orderService.getOrderInfo(orderId));
+    public ResponseEntity<OrderDto> getOrderInfo(HttpServletRequest request, @PathVariable Long orderId) throws CantFindByIdException, WrongParameter {
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        return ResponseEntity.ok(orderService.getOrderInfo(id, orderId));
+    }
+
+    @Operation(summary="예약 내역 payment True로 설정")
+    @PostMapping("order/{orderId}/payment")
+    public ResponseEntity<OrderDto> setPaymentTrue(@PathVariable Long orderId) throws CantFindByIdException, WrongParameter {
+        return ResponseEntity.ok(orderService.setPaymentTrue(orderId));
     }
 
     /**

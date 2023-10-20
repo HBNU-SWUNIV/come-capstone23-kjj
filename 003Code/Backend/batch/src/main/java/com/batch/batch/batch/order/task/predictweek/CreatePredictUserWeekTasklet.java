@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.task;
+package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.object.FoodPredict;
 import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
@@ -30,7 +30,6 @@ import java.util.Map;
 public class CreatePredictUserWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final ConnectionHandlerV1 connectionHandler;
 
     private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
 
@@ -39,31 +38,29 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Connection connection = dataSource.getConnection();
 
-        connectionHandler.execute(connection, () -> {
-            Map<Long, Integer> menuFood = getEntireMenuFood(connection);
-            FoodPredict entire = getEntire(connection, getMenuCostAvg(connection), menuFood);
-            FoodPredict part = getPart(connection, getRatio(connection), menuFood);
+        Map<Long, Integer> menuFood = getEntireMenuFood(connection);
+        FoodPredict entire = getEntire(connection, getMenuCostAvg(connection), menuFood);
+        FoodPredict part = getPart(connection, getRatio(connection), menuFood);
 
-            String insertQuery = "insert into weekly_food_predict(date, entire_monday, entire_tuesday, entire_wednesday, entire_thursday, entire_friday, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setString(1, DateTools.getDate());
-                insertStatement.setLong(2, Math.round(entire.getMonday()));
-                insertStatement.setLong(3, Math.round(entire.getTuesday()));
-                insertStatement.setLong(4, Math.round(entire.getWednesday()));
-                insertStatement.setLong(5, Math.round(entire.getThursday()));
-                insertStatement.setLong(6, Math.round(entire.getFriday()));
-                insertStatement.setLong(7, Math.round(part.getMonday()));
-                insertStatement.setLong(8, Math.round(part.getTuesday()));
-                insertStatement.setLong(9, Math.round(part.getWednesday()));
-                insertStatement.setLong(10, Math.round(part.getThursday()));
-                insertStatement.setLong(11, Math.round(part.getFriday()));
-                insertStatement.executeUpdate();
-            }
-        });
+        String insertQuery = "insert into weekly_food_predict(date, entire_monday, entire_tuesday, entire_wednesday, entire_thursday, entire_friday, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+            insertStatement.setString(1, DateTools.getDate());
+            insertStatement.setLong(2, Math.round(entire.getMonday()));
+            insertStatement.setLong(3, Math.round(entire.getTuesday()));
+            insertStatement.setLong(4, Math.round(entire.getWednesday()));
+            insertStatement.setLong(5, Math.round(entire.getThursday()));
+            insertStatement.setLong(6, Math.round(entire.getFriday()));
+            insertStatement.setLong(7, Math.round(part.getMonday()));
+            insertStatement.setLong(8, Math.round(part.getTuesday()));
+            insertStatement.setLong(9, Math.round(part.getWednesday()));
+            insertStatement.setLong(10, Math.round(part.getThursday()));
+            insertStatement.setLong(11, Math.round(part.getFriday()));
+            insertStatement.executeUpdate();
+        }
         return RepeatStatus.FINISHED;
     }
 
-    private Integer getMenuCostAvg(Connection connection) throws SQLException{
+    private Integer getMenuCostAvg(Connection connection) throws SQLException {
         String query = "select avg(cost) as average from menu;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -107,7 +104,7 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
         }
     }
 
-    private double getRatio(Connection connection) throws SQLException{
+    private double getRatio(Connection connection) throws SQLException {
         String query = "select count(*) as result from user;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -179,7 +176,7 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     String food = resultSet.getString("food");
-                    Map<String,Integer> foodMap = objectMapper.readValue(food, Map.class);
+                    Map<String, Integer> foodMap = objectMapper.readValue(food, Map.class);
                     result.put(resultSet.getLong("id"), foodMap.values().stream().mapToInt(Integer::intValue).sum());
                 }
             }
