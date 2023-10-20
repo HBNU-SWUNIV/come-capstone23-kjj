@@ -7,34 +7,37 @@
 - 20182174 정형목
 
 ## <u>Teamate</u> Project Background
+- 구내식당의 인기
+<img width="643" alt="스크린샷 2023-10-20 오후 12 30 36" src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/abfeed3e-71a0-4329-846e-a209f56de9f1">
 
 - ### 필요성
-  - OOO
-  - OOO
-- ### 기존 해결책의 문제점
-  - OOO
-  - OOO
+  - 구내식당은 저렴한 가격을 포함한 여러 장점으로 많은 인기를 끌고 있다. 또한 치솟는 물가 상황 속에서 그 수요는 더욱 높아지고 있다.
+  - 하지만 구내식당의 경우 수요가 유동점이라는 점 때문에 식재료 관리에 어려움을 겪고 있다. 현재 대부분의 구내식당이 과거의 경험을 기반으로 수요를 예측하고 식재료를 발주하고 있다.
+  - 이러한 방식으로는 정확도가 떨어질 수 밖에 없고, 식재료의 과다 발주로 인한 음식물 쓰레기 발생과 금전적 손실을 피할 수 없다.
+- 따라서 우리는 구내식당 관리자와 이용객을 대상으로 하여 이용객의 예약 정책 및 정보를 바탕으로 필요 식재료 양을 산출하고, 기존 소모하던 식재료 양과 시스템을 통해 절감 된 식재료 양을 비교 시각화 하여 제공
+- 또한 식재료 절약에 따른 금전적 이익을 이용객에게 포인트 및 적립으로 제공함.
 
 ## System Design
+![구조](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/05447f68-622b-419c-a9e8-3d1a944d4026)
 
 - ### System Requirements
 
-  - OOO
-  - OOO
-
-- ### 화면 설계
-  - https://www.figma.com/file/1TXgMLkO1WfMEP4cU8Xw5C/%EC%9D%8C%EC%8B%9D%EB%AC%BC-%EC%93%B0%EB%A0%88%EA%B8%B0-%EA%B0%90%EC%86%8C%EB%A5%BC-%EC%9C%84%ED%95%9C-%EA%B5%AC%EB%82%B4%EC%8B%9D%EB%8B%B9-%EC%98%88%EC%95%BD-%EC%8B%9C%EC%8A%A4%ED%85%9C---%ED%99%94%EB%A9%B4%EC%84%A4%EA%B3%84?node-id=38%3A1794&t=uMUVZ6fB2tUtXnPO-1
+  - 구내식당 관리자는 음식 메뉴를 등록/수정/삭제/품절할 수 있음
+  - 이용객의 예약 현황을 확인하고 식재료 발주량을 추천받을 수 있음
+  - 이용객은 시스템을 통해 음식 메뉴를 조회 및 예약할 수 있음. 또한 예약 이용 시 포인트가 적립되어 추후 결제 시 사용할 수 있음
+  - 시스템은 이용객의 예약 정보 및 정책 데이터를 기반으로 정산 및 필요한 식재료 양 산출을 진행함
+  - 또한 기존 대비 절감된 식재료 양을 시각화하여 제공
 
 ## Case Study
 
-- ### Description
-
 ## Conclusion
 
-- ### OOO
-- ### OOO
+- ### 다른 식당이나 사업장에도 확장 가능한 효율적인 시스템 개발을 통해 지속 가능한 식재료 관리 촉진
+- ### 식재료를 적정 소비하기 위한 수요 데이터 제공
 
 ## Project Outcome
+![웹](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/d075023f-7849-4151-b649-2c4b2cb482b7)
+![앱](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/e0198d1d-7319-4845-96ca-968e896b1a49)
 
 - ### 20XX 년 OO학술대회
 
