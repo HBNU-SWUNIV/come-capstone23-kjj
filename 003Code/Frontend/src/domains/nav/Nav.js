@@ -9,153 +9,43 @@ import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { useKeycloak } from '@react-keycloak/web';
-import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { MdTouchApp } from 'react-icons/md';
-import { useNavigate } from 'react-router-dom';
-import { useRecoilState } from 'recoil';
+import { useState } from 'react';
 import { styled as Cstyled, keyframes } from 'styled-components';
-import { isloginAtom } from '../../atom/loginAtom';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import Api_nav from '../../api/Api_nav';
 import NavLists from '../../components/nav/NavLists';
 import UpdateImgModal from '../../components/nav/UpdateImgModal';
 import UpdateInfoModal from '../../components/nav/UpdateInfoModal';
 import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
-import Api_nav from '../../api/Api_nav';
+import UseNav from './UseNav';
 
 function Nav(props) {
-  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
-  const { keycloak } = useKeycloak();
-  const [cookies, setCookie] = useCookies();
-  const navigate = useNavigate();
-  const config = ConfigWithToken();
-  const formdataConfig = {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-      ...config.headers,
-    },
-  };
-
-  const nameRef = useRef('');
-  const InfoRef = useRef('');
-
-  const { marketDetails, refetchmarketDetails, isLoading } = Api_nav();
-
-  const [form, setForm] = useState({
-    name: '',
-    info: '',
-    image: '',
-  });
-
-  useEffect(() => {
-    setForm({
-      name: marketDetails?.name,
-      info: marketDetails?.info,
-      image: marketDetails?.image,
-    });
-  }, [isLoading, marketDetails]);
-
-  const [isName, setIsName] = useState(false);
-  const [newImage, setNewImage] = useState([]);
-  const [updateInfo, setUpdateInfo] = useState(false);
-  const [updateImage, setUpdateImage] = useState(false);
-  const [updateName, setUpdateName] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
   const [draweropen, setDraweropen] = useState(true);
-
-  useEffect(() => {
-    if (form?.name !== '') setIsName(true);
-    else if (form?.name === '') setIsName(false);
-  }, [form?.name]);
-
   const handledrawer = () => {
     setDraweropen(!draweropen);
   };
 
-  const menuOpenHandler = (e) => {
-    setAnchorEl(e.currentTarget);
-  };
+  const {
+    onLogout,
+    openUpdateModal,
+    closeAllUpdateModals,
+    updateforms,
+    openUsermenuModal,
+    closeUsermenuModal,
+    usermodalOpen,
+    anchorEl,
+  } = UseNav();
 
-  const usermenucloseHandler = () => {
-    setAnchorEl(null);
-  };
-
-  const openUpdateNameModal = () => {
-    setUpdateName(true);
-  };
-  const openUpdateImgModal = () => {
-    setUpdateImage(true);
-    usermenucloseHandler();
-  };
-  const openUpdateInfoModal = () => {
-    setUpdateInfo(true);
-    usermenucloseHandler();
-  };
-  const closeUpdateInfoModal = () => {
-    setUpdateInfo(false);
-  };
-  const closeUpdateImgModal = () => {
-    setUpdateImage(false);
-  };
-  const closeUpdateNameModal = () => {
-    setUpdateName(false);
-  };
-
-  const onUpdateMarketName = () => {
-    const body = {
-      name: nameRef.current.value,
-    };
-    axios.patch(`${ManagerBaseApi}/store/title`, body, config).then((res) => {
-      if (res.status === 200) {
-        closeUpdateNameModal();
-        refetchmarketDetails();
-      }
-    });
-  };
-
-  const onUpdateMarketInfo = () => {
-    let body = {
-      info: InfoRef.current.value,
-    };
-    axios.patch(`${ManagerBaseApi}/store/info`, body, config).then((res) => {
-      if (res.status === 200) {
-        refetchmarketDetails();
-        closeUpdateInfoModal();
-      }
-    });
-  };
-
-  const onUpdateMarketImage = () => {
-    const formdata = new FormData();
-    newImage !== null && formdata.append('file', newImage);
-    axios({
-      method: 'POST',
-      url: `${ManagerBaseApi}/image`,
-      data: formdata,
-      ...formdataConfig,
-    })
-      .then((res) => {
-        if (res.status === 200) refetchmarketDetails();
-      })
-      .catch((err) => alert('이미지 용량이 너무 큽니다.'));
-
-    closeUpdateImgModal();
-  };
-
-  const onLogout = () => {
-    if (keycloak.authenticated) {
-      keycloak.logout();
-    } else {
-      setIsLogin(false);
-    }
-    setCookie('accesstoken', '');
-    setCookie('refreshtoken', '');
-    navigate('/');
-  };
+  const {
+    form,
+    isName,
+    nameRef,
+    InfoRef,
+    updateMarketName,
+    updateMarketInfo,
+    updateMarketImage,
+    setNewImage,
+  } = Api_nav(closeAllUpdateModals);
 
   return (
     <>
@@ -184,23 +74,13 @@ function Nav(props) {
             {props?.pages}
           </Typography>
 
-          {!isName && (
-            <SetNameWrapper>
-              <span onClick={openUpdateNameModal}>
-                클릭
-                <MdTouchApp />
-              </span>
-              <span>식당이름을 설정해주세요</span>
-            </SetNameWrapper>
-          )}
-
           <IconButton
             color="inherit"
             id="fade-button"
-            aria-controls={open ? 'fade-menu' : undefined}
+            aria-controls={usermodalOpen ? 'fade-menu' : undefined}
             aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            onClick={menuOpenHandler}
+            aria-expanded={usermodalOpen ? 'true' : undefined}
+            onClick={openUsermenuModal}
           >
             <AppbarUser>
               <AppbarUserTitle>관리자</AppbarUserTitle>
@@ -241,37 +121,35 @@ function Nav(props) {
 
         <UserMenuModal
           anchorEl={anchorEl}
-          open={open}
-          onClose={usermenucloseHandler}
+          open={usermodalOpen}
+          onClose={closeUsermenuModal}
           Fade={Fade}
-          openUpdateImageModal={openUpdateImgModal}
-          openUpdateNameModal={openUpdateNameModal}
-          openUpdateInfoModal={openUpdateInfoModal}
+          openUpdateModal={openUpdateModal}
           isName={isName}
           onLogout={onLogout}
         />
 
-        <UpdateInfoModal
-          open={updateInfo}
-          onClose={closeUpdateInfoModal}
-          info={form.info}
-          InfoRef={InfoRef}
-          onUpdateMarketInfo={onUpdateMarketInfo}
-        />
-        <UpdateImgModal
-          open={updateImage}
-          onClose={closeUpdateImgModal}
-          image={form.image}
-          setNewImage={setNewImage}
-          onUpdateMarketImage={onUpdateMarketImage}
-        />
         <UpdateNameModal
-          open={updateName}
-          onClose={closeUpdateNameModal}
+          open={updateforms.name}
+          onClose={closeAllUpdateModals}
           isName={isName}
           nameRef={nameRef}
-          name={form.name}
-          onUpdateMarketName={onUpdateMarketName}
+          name={form?.name}
+          onUpdateMarketName={updateMarketName}
+        />
+        <UpdateInfoModal
+          open={updateforms.info}
+          onClose={closeAllUpdateModals}
+          info={form?.info}
+          InfoRef={InfoRef}
+          onUpdateMarketInfo={updateMarketInfo}
+        />
+        <UpdateImgModal
+          open={updateforms.image}
+          onClose={closeAllUpdateModals}
+          image={form?.image}
+          setNewImage={setNewImage}
+          onUpdateMarketImage={updateMarketImage}
         />
       </Drawer>
     </>
@@ -280,6 +158,7 @@ function Nav(props) {
 
 export default Nav;
 
+// Appbar, Drawer은 mui 부트스트랩 기본 함수들, 건드리지 않음.
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({

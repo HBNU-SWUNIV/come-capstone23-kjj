@@ -22,7 +22,7 @@ const FoodSavingStatusChart = () => {
             type: 'column',
           },
           {
-            name: `기존 ${marketDetails.name} 식재료 발주량`,
+            name: `기존 ${marketDetails?.name} 식재료 발주량`,
             data: Object.values(chartdata?.prev),
             type: 'line',
           },
