@@ -1,18 +1,12 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { ConfigWithToken } from '../../auth/authConfig';
 import { c_color } from '../../styles/global';
 import Api_calculate_food from '../../api/Api_calculate_food';
-import { useQuery } from 'react-query';
-import { getMarketDetails } from '../../api/apis';
+import Api_nav from '../../api/Api_nav';
 
 const FoodSavingStatusChart = () => {
-  const config = ConfigWithToken();
   const { chartdata } = Api_calculate_food();
-
-  const { data: marketinfo, isLoading } = useQuery(['market_name', config], () =>
-    getMarketDetails(config)
-  );
+  const { marketDetails } = Api_nav();
 
   return (
     <>
@@ -28,7 +22,7 @@ const FoodSavingStatusChart = () => {
             type: 'column',
           },
           {
-            name: `기존 ${!isLoading && marketinfo.name} 식재료 발주량`,
+            name: `기존 ${marketDetails.name} 식재료 발주량`,
             data: Object.values(chartdata?.prev),
             type: 'line',
           },
