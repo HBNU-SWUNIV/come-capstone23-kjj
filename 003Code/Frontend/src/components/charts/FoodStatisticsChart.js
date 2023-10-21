@@ -1,23 +1,12 @@
 import * as React from 'react';
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { useState, useEffect } from 'react';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import axios from 'axios';
 import styled from 'styled-components';
 import { c_color } from '../../styles/global';
+import Api_charts from '../../api/Api_charts';
 
 export default function FoodStatisticsChart() {
-  const config = ConfigWithToken();
-  const [predictMenus, setPredictMenus] = useState([]);
-  const predictMenusArray = Object.entries(predictMenus);
-
-  useEffect(() => {
-    axios
-      .get(`${ManagerBaseApi}/state/predict/menu`, config)
-      .then((res) => setPredictMenus(res.data))
-      .catch((err) => console.log(err));
-  }, []);
+  const { predictMenusArray } = Api_charts();
 
   return (
     <>
@@ -30,12 +19,12 @@ export default function FoodStatisticsChart() {
             width={400}
             height={400}
             type="pie"
-            series={predictMenusArray.map((items) => items[1])}
+            series={predictMenusArray?.map((items) => items[1])}
             options={{
               chart: {
                 toolbar: { show: false, type: 'pie' },
               },
-              labels: predictMenusArray.map((items) => items[0]),
+              labels: predictMenusArray?.map((items) => items[0]),
             }}
           />
         </ChartWrapper>

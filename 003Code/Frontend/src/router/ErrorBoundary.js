@@ -32,12 +32,8 @@ const ErrorBoundary = () => {
   error !== undefined && console.log('errorBoundary catch errors =', error);
 
   useEffect(() => {
-    if (
-      (!cookies.accesstoken && islogin) ||
-      (!cookies.accesstoken && keycloak.authenticated)
-    )
-      reIssuetoken(setCookie, configWithRefreshtoken);
-  }, [cookies.accesstoken]);
+    reIssuetoken(setCookie, configWithRefreshtoken);
+  }, []);
 
   return (
     <Wrapper>예상치 못한 오류가 발생하였습니다. 새로고침 후 다시 이용해주세요.</Wrapper>

@@ -1,24 +1,10 @@
-import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import Api_charts from '../../api/Api_charts';
 import { c_color } from '../../styles/global';
+import Title from '../general/Title';
 
 const FoodNeccesaryChart = () => {
-  const [predict, setPredict] = useState([]);
-  const config = ConfigWithToken();
-  const predictArray = Object.entries(predict);
-
-  useEffect(() => {
-    axios
-      .get(`${ManagerBaseApi}/state/predict/food`, config)
-      .then((res) => setPredict(res.data))
-      .catch((err) => {
-        if (err.response.status === 403) {
-        }
-      });
-  }, []);
+  const { predictfoodsArray } = Api_charts();
 
   return (
     <>
@@ -30,7 +16,7 @@ const FoodNeccesaryChart = () => {
         series={[
           {
             name: '무게(g)',
-            data: predictArray.map((a) => a[1]),
+            data: predictfoodsArray.map((a) => a[1]),
           },
         ]}
         height={270}
@@ -49,7 +35,7 @@ const FoodNeccesaryChart = () => {
             },
           },
           xaxis: {
-            categories: predictArray.map((a) => a[0]),
+            categories: predictfoodsArray.map((a) => a[0]),
           },
           yaxis: {
             labels: {
