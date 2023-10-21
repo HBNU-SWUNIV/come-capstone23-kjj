@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 public class ServiceExceptionHandlingAspect {
 
     private final SlackTools slackTools;
+    private final ThreadLocal<Boolean> authFlag = ThreadLocal.withInitial(() -> false);
+    private final ThreadLocal<Boolean> serviceFlag = ThreadLocal.withInitial(() -> false);
 
     // 접근제어자(생략) / 반환타입(*) / 선언타입(com.hanbat.zanbanzero.auth..) 및 하위 모든 패키지 / 클래스명, 메소드이름(*.*) / 파라미터(..)
     @Pointcut("execution(* com.hanbat.zanbanzero.auth..*.*(..))")
@@ -28,18 +30,21 @@ public class ServiceExceptionHandlingAspect {
     /**
      * 에러 발생 시 slack 메시지 알림 전송하는 AOP
      */
-    @AfterThrowing(pointcut = "authPointcut()", throwing = "ex")
+    @AfterThrowing(pointcut = "authPointcut() || controllerPointcut()", throwing = "ex")
     public void handleAuthException(JoinPoint joinPoint, Exception ex) {
-        slackTools.sendSlackMessage(ex, "[auth Filter] ", joinPoint.getSignature().getName(), ex.getMessage());
-    }
-
-    @AfterThrowing(pointcut = "controllerPointcut()", throwing = "ex")
-    public void handleControllerException(JoinPoint joinPoint, Exception ex)  {
-        slackTools.sendSlackMessage(ex, "[Controller] ", joinPoint.getSignature().getName(), ex.getMessage());
+        if (serviceFlag.get() || authFlag.get()) {
+            serviceFlag.set(false);
+            authFlag.set(false);
+        }
+        else {
+            authFlag.set(true);
+            slackTools.sendSlackMessage(ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), ex.getMessage());
+        }
     }
 
     @AfterThrowing(pointcut = "servicePointcut()", throwing = "ex")
     public void handleServiceException(JoinPoint joinPoint, Exception ex) {
-        slackTools.sendSlackMessage(ex, "[Service] ", joinPoint.getSignature().getName(), ex.getMessage());
+        serviceFlag.set(true);
+        slackTools.sendSlackMessage(ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), ex.getMessage());
     }
 }
