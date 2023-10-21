@@ -12,7 +12,7 @@ const Api_nav = () => {
   } = useQuery(['getmarket', config], () => getMarketDetails(config));
 
   return {
-    marketDetails,
+    marketDetails: !isLoading && marketDetails,
     refetchmarketDetails,
     isLoading,
   };
