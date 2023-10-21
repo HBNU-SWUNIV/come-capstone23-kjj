@@ -4,6 +4,8 @@ import { ManagerBaseApi } from '../auth/authConfig';
 const holiday_service_key = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holiday_base_api = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
 
+// useQuery 사용을 위한 파일입니다.
+
 // charts
 export async function getReservation(config) {
   try {
@@ -20,6 +22,42 @@ export async function getIngredientsInfo(config) {
     return response.data;
   } catch (err) {
     console.error('getIngredientsInfo_Error=', err);
+  }
+}
+
+export async function getStatusFood(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/state/next-week/food`, config);
+    return response.data;
+  } catch (err) {
+    console.error('err', err);
+  }
+}
+
+export async function getPredictMenus(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/state/predict/menu`, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getPredictFoods(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/state/predict/food`, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+export async function getTodayPop(config) {
+  try {
+    const response = await axios.get(`${ManagerBaseApi}/state/today`, config);
+    return response.data;
+  } catch (err) {
+    console.error(err);
   }
 }
 
@@ -54,12 +92,8 @@ export async function getDailyMenu(config, year, month) {
 
 // dayoff
 export async function getOffDay(config, year, month) {
-  try {
-    const response = await axios.get(`/api/user/store/off/${year}/${month}`, config);
-    return response.data;
-  } catch (err) {
-    console.error('getOffday_Error=', err);
-  }
+  const response = await getAxios(`/api/user/store/off/${year}/${month}`, config);
+  return response;
 }
 
 export async function getHoliday(year, month) {
@@ -72,3 +106,18 @@ export async function getHoliday(year, month) {
     console.error('getHoliday_Error=', err);
   }
 }
+
+// nav
+export async function getMarketDetails(config) {
+  const res = await getAxios(`${ManagerBaseApi}/setting`, config);
+  return res;
+}
+
+const getAxios = async (src, config) => {
+  try {
+    const response = await axios.get(`${src}`, config);
+    return response.data;
+  } catch (err) {
+    console.log(err);
+  }
+};

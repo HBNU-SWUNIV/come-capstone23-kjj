@@ -1,24 +1,12 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { c_color } from '../../styles/global';
+import Api_calculate_food from '../../api/Api_calculate_food';
+import Api_nav from '../../api/Api_nav';
 
 const FoodSavingStatusChart = () => {
-  const config = ConfigWithToken();
-  const [marketname, setMarketname] = useState('');
-
-  useEffect(() => {
-    axios
-      .get(`${ManagerBaseApi}/setting`, config)
-      .then((res) => {
-        setMarketname(res.data.name);
-      })
-      .catch((err) => {
-        if (err.response.status === 403) console.log(err);
-      });
-  }, []);
+  const { chartdata } = Api_calculate_food();
+  const { marketDetails } = Api_nav();
 
   return (
     <>
@@ -30,12 +18,12 @@ const FoodSavingStatusChart = () => {
         series={[
           {
             name: '서비스 기반 식재료 발주량',
-            data: [24, 35, 5, 30, 12],
+            data: Object.values(chartdata?.next),
             type: 'column',
           },
           {
-            name: `기존 ${marketname} 식재료 발주량`,
-            data: [44, 55, 11, 66, 25],
+            name: `기존 ${marketDetails.name} 식재료 발주량`,
+            data: Object.values(chartdata?.prev),
             type: 'line',
           },
         ]}

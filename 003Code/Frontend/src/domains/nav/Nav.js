@@ -24,6 +24,7 @@ import UpdateImgModal from '../../components/nav/UpdateImgModal';
 import UpdateInfoModal from '../../components/nav/UpdateInfoModal';
 import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
+import Api_nav from '../../api/Api_nav';
 
 function Nav(props) {
   const [islogin, setIsLogin] = useRecoilState(isloginAtom);
@@ -41,15 +42,22 @@ function Nav(props) {
   const nameRef = useRef('');
   const InfoRef = useRef('');
 
+  const { marketDetails, refetchmarketDetails, isLoading } = Api_nav();
+
   const [form, setForm] = useState({
     name: '',
     info: '',
     image: '',
   });
 
-  const [name, setName] = useState('');
-  const [info, setInfo] = useState('');
-  const [image, setImage] = useState('');
+  useEffect(() => {
+    setForm({
+      name: marketDetails?.name,
+      info: marketDetails?.info,
+      image: marketDetails?.image,
+    });
+  }, [isLoading, marketDetails]);
+
   const [isName, setIsName] = useState(false);
   const [newImage, setNewImage] = useState([]);
   const [updateInfo, setUpdateInfo] = useState(false);
@@ -57,46 +65,41 @@ function Nav(props) {
   const [updateName, setUpdateName] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [open1, setOpen] = useState(true);
+  const [draweropen, setDraweropen] = useState(true);
 
   useEffect(() => {
-    getMarketDetails();
-    getMarketImage();
-  }, []);
+    if (form?.name !== '') setIsName(true);
+    else if (form?.name === '') setIsName(false);
+  }, [form?.name]);
 
-  useEffect(() => {
-    if (name !== '') setIsName(true);
-    else if (name === '') setIsName(false);
-  }, [name]);
-
-  const menuOpenHandler = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handledrawer = () => {
+    setDraweropen(!draweropen);
   };
-  const menuCloseHandler = () => {
+
+  const menuOpenHandler = (e) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const usermenucloseHandler = () => {
     setAnchorEl(null);
-  };
-  const toggleDrawer = () => {
-    setOpen(!open1);
-  };
-
-  const openUpdateInfoModal = () => {
-    setUpdateInfo(true);
-    menuCloseHandler();
-  };
-  const closeUpdateInfoModal = () => {
-    setUpdateInfo(false);
-  };
-
-  const openUpdateImageModal = () => {
-    setUpdateImage(true);
-    menuCloseHandler();
-  };
-  const closeUpdateImageModal = () => {
-    setUpdateImage(false);
   };
 
   const openUpdateNameModal = () => {
     setUpdateName(true);
+  };
+  const openUpdateImgModal = () => {
+    setUpdateImage(true);
+    usermenucloseHandler();
+  };
+  const openUpdateInfoModal = () => {
+    setUpdateInfo(true);
+    usermenucloseHandler();
+  };
+  const closeUpdateInfoModal = () => {
+    setUpdateInfo(false);
+  };
+  const closeUpdateImgModal = () => {
+    setUpdateImage(false);
   };
   const closeUpdateNameModal = () => {
     setUpdateName(false);
@@ -108,8 +111,8 @@ function Nav(props) {
     };
     axios.patch(`${ManagerBaseApi}/store/title`, body, config).then((res) => {
       if (res.status === 200) {
-        getMarketDetails();
         closeUpdateNameModal();
+        refetchmarketDetails();
       }
     });
   };
@@ -120,7 +123,7 @@ function Nav(props) {
     };
     axios.patch(`${ManagerBaseApi}/store/info`, body, config).then((res) => {
       if (res.status === 200) {
-        getMarketDetails();
+        refetchmarketDetails();
         closeUpdateInfoModal();
       }
     });
@@ -136,28 +139,11 @@ function Nav(props) {
       ...formdataConfig,
     })
       .then((res) => {
-        if (res.status === 200) getMarketImage();
+        if (res.status === 200) refetchmarketDetails();
       })
       .catch((err) => alert('이미지 용량이 너무 큽니다.'));
 
-    closeUpdateImageModal();
-  };
-
-  const getMarketDetails = () => {
-    axios
-      .get(`${ManagerBaseApi}/setting`, config)
-      .then((res) => {
-        setInfo(res.data.info);
-        setName(res.data.name);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getMarketImage = () => {
-    axios
-      .get(`/api/user/store`, config)
-      .then((res) => setImage(res.data.image))
-      .catch((err) => console.log(err));
+    closeUpdateImgModal();
   };
 
   const onLogout = () => {
@@ -173,20 +159,21 @@ function Nav(props) {
 
   return (
     <>
-      <AppBar position="absolute" open={open1}>
+      <AppBar position="absolute" open={draweropen}>
         <Toolbar sx={headerToolbarStyle}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={toggleDrawer}
+            onClick={handledrawer}
             sx={{
               marginRight: '36px',
-              ...(open1 && { display: 'none' }),
+              ...(draweropen && { display: 'none' }),
             }}
           >
             <MenuIcon />
           </IconButton>
+
           <Typography
             component="h1"
             variant="h6"
@@ -225,7 +212,7 @@ function Nav(props) {
                     fontSize: '18px',
                   }}
                 >
-                  {name}
+                  {form?.name}
                 </span>
               )}
             </AppbarUser>
@@ -233,9 +220,9 @@ function Nav(props) {
         </Toolbar>
       </AppBar>
 
-      <Drawer variant="permanent" open={open1}>
+      <Drawer variant="permanent" open={draweropen}>
         <Toolbar sx={drawerToolbarStyle}>
-          <IconButton onClick={toggleDrawer}>
+          <IconButton onClick={handledrawer}>
             <ChevronLeftIcon />
           </IconButton>
         </Toolbar>
@@ -244,7 +231,7 @@ function Nav(props) {
         <List component="nav" sx={listStyle}>
           <ListImageWrapper>
             <ListImage
-              src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + image}
+              src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + form?.image}
               alt="이미지 없음"
             />
             <ListImageText>식재료 절약단</ListImageText>
@@ -255,9 +242,9 @@ function Nav(props) {
         <UserMenuModal
           anchorEl={anchorEl}
           open={open}
-          onClose={menuCloseHandler}
+          onClose={usermenucloseHandler}
           Fade={Fade}
-          openUpdateImageModal={openUpdateImageModal}
+          openUpdateImageModal={openUpdateImgModal}
           openUpdateNameModal={openUpdateNameModal}
           openUpdateInfoModal={openUpdateInfoModal}
           isName={isName}
@@ -267,14 +254,14 @@ function Nav(props) {
         <UpdateInfoModal
           open={updateInfo}
           onClose={closeUpdateInfoModal}
-          info={info}
+          info={form.info}
           InfoRef={InfoRef}
           onUpdateMarketInfo={onUpdateMarketInfo}
         />
         <UpdateImgModal
           open={updateImage}
-          onClose={closeUpdateImageModal}
-          image={image}
+          onClose={closeUpdateImgModal}
+          image={form.image}
           setNewImage={setNewImage}
           onUpdateMarketImage={onUpdateMarketImage}
         />
@@ -283,7 +270,7 @@ function Nav(props) {
           onClose={closeUpdateNameModal}
           isName={isName}
           nameRef={nameRef}
-          name={name}
+          name={form.name}
           onUpdateMarketName={onUpdateMarketName}
         />
       </Drawer>
