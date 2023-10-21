@@ -8,37 +8,32 @@ import {
   TextField,
 } from '@mui/material';
 
-const UpdateNameModal = ({
-  open,
-  onClose,
-  isName,
-  nameRef,
-  name,
-  onUpdateMarketName,
-}) => {
+const UpdateNameModal = (props) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle sx={DialogTitleStyle}>
-        식당 이름 {isName ? '수정' : '설정'}
+        식당 이름 {props.isName ? '수정' : '설정'}
       </DialogTitle>
       <DialogContent>
         <DialogContentText sx={DialogTextStyle}>
-          소비자도 쉽게 확인할 수 있는 방법으로 식당 이름을 {isName ? '수정' : '설정'}
+          소비자도 쉽게 확인할 수 있는 방법으로 식당 이름을{' '}
+          {props.isName ? '수정' : '설정'}
           해주세요
         </DialogContentText>
         <TextField
           autoFocus
           margin="dense"
           id="nameRef"
-          inputRef={nameRef}
-          placeholder={isName ? name : ''}
-          label={isName ? '기존 식당 이름' : '식당 이름'}
+          inputRef={props.nameRef}
+          placeholder={props.isName ? props.name : ''}
+          label={props.isName ? '기존 식당 이름' : '식당 이름'}
           fullWidth
         />
       </DialogContent>
+
       <DialogActions>
-        <Button onClick={onUpdateMarketName}>등록</Button>
-        <Button color="error" onClick={onClose}>
+        <Button onClick={props.onUpdateMarketName}>등록</Button>
+        <Button color="error" onClick={props.onClose}>
           닫기
         </Button>
       </DialogActions>

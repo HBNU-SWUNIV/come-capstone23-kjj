@@ -7,11 +7,10 @@ import {
   DialogTitle,
   TextField,
 } from '@mui/material';
-import React from 'react';
 
-const UpdateInfoModal = ({ open, onClose, info, InfoRef, onUpdateMarketInfo }) => {
+const UpdateInfoModal = (props) => {
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle sx={DialogTitleStyle}>식당 소개 메시지 변경</DialogTitle>
       <DialogContent>
         <DialogContentText sx={{ ...DialogTextStyle, marginBottom: '10px' }}>
@@ -24,22 +23,23 @@ const UpdateInfoModal = ({ open, onClose, info, InfoRef, onUpdateMarketInfo }) =
             multiline
             disabled
             rows={5}
-            defaultValue={info}
+            defaultValue={props.info}
           />
           <TextField
             sx={{ ml: '2vw' }}
             id="outlined-multiline-static"
             label="식당 소개 메시지 변경"
             multiline
-            inputRef={InfoRef}
+            inputRef={props.InfoRef}
             rows={5}
-            placeholder={info}
+            placeholder={props.info}
           />
         </div>
       </DialogContent>
+
       <DialogActions>
-        <Button onClick={onUpdateMarketInfo}>등록</Button>
-        <Button color="error" onClick={onClose}>
+        <Button onClick={props.onUpdateMarketInfo}>등록</Button>
+        <Button color="error" onClick={props.onClose}>
           닫기
         </Button>
       </DialogActions>
