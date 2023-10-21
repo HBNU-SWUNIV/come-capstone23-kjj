@@ -6,6 +6,12 @@ spring:
   application:
     name: zanbanzero
 
+  task:
+    execution:
+      pool:
+        core-size: 1
+        max-size: 1
+
   # data.sql
   jpa:
     hibernate:
@@ -35,6 +41,7 @@ management:
       enabled: true
     prometheus:
       enabled: true
+
 ---
 spring:
   config:

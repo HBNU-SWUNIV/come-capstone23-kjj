@@ -32,7 +32,7 @@ public class SlackTools {
         LocalDate time = LocalDate.now();
         return Attachment.builder()
                 .color("ff0000")
-                .title(pointcut + time + " 발생 에러 로그")
+                .title("[" + pointcut + "]" + time + " 발생 에러 로그")
                 .fields(List.of(
                                 generateSlackField("Class", e.getClass().getSimpleName()),
                                 generateSlackField("Error Message", e.getMessage()),
