@@ -1,12 +1,18 @@
 package com.hanbat.zanbanzero.aop;
 
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.exception.tool.SlackTools;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
@@ -14,6 +20,8 @@ import org.springframework.stereotype.Component;
 public class ServiceExceptionHandlingAspect {
 
     private final SlackTools slackTools;
+    private final JwtUtil jwtUtil;
+    private static final Logger logger = LoggerFactory.getLogger("errorLogger");
     private final ThreadLocal<Boolean> authFlag = ThreadLocal.withInitial(() -> false);
     private final ThreadLocal<Boolean> serviceFlag = ThreadLocal.withInitial(() -> false);
 
@@ -45,6 +53,18 @@ public class ServiceExceptionHandlingAspect {
     @AfterThrowing(pointcut = "servicePointcut()", throwing = "ex")
     public void handleServiceException(JoinPoint joinPoint, Exception ex) {
         serviceFlag.set(true);
+        sendLog(joinPoint, ex);
         slackTools.sendSlackMessage(ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), ex.getMessage());
+    }
+
+    private void sendLog(JoinPoint joinPoint, Exception ex) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String username = jwtUtil.getUsernameFromRequest(request);
+        logger.error("[{}] {}:{} {} - {}",
+                username,
+                joinPoint.getTarget().getClass().getName(),
+                joinPoint.getSignature().getName(),
+                ex.getClass().getSimpleName(),
+                ex.getMessage());
     }
 }
