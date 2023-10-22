@@ -4,7 +4,7 @@ const UserMenuModal = (props) => {
   const usermenulists = [
     {
       htmlforname: 'name',
-      text: '식당 이름' + props.isName ? '수정' : '설정',
+      text: props.isName ? '식당 이름 수정' : '식당 이름 설정',
     },
     {
       htmlforname: 'info',
@@ -33,7 +33,7 @@ const UserMenuModal = (props) => {
     >
       {usermenulists.map((item) => (
         <label
-          key={item.htmlforname}
+          key={item.text}
           htmlFor={item.htmlforname}
           onClick={item.onClick ? item.onClick : (e) => props.openUpdateModal(e)}
         >

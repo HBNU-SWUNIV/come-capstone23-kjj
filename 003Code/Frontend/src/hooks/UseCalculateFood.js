@@ -1,9 +1,9 @@
 import { useQuery } from 'react-query';
 import { ConfigWithToken } from '../auth/authConfig';
-import { getStatusFood } from './apis';
+import { getStatusFood } from '../api/apis';
 import { useEffect, useState } from 'react';
 
-const Api_calculate_food = () => {
+const UseCalculateFood = () => {
   const config = ConfigWithToken();
   const { data, isLoading } = useQuery(['getFood', config], () => getStatusFood(config));
 
@@ -42,4 +42,4 @@ const Api_calculate_food = () => {
   return { chartdata, calculatedValue };
 };
 
-export default Api_calculate_food;
+export default UseCalculateFood;

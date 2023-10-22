@@ -1,10 +1,10 @@
 import ApexCharts from 'react-apexcharts';
-import Api_charts from '../../api/Api_charts';
+import UseGetCharts from '../../hooks/UseGetCharts';
 import { c_color } from '../../styles/global';
 import Title from '../general/Title';
 
 const FoodNeccesaryChart = () => {
-  const { predictfoodsArray } = Api_charts();
+  const { predictfoodsArray } = UseGetCharts();
 
   return (
     <>
