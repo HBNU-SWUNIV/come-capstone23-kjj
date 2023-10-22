@@ -113,7 +113,7 @@ export async function getMarketDetails(config) {
   return res;
 }
 
-const getAxios = async (src, config) => {
+export const getAxios = async (src, config) => {
   try {
     const response = await axios.get(`${src}`, config);
     return response.data;

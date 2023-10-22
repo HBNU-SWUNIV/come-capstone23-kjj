@@ -1,10 +1,10 @@
 import { useQuery } from 'react-query';
-import { getMarketDetails } from './apis';
+import { getMarketDetails } from '../api/apis';
 import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
-const Api_nav = (closeFn) => {
+const UseNavApi = (closeFn) => {
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
@@ -96,4 +96,4 @@ const Api_nav = (closeFn) => {
   };
 };
 
-export default Api_nav;
+export default UseNavApi;

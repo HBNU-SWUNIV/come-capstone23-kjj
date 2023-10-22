@@ -11,13 +11,13 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { styled as Cstyled, keyframes } from 'styled-components';
-import Api_nav from '../../api/Api_nav';
 import NavLists from '../../components/nav/NavLists';
 import UpdateImgModal from '../../components/nav/UpdateImgModal';
 import UpdateInfoModal from '../../components/nav/UpdateInfoModal';
 import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
-import UseNav from './UseNav';
+import UseNav from '../../hooks/UseNav';
+import UseNavApi from '../../hooks/UseNavApi';
 
 function Nav(props) {
   const [draweropen, setDraweropen] = useState(true);
@@ -45,7 +45,7 @@ function Nav(props) {
     updateMarketInfo,
     updateMarketImage,
     setNewImage,
-  } = Api_nav(closeAllUpdateModals);
+  } = UseNavApi(closeAllUpdateModals);
 
   return (
     <>

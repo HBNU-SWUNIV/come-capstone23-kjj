@@ -1,23 +1,33 @@
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Paper from '@mui/material/Paper';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
+import {
+  Avatar,
+  Box,
+  Button,
+  CssBaseline,
+  Grid,
+  Paper,
+  Skeleton,
+  TextField,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Copyright from '../../components/general/Copyright';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Skeleton from '@mui/material/Skeleton';
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import Copyright from '../../components/general/Copyright';
 import ErrorInform from '../../components/general/ErrorInform';
 import background from '../../image/capstone_background.png';
+import UseValidate from '../../hooks/UseValidate';
+import UseInput from '../../hooks/UseInput';
 
 export default function InitialLogin() {
+  const { data, handleDatas } = UseInput();
+  const { error, validateNull } = UseValidate({ data });
+  const [image, setImage] = useState([]);
+  const isNotnull = error.get('name') == false && error.get('info') == false;
   const navigate = useNavigate();
   const config = ConfigWithToken();
   const formdataConfig = {
@@ -26,42 +36,31 @@ export default function InitialLogin() {
       ...config.headers,
     },
   };
-  const [name, setname] = useState('');
-  const [info, setInfo] = useState('');
-  const [image, setImage] = useState([]);
-  const [nameError, setNameError] = useState(false);
-  const [infoError, setInfoError] = useState(false);
+
+  const marketdatas = {
+    name: data.get('name'),
+    info: data.get('info'),
+  };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    if (name === '' || info === '') return;
+    if (!isNotnull) return;
+
     try {
       if (image !== null) setMarketImage();
-      setMarketName();
-      setMarketInfo();
+      patchMarketInfos({ name: 'name', data: marketdatas?.name, shortsrc: 'title' });
+      patchMarketInfos({ name: 'info', data: marketdatas?.info, shortsrc: 'info' });
       navigate('/home');
     } catch {
       console.log('초기설정 에러');
     }
   };
 
-  const handleError = () => {
-    name === '' ? setNameError(true) : setNameError(false);
-    info === '' ? setInfoError(true) : setInfoError(false);
-  };
-
-  const setMarketName = () => {
+  const patchMarketInfos = ({ name, data, shortsrc }) => {
     const body = {
-      name,
+      [name]: data,
     };
-    axios.patch(`${ManagerBaseApi}/store/title`, body, config);
-  };
-
-  const setMarketInfo = () => {
-    const body = {
-      info,
-    };
-    axios.patch(`${ManagerBaseApi}/store/info`, body, config);
+    axios.patch(`${ManagerBaseApi}/store/${shortsrc}`, body, config);
   };
 
   const setMarketImage = () => {
@@ -77,34 +76,31 @@ export default function InitialLogin() {
     }
   };
 
+  const initialLoginInputDatas = [
+    {
+      inputname: 'name',
+      value: marketdatas?.name,
+      label: '식당 명',
+      autofocus: true,
+      condition: error.get('name'),
+      errormessage: '식당명을 입력해주세요.',
+    },
+    {
+      inputname: 'info',
+      value: marketdatas?.info,
+      label: '식당 소개',
+      condition: error.get('info'),
+      errormessage: '식당소개를 입력해주세요.',
+    },
+  ];
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: `url(${background})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'top center',
-          }}
-        />
+        <Grid item xs={false} sm={4} md={7} sx={initialloginGridStyle} />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+          <Box sx={initialloginBoxStyle}>
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
@@ -113,45 +109,30 @@ export default function InitialLogin() {
             </Typography>
 
             <div onClick={() => navigate('/home')}>
-              <Typography
-                sx={{
-                  cursor: 'pointer',
-
-                  fontSize: '15px',
-                }}
-                color="error"
-              >
+              <Typography sx={nextsetuptextStyle} color="error">
                 다음에 등록하기
               </Typography>
             </div>
+
             <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="name"
-                label="식당명"
-                name="식당명"
-                value={name}
-                onBlur={handleError}
-                onChange={(e) => setname(e.target.value)}
-                autoComplete="name"
-                autoFocus
-              />
-              {nameError && <ErrorInform message="식당명을 입력해주세요." />}
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                value={info}
-                onBlur={handleError}
-                onChange={(e) => setInfo(e.target.value)}
-                name="소개"
-                label="식당 소개"
-                id="info"
-                autoComplete="current-info"
-              />
-              {infoError && <ErrorInform message="식당 소개를 입력해주세요." />}
+              {initialLoginInputDatas.map((item) => (
+                <React.Fragment key={item.inputname}>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id={item.inputname}
+                    label={item.label}
+                    name={item.inputname}
+                    value={item.value}
+                    onBlur={validateNull}
+                    onChange={handleDatas}
+                    autoComplete={item.inputname}
+                    autofocus={item.autofocus}
+                  />
+                  {item.condition && <ErrorInform message={item.errormessage} />}
+                </React.Fragment>
+              ))}
 
               <Typography
                 sx={{ fontWeight: 500, marginTop: '20px' }}
@@ -188,3 +169,23 @@ export default function InitialLogin() {
 }
 
 const defaultTheme = createTheme();
+const initialloginGridStyle = {
+  backgroundImage: `url(${background})`,
+  backgroundRepeat: 'no-repeat',
+  backgroundColor: (t) =>
+    t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+  backgroundSize: 'cover',
+  backgroundPosition: 'top center',
+};
+
+const initialloginBoxStyle = {
+  my: 8,
+  mx: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
+const nextsetuptextStyle = {
+  cursor: 'pointer',
+  fontSize: '15px',
+};

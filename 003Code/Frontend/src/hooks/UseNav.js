@@ -1,5 +1,5 @@
 import { useSetRecoilState } from 'recoil';
-import { isloginAtom } from '../../atom/loginAtom';
+import { isloginAtom } from '../atom/loginAtom';
 import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
 import { useNavigate } from 'react-router-dom';
@@ -14,11 +14,10 @@ const UseNav = () => {
 
   const onLogout = () => {
     if (keycloak.authenticated) keycloak.logout();
-    else setIslogin(false);
-
+    else if (!keycloak.authenticated) setIslogin(false);
+    navigate('/login');
     setCookie('accesstoken', '');
     setCookie('refreshtoken', '');
-    navigate('/');
   };
 
   // updates

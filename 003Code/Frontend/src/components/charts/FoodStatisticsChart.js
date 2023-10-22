@@ -3,10 +3,10 @@ import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import styled from 'styled-components';
 import { c_color } from '../../styles/global';
-import Api_charts from '../../api/Api_charts';
+import UseGetCharts from '../../hooks/UseGetCharts';
 
 export default function FoodStatisticsChart() {
-  const { predictMenusArray } = Api_charts();
+  const { predictMenusArray } = UseGetCharts();
 
   return (
     <>

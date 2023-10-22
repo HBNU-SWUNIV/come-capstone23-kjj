@@ -1,10 +1,10 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import { c_color } from '../../styles/global';
-import Api_charts from '../../api/Api_charts';
+import UseGetCharts from '../../hooks/UseGetCharts';
 
 const UserReservationChart = () => {
-  const { reservationArray } = Api_charts();
+  const { reservationArray } = UseGetCharts();
   return (
     <>
       <>

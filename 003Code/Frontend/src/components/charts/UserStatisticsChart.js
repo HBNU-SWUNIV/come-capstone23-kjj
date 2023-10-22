@@ -4,12 +4,12 @@ import Title from '../general/Title';
 import Divider from '@mui/material/Divider';
 import { styled } from 'styled-components';
 import { c_color } from '../../styles/global';
-import Api_calculate_food from '../../api/Api_calculate_food';
-import Api_charts from '../../api/Api_charts';
+import UseCalculateFood from '../../hooks/UseCalculateFood';
+import UseGetCharts from '../../hooks/UseGetCharts';
 
 export default function UserStatisticsChart() {
-  const { calculatedValue } = Api_calculate_food();
-  const { todaypop, todaydates } = Api_charts();
+  const { calculatedValue } = UseCalculateFood();
+  const { todaypop, todaydates } = UseGetCharts();
 
   const userArray = [
     {
