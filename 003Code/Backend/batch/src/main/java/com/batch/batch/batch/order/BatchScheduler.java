@@ -102,8 +102,8 @@ public class BatchScheduler {
         if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("predictWeekJob");
     }
 
-    @Scheduled(cron = "0 42 5 * * ?")
+    @Scheduled(cron = "0 0 5 * * ?")
     public void t() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, SQLException {
-//        predictWeekJob();
+//        runOrderJob();
     }
 }

@@ -23,7 +23,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/jhm10/Documents/Git/come-capstone23-kjj",
+    "last_opened_file_path": "C:/Users/jhm10/Documents/Git/come-capstone23-kjj/003Code/Backend/api",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -36,7 +36,11 @@
       <option name="presentableId" value="Default" />
       <updated>1688375675486</updated>
       <workItem from="1688375678533" duration="2000" />
+      <workItem from="1697956299151" duration="22000" />
     </task>
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
   </component>
 </project>

@@ -63,8 +63,13 @@ public class CountOrdersByDateTasklet implements Tasklet {
     private int getSales() {
         int sales = 0;
         Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
-        for (Map.Entry<String, Integer> entry : resultMap.entrySet())
+        for (Map.Entry<String, Integer> entry : resultMap.entrySet()) {
+            if (!nameToCostMap.containsKey(entry.getKey())) {
+                log.warn("TRASH DATA FOUND : name = {}", entry.getKey());
+                continue;
+            }
             sales += nameToCostMap.get(entry.getKey()) * entry.getValue();
+        }
 
         return sales;
     }

@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -41,6 +42,14 @@ public class JwtUtil {
         token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
         return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim(USERNAME).asString();
+    }
+
+    public String getUsernameFromRequest(HttpServletRequest request){
+        String token = request.getHeader("Authorization");
+        if (token == null) return "token is null";
+        String username = getUsernameFromToken(token);
+        if (username == null) throw new JwtTokenException("username can not be null");
+        return username;
     }
 
     public Long getIdFromToken(String token) {
