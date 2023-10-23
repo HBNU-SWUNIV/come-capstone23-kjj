@@ -17,11 +17,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class ServiceExceptionHandlingAspect {
+public class ExceptionHandlingAspect {
 
     private final SlackTools slackTools;
     private final JwtUtil jwtUtil;
-    private static final Logger logger = LoggerFactory.getLogger("errorLogger");
+    private final Logger logger = LoggerFactory.getLogger("errorLogger");
     private final ThreadLocal<Boolean> authFlag = ThreadLocal.withInitial(() -> false);
     private final ThreadLocal<Boolean> serviceFlag = ThreadLocal.withInitial(() -> false);
 
@@ -41,8 +41,8 @@ public class ServiceExceptionHandlingAspect {
     @AfterThrowing(pointcut = "authPointcut() || controllerPointcut()", throwing = "ex")
     public void handleAuthException(JoinPoint joinPoint, Exception ex) {
         if (serviceFlag.get() || authFlag.get()) {
-            serviceFlag.set(false);
-            authFlag.set(false);
+            serviceFlag.remove();
+            authFlag.remove();
         }
         else {
             authFlag.set(true);

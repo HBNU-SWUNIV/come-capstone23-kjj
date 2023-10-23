@@ -43,7 +43,7 @@ public class AuthenticationProviderImpl implements AuthenticationProvider {
         else throw new AuthenticationServiceException("wrong uri : " + uri);
 
         if (password == null || !bCryptPasswordEncoder.matches(password, principalDetails.getPassword())) {
-            throw new AuthenticationServiceException("인증 실패");
+            throw new AuthenticationServiceException("인증 실패 - password : " + password);
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();

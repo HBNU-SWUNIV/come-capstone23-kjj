@@ -45,7 +45,9 @@ public class JwtUtil {
     }
 
     public String getUsernameFromRequest(HttpServletRequest request){
-        String username = getUsernameFromToken(request.getHeader("Authorization"));
+        String token = request.getHeader("Authorization");
+        if (token == null) return "token is null";
+        String username = getUsernameFromToken(token);
         if (username == null) throw new JwtTokenException("username can not be null");
         return username;
     }
