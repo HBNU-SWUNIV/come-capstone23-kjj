@@ -1,20 +1,24 @@
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Avatar from '@mui/material/Avatar';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import { useKeycloak } from '@react-keycloak/web';
+import {
+  Avatar,
+  Box,
+  Button,
+  CssBaseline,
+  Grid,
+  Paper,
+  TextField,
+  ThemeProvider,
+  Typography,
+  createTheme,
+} from '@mui/material';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useKeycloak } from '@react-keycloak/web';
 import { useCookies } from 'react-cookie';
 import { useActionData, useNavigate, useNavigation, useSubmit } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
+
+import React, { useEffect, useState } from 'react';
 import { isloginAtom } from '../../atom/loginAtom';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Copyright from '../../components/general/Copyright';
@@ -22,67 +26,32 @@ import ErrorInform from '../../components/general/ErrorInform';
 import LoadingDots from '../../components/general/LoadingDots';
 import background from '../../image/capstone_background.png';
 import keycloakimg from '../../image/keycloak.png';
+import { validateRules } from '../../auth/validateRules';
+import UseValidate from '../../hooks/UseValidate';
+import UseInput from '../../hooks/UseInput';
 
 export default function Login() {
+  const { error, validateWithRules } = UseValidate({ rules: validateRules });
+  const { data, handleDatas } = UseInput();
+  const [islogined, setIslogined] = useRecoilState(isloginAtom);
   const navigation = useNavigation();
   const navigate = useNavigate();
-  const actionData = useActionData();
-  const [cookies, setCookie] = useCookies();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [islogin, setIsLogin] = useRecoilState(isloginAtom);
-  const [loginError, setLoginError] = useState(false);
-  const [passwordError, setPasswordError] = useState(false);
   const config = ConfigWithToken();
+  const actionData = useActionData();
   const { keycloak } = useKeycloak();
+  const [cookies, setCookie] = useCookies();
   const submit = useSubmit();
+
+  const [loginError, setLoginError] = useState(false);
+  const [keycloakloading, setKeycloakloading] = useState(false);
+  const isNotcookies = cookies.accesstoken === '' || cookies.accesstoken === undefined;
   const isSubmitting = navigation.state === 'submitting';
-  const [keycloakloading, setKeycloakLoading] = useState(false);
 
-  useEffect(() => {
-    if (actionData?.ok) {
-      const token = actionData.response.headers.authorization;
-      setCookie('accesstoken', token);
-      setIsLogin(true);
-
-      const refreshtoken = actionData.response.headers.refresh_token;
-      setCookie('refreshtoken', refreshtoken);
-    } else if (actionData?.ok === false) {
-      setLoginError(true);
-      verifyPassword();
-    }
-  }, [actionData]);
-
-  useEffect(() => {
-    const isFirstLogin =
-      islogin ||
-      (keycloak.authenticated &&
-        (cookies.accesstoken !== '' || cookies.accesstoken !== undefined));
-    const isCookieSetting = cookies.accesstoken == '' || cookies.accesstoken == undefined;
-
-    if (isFirstLogin) {
-      verifyFirstLogin();
-    }
-    if (keycloak.authenticated) {
-      if (isCookieSetting) setKeyCloakToken();
-      else navigate('/home');
-    }
-  }, [keycloak.authenticated, cookies.accesstoken]);
-
-  const onKeyCloakLogin = () => {
-    keycloak.login();
-  };
-
-  const setKeyCloakToken = async () => {
-    setKeycloakLoading(true);
+  const setkeycloakToken = async () => {
+    setKeycloakloading(true);
     const response = await axios.post(`/api/user/login/keycloak?token=${keycloak.token}`);
     const keycloaktoken = response.headers.authorization;
     setCookie('accesstoken', keycloaktoken);
-  };
-
-  const verifyPassword = () => {
-    if (password.length < 4) setPasswordError(true);
-    else setPasswordError(false);
   };
 
   const verifyFirstLogin = () => {
@@ -95,97 +64,91 @@ export default function Login() {
       .catch((err) => console.error(err));
   };
 
-  const onSubmit = (e) => {
+  const onLogin = (e) => {
     e.preventDefault();
-    submit({ username, password }, { method: 'POST' });
+    submit(
+      {
+        username: data?.get('username'),
+        password: data?.get('password'),
+      },
+      { method: 'POST' }
+    );
   };
+
+  useEffect(() => {
+    if (actionData?.ok) {
+      const accesstoken = actionData.response.headers.authorization;
+      const refreshtoken = actionData.response.headers.refresh_token;
+      setCookie('accesstoken', accesstoken);
+      setCookie('refreshtoken', refreshtoken);
+      setIslogined(true);
+    } else if (actionData?.ok === false) setLoginError(true);
+  }, [actionData]);
+
+  useEffect(() => {
+    if (islogined && !isNotcookies) verifyFirstLogin();
+  }, [islogined, cookies.accesstoken]);
+
+  useEffect(() => {
+    if (keycloak.authenticated) {
+      if (!isNotcookies) verifyFirstLogin();
+      else setkeycloakToken();
+    }
+  }, [keycloak.authenticated, cookies.accesstoken]);
+
+  const loginformdatas = [
+    {
+      name: 'username',
+      autoFocus: true,
+      errorCondition: loginError,
+      errormessage: '올바른 ID 또는 Password를 입력하세요.',
+      onchange: handleDatas,
+    },
+    {
+      name: 'password',
+      type: 'password',
+      errorCondition: error.get('password'),
+      errormessage: error.get('password'),
+      onBlur: validateWithRules,
+      onchange: handleDatas,
+    },
+  ];
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
-        <Grid
-          item
-          xs={false}
-          sm={4}
-          md={7}
-          sx={{
-            backgroundImage: `url(${background})`,
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'top center',
-          }}
-        />
+        <Grid item xs={false} sm={4} md={7} sx={logingridstyle} />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <Box
-            sx={{
-              my: 8,
-              mx: 4,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+          <Box sx={lockboxstyle}>
             <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
               <LockOutlinedIcon />
             </Avatar>
-            <Typography
-              component="h1"
-              variant="h5"
-              sx={{ fontFamily: 'Nanum', fontWeight: '600' }}
-            >
+            <Typography component="h1" variant="h5" sx={{ fontWeight: '600' }}>
               식재료 절약단
             </Typography>
-            <Box component="form" noValidate onSubmit={onSubmit} sx={{ mt: 1 }}>
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                id="ID"
-                label="ID"
-                name="ID"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="ID"
-                autoFocus
-              />
-              {loginError && (
-                <ErrorInform message="올바른 ID 또는 Password를 입력하세요." />
-              )}
-              <TextField
-                margin="normal"
-                required
-                fullWidth
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onBlur={verifyPassword}
-              />
-              {passwordError && (
-                <ErrorInform message="비밀번호는 최소 4자 이상이여야 합니다." />
-              )}
+
+            <Box component="form" noValidate onSubmit={onLogin} sx={{ mt: 1 }}>
+              {loginformdatas.map((item, idx) => (
+                <React.Fragment key={'loginkey=' + idx}>
+                  <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    id={item.name}
+                    label={item.name}
+                    name={item.name}
+                    type={item.type}
+                    onBlur={item.onBlur}
+                    onChange={item.onchange}
+                    autoComplete={item.name}
+                  />
+                  {item.errorCondition && <ErrorInform message={item.errormessage} />}
+                </React.Fragment>
+              ))}
 
               <>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    mt: 3,
-                    mb: 2,
-                    fontFamily: 'Nanum',
-                    fontWeight: '600',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                >
+                <Button type="submit" fullWidth variant="contained" sx={loginbuttonstyle}>
                   {isSubmitting ? <LoadingDots /> : '로그인'}
                 </Button>
 
@@ -196,33 +159,18 @@ export default function Login() {
                 </HrWrapper>
 
                 <Button
-                  onClick={onKeyCloakLogin}
+                  onClick={() => keycloak.login()}
                   fullWidth
                   variant="contained"
                   color="inherit"
-                  sx={{
-                    mt: 2,
-                    mb: 2,
-                    fontFamily: 'Nanum',
-                    fontWeight: '600',
-                    position: 'relative',
-                    backgroundColor: 'white',
-                    color: 'black',
-                  }}
+                  sx={keycloakbuttonstyle}
                 >
-                  <img
-                    style={{
-                      width: '30px',
-                      height: '30px',
-                      position: 'absolute',
-                      left: 0,
-                    }}
-                    src={keycloakimg}
-                  />
+                  <img style={keycloakimgstyle} src={keycloakimg} />
 
                   {keycloakloading ? <LoadingDots isGray={true} /> : 'Keycloak 로그인'}
                 </Button>
               </>
+
               <Copyright sx={{ mt: 5 }} />
             </Box>
           </Box>
@@ -233,6 +181,49 @@ export default function Login() {
 }
 
 const defaultTheme = createTheme();
+
+const lockboxstyle = {
+  my: 8,
+  mx: 4,
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
+
+const logingridstyle = {
+  backgroundImage: `url(${background})`,
+  backgroundRepeat: 'no-repeat',
+  backgroundColor: (t) =>
+    t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
+  backgroundSize: 'cover',
+  backgroundPosition: 'top center',
+};
+
+const loginbuttonstyle = {
+  mt: 3,
+  mb: 2,
+  fontFamily: 'Nanum',
+  fontWeight: '600',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const keycloakbuttonstyle = {
+  mt: 2,
+  mb: 2,
+  fontWeight: '600',
+  position: 'relative',
+  backgroundColor: 'white',
+  color: 'black',
+};
+
+const keycloakimgstyle = {
+  width: '30px',
+  height: '30px',
+  position: 'absolute',
+  left: 0,
+};
 
 const HrWrapper = styled.div`
   padding: 10px 0;

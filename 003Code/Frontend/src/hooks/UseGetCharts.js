@@ -1,8 +1,13 @@
 import { useQuery } from 'react-query';
 import { ConfigWithToken } from '../auth/authConfig';
-import { getPredictFoods, getPredictMenus, getReservation, getTodayPop } from './apis';
+import {
+  getPredictFoods,
+  getPredictMenus,
+  getReservation,
+  getTodayPop,
+} from '../api/apis';
 
-const Api_charts = () => {
+const UseGetCharts = () => {
   const config = ConfigWithToken();
   const today = new Date();
 
@@ -50,4 +55,4 @@ const Api_charts = () => {
   };
 };
 
-export default Api_charts;
+export default UseGetCharts;

@@ -1,12 +1,12 @@
 import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import { c_color } from '../../styles/global';
-import Api_calculate_food from '../../api/Api_calculate_food';
-import Api_nav from '../../api/Api_nav';
+import UseNavApi from '../../hooks/UseNavApi';
+import UseCalculateFood from '../../hooks/UseCalculateFood';
 
 const FoodSavingStatusChart = () => {
-  const { chartdata } = Api_calculate_food();
-  const { marketDetails } = Api_nav();
+  const { chartdata } = UseCalculateFood();
+  const { marketDetails } = UseNavApi();
 
   return (
     <>
@@ -22,7 +22,7 @@ const FoodSavingStatusChart = () => {
             type: 'column',
           },
           {
-            name: `기존 ${marketDetails.name} 식재료 발주량`,
+            name: `기존 ${marketDetails?.name} 식재료 발주량`,
             data: Object.values(chartdata?.prev),
             type: 'line',
           },

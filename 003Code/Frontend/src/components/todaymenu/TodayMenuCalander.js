@@ -220,7 +220,7 @@ const DivDay = styled.div`
   padding: 10px;
 
   span:first-child {
-    font-size: 0.188rem;
+    font-size: 0.7rem;
     font-weight: 600;
   }
   span:last-child {
