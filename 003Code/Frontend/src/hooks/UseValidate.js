@@ -16,6 +16,8 @@ const UseValidate = ({ data, rules }) => {
       });
   };
 
+  const fkfkfkfkf = 12;
+
   const validateWithRules = (e) => {
     const { name, value } = e.target;
 
