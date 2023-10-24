@@ -93,6 +93,74 @@ const SignUp = () => {
         }
     };
 
+    const handleSSOSignUp = () => {
+        if (password !== confirmpassword) {
+            if (confirmpassword.trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    text: `비밀번호를 다시 확인해 주세요.`,
+                    confirmButtonText: "확인",
+                })
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    text: `비밀번호를 다시 확인해 주세요.`,
+                    confirmButtonText: "확인",
+                })
+            }
+        } else if (password.trim() === '') {
+            Swal.fire({
+                icon: 'warning',
+                text: `비밀번호를 입력해주세요.`,
+                confirmButtonText: "확인",
+            })
+        } else {
+            let body = {
+                username,
+                password
+            };
+
+            if (username.trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    text: `ID를 입력해주세요.`,
+                    confirmButtonText: "확인",
+                })
+                return;
+            }
+            axios.get(`${UserBaseApi}/login/join/check?username=${username}`)
+                .then(res => {
+                    if (res.data === true) {
+                        Swal.fire({
+                            icon: 'warning',
+                            text: `ID를 다시 확인해주세요.`,
+                            confirmButtonText: "확인",
+                        })
+                    }
+                    if (res.data === false) {
+                        axios.post(`${UserBaseApi}/login/join/keycloak`, body)
+                            .then(res => {
+                                console.log(res.data);
+                                Swal.fire({
+                                    icon: 'success',
+                                    text: `회원가입이 완료되었습니다.`,
+                                    confirmButtonText: "확인",
+                                });
+                                navigate('/login'); // 회원가입 성공 시에만 로그인 페이지로 이동
+                            })
+                            .catch(err => {
+                                console.log(err);
+                                setIdMessage("이미 사용중인 ID입니다.");
+                            });
+                    }
+                })
+                .catch(error => {
+                    console.log(error);
+                    setIdMessage("회원가입 중 오류가 발생했습니다.");
+                });
+        }
+    };
+
     const [idMessage, setIdMessage] = useState("");
     useEffect(() => {
         if (username.trim() === "") {
@@ -261,8 +329,14 @@ const SignUp = () => {
                     </div>
                 </div>
 
-                <div style={{ marginTop: '30px' }}>
-                    <button onClick={handleSignUp} style={{ backgroundColor: '#A93528', color: 'white', border: 'none', borderRadius: '5px', width: '100px', height: '30px' }}>회원가입</button>
+                <div style={{ display: 'flex', marginTop: '20px' }}>
+                    <div style={{ margin: '10px' }}>
+                        <button onClick={handleSignUp} style={{ backgroundColor: '#A93528', color: 'white', border: 'none', borderRadius: '5px', width: '100px', height: '30px' }}>회원가입</button>
+                    </div>
+
+                    <div style={{ margin: '10px' }}>
+                        <button onClick={handleSSOSignUp} style={{ backgroundColor: '#635a59', color: 'white', border: 'none', borderRadius: '5px', width: '100px', height: '30px' }}>SSO회원가입</button>
+                    </div>
                 </div>
             </div>
         </motion.div>

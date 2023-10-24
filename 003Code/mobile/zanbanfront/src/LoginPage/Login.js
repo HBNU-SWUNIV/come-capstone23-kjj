@@ -8,7 +8,7 @@ import { useRecoilState } from 'recoil';
 import { isloginAtom } from '../atom/loginAtom';
 import Swal from "sweetalert2";
 import { motion } from 'framer-motion';
-import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
+import { ConfigWithToken } from '../auth/authConfig';
 
 
 const Login = () => {
