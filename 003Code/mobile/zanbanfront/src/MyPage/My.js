@@ -15,7 +15,7 @@ function My() {
         setIsLogin(false);
         Swal.fire({
             icon: 'error',
-            text: `다시 로그인해 주세요.`,
+            text: `죄송합니다. 다시 로그인을 진행해주세요.`,
             confirmButtonText: "확인",
         });
         navigate("/login")
@@ -40,6 +40,10 @@ function My() {
             .then(res => {
                 setidnum(res.data.id);
             })
+            .catch((error) => {
+                navigate('/errorpage')
+            })
+
         axios
             .get(`${UserBaseApi}/page`, config)
             .then(res => {
@@ -170,20 +174,6 @@ function My() {
         position: 'relative',
     };
 
-    const buttonStyle = {
-        backgroundColor: 'white',
-        fontSize: '15px',
-        width: '60%',
-        padding: '8px 16px',
-        marginTop: '30px',
-        borderRadius: '100px',
-        textDecoration: 'none',
-        border: "1px solid black",
-        textAlign: 'center',
-        color: 'black',
-        boxShadow: '3px 3px 5px rgba(0, 0, 0, 0.3)',
-    };
-
     return (
         <div>
             <div style={pointboxStyle}>
@@ -219,23 +209,13 @@ function My() {
                         <Link to='/Graph' style={{ color: 'inherit', textDecoration: 'none' }}>
                             <div style={{ display: 'flex', flexDirection: 'row', }}>
                                 <p style={{ fontSize: '15px', fontWeight: 'bold' }}>탄소감축의 중요성,</p>
-                                {/* <p style={{ right: 0, position: 'absolute', paddingRight: '16px', fontWeight: 'bold' }}>&lt;상세조회&gt;</p> */}
                             </div>
                             <p style={{ marginTop: 0 }}>여러분은 식단미리 통해 음식물 쓰레기 저감 활동에 동참하고 있습니다.</p>
-                            <p style={{right: 0, position: 'absoulte', fontWeight: 'bold'}}>-🌲자세히 보기-</p>
+                            <p style={{ right: 0, position: 'absoulte', fontWeight: 'bold' }}>-🌲자세히 보기-</p>
                         </Link>
                     </div>
                 </div>
             </div>
-
-            <button style={{ marginLeft: '20px' }}>
-                <Link to='/checkout'>결제 테스트</Link>
-            </button>
-
-            {/* <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <Link to='/MyUse' style={buttonStyle}>이용내역 상세조회</Link>
-            </div> */}
-
         </div>
     );
 }

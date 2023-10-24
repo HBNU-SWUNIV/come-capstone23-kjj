@@ -10,16 +10,4 @@ const keycloak = new Keycloak({
   url: KEYCLOAK_URL,
 });
 
-//키를락 로그인 안됐을 경우 키클락 로그인 페이지로 이동
-// export const initOptions = {
-//   onLoad: 'login-required',
-//   checkLoginIframe: false,
-// };
-
-// export const initOptions = {
-//   onLoad: 'check-sso',
-//   checkLoginIframe: false,
-// };
-
-
 export default keycloak;
