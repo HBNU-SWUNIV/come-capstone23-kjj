@@ -1,17 +1,17 @@
 package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.object.FoodPredict;
-import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,12 +26,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CreatePredictUserWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
 
     private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
+
+    public CreatePredictUserWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     // 매출액 기반 월~금 이용자 수, 전체 인원 중 이용자 비율 기반 월~금 이용자 수
     @Override

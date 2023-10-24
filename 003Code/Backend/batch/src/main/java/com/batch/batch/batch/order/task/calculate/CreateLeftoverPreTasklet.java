@@ -1,13 +1,14 @@
 package com.batch.batch.batch.order.task.calculate;
 
 import com.batch.batch.tools.DateTools;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -18,10 +19,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CreateLeftoverPreTasklet implements Tasklet {
 
     private final DataSource dataSource;
+
+    public CreateLeftoverPreTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     private Map<String, Object> getCalculateData(Connection connection) throws SQLException {
         Map<String, Object> result = new HashMap<>();

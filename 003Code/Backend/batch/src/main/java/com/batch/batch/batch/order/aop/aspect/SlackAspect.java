@@ -33,7 +33,7 @@ public class SlackAspect {
             return proceed;
         } catch (Exception e) {
             connection.rollback();
-            slackTools.sendSlackErrorMessage(e, joinPoint.getClass().getName());
+            slackTools.sendSlackErrorMessage(e, "[" + joinPoint.getTarget().getClass().getSimpleName() + "]" + " : "+ joinPoint.getSignature().getName());
             throw e;
         } finally {
             connection.close();

@@ -2,7 +2,6 @@ package com.batch.batch.batch.order.task.calculate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.JobParameters;
@@ -10,6 +9,8 @@ import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -19,13 +20,17 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CreateCalculatePreTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private static final Map<Long, String> menuIdToNameMap = new HashMap<>();
     private static final Map<String, Long> menuNameToIdMap = new HashMap<>();
     private static final Map<String, Long> menuNameToFoodIdMap = new HashMap<>();
+
+    public CreateCalculatePreTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     // calculate 데이터 id 확인
     private Long calculateCheck(Connection connection, String today, String day) throws SQLException {

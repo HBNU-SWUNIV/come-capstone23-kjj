@@ -1,9 +1,7 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.aop.handler.ConnectionHandler;
 import com.batch.batch.batch.order.task.predictweek.CreatePredictUserWeekTasklet;
 import com.batch.batch.batch.order.task.predictweek.CreatePredictWeekTasklet;
-import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -17,29 +15,26 @@ import javax.sql.DataSource;
 
 @Component
 public class PredictWeekStep {
+    private final CreatePredictWeekTasklet createPredictWeekTasklet;
+    private final CreatePredictUserWeekTasklet createPredictUserWeekTasklet;
 
-    private final DataSource dataDataSource;
-    private final ConnectionHandler connectionHandler;
-
-    public PredictWeekStep(@Qualifier("dataDataSource") DataSource dataDataSource, ConnectionHandler connectionHandler) {
-        this.dataDataSource = dataDataSource;
-        this.connectionHandler = connectionHandler;
+    public PredictWeekStep(CreatePredictWeekTasklet createPredictWeekTasklet, CreatePredictUserWeekTasklet createPredictUserWeekTasklet) {
+        this.createPredictWeekTasklet = createPredictWeekTasklet;
+        this.createPredictUserWeekTasklet = createPredictUserWeekTasklet;
     }
 
     @Bean
     public Step createPredictWeekData(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreatePredictWeekTasklet(dataDataSource);
         return new StepBuilder("createPredictWeekData", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createPredictWeekTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }
 
     @Bean
     public Step createPredictUserWeekData(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreatePredictUserWeekTasklet(dataDataSource);
         return new StepBuilder("createPredictUserWeekData", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createPredictUserWeekTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

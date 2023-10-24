@@ -2,6 +2,7 @@ package com.batch.batch.batch.order.step;
 
 import com.batch.batch.batch.order.task.calculate.CreateCalculatePreTasklet;
 import com.batch.batch.batch.order.task.calculate.CreateLeftoverPreTasklet;
+import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -14,28 +15,24 @@ import org.springframework.transaction.PlatformTransactionManager;
 import javax.sql.DataSource;
 
 @Component
+@RequiredArgsConstructor
 public class CalculateStep {
 
-    private final DataSource dataDataSource;
-
-    public CalculateStep(@Qualifier("dataDataSource") DataSource dataDataSource) {
-        this.dataDataSource = dataDataSource;
-    }
+    private final CreateLeftoverPreTasklet createLeftoverPreTasklet;
+    private final CreateCalculatePreTasklet createCalculatePreTasklet;
 
     @Bean
     public Step createLeftoverPre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreateLeftoverPreTasklet(dataDataSource);
         return new StepBuilder("createLeftoverPre", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createLeftoverPreTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }
 
     @Bean
     public Step createCalculatePre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreateCalculatePreTasklet(dataDataSource);
         return new StepBuilder("createCalculatePre", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createCalculatePreTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

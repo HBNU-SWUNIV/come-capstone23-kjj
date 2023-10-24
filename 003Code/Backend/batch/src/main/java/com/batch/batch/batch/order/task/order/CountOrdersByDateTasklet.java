@@ -1,13 +1,13 @@
 package com.batch.batch.batch.order.task.order;
 
-import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -18,11 +18,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CountOrdersByDateTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final Map<String, Integer> resultMap = new HashMap<>();
+
+    public CountOrdersByDateTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     private Long initOrder(Connection connection, String date, int today, int sales) throws SQLException {
         String initQuery = "insert into calculate(date, today, sales) value(?, ?, ?)";

@@ -1,14 +1,14 @@
 package com.batch.batch.batch.order.task.predictweek;
 
-import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import com.batch.batch.tools.DateTools;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -22,11 +22,15 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
+
+    public CreatePredictWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     // 이번 주 월~금 이용인원 계산
     @Override
