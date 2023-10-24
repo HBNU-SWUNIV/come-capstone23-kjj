@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
 import { useMatch, useNavigate } from 'react-router-dom';
 import shortid from 'shortid';
-import Switch from 'react-switch';
 import axios from "axios";
 import Select from 'react-select';
 import { ConfigWithToken, UserBaseApi } from '../auth/authConfig';
@@ -12,6 +11,7 @@ import Swal from "sweetalert2";
 import { useCookies } from 'react-cookie';
 import { isloginAtom } from '../atom/loginAtom';
 import { useRecoilState } from 'recoil';
+import styled from 'styled-components'
 
 const holidayServiceKey = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holidayBaseApi = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
@@ -150,14 +150,10 @@ const saveButton = {
     borderRadius: '10px'
 };
 
-
-const selectStyles = {
-    control: (provided, state) => ({
-        ...provided,
-        width: '200px',
-        marginBottom: '10px',
-    }),
-};
+const StyledSelect = styled(Select)`
+  width: 200px;
+  margin-bottom: 10px;
+`;
 
 function Calendar() {
     const navigate = useNavigate();
@@ -167,7 +163,7 @@ function Calendar() {
         setIsLogin(false);
         Swal.fire({
             icon: 'error',
-            text: `다시 로그인해 주세요.`,
+            text: `죄송합니다. 다시 로그인을 진행해주세요.`,
             confirmButtonText: "확인",
         });
         navigate("/login")
@@ -212,6 +208,7 @@ function Calendar() {
             })
             .catch(error => {
                 console.error("유저 정책 조회 실패", error);
+                navigate('/errorpage')
             });
 
 
@@ -348,12 +345,12 @@ function Calendar() {
                     .then(() => {
                         console.log("수동 이용 안함 성공");
                         setNotUseDays(id)
+                        navigate("/calendar")
                         window.location.reload();
                     })
                     .catch((error) => {
                         console.error("수동 이용 안함 에러");
                     });
-                navigate('/calendar');
             }
         }
     };
@@ -365,7 +362,6 @@ function Calendar() {
             .catch(error => {
                 console.error("유저 이용일 조회 실패", error);
             });
-        //키클락 로그인은 적용X
 
         //공공데이터 휴무 조회
         axios
@@ -535,7 +531,7 @@ function Calendar() {
                             value: menu.id.toString(),
                             id: menu.id
                         }));
-                        updatedAquaticCreatures.unshift({ label: '예약 취소', value: '메뉴를 선택해주세요.', id: 0 });
+                        updatedAquaticCreatures.unshift({ label: '예약 취소', value: '예약 취소', id: 0 });
                         setAquaticCreatures(updatedAquaticCreatures);
 
                         const defaultMenu = menuList.find(menu => menu.id === receivedDefaultMenu);
@@ -563,7 +559,7 @@ function Calendar() {
         setUseMenuID(selectedOptions.id);
     };
     const matchedMenu = menus.find((menu) => menu.id === useMenuID);
-
+    const cancelMenu = 0 === useMenuID
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -589,11 +585,10 @@ function Calendar() {
                         <span style={{ marginRight: '5px' }}>{`${DayPathMatch.params.id.slice(0, 4)}년 ${DayPathMatch.params.id.slice(4, 6)}월 ${DayPathMatch.params.id.slice(6, 8)}일`}</span>
                     </div>
                     <div>
-                        <Select
+                        <StyledSelect
+                            placeholder={'메뉴를 선택하세요'}
                             options={aquaticCreatures}
-                            value={selectedOption}
                             onChange={handleListChange}
-                            styles={selectStyles}
                         />
                     </div>
 
@@ -614,6 +609,11 @@ function Calendar() {
                                 </div>
                             </div>
                         )}
+                        {cancelMenu && (
+                            <div>
+                                <p style={{ margin: 0 }}>정말로 예약을 취소하시겠습니까?</p>
+                            </div>
+                        )}
                     </div>
                     <div>
                         <button style={saveButton} onClick={() => { handleSave(); }}>
@@ -627,10 +627,6 @@ function Calendar() {
             ) : null}
 
             <div style={colorBox}>
-                {/* <div className='color-box2'>
-                    <div className='color-box1' style={{ backgroundColor: '#dec8f7', border: '1px solid black' }}></div>
-                    <p>식당 휴일</p>
-                </div> */}
                 <div style={colorBox2}>
                     <div style={{ ...colorBox1, backgroundColor: '#e0f7c8', border: '1px solid black' }}></div>
                     <p>현재 이용일</p>

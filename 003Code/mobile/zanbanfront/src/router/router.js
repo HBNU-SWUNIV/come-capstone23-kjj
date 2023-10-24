@@ -5,7 +5,6 @@ import SignUp from "../LoginPage/SignUp";
 import Home from "../HomePage/Home";
 import Calendar from '../CalendarPage/Calendar';
 import My from '../MyPage/My';
-import MyUse from '../MyPage/MyUse'
 import Graph from "../MyPage/Graph";
 import Setting from "../SettingPage/Setting";
 import Guide1 from "../SettingPage/Guide1";
@@ -19,6 +18,8 @@ import Success from "../toss/Success";
 import Fail from "../toss/Fail";
 import FirstLogin from "../SettingPage/FirtsLogin";
 import Developers from "../SettingPage/Developers";
+import ErrorBoundary from '../Components/ErrorBoundary';
+import ErrorPage from "../Components/ErrorPage";
 
 
 
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     {
         path: '',
         element: <RootContainer />,
+        errorElement: <ErrorBoundary />,
         children: [
             {
                 path: '',
@@ -92,10 +94,6 @@ const router = createBrowserRouter([
                         element: <Guide4 />
                     },
                     {
-                        path: '/myuse',
-                        element: <MyUse />
-                    },
-                    {
                         path: '/graph',
                         element: <Graph />
                     },
@@ -114,6 +112,10 @@ const router = createBrowserRouter([
                     {
                         path: '/developers',
                         element: <Developers />
+                    },
+                    {
+                        path: '/errorpage',
+                        element: <ErrorPage />
                     },
                 ]
             }
