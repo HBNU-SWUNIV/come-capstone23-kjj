@@ -56,18 +56,10 @@ export function CheckoutPage() {
     const paymentWidgetRef = useRef(null);
     const paymentMethodsWidgetRef = useRef(null);
     const [price, setPrice] = useState(10);
-
+    localStorage.setItem('pointChecked', false);
+    
     const handlePointButtonClick = () => {
-        if(checked){
-            axios
-          .post(`/api/user/page/point`, { value: point }, config)
-          .then((res) => {
-            console.log('포인트 사용 성공:', res);
-          })
-          .catch((error) => {
-            console.error('포인트 사용 실패:', error);
-          });
-        }
+        localStorage.setItem('pointChecked', checked);
       };
 
     useEffect(() => {
