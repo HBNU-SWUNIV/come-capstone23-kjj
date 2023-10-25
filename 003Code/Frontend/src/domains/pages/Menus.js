@@ -25,6 +25,8 @@ import UseImageHandler from '../../hooks/UseImageHandler';
 import UseOnOffHandler from '../../hooks/UseOnOffHandler';
 import Nav from '../nav/Nav';
 import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { IngredientsIdAtom } from '../../atom/menuAtom';
 
 const defaultTheme = createTheme();
 export const NanumFontStyle = {
@@ -62,6 +64,8 @@ const toggle_button_list_data = [
 ];
 
 export default function Menus() {
+  const [selectedIngredients, setSelectedIngredients] = useRecoilState(IngredientsIdAtom);
+
   const [selectedFoodId, setSelectedFood] = useState('');
   const [updateID, setUpdateID] = useState('');
   const [addMenu, setAddMenu] = useState(false);
@@ -185,6 +189,7 @@ export default function Menus() {
     formdata.append('file', image);
     if (menuInputsIsNotNull) addMenus.mutate(formdata);
   };
+
   const onUpdateMenu = () => {
     const formdata = new FormData();
     const validateDuplicatedName =
@@ -224,6 +229,49 @@ export default function Menus() {
         .catch((err) => console.error(err));
     }
   };
+
+  const newAddedMenu = menus !== undefined && menus[menus?.length - 1];
+  const needSetIngredients = newAddedMenu?.name == selectedIngredients?.name;
+
+  useEffect(() => {
+    if (needSetIngredients) {
+      if (newAddedMenu?.id !== '' && selectedIngredients?.id !== '') {
+        console.log('123');
+        axios({
+          method: 'PATCH',
+          url: `${ManagerBaseApi}/menu/${newAddedMenu?.id}/food/${selectedIngredients?.id}`,
+          ...formdataConfig,
+        })
+          .then((res) => {
+            setSelectedIngredients({
+              id: '',
+              name: '',
+            });
+            window.location.reload();
+          })
+          .catch((err) => console.error(err));
+      }
+    } else return;
+  });
+
+  const menuDatas = [
+    {
+      menus: menus,
+      handleIngredientsOpen: handleIngredientsOpen,
+      handleUpdateOpen: handleUpdateOpen,
+      soldout: soldout,
+      handleDeleteOpen: handleDeleteOpen,
+      resale: resale,
+    },
+    {
+      addIngredients: handleIngredientsOpen,
+      soldout: soldout,
+      resale: resale,
+      onDelete: handleDeleteOpen,
+      onUpdate: handleUpdateOpen,
+      menus: menus,
+    },
+  ];
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -270,27 +318,8 @@ export default function Menus() {
           </Container>
 
           <Container sx={{ py: 1 }} maxWidth="lg">
-            {view === 'card' && (
-              <MenuCard
-                menus={menus}
-                handleIngredientsOpen={handleIngredientsOpen}
-                handleUpdateOpen={handleUpdateOpen}
-                soldout={soldout}
-                handleDeleteOpen={handleDeleteOpen}
-                resale={resale}
-              />
-            )}
-
-            {view === 'list' && (
-              <Menulist
-                addIngredients={handleIngredientsOpen}
-                soldout={soldout}
-                resale={resale}
-                onDelete={handleDeleteOpen}
-                onUpdate={handleUpdateOpen}
-                menus={menus}
-              />
-            )}
+            {view === 'card' && <MenuCard {...menuDatas[0]} />}
+            {view === 'list' && <Menulist {...menuDatas[1]} />}
           </Container>
         </Box>
       </Box>

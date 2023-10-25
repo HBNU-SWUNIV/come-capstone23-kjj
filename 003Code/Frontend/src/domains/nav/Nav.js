@@ -18,6 +18,7 @@ import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
 import UseNav from '../../hooks/UseNav';
 import UseNavApi from '../../hooks/UseNavApi';
+import favicon from '../../image/favico.png';
 
 function Nav(props) {
   const [draweropen, setDraweropen] = useState(true);
@@ -102,6 +103,8 @@ function Nav(props) {
 
       <Drawer variant="permanent" open={draweropen}>
         <Toolbar sx={drawerToolbarStyle}>
+          <img src={favicon} width={40} />
+
           <IconButton onClick={handledrawer}>
             <ChevronLeftIcon />
           </IconButton>
@@ -109,13 +112,13 @@ function Nav(props) {
         <Divider />
 
         <List component="nav" sx={listStyle}>
-          <ListImageWrapper>
+          {/* <ListImageWrapper>
             <ListImage
               src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + form?.image}
               alt="이미지 없음"
             />
             <ListImageText>식재료 절약단</ListImageText>
-          </ListImageWrapper>
+          </ListImageWrapper> */}
           <NavLists />
         </List>
 
@@ -206,11 +209,20 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const screenWidth = window.innerWidth;
 const drawerWidth = screenWidth < 450 ? 20 : 220;
 const pagesNameStyle = { flexGrow: 1, fontWeight: 600, fontSize: '25px' };
-const listStyle = { backgroundColor: '#f5f5f5', height: '100%' };
+const listStyle = {
+  backgroundColor: '#f5f5f5',
+  // backgroundColor: 'rgb(27,33,54)',
+  height: '100%',
+};
 
 const headerToolbarStyle = {
   backgroundColor: '#24292e',
   pr: '24px',
+};
+
+const drawerToolbarTextStyle = {
+  fontSize: '16px',
+  fontWeight: 600,
 };
 
 const drawerToolbarStyle = {
@@ -218,7 +230,7 @@ const drawerToolbarStyle = {
   zIndex: 3,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
   px: [1],
 };
 

@@ -8,6 +8,7 @@ import { CookiesProvider } from 'react-cookie';
 import keycloak, { initOptions } from './auth/Keycloak';
 import { RecoilRoot } from 'recoil';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import '../src/styles/reset.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
