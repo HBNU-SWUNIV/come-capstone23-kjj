@@ -42,8 +42,15 @@ const MenuUpdateAddInputs = (props) => {
             label="required"
             type={item.type}
           />
+
           {!props.isUpdate && props.validateFn[item.inputName] && (
             <ErrorInform message={`${item.item_name}은 필수 입력입니다`} />
+          )}
+          {item.condition && (
+            <ErrorInform
+              color={true}
+              message={`식재료가 ${item.selectedIngredient}으로 설정되었습니다.`}
+            />
           )}
           {item.duplicated_error && props.duplicateFn && (
             <ErrorInform

@@ -38,24 +38,24 @@ const gridItems = [
   {
     id: 2,
     xs: 12,
-    md: 12,
-    lg: 12,
+    md: 8,
+    lg: 8,
     chart: <FoodNeccesaryChart />,
   },
   {
     id: 3,
     xs: 12,
-    md: 6,
-    lg: 6,
-    chart: <UserReservationChart />,
-  },
-  {
-    id: 4,
-    xs: 12,
-    md: 6,
-    lg: 6,
+    md: 4,
+    lg: 4,
     chart: <FoodStatisticsChart />,
   },
+  // {
+  //   id: 4,
+  //   xs: 12,
+  //   md: 6,
+  //   lg: 6,
+  //   chart: <UserReservationChart />,
+  // },
 ];
 
 export default function Dashboard() {
@@ -89,7 +89,7 @@ export default function Dashboard() {
 const defaultTheme = createTheme();
 
 const boxStyle = {
-  backgroundColor: 'white',
+  backgroundColor: '#ffffff',
   flexGrow: 1,
   minHeight: '100vh',
   overflow: 'scroll',

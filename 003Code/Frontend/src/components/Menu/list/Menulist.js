@@ -35,27 +35,29 @@ const table_header_data = [
   },
 ];
 
-export default function Menulist({ menus, onDelete, soldout, resale, onUpdate }) {
+export default function Menulist(props) {
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
             {table_header_data.map((item) => (
-              <TableCell align={item.align}>{item.text}</TableCell>
+              <TableCell key={item.id + 'menulist'} align={item.align}>
+                {item.text}
+              </TableCell>
             ))}
           </TableRow>
         </TableHead>
 
         <TableBody>
-          {menus?.map((row) => (
+          {props.menus?.map((row) => (
             <MenulistRow
               key={row.name}
               row={row}
-              onDelete={onDelete}
-              soldout={soldout}
-              resale={resale}
-              onUpdate={onUpdate}
+              onDelete={props.onDelete}
+              soldout={props.soldout}
+              resale={props.resale}
+              onUpdate={props.onUpdate}
             />
           ))}
         </TableBody>

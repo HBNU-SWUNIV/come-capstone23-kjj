@@ -19,5 +19,5 @@ export default NavList;
 
 const ListItemTextStyle = {
   fontWeight: '600',
-  fontSize: '15px',
+  fontSize: '13px',
 };
