@@ -24,17 +24,11 @@ const gridItems = [
   {
     id: 0,
     xs: 12,
-    md: 8,
-    lg: 9,
+    md: 12,
+    lg: 12,
     chart: <FoodSavingStatusChart />,
   },
-  {
-    id: 1,
-    xs: 12,
-    md: 4,
-    lg: 3,
-    chart: <UserStatisticsChart />,
-  },
+
   {
     id: 2,
     xs: 12,
@@ -49,6 +43,13 @@ const gridItems = [
     lg: 4,
     chart: <FoodStatisticsChart />,
   },
+  // {
+  //   id: 1,
+  //   xs: 12,
+  //   md: 3,
+  //   lg: 3,
+  //   chart: <UserStatisticsChart />,
+  // },
   // {
   //   id: 4,
   //   xs: 12,
@@ -89,7 +90,7 @@ export default function Dashboard() {
 const defaultTheme = createTheme();
 
 const boxStyle = {
-  backgroundColor: '#ffffff',
+  backgroundColor: 'white',
   flexGrow: 1,
   minHeight: '100vh',
   overflow: 'scroll',
