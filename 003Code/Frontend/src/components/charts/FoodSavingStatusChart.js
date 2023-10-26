@@ -11,7 +11,9 @@ const FoodSavingStatusChart = () => {
   return (
     <>
       <Title>
-        <span style={c_color}>식재료를 이정도나 절약했어요!</span>
+        <span style={{ ...c_color, fontWeight: '600', fontSize: '16px' }}>
+          식재료를 이정도나 절약했어요!
+        </span>
       </Title>
       <ApexCharts
         type="line"
@@ -40,6 +42,7 @@ const FoodSavingStatusChart = () => {
           stroke: {
             width: [1, 4],
             colors: ['#fff', '#FEB019'],
+            curve: 'smooth',
           },
           dataLabels: {
             enabled: true,
