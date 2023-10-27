@@ -24,38 +24,39 @@ const gridItems = [
   {
     id: 0,
     xs: 12,
-    md: 8,
-    lg: 9,
+    md: 12,
+    lg: 12,
     chart: <FoodSavingStatusChart />,
   },
-  {
-    id: 1,
-    xs: 12,
-    md: 4,
-    lg: 3,
-    chart: <UserStatisticsChart />,
-  },
+
   {
     id: 2,
     xs: 12,
-    md: 12,
-    lg: 12,
+    md: 8,
+    lg: 8,
     chart: <FoodNeccesaryChart />,
   },
   {
     id: 3,
     xs: 12,
-    md: 6,
-    lg: 6,
-    chart: <UserReservationChart />,
-  },
-  {
-    id: 4,
-    xs: 12,
-    md: 6,
-    lg: 6,
+    md: 4,
+    lg: 4,
     chart: <FoodStatisticsChart />,
   },
+  // {
+  //   id: 1,
+  //   xs: 12,
+  //   md: 3,
+  //   lg: 3,
+  //   chart: <UserStatisticsChart />,
+  // },
+  // {
+  //   id: 4,
+  //   xs: 12,
+  //   md: 6,
+  //   lg: 6,
+  //   chart: <UserReservationChart />,
+  // },
 ];
 
 export default function Dashboard() {

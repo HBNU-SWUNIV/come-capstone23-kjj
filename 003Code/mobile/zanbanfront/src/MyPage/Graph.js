@@ -18,7 +18,7 @@ function Graph() {
 
             <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
                 <div style={{ width: '80%', marginTop: '30px' }}>
-                    <p>저희 식단미리 서비스를 이용하시면 사전예약을 통한 음식 주문이 이루어져 불필요한 식재료 낭비와 음식물 쓰레기의 발생을 막을 수 있습니다.</p>
+                    <p>저희 식단미리 서비스를 이용하시면 사전예약을 통한 음식 주문이 이루어져 불필요한 식재료 낭비와 음식물 쓰레기의 발생을 최소화할 수 있습니다.</p>
                     <br />
                     <img style={{ maxWidth: '100%' }} src={co2}></img>
                 </div>

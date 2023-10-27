@@ -4,6 +4,7 @@ import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import RiceBowlIcon from '@mui/icons-material/RiceBowl';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NavList from './NavList';
+import styled from 'styled-components';
 
 const listItems = [
   {
@@ -30,12 +31,21 @@ const listItems = [
 
 function NavLists() {
   return (
-    <>
+    <Wrapper>
       {listItems.map((item, idx) => (
         <NavList key={idx} {...item} />
       ))}
-    </>
+    </Wrapper>
   );
 }
 
 export default NavLists;
+
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  gap: 20px;
+  bos-sizing: border-box;
+  padding-top: 30px;
+`;

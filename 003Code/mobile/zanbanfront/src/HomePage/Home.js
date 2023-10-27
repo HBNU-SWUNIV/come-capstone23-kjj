@@ -17,11 +17,11 @@ const Home = () => {
     const navigate = useNavigate();
     const [islogin, setIsLogin] = useRecoilState(isloginAtom);
     const [cookies, setCookie] = useCookies(['accesstoken']);
-    if(cookies.accesstoken === undefined){
+    if (cookies.accesstoken === undefined) {
         setIsLogin(false);
         Swal.fire({
             icon: 'error',
-            text: `다시 로그인해 주세요.`,
+            text: `죄송합니다. 다시 로그인을 진행해주세요.`,
             confirmButtonText: "확인",
         });
         navigate("/login")
@@ -102,6 +102,9 @@ const Home = () => {
             .then(res => {
                 setTest(res.data.id);
             })
+            .catch((error) => {
+                navigate('/errorpage')
+            })
 
         const interval = setInterval(() => {
             setCurrentIdx((prevIdx) => (prevIdx + 1) % goodmenu.length);
@@ -172,6 +175,14 @@ const Home = () => {
         gridTemplateColumns: 'repeat(2, 1fr)',
         gap: '20px',
     };
+
+    const qrInfoPtag = {
+        margin: 0,
+        border: '1px solid'
+    };
+
+    //포인트 사용 여부 초기화
+    localStorage.setItem('pointChecked', false);
 
     //QR코드 부분에 오늘 날짜 출력
     const today = new Date();
@@ -280,7 +291,7 @@ const Home = () => {
         menuDiv.style.display = 'none';
 
         if (usedatesetDiv.style.display === 'none') {
-            usedatesetDiv.style.display = 'block'; // Show the targetDiv
+            usedatesetDiv.style.display = 'block';
         }
     };
 
@@ -355,7 +366,6 @@ const Home = () => {
             .patch(`${UserBaseApi}/policy/menu/${DetailPath.id}`, {}, config)
             .then(() => {
                 console.log("patch successful");
-                // Update the default menu value in the state
                 setDefaultMenu(DetailPath.name);
             })
             .catch(error => {
@@ -402,7 +412,6 @@ const Home = () => {
         return selectedDays.join(' ');
     };
 
-
     return (
         <div>
             <div style={{ ...infoBox }}>
@@ -438,7 +447,6 @@ const Home = () => {
                                     <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p>
                                 </>
                             )}
-                            {/* <p style={{ color: 'gray', marginTop: '2px' }}>+크게보기</p> */}
                         </div>
                     </div>
                 </div>
@@ -450,7 +458,8 @@ const Home = () => {
                         exit={{ y: '100%' }}
                         transition={{ duration: 0.5 }}
                         style={{ position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', height: '50%', textAlign: 'center' }}>
+                        <div style={{ backgroundColor: '#fff', padding: '20px', borderRadius: '10px', width: '300px', textAlign: 'center' }}>
+                            <p style={{ fontWeight: 'bold', margin: 0}}>직원에게 제시해주세요.</p>
                             {!useDays.expired && (<img
                                 src={qrCodeImg}
                                 alt="QR코드"
@@ -463,13 +472,33 @@ const Home = () => {
                                     <p style={{ color: 'red' }}>이용 완료</p>
                                 </div>
                             )}
-                            <p>예약자 ID : {test}님
-                                <br />가격 : {qr.cost}원
-                                <br />메뉴 : {qr.menu}</p>
-                            <p>예약일 : {qr.orderDate}</p>
+                            <p style={{ marginTop: 0}}>&lt;&lt; 예약 정보 &gt;&gt;</p>
+                            <div style={{ marginBottom: '10px',display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
+                                <div>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>예약자 ID</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>메뉴</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>가격</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>예약일</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>예약번호</p>
+                                </div>
+                                <div>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>{test}번</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>{qr.menu}</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>{qr.cost}원</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>{qr.orderDate}</p>
+                                    <p style={{ margin: 0, borderBottom: '1px dotted' }}>{useDays.id}</p>
+                                </div>
+                            </div>
+                            {!qr.payment && (
+                                <button style={{ background: '#ff9a78', borderRadius: '5px', height: '30px' }}>
+                                    <Link to='/checkout' style={{ textDecoration: 'none', color: 'white', fontWeight: 'bold' }}>미리 결제하기</Link>
+                                </button>)}
+                            {qr.payment && (
+                                <p style={{ fontSize: '20px'}}>결제 완료😄</p>)}
                             <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '10%' }}>
                                 <button style={DialogButtonStyle} onClick={handleqrCancel}>확인</button>
                             </div>
+                            <p style={{margin: 0, textAlign: 'right', color: '#A93528'}}>식단미리</p>
                         </div>
                     </motion.div>
                 )}

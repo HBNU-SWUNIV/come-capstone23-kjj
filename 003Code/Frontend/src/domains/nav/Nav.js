@@ -1,5 +1,3 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import MenuIcon from '@mui/icons-material/Menu';
 import MuiAppBar from '@mui/material/AppBar';
 import Divider from '@mui/material/Divider';
 import MuiDrawer from '@mui/material/Drawer';
@@ -9,8 +7,7 @@ import List from '@mui/material/List';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
-import { styled as Cstyled, keyframes } from 'styled-components';
+import { styled as Cstyled } from 'styled-components';
 import NavLists from '../../components/nav/NavLists';
 import UpdateImgModal from '../../components/nav/UpdateImgModal';
 import UpdateInfoModal from '../../components/nav/UpdateInfoModal';
@@ -18,13 +15,9 @@ import UpdateNameModal from '../../components/nav/UpdateNameModal';
 import UserMenuModal from '../../components/nav/UserMenuModal';
 import UseNav from '../../hooks/UseNav';
 import UseNavApi from '../../hooks/UseNavApi';
+import favicon from '../../image/favico.png';
 
 function Nav(props) {
-  const [draweropen, setDraweropen] = useState(true);
-  const handledrawer = () => {
-    setDraweropen(!draweropen);
-  };
-
   const {
     onLogout,
     openUpdateModal,
@@ -49,19 +42,17 @@ function Nav(props) {
 
   return (
     <>
-      <AppBar position="absolute" open={draweropen}>
+      <AppBar position="absolute">
         <Toolbar sx={headerToolbarStyle}>
           <IconButton
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            onClick={handledrawer}
             sx={{
               marginRight: '36px',
-              ...(draweropen && { display: 'none' }),
             }}
           >
-            <MenuIcon />
+            <img src={favicon} width={40} />
           </IconButton>
 
           <Typography
@@ -100,22 +91,13 @@ function Nav(props) {
         </Toolbar>
       </AppBar>
 
-      <Drawer variant="permanent" open={draweropen}>
+      <Drawer variant="permanent" sx={drawerStyle}>
         <Toolbar sx={drawerToolbarStyle}>
-          <IconButton onClick={handledrawer}>
-            <ChevronLeftIcon />
-          </IconButton>
+          <img src={favicon} width={40} />
         </Toolbar>
         <Divider />
 
         <List component="nav" sx={listStyle}>
-          <ListImageWrapper>
-            <ListImage
-              src={`http://kjj.kjj.r-e.kr:8080/api/image?dir=` + form?.image}
-              alt="이미지 없음"
-            />
-            <ListImageText>식재료 절약단</ListImageText>
-          </ListImageWrapper>
           <NavLists />
         </List>
 
@@ -167,6 +149,7 @@ const AppBar = styled(MuiAppBar, {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  border: '1px solid rgb(69, 75, 95)',
   ...(open && {
     marginLeft: drawerWidth,
     width: `calc(100% - ${drawerWidth}px)`,
@@ -180,13 +163,16 @@ const AppBar = styled(MuiAppBar, {
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
   ({ theme, open }) => ({
     '& .MuiDrawer-paper': {
+      top: '-10px',
       position: 'relative',
       whiteSpace: 'nowrap',
       width: drawerWidth,
+      height: 'calc(100% + 10px)',
       transition: theme.transitions.create('width', {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.enteringScreen,
       }),
+      border: '1px solid #24292e',
       boxSizing: 'border-box',
       ...(!open && {
         overflowX: 'hidden',
@@ -205,20 +191,31 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const screenWidth = window.innerWidth;
 const drawerWidth = screenWidth < 450 ? 20 : 220;
-const pagesNameStyle = { flexGrow: 1, fontWeight: 600, fontSize: '25px' };
-const listStyle = { backgroundColor: '#f5f5f5', height: '100%' };
+const pagesNameStyle = {
+  flexGrow: 1,
+  fontWeight: 600,
+  fontSize: '20px',
+};
+const listStyle = {
+  backgroundColor: 'rgb(69,75,95)',
+  height: '100%',
+};
 
 const headerToolbarStyle = {
   backgroundColor: '#24292e',
   pr: '24px',
 };
 
+const drawerStyle = {
+  border: '1px solid rgb(69, 75, 95)',
+};
+
 const drawerToolbarStyle = {
-  backgroundColor: '#f5f5f5',
+  backgroundColor: 'rgb(69, 75, 95)',
   zIndex: 3,
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'flex-end',
+  justifyContent: 'space-between',
   px: [1],
 };
 
@@ -230,38 +227,6 @@ const marketNameStyle = {
   whiteSpace: 'nowrap',
   textAlign: 'right',
 };
-
-const blinkEffects = keyframes`
-  50%{
-    opacity:0.3;
-  }
-`;
-
-const SetNameWrapper = Cstyled.div`
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  line-height:25px;
-
-  span{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-  }
-  span:first-child{
-    font-size:16px;
-    font-weight:600;
-    animation:${blinkEffects} 1s ease infinite;
-    &:hover{
-      cursor:pointer;
-    }
-  }
-  span:last-child{
-    font-size:13px;
-    font-weight:600;
-  }
-`;
 
 const AppbarUser = Cstyled.div`
   display:flex;
@@ -277,25 +242,4 @@ const AppbarUserTitle = Cstyled.span`
   font-weight:700;
   color:inherit;
   margin-bottom:1px;
-`;
-
-const ListImageWrapper = Cstyled.div`
-  width:100%;
-  height:20vh;
-
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-`;
-
-const ListImage = Cstyled.img`
-width: 45%;
-maxWidth: 45%;
-`;
-
-const ListImageText = Cstyled.span`
-  font-size:16px;
-  color:#0a376e;
-  font-weight:600;
 `;

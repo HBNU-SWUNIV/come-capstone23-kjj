@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -6,12 +6,46 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import MenuUpdateAddInputs from '../MenuUpdateAddInputs';
+import UseGetAxios from '../../../hooks/UseGetAxios';
+import { getIngredientsInfo } from '../../../api/apis';
+import { useRecoilState } from 'recoil';
+import { IngredientsIdAtom } from '../../../atom/menuAtom';
 
 const weightFontStyle = { fontWeight: 600 };
 const dialogContentStyle = { display: 'flex', flexDirection: 'column', gap: '1vh' };
 const dialogContentTextStyle = { ...weightFontStyle, fontSize: '15px' };
 
 const MenuAddDialog = (props) => {
+  const [selectedIngredientsId, setSelectedIngredientsId] =
+    useRecoilState(IngredientsIdAtom);
+  const { data, isLoading } = UseGetAxios({
+    name: 'getIngredientsNames',
+    api: getIngredientsInfo,
+  });
+
+  const [selectedIngredients, setSelectedIngredients] = useState('');
+
+  const selectIngredientsHandler = (e) => {
+    const { value } = e.target;
+
+    if (!isLoading && data?.filter((item) => item.name == value)[0]?.length !== 0) {
+      setSelectedIngredients(data?.filter((item) => item.name == value)[0]?.name);
+      setSelectedIngredientsId({
+        name: value,
+        id: data?.filter((item) => item.name == value)[0]?.id,
+      });
+    } else {
+      setSelectedIngredients('');
+      setSelectedIngredientsId({
+        name: '',
+        id: '',
+      });
+    }
+  };
+
+  const isSelectedIngredients =
+    selectedIngredients != '' && selectedIngredients !== undefined;
+
   const [validate, setValidate] = useState({
     name: false,
     details: false,
@@ -32,9 +66,10 @@ const MenuAddDialog = (props) => {
       inputRef: props.menuNameRef,
       placeholder: '메뉴명',
       inputName: 'name',
-      onBlur: errorHandler,
+      onBlur: selectIngredientsHandler,
       item_name: '메뉴 명',
-      duplicated_error: true,
+      condition: isSelectedIngredients,
+      selectedIngredient: selectedIngredients,
     },
     {
       id: 'outlined-required2',

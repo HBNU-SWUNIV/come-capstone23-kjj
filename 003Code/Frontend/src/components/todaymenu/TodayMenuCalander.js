@@ -18,7 +18,7 @@ import { useMutation, useQuery } from 'react-query';
 import { getDailyMenu } from '../../api/apis';
 import TodayMenuInputDialog from './TodayMenuInputDialog';
 
-function TodayMenuCalander() {
+function TodayMenuCalander(props) {
   const config = ConfigWithToken();
   const [dailyMenuInfo, setDailyMenuInfo] = useState('');
   const [dayId, setDayId] = useState(0);
@@ -122,7 +122,7 @@ function TodayMenuCalander() {
   }
 
   return (
-    <Wrapper>
+    <Wrapper $isTodayMenu={props.isTodayMenu}>
       <HeaderW>
         <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
         <span style={headerWSpanStyle}>
@@ -168,6 +168,9 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  opacity: ${({ $isTodayMenu }) => ($isTodayMenu ? '1' : '0.5')};
+  pointer-events: ${({ $isTodayMenu }) => ($isTodayMenu ? 'auto' : 'none')};
 `;
 const HeaderW = styled.div`
   width: 100%;

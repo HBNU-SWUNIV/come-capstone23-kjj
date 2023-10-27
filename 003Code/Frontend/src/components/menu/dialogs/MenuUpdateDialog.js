@@ -43,7 +43,7 @@ const MenuUpdateDialog = (props) => {
           handleImageChange={props.handleImageChange}
           input_data={menu_update_input_datas}
           duplicateFn={props.nameDuplicate}
-          prev_img={props.updateID.image}
+          prev_img={props.updateID?.image}
         />
 
         <MenuSelectIngredients

@@ -4,17 +4,16 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useEffect, useState } from 'react';
-import { ConfigWithToken } from '../../../auth/authConfig';
-import { useQuery } from 'react-query';
 import { getIngredientsInfo } from '../../../api/apis';
+import UseGetAxios from '../../../hooks/UseGetAxios';
 
 export default function MenuSelectIngredients({ setFn }) {
   const [food, setFood] = useState('');
 
-  const config = ConfigWithToken();
-  const { data: getFoods, isLoading } = useQuery(['getFoods', config], () =>
-    getIngredientsInfo(config)
-  );
+  const { data: getFoods, isLoading } = UseGetAxios({
+    name: 'getFoods',
+    api: getIngredientsInfo,
+  });
 
   const handleChange = (event) => {
     setFood(event.target.value);
