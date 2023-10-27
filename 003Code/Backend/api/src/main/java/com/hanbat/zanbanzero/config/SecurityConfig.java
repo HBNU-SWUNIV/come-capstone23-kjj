@@ -84,7 +84,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
                 .authorizeHttpRequests()
-//                .requestMatchers("/update-db").permitAll()
+                .requestMatchers("/update-db").permitAll()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()
                 .requestMatchers("/api/user/order/**/qr").permitAll()

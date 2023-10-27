@@ -1,10 +1,8 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.aop.handler.ConnectionHandler;
 import com.batch.batch.batch.order.task.order.CountOrdersByDateTasklet;
 import com.batch.batch.object.Order;
 import com.batch.batch.object.UserPolicy;
-import com.batch.batch.batch.order.aop.handler.ConnectionHandlerV1;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -21,19 +19,17 @@ import javax.sql.DataSource;
 
 @Component
 public class OrderStep {
-
-    private final ConnectionHandler connectionHandler;
-    private final DataSource dataDataSource;
     private final JdbcCursorItemReader<UserPolicy> itemReader;
     private final ItemProcessor<UserPolicy, Order> itemProcessor;
     private final ItemWriter<Order> itemWriter;
 
-    public OrderStep(ConnectionHandler connectionHandler, @Qualifier("dataDataSource") DataSource dataDataSource, JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter) {
-        this.connectionHandler = connectionHandler;
-        this.dataDataSource = dataDataSource;
+    private final Tasklet countOrdersByDateTasklet;
+
+    public OrderStep(JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter, @Qualifier("countOrdersByDateTasklet") Tasklet countOrdersByDateTasklet) {
         this.itemReader = itemReader;
         this.itemProcessor = itemProcessor;
         this.itemWriter = itemWriter;
+        this.countOrdersByDateTasklet = countOrdersByDateTasklet;
     }
 
     @Bean
@@ -48,9 +44,8 @@ public class OrderStep {
 
     @Bean
     public Step countOrdersByDateStep(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CountOrdersByDateTasklet(dataDataSource);
         return new StepBuilder("countOrdersByDateStep", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(countOrdersByDateTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

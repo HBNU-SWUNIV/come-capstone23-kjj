@@ -1,7 +1,5 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.task.calculate.CreateCalculatePreTasklet;
-import com.batch.batch.batch.order.task.calculate.CreateLeftoverPreTasklet;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -11,31 +9,29 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import javax.sql.DataSource;
-
 @Component
 public class CalculateStep {
 
-    private final DataSource dataDataSource;
+    private final Tasklet createLeftoverPreTasklet;
+    private final Tasklet createCalculatePreTasklet;
 
-    public CalculateStep(@Qualifier("dataDataSource") DataSource dataDataSource) {
-        this.dataDataSource = dataDataSource;
+    public CalculateStep(@Qualifier("createLeftoverPreTasklet") Tasklet createLeftoverPreTasklet, @Qualifier("createCalculatePreTasklet") Tasklet createCalculatePreTasklet) {
+        this.createLeftoverPreTasklet = createLeftoverPreTasklet;
+        this.createCalculatePreTasklet = createCalculatePreTasklet;
     }
 
     @Bean
     public Step createLeftoverPre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreateLeftoverPreTasklet(dataDataSource);
         return new StepBuilder("createLeftoverPre", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createLeftoverPreTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }
 
     @Bean
     public Step createCalculatePre(JobRepository jobRepository, PlatformTransactionManager transactionManager) {
-        Tasklet tasklet = new CreateCalculatePreTasklet(dataDataSource);
         return new StepBuilder("createCalculatePre", jobRepository)
-                .tasklet(tasklet, transactionManager)
+                .tasklet(createCalculatePreTasklet, transactionManager)
                 .allowStartIfComplete(true)
                 .build();
     }

@@ -47,4 +47,8 @@ public class DateTools {
         LocalDate today = LocalDate.now();
         return !date.isBefore(today);
     }
+
+    public static String[] getDayArray() {
+        return new String[]{"monday", "tuesday", "wednesday", "thursday", "friday"};
+    }
 }
