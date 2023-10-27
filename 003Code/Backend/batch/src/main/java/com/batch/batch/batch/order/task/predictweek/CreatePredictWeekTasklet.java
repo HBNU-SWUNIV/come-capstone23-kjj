@@ -1,5 +1,6 @@
 package com.batch.batch.batch.order.task.predictweek;
 
+import com.batch.batch.batch.order.task.predictweek.method.CreatePredictWeekMethod;
 import com.batch.batch.tools.DateTools;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
@@ -26,10 +27,11 @@ import java.util.*;
 public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
-    private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
+    private final CreatePredictWeekMethod method;
 
-    public CreatePredictWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource) {
+    public CreatePredictWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource, CreatePredictWeekMethod method) {
         this.dataSource = dataSource;
+        this.method = method;
     }
 
     // 이번 주 월~금 이용인원 계산
@@ -37,14 +39,15 @@ public class CreatePredictWeekTasklet implements Tasklet {
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Map<String, Integer> result = new HashMap<>();
         Map<String, List<Long>> doubleCheckMap = new HashMap<>();
+        String[] day = DateTools.getDayArray();
         for (String d : day) {
             result.put(d, 0);
             doubleCheckMap.put(d, new ArrayList<>());
         }
         Connection connection = dataSource.getConnection();
 
-        countOrders(connection, result, doubleCheckMap);
-        checkPolicy(connection, result, doubleCheckMap);
+        method.countOrders(connection, result, doubleCheckMap);
+        method.checkPolicy(connection, result, doubleCheckMap);
 
         String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
@@ -57,43 +60,5 @@ public class CreatePredictWeekTasklet implements Tasklet {
             insertStatement.executeUpdate();
         }
         return RepeatStatus.FINISHED;
-    }
-
-    private void countOrders(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
-        LocalDate today = LocalDate.now();
-        LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        for (String d : day) {
-            String formatted = thisMonday.format(format);
-            int count = 0;
-
-            String getQuery = "select user_id from orders where order_date = ? and recognize = 1;";
-            try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
-                statement.setString(1, formatted);
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    while (resultSet.next()) {
-                        count += 1;
-                        doubleCheckMap.get(d).add(resultSet.getLong("user_id"));
-                    }
-                }
-            }
-            result.put(d, count);
-            thisMonday = thisMonday.plusDays(1);
-        }
-    }
-
-    private void checkPolicy(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
-        for (String d : day) {
-            String getQuery = "select user_id from user_policy where " + d + " = 1 and default_menu;";
-            try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
-                try (ResultSet resultSet = statement.executeQuery()) {
-                    while (resultSet.next()) {
-                        Long userId = resultSet.getLong("user_id");
-                        if (doubleCheckMap.get(d).contains(userId)) continue;
-                        result.put(d, result.get(d) + 1);
-                    }
-                }
-            }
-        }
     }
 }

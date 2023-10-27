@@ -31,6 +31,7 @@ out/
 data
 application-slack.yml
 application-keycloakAuth.yml
+application-chatgptApi.yml
 
 ### NetBeans ###
 /nbproject/private/

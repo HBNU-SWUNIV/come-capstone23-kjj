@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: db, actuator, slack, keycloakAuth
+    include: db, actuator, slack, keycloakAuth, chatgptApi
 
   application:
     name: zanbanzero

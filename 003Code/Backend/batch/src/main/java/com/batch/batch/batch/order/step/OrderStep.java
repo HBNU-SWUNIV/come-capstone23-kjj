@@ -23,9 +23,9 @@ public class OrderStep {
     private final ItemProcessor<UserPolicy, Order> itemProcessor;
     private final ItemWriter<Order> itemWriter;
 
-    private final CountOrdersByDateTasklet countOrdersByDateTasklet;
+    private final Tasklet countOrdersByDateTasklet;
 
-    public OrderStep(JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter, CountOrdersByDateTasklet countOrdersByDateTasklet) {
+    public OrderStep(JdbcCursorItemReader itemReader, ItemProcessor itemProcessor, ItemWriter itemWriter, @Qualifier("countOrdersByDateTasklet") Tasklet countOrdersByDateTasklet) {
         this.itemReader = itemReader;
         this.itemProcessor = itemProcessor;
         this.itemWriter = itemWriter;

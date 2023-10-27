@@ -15,10 +15,10 @@ import javax.sql.DataSource;
 
 @Component
 public class PredictWeekStep {
-    private final CreatePredictWeekTasklet createPredictWeekTasklet;
-    private final CreatePredictUserWeekTasklet createPredictUserWeekTasklet;
+    private final Tasklet createPredictWeekTasklet;
+    private final Tasklet createPredictUserWeekTasklet;
 
-    public PredictWeekStep(CreatePredictWeekTasklet createPredictWeekTasklet, CreatePredictUserWeekTasklet createPredictUserWeekTasklet) {
+    public PredictWeekStep(@Qualifier("createPredictWeekTasklet") Tasklet createPredictWeekTasklet, @Qualifier("createPredictUserWeekTasklet") Tasklet createPredictUserWeekTasklet) {
         this.createPredictWeekTasklet = createPredictWeekTasklet;
         this.createPredictUserWeekTasklet = createPredictUserWeekTasklet;
     }
