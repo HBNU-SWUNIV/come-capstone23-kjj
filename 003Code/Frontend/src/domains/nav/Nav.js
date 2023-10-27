@@ -191,7 +191,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const screenWidth = window.innerWidth;
 const drawerWidth = screenWidth < 450 ? 20 : 220;
-const pagesNameStyle = { flexGrow: 1, fontWeight: 600, fontSize: '25px' };
+const pagesNameStyle = {
+  flexGrow: 1,
+  fontWeight: 600,
+  fontSize: '20px',
+};
 const listStyle = {
   backgroundColor: 'rgb(69,75,95)',
   height: '100%',

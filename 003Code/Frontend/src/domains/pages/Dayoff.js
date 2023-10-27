@@ -36,11 +36,9 @@ export default function Dayoff() {
         <Box component="main" sx={boxStyle}>
           <Toolbar />
           <Container maxWidth="xl" sx={containerStyle}>
-            <Typography align="center" color="text.secondary">
-              <span style={spanStyle}>
-                우리 식당에 휴일을 추가적으로 등록할 수 있습니다
-              </span>
-            </Typography>
+            <span style={spanStyle}>
+              우리 식당에 휴일을 추가적으로 등록할 수 있습니다
+            </span>
 
             <Button
               sx={buttonStyle}
@@ -49,12 +47,6 @@ export default function Dayoff() {
             >
               주의사항 보기
             </Button>
-            <Stack
-              sx={{ pt: 4 }}
-              direction="row"
-              spacing={2}
-              justifyContent="center"
-            ></Stack>
           </Container>
 
           <Container sx={{ py: 1 }} maxWidth="xl">
@@ -83,6 +75,7 @@ const spanStyle = {
   fontFamily: 'NotoSans',
   fontSize: '16px',
   fontWeight: '600',
+  color: 'rgb(0, 171, 85)',
 };
 
 const boxStyle = {
