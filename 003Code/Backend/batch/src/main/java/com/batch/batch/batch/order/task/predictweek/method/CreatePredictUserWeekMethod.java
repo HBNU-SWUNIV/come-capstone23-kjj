@@ -69,18 +69,8 @@ public class CreatePredictUserWeekMethod {
         }
     }
 
-    public double getRatio(Connection connection, long entireUser) throws SQLException {
-        String query = "select count(*) as result from user where roles='ROLE_USER';";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                resultSet.next();
-                return resultSet.getDouble("result") / entireUser * 100.0;
-            }
-        }
-    }
-
-    public void checkSelfOrders(Connection connection, Map<String, Integer> dayFoodMap, String d, String date, Map<Long, Integer> menuFood) throws SQLException {
-        String query = "select count(orders.id) as count, menu.id from orders join menu on order_date= ? and orders.menu = menu.name  group by menu.id;";
+    public void checkSelfOrders(Connection connection, Map<String, Integer> dayFoodMap, Map<String, Integer> userCountMap, String d, String date, Map<Long, Integer> menuFood) throws SQLException {
+        String query = "select count(orders.id) as count, menu.id from orders join menu on order_date= ? and recognize and orders.menu = menu.name  group by menu.id;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setString(1, date);
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -90,23 +80,28 @@ public class CreatePredictUserWeekMethod {
                         log.warn("TRASH DATA FOUND : menuId = {}", menuId);
                         continue;
                     }
-                    dayFoodMap.put(d, dayFoodMap.get(d) - (menuFood.get(menuId) * resultSet.getInt("count")));
+                    int count = resultSet.getInt("count");
+                    dayFoodMap.put(d, dayFoodMap.get(d) - (menuFood.get(menuId) * count));
+                    userCountMap.put(d, userCountMap.get(d) - count);
                 }
             }
         }
     }
 
-    public FoodPredict getPart(Connection connection, double ratio, Map<Long, Integer> menuFood) throws SQLException {
+    public FoodPredict getPart(Connection connection, long entireUser, Map<Long, Integer> menuFood) throws SQLException {
         Map<String, Integer> dayFoodMap = new HashMap<>();
+        Map<String, Integer> userCountMap = new HashMap<>();
         LocalDate thisMonday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         for (String d : day) {
             int dayFood = 0;
+            int allUser = 0;
             String query = "select count(*) as count, default_menu from user_policy where " + d + " = 1 and default_menu group by default_menu;";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
                 try (ResultSet resultSet = statement.executeQuery()) {
                     while (resultSet.next()) {
                         Long menuId = resultSet.getLong("default_menu");
                         int count = resultSet.getInt("count");
+                        allUser += count;
                         if (!menuFood.containsKey(menuId)) {
                             log.warn("TRASH DATA FOUND : menuId = {}", menuId);
                             continue;
@@ -116,17 +111,19 @@ public class CreatePredictUserWeekMethod {
                 }
             }
             dayFoodMap.put(d, dayFood);
+            userCountMap.put(d, allUser);
             if (DateTools.isNotBefore(thisMonday)) {
-                checkSelfOrders(connection, dayFoodMap, d, thisMonday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), menuFood);
+                System.out.println("isNotBefor IN = " + d);
+                checkSelfOrders(connection, dayFoodMap, userCountMap, d, thisMonday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), menuFood);
             }
             thisMonday = thisMonday.plusDays(1);
         }
         return new FoodPredict(
-                dayFoodMap.get(day[0]) / ratio * 100,
-                dayFoodMap.get(day[1]) / ratio * 100,
-                dayFoodMap.get(day[2]) / ratio * 100,
-                dayFoodMap.get(day[3]) / ratio * 100,
-                dayFoodMap.get(day[4]) / ratio * 100
+                (double) (entireUser * dayFoodMap.get(day[0])) / userCountMap.get(day[0]),
+                (double) (entireUser * dayFoodMap.get(day[1])) / userCountMap.get(day[1]),
+                (double) (entireUser * dayFoodMap.get(day[2])) / userCountMap.get(day[2]),
+                (double) (entireUser * dayFoodMap.get(day[3])) / userCountMap.get(day[3]),
+                (double) (entireUser * dayFoodMap.get(day[4])) / userCountMap.get(day[4])
         );
     }
 

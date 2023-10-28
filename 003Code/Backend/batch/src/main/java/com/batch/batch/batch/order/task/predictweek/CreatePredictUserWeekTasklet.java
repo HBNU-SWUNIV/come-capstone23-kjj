@@ -38,7 +38,7 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
 
         Map<Long, Integer> menuFood = method.getEntireMenuFood(connection);
         FoodPredict entire = method.getEntire(connection, entireUser, method.getMenuCostAvg(connection), menuFood);
-        FoodPredict part = method.getPart(connection, method.getRatio(connection, entireUser), menuFood);
+        FoodPredict part = method.getPart(connection, entireUser, menuFood);
 
         String insertQuery = "insert into weekly_food_predict(date, entire_monday, entire_tuesday, entire_wednesday, entire_thursday, entire_friday, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
