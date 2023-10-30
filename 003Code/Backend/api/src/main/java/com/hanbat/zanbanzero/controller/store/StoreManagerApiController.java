@@ -69,9 +69,9 @@ public class StoreManagerApiController {
      *
      * @return Integer
      */
-    @Operation(summary="금일 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
+    @Operation(summary="금일 / 전 영업일 이용자 수 조회", description="10:30분마다 정산하여 갱신됨")
     @GetMapping("state/today")
-    public ResponseEntity<Integer> getToday() {
+    public ResponseEntity<StoreTodayDto> getToday() {
         return ResponseEntity.ok(storeService.getToday());
     }
 
@@ -136,6 +136,12 @@ public class StoreManagerApiController {
         return ResponseEntity.ok(storeService.updateStoreInfo(dto));
     }
 
+    @Operation(summary="금일 / 전 영업일 매출액 조회")
+    @GetMapping("store/sales")
+    public ResponseEntity<StoreSalesDto> getSales() {
+        return ResponseEntity.ok(storeService.getSales());
+    }
+
     /**
      * 연, 월, 일, 휴무일 설정
      * @param off - boolean off
@@ -156,9 +162,9 @@ public class StoreManagerApiController {
      *
      * @return Integer
      */
-    @Operation(summary="익일 예측 이용자 수", description = "10시 30분마다 갱신")
+    @Operation(summary="익일 예측 / 전 영업일 이용자 수", description = "10시 30분마다 갱신")
     @GetMapping("state/predict/user")
-    public ResponseEntity<Integer> getCalculatePreUser() {
+    public ResponseEntity<StorePreDto> getCalculatePreUser() {
         return ResponseEntity.ok(storeService.getCalculatePreUser());
     }
 

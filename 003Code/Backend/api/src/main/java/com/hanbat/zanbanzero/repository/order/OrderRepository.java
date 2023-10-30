@@ -21,4 +21,5 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o WHERE o.user.id = :id AND YEAR(o.orderDate) = :year AND MONTH(o.orderDate) = :month")
     List<Order> findByUserIdAndOrderDate_YearAndOrderDate_Month(Long id, int year, int month);
 
+    void deleteAllByMenu(String menuName);
 }
