@@ -3,8 +3,10 @@ import { ConfigWithToken } from '../auth/authConfig';
 import {
   getPredictFoods,
   getPredictMenus,
+  getPredictUsers,
   getReservation,
   getTodayPop,
+  getUserPop,
 } from '../api/apis';
 
 const UseGetCharts = () => {
@@ -46,12 +48,18 @@ const UseGetCharts = () => {
     () => getTodayPop(config)
   );
 
+  const { data: predictUser, isLoading: predictUserLoading } = useQuery(
+    ['getpredictuser', config],
+    () => getPredictUsers(config)
+  );
+
   return {
     predictMenusArray,
     predictfoodsArray,
     reservationArray,
     todaypop: !todaypoploading && todaypop,
     todaydates,
+    predictUser: !predictUserLoading && predictUser,
   };
 };
 

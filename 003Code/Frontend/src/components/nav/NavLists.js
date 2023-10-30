@@ -5,6 +5,7 @@ import RiceBowlIcon from '@mui/icons-material/RiceBowl';
 import SettingsIcon from '@mui/icons-material/Settings';
 import NavList from './NavList';
 import styled from 'styled-components';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 
 const listItems = [
   {
@@ -24,7 +25,7 @@ const listItems = [
   },
   {
     url: '/dayoff',
-    icon: <SettingsIcon />,
+    icon: <CalendarMonthIcon />,
     name: '휴일 설정',
   },
 ];

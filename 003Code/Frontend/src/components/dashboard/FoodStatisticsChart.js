@@ -12,10 +12,12 @@ export default function FoodStatisticsChart() {
       <Wrapper>
         <ChartWrapper>
           <Title>
-            <span style={{ ...c_color, fontSize: '16px' }}>익일 예약 메뉴</span>
+            <span style={{ ...c_color, fontSize: '16px', fontWeight: 600 }}>
+              익일 예약 메뉴
+            </span>
           </Title>
           <ApexCharts
-            width={400}
+            width={450}
             height={400}
             type="donut"
             series={predictMenusArray?.map((items) => items[1])}
@@ -28,6 +30,9 @@ export default function FoodStatisticsChart() {
                   startAngle: -90,
                   endAngle: 270,
                 },
+              },
+              legend: {
+                position: 'bottom',
               },
               chart: {
                 toolbar: { show: false, type: 'donut' },

@@ -7,6 +7,15 @@ const holiday_base_api = `http://apis.data.go.kr/B090041/openapi/service/SpcdeIn
 // useQuery 사용을 위한 파일입니다.
 
 // charts
+export async function getUserPop(config) {
+  try {
+    const res = await axios.get(`${ManagerBaseApi}/state/next-week/user`, config);
+    return res.data;
+  } catch (err) {
+    console.log('userpoperror=', err);
+  }
+}
+
 export async function getReservation(config) {
   try {
     const response = await axios.get(`${ManagerBaseApi}/state/next-week/user`, config);
@@ -121,3 +130,8 @@ export const getAxios = async (src, config) => {
     console.log(err);
   }
 };
+
+export async function getPredictUsers(config) {
+  const res = await getAxios(`${ManagerBaseApi}/state/predict/user`, config);
+  return res;
+}

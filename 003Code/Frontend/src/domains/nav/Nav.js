@@ -42,7 +42,7 @@ function Nav(props) {
 
   return (
     <>
-      <AppBar position="absolute">
+      <AppBar position="fixed">
         <Toolbar sx={headerToolbarStyle}>
           <IconButton
             edge="start"

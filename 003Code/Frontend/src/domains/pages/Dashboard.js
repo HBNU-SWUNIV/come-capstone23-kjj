@@ -6,26 +6,60 @@ import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import Nav from '../nav/Nav';
-import FoodStatisticsChart from '../../components/charts/FoodStatisticsChart';
-import UserStatisticsChart from '../../components/charts/UserStatisticsChart';
-import FoodNeccesaryChart from '../../components/charts/FoodNeccesaryChart';
-import UserReservationChart from '../../components/charts/UserReservationChart';
-import FoodSavingStatusChart from '../../components/charts/FoodSavingStatusChart';
+import FoodStatisticsChart from '../../components/dashboard/FoodStatisticsChart';
+import FoodSavingStatusChart from '../../components/dashboard/FoodSavingStatusChart';
+import StatisticsWrap from '../../components/StatisticsWrap';
+import NeedFoods from '../../components/dashboard/NeedFoods';
 
-const GridItem = ({ xs, md, lg, chart }) => {
+const defaultTheme = createTheme();
+
+const boxStyle = {
+  backgroundColor: 'white',
+  flexGrow: 1,
+  minHeight: '100vh',
+  overflow: 'scroll',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+  backgroundColor: 'rgb(245 247 252)',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
+
+const paperStyle = {
+  height: '100%',
+  minHeight: '30vh',
+  p: 2,
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const containerStyle = {
+  mt: 4,
+  mb: 4,
+};
+
+const GridItem = (props) => {
   return (
-    <Grid item xs={xs} md={md} lg={lg}>
-      <Paper sx={paperStyle}>{chart}</Paper>
+    <Grid item xs={props.xs} md={props.md} lg={props.lg}>
+      <Paper sx={paperStyle}>{props.chart}</Paper>
     </Grid>
   );
 };
 
 const gridItems = [
   {
+    id: 1,
+    xs: 12,
+    md: 5,
+    lg: 5,
+    chart: <StatisticsWrap />,
+  },
+  {
     id: 0,
     xs: 12,
-    md: 12,
-    lg: 12,
+    md: 7,
+    lg: 7,
     chart: <FoodSavingStatusChart />,
   },
 
@@ -34,7 +68,7 @@ const gridItems = [
     xs: 12,
     md: 8,
     lg: 8,
-    chart: <FoodNeccesaryChart />,
+    chart: <NeedFoods />,
   },
   {
     id: 3,
@@ -43,20 +77,6 @@ const gridItems = [
     lg: 4,
     chart: <FoodStatisticsChart />,
   },
-  // {
-  //   id: 1,
-  //   xs: 12,
-  //   md: 3,
-  //   lg: 3,
-  //   chart: <UserStatisticsChart />,
-  // },
-  // {
-  //   id: 4,
-  //   xs: 12,
-  //   md: 6,
-  //   lg: 6,
-  //   chart: <UserReservationChart />,
-  // },
 ];
 
 export default function Dashboard() {
@@ -68,16 +88,11 @@ export default function Dashboard() {
 
         <Box component="main" sx={boxStyle}>
           <Toolbar />
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+
+          <Container maxWidth="xl" sx={containerStyle}>
             <Grid container spacing={3}>
               {gridItems.map((item) => (
-                <GridItem
-                  key={item.id}
-                  xs={item.xs}
-                  md={item.md}
-                  lg={item.lg}
-                  chart={item.chart}
-                />
+                <GridItem key={item.id} {...item} />
               ))}
             </Grid>
           </Container>
@@ -86,22 +101,3 @@ export default function Dashboard() {
     </ThemeProvider>
   );
 }
-
-const defaultTheme = createTheme();
-
-const boxStyle = {
-  backgroundColor: 'white',
-  flexGrow: 1,
-  minHeight: '100vh',
-  overflow: 'scroll',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
-};
-
-const paperStyle = {
-  height: '100%',
-  minHeight: '30vh',
-  p: 2,
-  display: 'flex',
-  flexDirection: 'column',
-};
