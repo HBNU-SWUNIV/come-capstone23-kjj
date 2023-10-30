@@ -1,4 +1,5 @@
 import styled from '@emotion/styled';
+import { Tooltip } from '@mui/material';
 
 const Wrapper = styled.div`
   width: 95%;
@@ -107,7 +108,9 @@ const Statistics = (props) => {
       <ContentWrapper>
         <Left>
           <span>{props.title}</span>
-          <span>{props.data}</span>
+          <Tooltip title={props.tip}>
+            <span>{props.data}</span>
+          </Tooltip>
 
           <LastText $chipColor={props.chipcolor}>
             <div>{props.chip}</div>
