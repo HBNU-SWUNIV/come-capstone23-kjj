@@ -162,7 +162,7 @@ public class StoreManagerApiController {
      *
      * @return Integer
      */
-    @Operation(summary="익일 예측 / 전 영업일 이용자 수", description = "10시 30분마다 갱신")
+    @Operation(summary="익일 예측 / 금일 이용자 수", description = "10시 30분마다 갱신")
     @GetMapping("state/predict/user")
     public ResponseEntity<StorePreDto> getCalculatePreUser() {
         return ResponseEntity.ok(storeService.getCalculatePreUser());

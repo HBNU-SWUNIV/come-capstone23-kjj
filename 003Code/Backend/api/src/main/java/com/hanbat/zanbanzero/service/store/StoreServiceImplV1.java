@@ -174,7 +174,7 @@ public class StoreServiceImplV1 implements StoreService {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
         Calculate calculate = calculateRepository.findTopByOrderByIdDesc();
 
-        return StorePreDto.of(List.of(calculatePre.getPredictUser(), calculate.getToday()));
+        return StorePreDto.of(List.of(calculate.getToday(), calculatePre.getPredictUser()));
     }
 
     @Override
