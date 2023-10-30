@@ -1,15 +1,18 @@
 # ZanbanZero
 
 2023 한밭대학교 컴퓨터공학과 캡스톤디자인 KJJ팀 백엔드  
-(미완)
 
 ## Tools
 
-<img src="https://img.shields.io/badge/Java-FF9900?style=for-the-badge&logo=OpenJDK&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=for-the-badge&logo=SpringBoot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Batch-6DB33F?style=for-the-badge&logo=Batch&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=MySQL&logoColor=white"/>
+- JAVA
+- Spring Boot, Spring Batch, Spring Security
+- MySQL, Redis
+- Jenkins, Slack
+- Keycloak
 
-## [ERD](https://www.erdcloud.com/d/qpTvHkbgBbqLyYYzZ)
+## [ERD]
 
-<img src="https://github.com/HyeongMokJeong/Coding-Test/assets/94634916/fec9d298-749b-4d7a-a219-9d1334d5328a" />
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/2351b595-ae55-40f6-9a4a-91e0398e2142" />
 
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
