@@ -75,7 +75,7 @@ const spanStyle = {
   fontFamily: 'NotoSans',
   fontSize: '16px',
   fontWeight: '600',
-  color: 'rgb(0, 171, 85)',
+  color: 'rgb(27 27 27)',
 };
 
 const boxStyle = {

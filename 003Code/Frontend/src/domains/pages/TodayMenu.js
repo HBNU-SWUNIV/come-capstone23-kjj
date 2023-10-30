@@ -222,7 +222,7 @@ const dailymenuBoxStyle = {
 
 const dailymenuButtonSpanStyle = {
   fontSize: '16px',
-  color: 'rgb(0, 171, 85)',
+  color: 'rgb(27 27 27)',
   marginBottom: '30px',
 };
 

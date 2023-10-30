@@ -27,12 +27,7 @@ const TableName = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
-  span {
-    color: rgb(0, 171, 85);
-    font-size: 30px;
-    &:hover {
-      cursor: pointer;
-    }
+
   }
 `;
 
