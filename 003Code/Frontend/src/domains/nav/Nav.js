@@ -17,129 +17,6 @@ import UseNav from '../../hooks/UseNav';
 import UseNavApi from '../../hooks/UseNavApi';
 import favicon from '../../image/favico.png';
 
-function Nav(props) {
-  const {
-    onLogout,
-    openUpdateModal,
-    closeAllUpdateModals,
-    updateforms,
-    openUsermenuModal,
-    closeUsermenuModal,
-    usermodalOpen,
-    anchorEl,
-  } = UseNav();
-
-  const {
-    form,
-    isName,
-    nameRef,
-    InfoRef,
-    updateMarketName,
-    updateMarketInfo,
-    updateMarketImage,
-    setNewImage,
-  } = UseNavApi(closeAllUpdateModals);
-
-  return (
-    <>
-      <AppBar position="absolute">
-        <Toolbar sx={headerToolbarStyle}>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{
-              marginRight: '36px',
-            }}
-          >
-            <img src={favicon} width={40} />
-          </IconButton>
-
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            sx={pagesNameStyle}
-          >
-            {props?.pages}
-          </Typography>
-
-          <IconButton
-            color="inherit"
-            id="fade-button"
-            aria-controls={usermodalOpen ? 'fade-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={usermodalOpen ? 'true' : undefined}
-            onClick={openUsermenuModal}
-          >
-            <AppbarUser>
-              <AppbarUserTitle>관리자</AppbarUserTitle>
-
-              {isName && (
-                <span
-                  style={{
-                    ...marketNameStyle,
-                    fontSize: '18px',
-                  }}
-                >
-                  {form?.name}
-                </span>
-              )}
-            </AppbarUser>
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      <Drawer variant="permanent" sx={drawerStyle}>
-        <Toolbar sx={drawerToolbarStyle}>
-          <img src={favicon} width={40} />
-        </Toolbar>
-        <Divider />
-
-        <List component="nav" sx={listStyle}>
-          <NavLists />
-        </List>
-
-        <UserMenuModal
-          anchorEl={anchorEl}
-          open={usermodalOpen}
-          onClose={closeUsermenuModal}
-          Fade={Fade}
-          openUpdateModal={openUpdateModal}
-          isName={isName}
-          onLogout={onLogout}
-        />
-
-        <UpdateNameModal
-          open={updateforms.name}
-          onClose={closeAllUpdateModals}
-          isName={isName}
-          nameRef={nameRef}
-          name={form?.name}
-          onUpdateMarketName={updateMarketName}
-        />
-        <UpdateInfoModal
-          open={updateforms.info}
-          onClose={closeAllUpdateModals}
-          info={form?.info}
-          InfoRef={InfoRef}
-          onUpdateMarketInfo={updateMarketInfo}
-        />
-        <UpdateImgModal
-          open={updateforms.image}
-          onClose={closeAllUpdateModals}
-          image={form?.image}
-          setNewImage={setNewImage}
-          onUpdateMarketImage={updateMarketImage}
-        />
-      </Drawer>
-    </>
-  );
-}
-
-export default Nav;
-
 // Appbar, Drawer은 mui 부트스트랩 기본 함수들, 건드리지 않음.
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -243,3 +120,126 @@ const AppbarUserTitle = Cstyled.span`
   color:inherit;
   margin-bottom:1px;
 `;
+
+function Nav(props) {
+  const {
+    onLogout,
+    openUpdateModal,
+    closeAllUpdateModals,
+    updateforms,
+    openUsermenuModal,
+    closeUsermenuModal,
+    usermodalOpen,
+    anchorEl,
+  } = UseNav();
+
+  const {
+    form,
+    isName,
+    nameRef,
+    InfoRef,
+    updateMarketName,
+    updateMarketInfo,
+    updateMarketImage,
+    setNewImage,
+  } = UseNavApi(closeAllUpdateModals);
+
+  return (
+    <>
+      <AppBar position="fixed">
+        <Toolbar sx={headerToolbarStyle}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            sx={{
+              marginRight: '36px',
+            }}
+          >
+            <img src={favicon} width={40} />
+          </IconButton>
+
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={pagesNameStyle}
+          >
+            {props?.pages}
+          </Typography>
+
+          <IconButton
+            color="inherit"
+            id="fade-button"
+            aria-controls={usermodalOpen ? 'fade-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={usermodalOpen ? 'true' : undefined}
+            onClick={openUsermenuModal}
+          >
+            <AppbarUser>
+              <AppbarUserTitle>관리자</AppbarUserTitle>
+
+              {isName && (
+                <span
+                  style={{
+                    ...marketNameStyle,
+                    fontSize: '18px',
+                  }}
+                >
+                  {form?.name}
+                </span>
+              )}
+            </AppbarUser>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer variant="permanent" sx={drawerStyle}>
+        <Toolbar sx={drawerToolbarStyle}>
+          <img src={favicon} width={40} />
+        </Toolbar>
+        <Divider />
+
+        <List component="nav" sx={listStyle}>
+          <NavLists />
+        </List>
+
+        <UserMenuModal
+          anchorEl={anchorEl}
+          open={usermodalOpen}
+          onClose={closeUsermenuModal}
+          Fade={Fade}
+          openUpdateModal={openUpdateModal}
+          isName={isName}
+          onLogout={onLogout}
+        />
+
+        <UpdateNameModal
+          open={updateforms.name}
+          onClose={closeAllUpdateModals}
+          isName={isName}
+          nameRef={nameRef}
+          name={form?.name}
+          onUpdateMarketName={updateMarketName}
+        />
+        <UpdateInfoModal
+          open={updateforms.info}
+          onClose={closeAllUpdateModals}
+          info={form?.info}
+          InfoRef={InfoRef}
+          onUpdateMarketInfo={updateMarketInfo}
+        />
+        <UpdateImgModal
+          open={updateforms.image}
+          onClose={closeAllUpdateModals}
+          image={form?.image}
+          setNewImage={setNewImage}
+          onUpdateMarketImage={updateMarketImage}
+        />
+      </Drawer>
+    </>
+  );
+}
+
+export default Nav;

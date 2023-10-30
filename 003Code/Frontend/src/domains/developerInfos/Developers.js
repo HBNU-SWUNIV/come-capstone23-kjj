@@ -13,19 +13,19 @@ import Developer from './Developer';
 
 const developers = [
   {
-    name: 'Gibeom',
+    name: '기범',
     github: 'https://github.com/kkb4363',
     imgsrc: Gibeom,
     position: 'Web Frontend',
   },
   {
-    name: 'HyeongMok',
+    name: '형목',
     github: 'https://github.com/HyeongMokJeong',
     imgsrc: Heongmok,
     position: 'Web&App Backend',
   },
   {
-    name: 'SeongHoon',
+    name: '성훈',
     github: 'https://github.com/joseonghoon',
     imgsrc: Seonghun,
     position: 'App Frontend',
@@ -40,7 +40,7 @@ const Developers = ({ onClose, open }) => {
       open={open}
     >
       <DialogContent dividers sx={developerContentStyle}>
-        <DeveloperTitle>Developer Information</DeveloperTitle>
+        <DeveloperTitle>개발자 정보</DeveloperTitle>
 
         <DeveloperInfoWrapper>
           {developers.map((user, index) => (
@@ -48,7 +48,7 @@ const Developers = ({ onClose, open }) => {
           ))}
         </DeveloperInfoWrapper>
 
-        <span style={{ fontSize: '20px' }}>Capstone Design 2023 KJJ Team</span>
+        <span style={{ fontSize: '16px' }}>Capstone Design 2023 KJJ Team</span>
       </DialogContent>
     </BootstrapDialog>
   );
@@ -112,6 +112,6 @@ height: 250px;
 `;
 
 const DeveloperTitle = cStyled.span`
-    font-size:30px;
+    font-size:24px;
     font-weight:600px;
 `;

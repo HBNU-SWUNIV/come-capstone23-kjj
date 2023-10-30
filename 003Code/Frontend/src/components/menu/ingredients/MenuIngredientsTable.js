@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -23,6 +22,7 @@ export default function MenuIngredientsTable(props) {
             <TableCell align="right">무게(1인분 기준)</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
           {Array.isArray(props.data) &&
             rows.map((row) => (

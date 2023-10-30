@@ -15,8 +15,7 @@ function Copyright(props) {
   return (
     <Wrapper>
       <Typography variant="body2" color="text.secondary" align="center" {...props}>
-        {'Copyright © 2023. '}
-        <span>식재료 절약단</span>
+        <span>Copyright © 2023. 식재료 절약단</span>
         <span> · </span>
         <Info onClick={handleClickOpen}>개발자 정보</Info>
         <span> · </span>
@@ -31,6 +30,20 @@ export default Copyright;
 
 const Wrapper = cStyled.div`
   position: relative;
+
+  height:30px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
+  span{
+    font-size:16px;
+    font-weight:600;
+  }
+
+ 
+
 `;
 
 const Info = cStyled.span`
