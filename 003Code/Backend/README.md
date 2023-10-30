@@ -18,4 +18,5 @@
 
 ### [캐시를 활용한 조회 API 응답시간 이슈 해결](https://jeong-mok.tistory.com/8)
 ### [인덱싱을 이용한 API 응답 지연 이슈 해결](https://jeong-mok.tistory.com/13)
-### [Batch를 이용한 자동 정산, 데이터 생성 시스템 구축](https://jeong-mok.tistory.com/10)
+### [자동 정산 Batch 로직 개발](https://jeong-mok.tistory.com/10)
+### [Jenkins를 활용한 CI/CD 구축 및 API 테스트 자동화](https://jeong-mok.tistory.com/14)
