@@ -6,7 +6,17 @@ const holiday_base_api = `http://apis.data.go.kr/B090041/openapi/service/SpcdeIn
 
 // useQuery 사용을 위한 파일입니다.
 
-// charts
+// dashboard 관련
+
+export async function getCosts(config) {
+  try {
+    const res = await axios.get(`${ManagerBaseApi}/store/sales`, config);
+    return res.data;
+  } catch (err) {
+    console.log('costerror=', err);
+  }
+}
+
 export async function getUserPop(config) {
   try {
     const res = await axios.get(`${ManagerBaseApi}/state/next-week/user`, config);

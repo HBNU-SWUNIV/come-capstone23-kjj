@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import { ConfigWithToken } from '../auth/authConfig';
 import { getStatusFood } from '../api/apis';
 import { useEffect, useState } from 'react';
-import { dateObject } from './dashboard_statistics/UseCompareReservation';
+import { dateObject } from './dashboard_statistics/UseUserPop';
 
 const UseCalculateFood = (props) => {
   const config = ConfigWithToken();

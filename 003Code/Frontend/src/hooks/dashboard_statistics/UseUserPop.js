@@ -1,8 +1,30 @@
 import { useQuery } from 'react-query';
 import { getUserPop } from '../../api/apis';
 import { ConfigWithToken } from '../../auth/authConfig';
-import { dateObject } from './UseCompareReservation';
 import { useEffect, useState } from 'react';
+
+export const dateObject = [
+  {
+    idx: 1,
+    day: 'monday',
+  },
+  {
+    idx: 2,
+    day: 'tuesday',
+  },
+  {
+    idx: 3,
+    day: 'wednesday',
+  },
+  {
+    idx: 4,
+    day: 'thursday',
+  },
+  {
+    idx: 5,
+    day: 'friday',
+  },
+];
 
 const UseUserPop = (props) => {
   const config = ConfigWithToken();

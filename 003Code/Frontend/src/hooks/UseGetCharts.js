@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { ConfigWithToken } from '../auth/authConfig';
 import {
+  getCosts,
   getPredictFoods,
   getPredictMenus,
   getPredictUsers,
@@ -53,6 +54,11 @@ const UseGetCharts = () => {
     () => getPredictUsers(config)
   );
 
+  const { data: marketCost, isLoading: costLoading } = useQuery(
+    ['getCosts', config],
+    () => getCosts(config)
+  );
+
   return {
     predictMenusArray,
     predictfoodsArray,
@@ -60,6 +66,7 @@ const UseGetCharts = () => {
     todaypop: !todaypoploading && todaypop,
     todaydates,
     predictUser: !predictUserLoading && predictUser,
+    marketCost: !costLoading && marketCost,
   };
 };
 
