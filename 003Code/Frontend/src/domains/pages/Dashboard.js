@@ -51,14 +51,14 @@ const gridItems = [
   {
     id: 1,
     xs: 12,
-    md: 5,
+    md: 6,
     lg: 5,
     chart: <StatisticsWrap />,
   },
   {
     id: 0,
     xs: 12,
-    md: 7,
+    md: 6,
     lg: 7,
     chart: <FoodSavingStatusChart />,
   },
@@ -66,14 +66,14 @@ const gridItems = [
   {
     id: 2,
     xs: 12,
-    md: 8,
+    md: 6,
     lg: 8,
     chart: <NeedFoods />,
   },
   {
     id: 3,
     xs: 12,
-    md: 4,
+    md: 6,
     lg: 4,
     chart: <FoodStatisticsChart />,
   },

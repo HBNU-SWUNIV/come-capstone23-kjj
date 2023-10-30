@@ -1,6 +1,10 @@
 import { ListItemButton, ListItemIcon, Tooltip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+const IconStyle = {
+  marginLeft: '5px',
+};
+
 const NavList = (props) => {
   const navigate = useNavigate();
   const path = useLocation().pathname;
@@ -19,7 +23,3 @@ const NavList = (props) => {
 };
 
 export default NavList;
-
-const IconStyle = {
-  marginLeft: '5px',
-};
