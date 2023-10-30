@@ -10,10 +10,6 @@
 - Jenkins, Slack
 - Keycloak
 
-## [ERD]
-
-<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/2351b595-ae55-40f6-9a4a-91e0398e2142" />
-
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
 - Path : /apis
