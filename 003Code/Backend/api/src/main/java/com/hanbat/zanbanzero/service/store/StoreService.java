@@ -22,7 +22,7 @@ public interface StoreService {
 
     void setStoreImage(MultipartFile file) throws CantFindByIdException, UploadFileException;
 
-    Integer getToday();
+    StoreTodayDto getToday();
 
     List<StoreWeekendDto> getLastWeeksUser();
 
@@ -38,7 +38,7 @@ public interface StoreService {
 
     List<StoreStateDto> getClosedDays(int year, int month);
 
-    Integer getCalculatePreUser();
+    StorePreDto getCalculatePreUser();
 
     Map<String, Integer> getCalculatePreFood() throws StringToMapException;
 
@@ -47,4 +47,6 @@ public interface StoreService {
     CalculatePreWeekDto getNextWeeksUser();
 
     WeeklyFoodPredictDto getNextWeeksFood();
+
+    StoreSalesDto getSales();
 }

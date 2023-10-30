@@ -11,6 +11,7 @@ import com.hanbat.zanbanzero.exception.exceptions.*;
 import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
+import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +25,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImplV1 implements MenuService{
-
     private final ImageService menuImageService;
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
+    private final OrderRepository orderRepository;
 
     private static final String MENU_DTO_CACHE_KEY = "1";
     private static final String CACHE_MANAGER = "cacheManager";
@@ -134,8 +136,14 @@ public class MenuServiceImplV1 implements MenuService{
                 .peek(UserPolicy::clearDefaultMenu)
                 .toList());
         menuRepository.delete(menu);
+        CompletableFuture.runAsync(() -> deleteOrders(menu.getName()));
 
         return MenuDto.of(menu);
+    }
+
+    @Transactional
+    public void deleteOrders(String menuName) {
+        orderRepository.deleteAllByMenu(menuName);
     }
 
     @Override

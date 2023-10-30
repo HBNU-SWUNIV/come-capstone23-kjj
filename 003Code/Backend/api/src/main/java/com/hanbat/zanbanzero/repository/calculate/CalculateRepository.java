@@ -16,4 +16,12 @@ public interface CalculateRepository extends JpaRepository<Calculate, Long> {
     List<Calculate> findTop5ByIdOrderByIdDesc();
 
     Page<Calculate> findAllByOrderByIdDesc(Pageable pageable);
+
+    @Query("SELECT c.today FROM Calculate c ORDER BY c.id DESC LIMIT 2")
+    List<Integer> findLastTwoToday();
+
+    @Query("SELECT c.sales FROM Calculate c ORDER BY c.id DESC LIMIT 2")
+    List<Integer> findLastTwoSales();
+
+    Calculate findTopByOrderByIdDesc();
 }

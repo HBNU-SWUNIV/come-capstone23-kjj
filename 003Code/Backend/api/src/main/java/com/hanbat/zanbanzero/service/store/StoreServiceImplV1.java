@@ -82,11 +82,13 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
-    @Transactional
-    public Integer getToday() {
-        Calculate calculate = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
-        if (calculate == null) return 0;
-        return calculate.getToday();
+    public StoreTodayDto getToday() {
+        return StoreTodayDto.of(calculateRepository.findLastTwoToday());
+    }
+
+    @Override
+    public StoreSalesDto getSales() {
+        return StoreSalesDto.of(calculateRepository.findLastTwoSales());
     }
 
     @Override
@@ -168,10 +170,11 @@ public class StoreServiceImplV1 implements StoreService {
 
     @Override
     @Transactional
-    public Integer getCalculatePreUser() {
+    public StorePreDto getCalculatePreUser() {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        Calculate calculate = calculateRepository.findTopByOrderByIdDesc();
 
-        return calculatePre.getPredictUser();
+        return StorePreDto.of(List.of(calculatePre.getPredictUser(), calculate.getToday()));
     }
 
     @Override
