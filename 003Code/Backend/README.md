@@ -22,3 +22,4 @@
 - [인덱싱을 이용한 API 응답 지연 이슈 해결](https://jeong-mok.tistory.com/13)
 - [Jenkins를 활용한 CI/CD 구축 및 API 테스트 자동화](https://jeong-mok.tistory.com/14)
 - [예외상황 확인을 위한 Slack API 연동](https://jeong-mok.tistory.com/15)
+- [SSO 회원 시스템 구축](https://jeong-mok.tistory.com/16)
