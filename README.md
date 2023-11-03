@@ -18,7 +18,14 @@
 - 또한 식재료 절약에 따른 금전적 이익을 이용객에게 포인트 및 적립으로 제공함.
 
 ## System Design
-![구조](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/24934e48-5182-47f0-8191-ce63f3ba8cd0)
+- 시스템 구조도
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/c1b553a4-bc9d-46d5-b811-0e363b121f60" />
+
+- 전체 시스템 구성  
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/215b4737-4f37-448e-9733-94db5279f64d" />
+
+- 전체 시스템 흐름도
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/d4d0c53c-0ff1-49a4-a092-94beb5f77aa7" />
 
 - ### System Requirements
 
