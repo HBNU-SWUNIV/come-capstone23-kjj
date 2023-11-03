@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 public class StorePreDto {
     int today;
-    int yesterday;
+    int tomorrow;
 
     public static StorePreDto of(List<Integer> list) {
         return new StorePreDto(

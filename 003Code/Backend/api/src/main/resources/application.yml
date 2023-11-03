@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: db, actuator, slack, keycloakAuth, chatgptApi
+    include: db, slack, keycloakAuth, chatgptApi, monitor
 
   application:
     name: zanbanzero
@@ -27,21 +27,6 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
-  # Actuator
-management:
-  endpoints:
-    enabled-by-default: false
-    web:
-      exposure:
-        include: health, prometheus
-
-  endpoint:
-    health:
-      enabled: true
-    prometheus:
-      enabled: true
-
 ---
 spring:
   config:

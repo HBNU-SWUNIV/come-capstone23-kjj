@@ -25,6 +25,24 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+
+# actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics, prometheus
+      base-path: /my-server-status-is
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+  metrics:
+    enable:
+      all: false
+      hikaricp: true
+server:
+  port: 8888
 ---
 spring:
   config:

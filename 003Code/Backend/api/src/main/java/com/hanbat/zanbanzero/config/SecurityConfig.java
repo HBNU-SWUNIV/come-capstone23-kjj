@@ -5,10 +5,10 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
 import com.hanbat.zanbanzero.auth.login.authentication_impl.AuthenticationManagerImpl;
-import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilterV1;
 import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.LoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl;
+import com.hanbat.zanbanzero.auth.monitor.IpCheckFilter;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeUsernamePassword;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
@@ -17,6 +17,7 @@ import com.hanbat.zanbanzero.service.user.service.UserService;
 import com.hanbat.zanbanzero.service.user.service.UserSsoService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,6 +33,9 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    @Value("${my.server.address}") private String address;
+    @Value("${my.prometheus.path}") private String path;
 
     private final CorsFilter corsFilter;
     private final RestTemplate restTemplate;
@@ -74,24 +78,22 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
+                .addFilterBefore(new IpCheckFilter(path, address), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
-//                .addFilterBefore(new LoginFilterV1("/login/id", authenticationManager, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new KeycloakLoginFilterV1("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userSsoService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
                 .authorizeHttpRequests()
-                .requestMatchers("/update-db").permitAll()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()
                 .requestMatchers("/api/user/order/**/qr").permitAll()
                 .requestMatchers("/api/manager/login/**").permitAll()
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "MANAGER")
                 .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                .requestMatchers("/actuator/**").permitAll()
+                .requestMatchers(path).permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

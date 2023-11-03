@@ -7,12 +7,9 @@
 - JAVA
 - Spring Boot, Spring Batch, Spring Security
 - MySQL, Redis
-- Jenkins, Slack
+- Jenkins
+- Prometheus, Grafana, Slack
 - Keycloak
-
-## [ERD]
-
-<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/2351b595-ae55-40f6-9a4a-91e0398e2142" />
 
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
@@ -26,3 +23,4 @@
 - [인덱싱을 이용한 API 응답 지연 이슈 해결](https://jeong-mok.tistory.com/13)
 - [Jenkins를 활용한 CI/CD 구축 및 API 테스트 자동화](https://jeong-mok.tistory.com/14)
 - [예외상황 확인을 위한 Slack API 연동](https://jeong-mok.tistory.com/15)
+- [SSO 회원 시스템 구축](https://jeong-mok.tistory.com/16)

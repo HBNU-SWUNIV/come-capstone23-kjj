@@ -33,6 +33,10 @@ dependencies {
 	// slack
 	implementation 'com.slack.api:slack-api-client:1.29.0'
 
+	// actuator
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus' // 마이크로미터 프로메테우스 구현체
+
 	//aop
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	implementation 'org.aspectj:aspectjweaver'
