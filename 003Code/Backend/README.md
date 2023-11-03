@@ -7,7 +7,8 @@
 - JAVA
 - Spring Boot, Spring Batch, Spring Security
 - MySQL, Redis
-- Jenkins, Slack
+- Jenkins
+- Prometheus, Grafana, Slack
 - Keycloak
 
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
