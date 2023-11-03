@@ -11,6 +11,13 @@
 - Prometheus, Grafana, Slack
 - Keycloak
 
+## 서버 구성
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/215b4737-4f37-448e-9733-94db5279f64d" />
+
+## 서버 흐름
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/02dd1179-8647-4f3d-8f5a-7304798cd83e" />
+
+
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
 - Path : /apis
