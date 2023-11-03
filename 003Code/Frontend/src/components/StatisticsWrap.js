@@ -38,7 +38,7 @@ const StatisticsWrap = () => {
   const calculatedIngredientsValue = isNaN(calculatedValue) ? 0 : calculatedValue;
 
   const calculatedCosts = marketCost?.today - marketCost?.yesterday;
-  const costs = calculatedCosts < 0 ? '-' + calculatedCosts : '+' + calculatedCosts;
+  const costs = calculatedCosts < 0 ? calculatedCosts : '+' + calculatedCosts;
 
   const statistics_datas = [
     {
@@ -53,7 +53,7 @@ const StatisticsWrap = () => {
       title: '매출액',
       data: `${marketCost?.today}원`,
       date: '금일',
-      chip: `${!isNaN(costs) && costs}원`,
+      chip: `${costs}원`,
       chipcolor: calculatedCosts < 0,
     },
     {
