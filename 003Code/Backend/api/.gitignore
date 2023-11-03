@@ -33,6 +33,7 @@ application-slack.yml
 application-keycloakAuth.yml
 application-chatgptApi.yml
 application-rabbitmq.yml
+application-monitor.yml
 
 ### NetBeans ###
 /nbproject/private/

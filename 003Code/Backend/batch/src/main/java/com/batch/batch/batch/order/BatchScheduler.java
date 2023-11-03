@@ -69,16 +69,21 @@ public class BatchScheduler {
     public void runOrderJob() throws SQLException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String today = DateTools.getToday();
         String date = DateTools.getDate();
+        String firstJobName = "OrderJob";
+        String secondJobName = "CalculateJob";
         boolean off = isOffDay(date);
         if (!today.equals("SATURDAY") && !today.equals("SUNDAY") && !off) {
             JobExecution run = jobLauncher.run(firstJob, getFirstJobParameters());
             if (run.getStatus() != BatchStatus.FAILED) {
-                slackTools.sendSlackMessage("firstJob");
+                slackTools.sendSlackMessage(firstJobName);
                 if (!today.equals("FRIDAY")) {
                     JobExecution secondRun = jobLauncher.run(secondJob, getSecondJobParameters());
-                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("secondJob");
+                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage(secondJobName);
                 }
-                else slackTools.sendSlackMessage("Friday! SecondJob is resting");
+                else slackTools.sendSlackMessage("Friday! " + secondJobName + " is resting");
+            }
+            else {
+                slackTools.sendSlackFailMessage(firstJobName, run.getStatus().name());
             }
         }
     }
@@ -98,8 +103,10 @@ public class BatchScheduler {
 
     @Scheduled(cron = "0 0 0 ? * MON-FRI")
     public void predictWeekJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        String jobName = "PredictWeekJob";
         JobExecution run = jobLauncher.run(predictWeekJob, getpredictWeekJobParameters());
-        if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage("predictWeekJob");
+        if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage(jobName);
+        else slackTools.sendSlackFailMessage(jobName, run.getStatus().name());
     }
 
     @Scheduled(cron = "0 52 2 * * ?")
