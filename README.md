@@ -19,7 +19,7 @@
 
 ## System Design
 - 시스템 구조도
-<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/c1b553a4-bc9d-46d5-b811-0e363b121f60" />
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/0346becc-f8d1-464b-b8c9-5cc4a49f7f05" />
 
 - 전체 시스템 구성  
 <img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/215b4737-4f37-448e-9733-94db5279f64d" />
