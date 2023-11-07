@@ -2,6 +2,7 @@ package com.hanbat.zanbanzero.auth.jwt;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -67,8 +68,12 @@ public class JwtUtil {
     public boolean isTokenExpired(String token) {
         token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
-        Date exp = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("exp").asDate();
-        return exp.before(new Date());
+        try {
+            Date exp = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("exp").asDate();
+            return exp.before(new Date());
+        } catch (TokenExpiredException e) {
+            return true;
+        }
     }
 
     public String getUsernameFromRefreshToken(String token) {

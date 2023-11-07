@@ -44,20 +44,20 @@ public class CreatePredictWeekTasklet implements Tasklet {
             result.put(d, 0);
             doubleCheckMap.put(d, new ArrayList<>());
         }
-        Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+            method.countOrders(connection, result, doubleCheckMap);
+            method.checkPolicy(connection, result, doubleCheckMap);
 
-        method.countOrders(connection, result, doubleCheckMap);
-        method.checkPolicy(connection, result, doubleCheckMap);
-
-        String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-            insertStatement.setString(1, DateTools.getDate());
-            insertStatement.setInt(2, result.get(day[0]));
-            insertStatement.setInt(3, result.get(day[1]));
-            insertStatement.setInt(4, result.get(day[2]));
-            insertStatement.setInt(5, result.get(day[3]));
-            insertStatement.setInt(6, result.get(day[4]));
-            insertStatement.executeUpdate();
+            String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                insertStatement.setString(1, DateTools.getDate());
+                insertStatement.setInt(2, result.get(day[0]));
+                insertStatement.setInt(3, result.get(day[1]));
+                insertStatement.setInt(4, result.get(day[2]));
+                insertStatement.setInt(5, result.get(day[3]));
+                insertStatement.setInt(6, result.get(day[4]));
+                insertStatement.executeUpdate();
+            }
         }
         return RepeatStatus.FINISHED;
     }

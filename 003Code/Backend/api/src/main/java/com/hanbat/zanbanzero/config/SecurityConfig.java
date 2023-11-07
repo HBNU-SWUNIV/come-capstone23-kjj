@@ -11,6 +11,7 @@ import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl
 import com.hanbat.zanbanzero.auth.monitor.IpCheckFilter;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeUsernamePassword;
+import com.hanbat.zanbanzero.exception.handler.filter.template.ExceptionHandlerBeforeJwtAuth;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.user.service.UserService;
@@ -35,7 +36,8 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     @Value("${my.server.address}") private String address;
-    @Value("${my.prometheus.path}") private String path;
+    @Value("${my.prometheus.path}") private String prometheusPath;
+    @Value("${my.actuator.path}") private String actuatorPath;
 
     private final CorsFilter corsFilter;
     private final RestTemplate restTemplate;
@@ -78,14 +80,15 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .addFilterBefore(new IpCheckFilter(path, address), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new IpCheckFilter(prometheusPath, address), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate))
+                .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate, jwtUtil))
+                .addFilterBefore(new ExceptionHandlerBeforeJwtAuth(), JwtAuthFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()
@@ -93,7 +96,8 @@ public class SecurityConfig {
                 .requestMatchers("/api/manager/login/**").permitAll()
                 .requestMatchers("/api/user/**").hasAnyRole("USER", "MANAGER")
                 .requestMatchers("/api/manager/**").hasRole("MANAGER")
-                .requestMatchers(path).permitAll()
+                .requestMatchers(prometheusPath).permitAll()
+                .requestMatchers(actuatorPath + "health").permitAll()
                 .anyRequest().authenticated();
 
         return http.build();

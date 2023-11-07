@@ -23,17 +23,8 @@ import java.util.Map;
 public class CreatePredictUserWeekMethod {
 
     private final String[] day = {"monday", "tuesday", "wednesday", "thursday", "friday"};
-    public Integer getMenuCostAvg(Connection connection) throws SQLException {
-        String query = "select avg(cost) as average from menu;";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                resultSet.next();
-                return resultSet.getInt("average");
-            }
-        }
-    }
 
-    public int countMenu(Connection connection) throws SQLException {
+    private int countMenu(Connection connection) throws SQLException {
         String query = "select count(*) as count from menu;";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             try (ResultSet resultSet = statement.executeQuery()) {
@@ -43,30 +34,13 @@ public class CreatePredictUserWeekMethod {
         }
     }
 
-    public int getEntireData(Map<Long, Integer> foodMap, double revenue, int unit, int avg, int count, long entireUser) {
-        int people = (int) (revenue * unit / avg) / count;
-        int a1 = people * count;
-        int foodResult = foodMap.values().stream().mapToInt(value -> value * people).sum();
-
-        return (int) ((foodResult * entireUser) / a1);
+    public int getEntireData(Map<Long, Integer> foodMap, int usersByMenu) {
+        return foodMap.values().stream().mapToInt(value -> value * usersByMenu).sum();
     }
 
-    public FoodPredict getEntire(Connection connection, long entireUser, Integer avg, Map<Long, Integer> menuFood) throws SQLException {
-        int unit = 10000;
-        int count = countMenu(connection);
-        String query = "select * from revenue order by id desc limit 1;";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            try (ResultSet resultSet = statement.executeQuery()) {
-                resultSet.next();
-                return new FoodPredict(
-                        getEntireData(menuFood, resultSet.getDouble(day[0]), unit, avg, count, entireUser),
-                        getEntireData(menuFood, resultSet.getDouble(day[1]), unit, avg, count, entireUser),
-                        getEntireData(menuFood, resultSet.getDouble(day[2]), unit, avg, count, entireUser),
-                        getEntireData(menuFood, resultSet.getDouble(day[3]), unit, avg, count, entireUser),
-                        getEntireData(menuFood, resultSet.getDouble(day[4]), unit, avg, count, entireUser)
-                );
-            }
-        }
+    public FoodPredict getEntire(Connection connection, long entireUser, Map<Long, Integer> menuFood) throws SQLException {
+        int entireData = getEntireData(menuFood, (int) (entireUser / countMenu(connection)));
+        return FoodPredict.of(entireData);
     }
 
     public void checkSelfOrders(Connection connection, Map<String, Integer> dayFoodMap, Map<String, Integer> userCountMap, String d, String date, Map<Long, Integer> menuFood) throws SQLException {

@@ -31,30 +31,30 @@ public class CountOrdersByDateTasklet implements Tasklet {
 
     private void clear() {
         resultMap.clear();
+        CreateTodayOrder.clearNameToCostMap();
     }
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         String date = DateTools.getDate();
         Map<String, Integer> nameToCostMap = CreateTodayOrder.getNameToCostMap();
-        Connection connection = dataSource.getConnection();
 
-        int count = method.countTodayOrders(connection, date, resultMap);
-        int sales = method.getSales(resultMap);
-        Long id = method.initOrder(connection, date, count, sales);
-        for (Map.Entry<String, Integer> data : resultMap.entrySet()) {
-            String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
-            try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setLong(1, id);
-                insertStatement.setString(2, data.getKey());
-                insertStatement.setInt(3, data.getValue());
-                insertStatement.setInt(4, data.getValue() * nameToCostMap.get(data.getKey()));
-                insertStatement.executeUpdate();
+        try (Connection connection = dataSource.getConnection()) {
+            int count = method.countTodayOrders(connection, date, resultMap);
+            int sales = method.getSales(resultMap);
+            Long id = method.initOrder(connection, date, count, sales);
+            for (Map.Entry<String, Integer> data : resultMap.entrySet()) {
+                String insertQuery = "insert into calculate_menu(calculate_id, menu, count, sales) values(?, ?, ?, ?)";
+                try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
+                    insertStatement.setLong(1, id);
+                    insertStatement.setString(2, data.getKey());
+                    insertStatement.setInt(3, data.getValue());
+                    insertStatement.setInt(4, data.getValue() * nameToCostMap.get(data.getKey()));
+                    insertStatement.executeUpdate();
+                }
             }
         }
         clear();
-
-        CreateTodayOrder.clearNameToCostMap();
         return RepeatStatus.FINISHED;
     }
 }
