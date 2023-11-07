@@ -3,9 +3,11 @@ package com.hanbat.zanbanzero.auth.jwt.filter;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,11 +25,13 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     private final UserRepository userRepository;
     private final JwtTemplate jwtTemplate;
+    private final JwtUtil jwtUtil;
 
-    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTemplate jwtTemplate) {
+    public JwtAuthFilter(AuthenticationManager authenticationManager, UserRepository userRepository, JwtTemplate jwtTemplate, JwtUtil jwtUtil) {
         super(authenticationManager);
         this.userRepository = userRepository;
         this.jwtTemplate = jwtTemplate;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -42,6 +46,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         // JWT 검증
         String jwtToken = jwtHeader.replace(jwtTemplate.getTokenPrefix(), "");
 
+        if (jwtUtil.isTokenExpired(jwtToken)) throw new JwtTokenException("토큰이 만료되었습니다.");
         String username = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("username").asString();
         String roles = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("roles").asString();
 

@@ -1,4 +1,6 @@
 package com.batch.batch.config;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -12,16 +14,26 @@ import javax.sql.DataSource;
 public class DataSourceConfig {
 
     @Bean
-    @Qualifier("dataDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.data")
+    public HikariConfig dbHikariConfig() {
+        return new HikariConfig();
+    }
+
+    @Bean
+    @ConfigurationProperties(prefix = "spring.datasource")
+    public HikariConfig batchHikariConfig() {
+        return new HikariConfig();
+    }
+
+    @Bean
+    @Qualifier("dataDataSource")
     public DataSource dbDataSource() {
-        return DataSourceBuilder.create().build();
+        return new HikariDataSource(dbHikariConfig());
     }
 
     @Bean
     @Primary
-    @ConfigurationProperties(prefix = "spring.datasource")
     public DataSource batchDataSource() {
-        return DataSourceBuilder.create().build();
+        return new HikariDataSource(batchHikariConfig());
     }
 }

@@ -29,22 +29,20 @@ public class CreateLeftoverPreTasklet implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-        Connection connection = dataSource.getConnection();
+        try (Connection connection = dataSource.getConnection()) {
+            Map<String, Integer> calculateData = method.getCalculateData(connection);
+            int id = calculateData.get("id");
+            int today = calculateData.get("today");
 
-        Map<String, Integer> calculateData = method.getCalculateData(connection);
-        int id = calculateData.get("id");
-        int today = calculateData.get("today");
+            String query = "insert into leftover_pre(calculate_id, predict) values(?, ?)";
+            try (PreparedStatement statement = connection.prepareStatement(query)) {
+                statement.setLong(1, id);
+                double aver = 120;
+                statement.setDouble(2, aver * today);
 
-        String query = "insert into leftover_pre(calculate_id, predict) values(?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setLong(1, id);
-            double aver = 120;
-            statement.setDouble(2, aver * today);
-
-            statement.executeUpdate();
+                statement.executeUpdate();
+            }
         }
-
-        connection.close();
         return RepeatStatus.FINISHED;
     }
 }

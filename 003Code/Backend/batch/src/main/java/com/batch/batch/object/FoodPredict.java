@@ -17,4 +17,14 @@ public class FoodPredict {
     private double wednesday;
     private double thursday;
     private double friday;
+
+    public static FoodPredict of(double data) {
+        return new FoodPredict(
+                data,
+                data,
+                data,
+                data,
+                data
+        );
+    }
 }

@@ -28,7 +28,8 @@ out/
 
 ### custom ###
 application-slackWebHook.yml
-
+application-monitor.yml
+application-db.yml
 
 ### NetBeans ###
 /nbproject/private/

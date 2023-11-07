@@ -47,7 +47,7 @@ public class RedisConfig {
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) //Serializer 설정
-                .entryTtl(Duration.ofMinutes(120)); // 유지시간 설정
+                .entryTtl(Duration.ZERO); // 유지시간 설정
         builder.cacheDefaults(configuration);
         return builder.build();
     }
