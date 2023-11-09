@@ -5,7 +5,7 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.planner.Planner;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.planner.PlannerRepository;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +19,7 @@ public class PlannerServiceImplV1 implements PlannerService{
 
     private final PlannerRepository repository;
     private final MenuRepository menuRepository;
+    private final DateUtil dateUtil;
 
     private Menu getPlannerMenu() {
         return menuRepository.findByUsePlanner(true);
@@ -27,7 +28,7 @@ public class PlannerServiceImplV1 implements PlannerService{
     @Override
     @Transactional
     public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
-        LocalDate dateString = DateTools.makeLocalDate(year, month, day);
+        LocalDate dateString = dateUtil.makeLocalDate(year, month, day);
 
         Planner planner = repository.findOnePlanner(dateString);
         if (planner == null) {
@@ -40,7 +41,7 @@ public class PlannerServiceImplV1 implements PlannerService{
 
     @Override
     public PlannerDto getPlannerByDay(int year, int month, int day) {
-        LocalDate date = DateTools.makeLocalDate(year, month, day);
+        LocalDate date = dateUtil.makeLocalDate(year, month, day);
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
@@ -48,8 +49,8 @@ public class PlannerServiceImplV1 implements PlannerService{
     }
     @Override
     public List<PlannerDto> getPlannerByMonth(int year, int month) {
-        LocalDate start = DateTools.makeLocalDate(year, month, 1);
-        LocalDate end = DateTools.makeLocalDate(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = dateUtil.makeLocalDate(year, month, 1);
+        LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
                 .map(PlannerDto::of)

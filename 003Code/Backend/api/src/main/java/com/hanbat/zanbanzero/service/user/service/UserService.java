@@ -17,7 +17,7 @@ public interface UserService extends UserDetailsService {
 
     boolean check(String username);
 
-    UserInfoDto getInfo(String username) throws CantFindByIdException;
+    UserInfoDto getInfo(Long id) throws CantFindByIdException;
 
     UserMypageDto getMyPage(Long id) throws CantFindByIdException;
 

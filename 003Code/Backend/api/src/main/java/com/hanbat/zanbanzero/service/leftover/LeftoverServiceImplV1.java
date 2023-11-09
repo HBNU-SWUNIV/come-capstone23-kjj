@@ -8,7 +8,7 @@ import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
 import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverPreRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverRepository;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +27,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     private final CalculateRepository calculateRepository;
     private final LeftoverRepository leftoverRepository;
     private final LeftoverPreRepository leftoverPreRepository;
+    private final DateUtil dateUtil;
 
     private static final int DATA_SIZE = 5;
 
@@ -34,7 +35,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     @Transactional
     public LeftoverDto setLeftover(LeftoverDto dto) {
         Calculate target;
-        if (dto.getDate() == null) target = calculateRepository.findByDate(DateTools.makeTodayToLocalDate());
+        if (dto.getDate() == null) target = calculateRepository.findByDate(dateUtil.makeTodayToLocalDate());
         else target = calculateRepository.findByDate(LocalDate.parse(dto.getDate()));
 
         Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
@@ -88,7 +89,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     @Transactional
     public List<LeftoverDto> getLastWeeksLeftovers(int type) {
         List<LeftoverDto> result = new ArrayList<>();
-        LocalDate date = DateTools.getLastWeeksMonday(type);
+        LocalDate date = dateUtil.getLastWeeksMonday(type);
 
         for (int i = 0; i < DATA_SIZE; i ++) {
             LocalDate targetDate = date.plusDays(i);

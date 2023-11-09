@@ -1,10 +1,14 @@
 package com.hanbat.zanbanzero.config;
 
+import com.hanbat.zanbanzero.exception.tool.SlackTools;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.support.NoOpCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.RedisConnectionFailureException;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -19,7 +23,10 @@ import java.time.Duration;
 
 @Configuration
 @EnableCaching
+@RequiredArgsConstructor
 public class RedisConfig {
+
+    private final SlackTools slackTools;
 
     @Value("${spring.data.redis.host}")
     private String host;
@@ -44,10 +51,16 @@ public class RedisConfig {
      */
     @Bean
     public CacheManager cacheManager() {
+        try {
+            redisConnectionFactory().getConnection();
+        } catch (RedisConnectionFailureException e) {
+            slackTools.sendSlackMessage(e, this.getClass().getSimpleName(), "cacheManager()", "Redis Configuration failed");
+            return new NoOpCacheManager();
+        }
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer())) //Serializer 설정
-                .entryTtl(Duration.ZERO); // 유지시간 설정
+                .entryTtl(Duration.ZERO);
         builder.cacheDefaults(configuration);
         return builder.build();
     }

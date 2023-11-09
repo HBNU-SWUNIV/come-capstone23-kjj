@@ -44,16 +44,16 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Cacheable(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
-    public MenuUserInfoDtos getMenus() {
-        return MenuUserInfoDtos.of(menuRepository.findAllWithMenuInfo().stream()
+    public List<MenuUserInfoDto> getMenus() {
+        return menuRepository.findAllWithMenuInfo().stream()
                 .map(MenuUserInfoDto::of)
-                .toList());
+                .toList();
     }
 
     @Override
     @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
     public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
-        return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(() -> new CantFindByIdException("id : " + id)));
+        return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(() -> new CantFindByIdException("menuInfoId", id)));
     }
 
     @Override
@@ -80,7 +80,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     public void setFood(Long menuId, Long foodId) throws CantFindByIdException {
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId));
         if (foodId == 0) menu.clearMenuFood();
         else menu.setMenuFood(menuFoodRepository.getReferenceById(foodId));
     }
@@ -95,7 +95,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     public Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, MapToStringException {
-        MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        MenuFood menuFood = menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
 
         try {
             menuFood.setFood(objectMapper.writeValueAsString(map));
@@ -110,8 +110,8 @@ public class MenuServiceImplV1 implements MenuService{
     @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
     @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, UploadFileException {
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
-        MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
+        MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuInfoId", id));
 
         if (file != null) {
             if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file, uploadDir));
@@ -130,7 +130,7 @@ public class MenuServiceImplV1 implements MenuService{
             @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
     })
     public MenuDto deleteMenu(Long id) throws CantFindByIdException {
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
 
         userPolicyRepository.saveAll(userPolicyRepository.findAllByDefaultMenu(id).stream()
                 .peek(UserPolicy::clearDefaultMenu)
@@ -153,7 +153,7 @@ public class MenuServiceImplV1 implements MenuService{
             @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
     })
     public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
 
         switch (type) {
             case "n" -> menu.setSoldFalse();
@@ -168,7 +168,7 @@ public class MenuServiceImplV1 implements MenuService{
     public MenuDto setPlanner(Long id) throws CantFindByIdException, WrongParameter {
         if (menuRepository.existsByUsePlannerTrue()) throw new WrongParameter("이미 식단표를 사용하고 있습니다. id : " + id);
 
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         menu.usePlanner();
         return MenuDto.of(menu);
     }
@@ -179,7 +179,7 @@ public class MenuServiceImplV1 implements MenuService{
         Menu old = menuRepository.findByUsePlanner(true);
         if (old != null) old.notUsePlanner();
 
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         menu.usePlanner();
         return MenuDto.of(menu);
     }
@@ -192,6 +192,6 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     public MenuFoodDto getOneFood(Long id) throws CantFindByIdException {
-        return MenuFoodDto.of(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id)));
+        return MenuFoodDto.of(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id)));
     }
 }

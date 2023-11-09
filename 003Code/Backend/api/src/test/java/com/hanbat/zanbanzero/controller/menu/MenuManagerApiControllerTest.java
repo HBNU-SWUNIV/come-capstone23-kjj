@@ -3,12 +3,11 @@ package com.hanbat.zanbanzero.controller.menu;
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
+import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.menu.MenuService;
-import com.hanbat.zanbanzero.service.menu.MenuServiceImplV1;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +16,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,7 +37,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         // 1. 정상 요청
         {
             // Given
-            MenuUserInfoDtos expected = new MenuUserInfoDtos();
+            List<MenuUserInfoDto> expected = new ArrayList<>();
             Mockito.when(menuService.getMenus()).thenReturn(expected);
 
             // When
