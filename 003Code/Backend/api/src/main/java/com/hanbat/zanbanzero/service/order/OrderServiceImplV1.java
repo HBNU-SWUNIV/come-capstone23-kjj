@@ -18,7 +18,7 @@ import com.hanbat.zanbanzero.repository.order.OrderRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,28 +41,29 @@ public class OrderServiceImplV1 implements OrderService{
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
     private final UserMyPageRepository userMyPageRepository;
+    private final DateUtil dateUtil;
 
     private static final int PAGE_SIZE = 10;
 
     private Long getDefaultMenuId(Long userId) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userId : " + userId));
+        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(() -> new CantFindByIdException(userId));
         Long defaultMenu = policy.getDefaultMenu();
         if (defaultMenu == null) return null;
-        else return menuRepository.findById(defaultMenu).orElseThrow(() -> new CantFindByIdException("defaultMenu : " + defaultMenu)).getId();
+        else return menuRepository.findById(defaultMenu).orElseThrow(() -> new CantFindByIdException("defaultMenu", defaultMenu)).getId();
     }
 
     @Override
     @Transactional
     public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException, WrongRequestDetails {
-        if (menuId == null) throw new WrongRequestDetails("menuId : " + menuId);
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId));
+        if (menuId == null) throw new WrongRequestDetails("menuId", menuId);
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId));
         return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
     @Override
     @Transactional
     public OrderDto cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
-        LocalDate date = DateTools.makeLocalDate(year, month, day);
+        LocalDate date = dateUtil.makeLocalDate(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenuId(id), date, false));
@@ -73,12 +74,12 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional
     public OrderDto addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
-        LocalDate date = DateTools.makeLocalDate(year, month, day);
+        LocalDate date = dateUtil.makeLocalDate(year, month, day);
         Order order = orderRepository.findByUserIdAndOrderDate(id, date);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
-            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId : " + menuId)));
+            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId)));
             order.setRecognizeToUse();
         }
         return OrderDto.of(order);
@@ -148,7 +149,7 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional
     public OrderDto getOrderDay(Long id, int year, int month, int day) {
-        Order order = orderRepository.findByUserIdAndOrderDate(id, DateTools.makeLocalDate(year, month, day));
+        Order order = orderRepository.findByUserIdAndOrderDate(id, dateUtil.makeLocalDate(year, month, day));
         if (order == null) return null;
         else return OrderDto.of(order);
     }
@@ -156,13 +157,13 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional
     public void checkOrder(Long id) throws CantFindByIdException {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId", id));
         if (!order.isExpired()) {
             order.setExpiredTrue();
 
             Long userId = order.getUser().getId();
             int point = 50;
-            UserMypage myPage = userMyPageRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userId : " + userId));
+            UserMypage myPage = userMyPageRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userMypageId", userId));
             myPage.updatePoint(point);
         }
     }
@@ -170,14 +171,14 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional
     public OrderDto getOrderInfo(Long id, Long orderId) throws CantFindByIdException {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId : " + orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId", orderId));
         return OrderDto.of(order);
     }
 
     @Override
     @Transactional
     public OrderDto setPaymentTrue(Long id) throws CantFindByIdException  {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId : " + id));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId", id));
         order.setPaymentTrue();
         return OrderDto.of(order);
     }

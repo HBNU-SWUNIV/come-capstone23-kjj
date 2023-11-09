@@ -26,6 +26,6 @@ public class MenuUserApiController {
     @Operation(summary="전체 메뉴 조회")
     @GetMapping("menu")
     public ResponseEntity<List<MenuUserInfoDto>> getMenus() {
-        return ResponseEntity.ok(menuService.getMenus().getDtos());
+        return ResponseEntity.ok(menuService.getMenus());
     }
 }

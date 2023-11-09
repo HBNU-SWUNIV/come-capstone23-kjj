@@ -1,7 +1,7 @@
 # env
 spring:
   profiles:
-    include: db, slack, keycloakAuth, chatgptApi, monitor
+    include: db, dbAuth, slack, keycloakAuth, chatgptApi, monitor
 
   application:
     name: zanbanzero
@@ -15,7 +15,7 @@ spring:
   # data.sql
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
         hibernate:
           show_sql: true

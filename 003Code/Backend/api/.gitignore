@@ -30,6 +30,7 @@ out/
 ../.env
 data
 application-slack.yml
+application-dbAuth.yml
 application-keycloakAuth.yml
 application-chatgptApi.yml
 application-rabbitmq.yml

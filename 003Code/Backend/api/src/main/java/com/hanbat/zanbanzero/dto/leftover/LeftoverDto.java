@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.dto.leftover;
 
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,14 +18,14 @@ public class LeftoverDto {
 
     public static LeftoverDto of(Leftover leftover) {
         return new LeftoverDto(
-                DateTools.makeLocaldateToFormatterString(leftover.getLeftoverPre().getCalculate().getDate()),
+                DateUtil.makeLocaldateToFormatterString(leftover.getLeftoverPre().getCalculate().getDate()),
                 leftover.getLeftover()
         );
     }
 
     public static LeftoverDto of(LocalDate date, double leftover) {
         return new LeftoverDto(
-                DateTools.makeLocaldateToFormatterString(date),
+                DateUtil.makeLocaldateToFormatterString(date),
                 leftover
         );
     }

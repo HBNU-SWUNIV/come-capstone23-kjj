@@ -53,7 +53,7 @@ public class UserServiceImplV1 implements UserService {
     @Transactional
     public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
         User user = userRepository.findByUsername(username);
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(userRepository.findById(user.getId()).orElseThrow(() -> new CantFindByIdException("userId : " + user.getId())));
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(userRepository.findById(user.getId()).orElseThrow(() -> new CantFindByIdException("userId", user.getId())));
         else throw new WrongRequestDetails("error");
     }
 
@@ -63,16 +63,14 @@ public class UserServiceImplV1 implements UserService {
     }
 
     @Override
-    public UserInfoDto getInfo(String username) throws CantFindByIdException {
-        User user = userRepository.findByUsername(username);
-        if (user == null) throw new CantFindByIdException(username);
-
+    public UserInfoDto getInfo(Long id) throws CantFindByIdException {
+        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
         return UserInfoDto.of(user);
     }
 
     @Override
     public UserMypageDto getMyPage(Long id) throws CantFindByIdException {
-        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
 
         return UserMypageDto.createUserMyPageDto(userMypage);
     }
@@ -80,7 +78,7 @@ public class UserServiceImplV1 implements UserService {
     @Override
     @Transactional
     public Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException, WrongRequestDetails {
-        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
         int data = -1 * dto.getValue();
         if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("point : " + userMypage.getPoint());
         userMypage.updatePoint(data);
@@ -97,7 +95,7 @@ public class UserServiceImplV1 implements UserService {
     @Override
     @Transactional
     public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
         policy.setPolicy(dto);
 
         return UserPolicyDto.of(policy);
@@ -108,7 +106,7 @@ public class UserServiceImplV1 implements UserService {
     public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws CantFindByIdException, WrongParameter {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
 
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
         policy.setDefaultMenu(menuId);
 
         return UserPolicyDto.of(policy);
@@ -116,7 +114,7 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException("id : " + id));
+        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
         return UserPolicyDto.of(policy);
     }
 

@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.dto.order;
 
 import com.hanbat.zanbanzero.entity.order.Order;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,7 +22,7 @@ public class LastOrderDto {
                 order.getId(),
                 order.getMenu(),
                 order.getCost(),
-                DateTools.makeLocaldateToFormatterString(order.getOrderDate()),
+                DateUtil.makeLocaldateToFormatterString(order.getOrderDate()),
                 order.isRecognize()
         );
     }

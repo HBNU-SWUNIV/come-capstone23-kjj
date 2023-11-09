@@ -21,7 +21,7 @@ import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.sbiz.SbizRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,6 +47,7 @@ public class StoreServiceImplV1 implements StoreService {
     private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
     private final SbizRepository sbizRepository;
+    private final DateUtil dateUtil;
 
     private static final Long FINAL_ID = 1L;
 
@@ -61,7 +62,7 @@ public class StoreServiceImplV1 implements StoreService {
 
     @Override
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.of(storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new));
+        return StoreDto.of(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID)));
     }
 
     @Override
@@ -75,7 +76,7 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public void setStoreImage(MultipartFile file) throws CantFindByIdException, UploadFileException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
         String uploadDir = "img/store";
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
         else imageService.updateImage(file, store.getImage());
@@ -95,7 +96,7 @@ public class StoreServiceImplV1 implements StoreService {
     @Transactional
     public List<StoreWeekendDto> getLastWeeksUser() {
         List<StoreWeekendDto> result = new ArrayList<>();
-        LocalDate date = DateTools.getLastWeeksMonday(0);
+        LocalDate date = dateUtil.getLastWeeksMonday(0);
 
         int dataSize = 5;
         for (int i = 0; i < dataSize; i ++) {
@@ -132,7 +133,7 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreTitle(StoreTitleDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
         store.setName(dto.getName());
 
         return StoreDto.of(store);
@@ -141,7 +142,7 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreInfo(StoreInfoDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(CantFindByIdException::new);
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
         store.setInfo(dto.getInfo());
 
         return StoreDto.of(store);
@@ -150,7 +151,7 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreStateDto setOff(StoreOffDto dto, int year, int month, int day) {
-        LocalDate date = DateTools.makeLocalDate(year, month, day);
+        LocalDate date = dateUtil.makeLocalDate(year, month, day);
 
         StoreState storeState = storeStateRepository.findByDate(date);
         if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto));
@@ -160,8 +161,8 @@ public class StoreServiceImplV1 implements StoreService {
 
     @Override
     public List<StoreStateDto> getClosedDays(int year, int month) {
-        LocalDate start = DateTools.makeLocalDate(year, month, 1);
-        LocalDate end = DateTools.makeLocalDate(year, month, DateTools.getLastDay(year, month));
+        LocalDate start = dateUtil.makeLocalDate(year, month, 1);
+        LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
                 .map(StoreStateDto::of)

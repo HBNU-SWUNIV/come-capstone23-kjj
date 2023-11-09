@@ -12,19 +12,19 @@ import java.io.IOException;
 public class IpCheckFilter implements Filter {
 
     private final String prometheusPath;
-    private final String serverAddress;
+    private final String[] allowAddress;
     private final Logger logger = LoggerFactory.getLogger("errorLogger");
 
-    public IpCheckFilter(String prometheusPath, String serverAddress) {
+    public IpCheckFilter(String prometheusPath, String[] allowAddress) {
         this.prometheusPath = prometheusPath;
-        this.serverAddress = serverAddress;
+        this.allowAddress = allowAddress;
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         if (servletRequest.getRequestURI().equals(prometheusPath)) {
-            if (!check(servletRequest)) {
+            if (!check(allowAddress)) {
                 logger.error("[WARN] Someone approaches Prometheus Matrix. IP = {}", request.getRemoteAddr());
                 ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
             }
@@ -33,8 +33,11 @@ public class IpCheckFilter implements Filter {
         else chain.doFilter(request, response);
     }
 
-    public boolean check(HttpServletRequest request) {
-        IpAddressMatcher matcher = new IpAddressMatcher(serverAddress);
-        return matcher.matches(request);
+    public boolean check(String[] allowAddress) {
+        for (String address : allowAddress) {
+            IpAddressMatcher matcher = new IpAddressMatcher(address);
+            if (matcher.matches(address)) return true;
+        }
+        return false;
     }
 }

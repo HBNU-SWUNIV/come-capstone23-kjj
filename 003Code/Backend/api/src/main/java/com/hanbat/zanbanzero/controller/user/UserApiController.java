@@ -64,9 +64,9 @@ public class UserApiController {
     @Operation(summary="일반회원 대표정보 조회")
     @GetMapping("info")
     public ResponseEntity<UserInfoDto> getInfo(HttpServletRequest request) throws CantFindByIdException {
-        String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
+        Long id = jwtUtil.getIdFromToken(request.getHeader(jwtTemplate.getHeaderString()));
 
-        return ResponseEntity.ok(userService.getInfo(username));
+        return ResponseEntity.ok(userService.getInfo(id));
     }
 
     /**

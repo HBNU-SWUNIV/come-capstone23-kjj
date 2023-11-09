@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.dto.store;
 
-import com.hanbat.zanbanzero.service.DateTools;
+import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,13 +16,13 @@ public class StoreWeekendDto {
 
     public static StoreWeekendDto createZeroStoreWeekendDto(LocalDate targetDate) {
         return new StoreWeekendDto(
-                DateTools.makeLocaldateToFormatterString(targetDate),
+                DateUtil.makeLocaldateToFormatterString(targetDate),
                 0);
     }
 
     public static StoreWeekendDto createStoreWeekendDto(LocalDate targetDate, int today) {
         return new StoreWeekendDto(
-                DateTools.makeLocaldateToFormatterString(targetDate),
+                DateUtil.makeLocaldateToFormatterString(targetDate),
                 today
         );
     }
