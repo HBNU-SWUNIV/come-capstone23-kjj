@@ -36,24 +36,16 @@ public class MenuServiceImplV1 implements MenuService{
     private final MenuInfoRepository menuInfoRepository;
     private final MenuFoodRepository menuFoodRepository;
     private final OrderRepository orderRepository;
-
-    private static final String MENU_DTO_CACHE_KEY = "1";
-    private static final String CACHE_MANAGER = "cacheManager";
+    private static final String REDIS_CACHE_MANAGER = "redisCacheManager";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Cacheable(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @Cacheable(value = "MenuUserInfoDto", key = "#result?.id", cacheManager = REDIS_CACHE_MANAGER)
     public List<MenuUserInfoDto> getMenus() {
         return menuRepository.findAllWithMenuInfo().stream()
                 .map(MenuUserInfoDto::of)
                 .toList();
-    }
-
-    @Override
-    @Cacheable(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
-    public MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException {
-        return MenuInfoDto.of(menuInfoRepository.findByIdAndFetch(id).orElseThrow(() -> new CantFindByIdException("menuInfoId", id)));
     }
 
     @Override
@@ -107,8 +99,8 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Transactional
-    @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER)
-    @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+    @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
+    @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, UploadFileException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuInfoId", id));
@@ -126,8 +118,8 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
     })
     public MenuDto deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
@@ -149,8 +141,8 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDtos", key = MENU_DTO_CACHE_KEY, cacheManager = CACHE_MANAGER)
+            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER),
+            @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
     })
     public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));

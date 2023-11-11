@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.dto.user;
+package com.hanbat.zanbanzero.dto.user.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDto {
-    private String username;
+public class WithdrawDto {
     private String password;
 }

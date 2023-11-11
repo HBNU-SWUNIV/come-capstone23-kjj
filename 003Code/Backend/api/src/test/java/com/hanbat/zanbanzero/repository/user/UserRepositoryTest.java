@@ -16,7 +16,7 @@ class UserRepositoryTest {
     @Autowired private UserRepository userRepository;
 
     private String username = "test";
-    private final User user = new User(null, null, null, null, username, "1234", "ROLE_USER");
+    private final User user = new User();
 
     @BeforeEach
     void setup() {

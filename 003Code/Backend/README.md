@@ -17,6 +17,10 @@
 ## 서버 흐름
 <img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/d4d0c53c-0ff1-49a4-a092-94beb5f77aa7" />
 
+## 자바 시스템 속성(VM 옵션)
+- -Djava.net.preferIPv4Stack=true
+- -Dpassword={Jasypt에서 사용할 Secret Key}
+
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
 - Path : /apis

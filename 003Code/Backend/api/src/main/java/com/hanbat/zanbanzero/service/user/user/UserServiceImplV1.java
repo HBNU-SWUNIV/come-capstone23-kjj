@@ -1,9 +1,8 @@
-package com.hanbat.zanbanzero.service.user;
+package com.hanbat.zanbanzero.service.user.user;
 
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.dto.user.WithdrawDto;
+import com.hanbat.zanbanzero.dto.user.auth.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.User;
@@ -16,15 +15,12 @@ import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -38,7 +34,6 @@ public class UserServiceImplV1 implements UserService {
 
     private final MenuRepository menuRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JwtUtil jwtUtil;
 
     @Override
     @Transactional
@@ -93,6 +88,11 @@ public class UserServiceImplV1 implements UserService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    @Override
     @Transactional
     public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) throws CantFindByIdException {
         UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
@@ -125,10 +125,5 @@ public class UserServiceImplV1 implements UserService {
         UserInfoDto userInfoDto = UserInfoDto.of(user);
         user.updateLoginDate();
         return userInfoDto;
-    }
-
-    public Map<String, String> testToken(String username) {
-        if (username == null) username = "user";
-        return Map.of("accessToken", jwtUtil.createToken(loadUserByUsername(username)));
     }
 }

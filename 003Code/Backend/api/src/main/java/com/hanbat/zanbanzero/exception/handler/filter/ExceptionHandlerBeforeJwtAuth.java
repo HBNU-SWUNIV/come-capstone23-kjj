@@ -1,6 +1,7 @@
-package com.hanbat.zanbanzero.exception.handler.filter.template;
+package com.hanbat.zanbanzero.exception.handler.filter;
 
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
+import com.hanbat.zanbanzero.exception.handler.filter.template.SetFilterErrorResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

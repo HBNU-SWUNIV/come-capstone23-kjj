@@ -68,6 +68,9 @@ dependencies {
 
 	// keycloak
 	implementation 'org.keycloak:keycloak-admin-client:22.0.1'
+
+	// jasypt
+	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.5'
 }
 
 tasks.named('test') {

@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.controller;
+package com.hanbat.zanbanzero.controller.etc;
 
 import com.google.zxing.WriterException;
 import com.hanbat.zanbanzero.service.order.OrderService;

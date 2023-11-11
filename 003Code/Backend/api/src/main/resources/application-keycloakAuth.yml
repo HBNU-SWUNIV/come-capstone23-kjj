@@ -1,0 +1,16 @@
+# Keycloak
+my:
+  keycloak:
+    host: ENC(ya+kx8xGeYXZRp358u1n+zZrIcrofult735ZIqwA5S8=)
+    realm_name: test-app
+    client_id: test-client
+
+keycloak:
+  realm: test-app
+  auth-server-url: ENC(q1Up9lt7xL5+H2gAKovQRYP0mZlLXpArePF0v6GfKvvRHnHrGYYZMA==)
+  resource: test-client
+  username: ENC(h+pWKtcQV7SRHUInH3QBWg==)
+  password: ENC(O0DX8Uy+C3tQdcIGK3k6jjaXe/rQun+i)
+  admin:
+    username: ENC(h+pWKtcQV7SRHUInH3QBWg==)
+    password: ENC(h+pWKtcQV7SRHUInH3QBWg==)

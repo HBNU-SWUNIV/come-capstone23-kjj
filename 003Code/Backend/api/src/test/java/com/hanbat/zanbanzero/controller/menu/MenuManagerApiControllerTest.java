@@ -57,7 +57,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             MenuInfoDto expected = new MenuInfoDto();
-            Mockito.when(menuService.getMenuInfo(testId)).thenReturn(expected);
+//            Mockito.when(menuService.getMenuInfo(testId)).thenReturn(expected);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/user/menu/1")).andReturn();
@@ -66,7 +66,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
             assertEquals(objectMapper.writeValueAsString(expected), result.getResponse().getContentAsString());
             assertEquals(200, result.getResponse().getStatus());
 
-            Mockito.verify(menuService, Mockito.times(1)).getMenuInfo(testId);
+//            Mockito.verify(menuService, Mockito.times(1)).getMenuInfo(testId);
         }
     }
 
@@ -201,7 +201,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         {
             // Given
             String expectedMsg = "잘못된 id 입니다.";
-            Mockito.doThrow(new CantFindByIdException()).when(menuService).deleteMenu(testId);
+            Mockito.doThrow(new CantFindByIdException(1L)).when(menuService).deleteMenu(testId);
 
             // When
             MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/manager/menu/1/del")).andReturn();
