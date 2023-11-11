@@ -27,6 +27,10 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+
+jasypt:
+  encryptor:
+    bean: jasypt
 ---
 spring:
   config:

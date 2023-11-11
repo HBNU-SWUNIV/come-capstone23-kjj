@@ -1,0 +1,22 @@
+# Actuator
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, prometheus
+      base-path: ENC(7Br3hhVq66/sAE7e8i8KARuAE36elNWc5NBqKIXGaEs=)
+
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
+
+my:
+  actuator:
+    path: ENC(3aT/vVhONgwb9fUNyYcql3dB4otCYZzQvCWi4j5GLjE=)
+  prometheus:
+    path: ENC(Z4NYl7Fxye+brx2H8pENelwfSDLHvV7NRI88yaDndFogL8U7mPtf3Q==)
+  server:
+    address: ENC(gPJhlVKh3UhW4T03tRqZ3GQGiUOkWbsi)

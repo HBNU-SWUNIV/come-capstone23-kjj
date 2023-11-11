@@ -4,7 +4,7 @@ spring:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: ${mysql.uri-dev}
       username: ${mysql.username}
-      password: ${mysql.password}
+      password: ${mysql.slave.password}
     slave:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: ${mysql.slave.uri}

@@ -1,0 +1,10 @@
+mysql:
+  username: ENC(pjhOrcAP1pMETn/qH0IcRA==)
+  password: ENC(y5AeZxxjZ6aB6a7QWBz5FQ==)
+  uri-dev: jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
+  uri: ENC(ZPxyVOKqTyfjGKYNpEpJrhw4Es0/muD7c5OFpJAGxwehsPZ/kAeemBCoaxRq4YGd++ba78HaC/Q1buEOVmIiaA==)
+
+  slave:
+    username: ENC(pjhOrcAP1pMETn/qH0IcRA==)
+    password: ENC(y5AeZxxjZ6aB6a7QWBz5FQ==)
+    uri: ENC(uy3YbGjjo0wTg2eTCnvQfvkvVaYtZoQYe5Br0EPt6zOG29iCpkZdbAdmuVCg596fLpmsYB6COWLNhrscdH6Vd4ARWiLQNr7w)

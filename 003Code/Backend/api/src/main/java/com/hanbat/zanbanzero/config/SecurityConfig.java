@@ -4,23 +4,22 @@ import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
-import com.hanbat.zanbanzero.auth.login.authentication_impl.AuthenticationManagerImpl;
 import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.LoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl;
 import com.hanbat.zanbanzero.auth.monitor.IpCheckFilter;
+import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeJwtAuth;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeUsernamePassword;
-import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeJwtAuth;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
-import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.user.UserService;
 import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
+import com.hanbat.zanbanzero.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -46,8 +45,7 @@ public class SecurityConfig {
     private final JwtTemplate jwtTemplate = new JwtTemplate();
     private final UserService userService;
     private final UserSsoService userSsoService;
-    private final UserRepository userRepository;
-    private final AuthenticationManagerImpl authenticationManager;
+    private final AuthenticationManager authenticationManager;
     private final KeycloakProperties properties;
 
     /**
@@ -85,9 +83,9 @@ public class SecurityConfig {
                 .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userRepository, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userService, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
-                .addFilter(new JwtAuthFilter(authenticationManager, userRepository, jwtTemplate, jwtUtil))
+                .addFilter(new JwtAuthFilter(authenticationManager, userService, jwtTemplate, jwtUtil))
                 .addFilterBefore(new ExceptionHandlerBeforeJwtAuth(), JwtAuthFilter.class)
                 .authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()

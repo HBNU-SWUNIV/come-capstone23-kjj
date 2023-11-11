@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.dto.user.auth.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
+import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
@@ -33,4 +34,6 @@ public interface UserService extends UserDetailsService {
 
     @Override
     UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException;
+
+    User findByUsername(String username);
 }

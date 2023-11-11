@@ -8,8 +8,8 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
-import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
+import com.hanbat.zanbanzero.service.user.user.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,18 +38,18 @@ public class KeycloakLoginFilterV2 extends AbstractAuthenticationProcessingFilte
     private final RestTemplate restTemplate;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
-    private final UserRepository userRepository;
-    private final UserSsoService userService;
+    private final UserService userService;
+    private final UserSsoService userSsoService;
     private final Keycloak keycloak;
 
-    public KeycloakLoginFilterV2(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate, UserRepository userRepository, UserSsoService userService, Keycloak keycloak) {
+    public KeycloakLoginFilterV2(String filterProcessesUrl, RestTemplate restTemplate, KeycloakProperties properties, JwtUtil jwtUtil, JwtTemplate jwtTemplate, UserService userService, UserSsoService userSsoService, Keycloak keycloak) {
         super(filterProcessesUrl);
         this.restTemplate = restTemplate;
         this.properties = properties;
         this.jwtUtil = jwtUtil;
         this.jwtTemplate = jwtTemplate;
-        this.userRepository = userRepository;
         this.userService = userService;
+        this.userSsoService = userSsoService;
         this.keycloak = keycloak;
     }
 
@@ -60,8 +60,8 @@ public class KeycloakLoginFilterV2 extends AbstractAuthenticationProcessingFilte
         if (sub == null) throw new KeycloakLoginException("keycloak user sub is null");
 
         String userSub = sub + "_keycloak";
-        User user = userRepository.findByUsername(userSub);
-        if (user == null) user = userService.join(User.of(userSub, checkUserInfo(userInfo)));
+        User user = userService.findByUsername(userSub);
+        if (user == null) user = userSsoService.join(User.of(userSub, checkUserInfo(userInfo)));
         request.setAttribute("user", user);
 
         UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);

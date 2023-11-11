@@ -24,7 +24,7 @@ public class IpCheckFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         if (servletRequest.getRequestURI().equals(prometheusPath)) {
-            if (!check(allowAddress)) {
+            if (!check(allowAddress, servletRequest)) {
                 logger.error("[WARN] Someone approaches Prometheus Matrix. IP = {}", request.getRemoteAddr());
                 ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
             }
@@ -33,10 +33,11 @@ public class IpCheckFilter implements Filter {
         else chain.doFilter(request, response);
     }
 
-    public boolean check(String[] allowAddress) {
+    public boolean check(String[] allowAddress, HttpServletRequest request) {
+        IpAddressMatcher matcher;
         for (String address : allowAddress) {
-            IpAddressMatcher matcher = new IpAddressMatcher(address);
-            if (matcher.matches(address)) return true;
+            matcher = new IpAddressMatcher(address);
+            if (matcher.matches(request)) return true;
         }
         return false;
     }

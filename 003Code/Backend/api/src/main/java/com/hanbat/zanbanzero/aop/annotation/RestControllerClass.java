@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @RequestMapping
 public @interface RestControllerClass {
 
-    @AliasFor(annotation = RequestMapping.class, attribute = "value")
+    @AliasFor(annotation = RequestMapping.class)
     String value() default "";
 }
