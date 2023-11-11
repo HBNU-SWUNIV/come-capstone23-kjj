@@ -50,11 +50,11 @@ public class RedisConfig {
      * @return CacheManager 빈
      */
     @Bean
-    public CacheManager cacheManager() {
+    public CacheManager redisCacheManager() {
         try {
-            redisConnectionFactory().getConnection();
+            redisConnectionFactory().getConnection().close();
         } catch (RedisConnectionFailureException e) {
-            slackTools.sendSlackMessage(e, this.getClass().getSimpleName(), "cacheManager()", "Redis Configuration failed");
+            slackTools.sendSlackMessage(e, this.getClass().getSimpleName(), "redisCacheManager()", "Redis Configuration failed");
             return new NoOpCacheManager();
         }
         RedisCacheManager.RedisCacheManagerBuilder builder = RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory());

@@ -8,8 +8,8 @@ spring:
     slave:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: ${mysql.slave.uri}
-      username: ${mysql.username}
-      password: ${mysql.password}
+      username: ${mysql.slave.username}
+      password: ${mysql.slave.password}
 
   # Redis
   cache:
@@ -26,11 +26,7 @@ spring:
 
   datasource:
     master:
-      url: ${mysql.uri}
-    slave:
-        url: ${mysql.slave.uri}
-        username: ${mysql.slave.username}
-        password: ${mysql.slave.password}
+      jdbc-url: ${mysql.uri}
 
   # Redis
   data:

@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.service.user;
+package com.hanbat.zanbanzero.service.user.sso;
 
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
@@ -10,8 +10,7 @@ import com.hanbat.zanbanzero.exception.exceptions.KeycloakWithdrawException;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.service.UserService;
-import com.hanbat.zanbanzero.service.user.service.UserSsoService;
+import com.hanbat.zanbanzero.service.user.user.UserService;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.CreatedResponseUtil;

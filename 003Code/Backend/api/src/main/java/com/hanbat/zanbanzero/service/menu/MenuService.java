@@ -11,8 +11,6 @@ import java.util.Map;
 public interface MenuService {
     List<MenuUserInfoDto> getMenus();
 
-    MenuInfoDto getMenuInfo(Long id) throws CantFindByIdException;
-
     List<MenuManagerInfoDto> getMenusForManager();
 
     Boolean isPlanned();

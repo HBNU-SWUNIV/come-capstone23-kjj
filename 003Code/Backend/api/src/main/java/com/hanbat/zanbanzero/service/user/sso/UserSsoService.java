@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.service.user.service;
+package com.hanbat.zanbanzero.service.user.sso;
 
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;

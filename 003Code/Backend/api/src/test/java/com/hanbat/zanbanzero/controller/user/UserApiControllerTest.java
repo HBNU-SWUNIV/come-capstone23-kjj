@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
+import com.hanbat.zanbanzero.controller.user.user.UserApiController;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
@@ -8,18 +9,18 @@ import com.hanbat.zanbanzero.dto.user.user.UserMypageDto;
 import com.hanbat.zanbanzero.dto.user.user.UsernameDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.service.user.UserServiceImplV1;
+import com.hanbat.zanbanzero.service.user.user.UserService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.mockito.Mockito;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserApiController.class) //클래스 지정하여 스캔
@@ -27,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserApiControllerTest extends ControllerTestClass {
 
     @MockBean
-    private UserServiceImplV1 userService;
+    private UserService userService;
 
     private final UserDto dto = new UserDto(1L, "test username", "1234", null);
     private final UserJoinDto dto2 = new UserJoinDto("test username", "1234");

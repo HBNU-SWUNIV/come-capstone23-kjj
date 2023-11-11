@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.controller.store;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
+import com.hanbat.zanbanzero.controller.store.manager.StoreManagerApiController;
 import com.hanbat.zanbanzero.service.store.StoreService;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;

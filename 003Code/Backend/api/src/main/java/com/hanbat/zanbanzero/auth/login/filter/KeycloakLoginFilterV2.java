@@ -9,7 +9,7 @@ import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.service.UserSsoService;
+import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

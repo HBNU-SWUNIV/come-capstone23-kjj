@@ -11,11 +11,11 @@ import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl
 import com.hanbat.zanbanzero.auth.monitor.IpCheckFilter;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeUsernamePassword;
-import com.hanbat.zanbanzero.exception.handler.filter.template.ExceptionHandlerBeforeJwtAuth;
+import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeJwtAuth;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
-import com.hanbat.zanbanzero.service.user.service.UserService;
-import com.hanbat.zanbanzero.service.user.service.UserSsoService;
+import com.hanbat.zanbanzero.service.user.user.UserService;
+import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
 import lombok.RequiredArgsConstructor;
 import org.keycloak.admin.client.Keycloak;
 import org.springframework.beans.factory.annotation.Value;

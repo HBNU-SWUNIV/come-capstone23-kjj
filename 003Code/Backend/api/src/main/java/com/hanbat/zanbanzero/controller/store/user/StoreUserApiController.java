@@ -1,5 +1,6 @@
-package com.hanbat.zanbanzero.controller.store;
+package com.hanbat.zanbanzero.controller.store.user;
 
+import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.store.StoreDto;
 import com.hanbat.zanbanzero.dto.store.StoreStateDto;
@@ -11,14 +12,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-@RestController
-@RequestMapping("/api/user/")
+@RestControllerClass("/api/user/store")
 public class StoreUserApiController {
 
     private final StoreService storeService;
@@ -30,7 +28,7 @@ public class StoreUserApiController {
      * @throws CantFindByIdException - 식당 정보가 없을 때 발생
      */
     @Operation(summary="식당 정보 조회")
-    @GetMapping("store")
+    @GetMapping
     public ResponseEntity<StoreDto> getStoreData() throws CantFindByIdException {
         return ResponseEntity.ok(storeService.getStoreData());
     }
@@ -44,7 +42,7 @@ public class StoreUserApiController {
      * @throws WrongParameter - month가 1 ~ 12가 아닐 때 발생
      */
     @Operation(summary="월간 휴무일 조회", description="n월 한달의 휴무일 조회")
-    @GetMapping("store/off/{year}/{month}")
+    @GetMapping("/off/{year}/{month}")
     public ResponseEntity<List<StoreStateDto>> getClosedDays(@PathVariable int year, @PathVariable int month) throws WrongParameter {
         if (0 >= month || month > 12) throw new WrongParameter("month(1 ~ 12) : " + month);
         return ResponseEntity.ok(storeService.getClosedDays(year, month));

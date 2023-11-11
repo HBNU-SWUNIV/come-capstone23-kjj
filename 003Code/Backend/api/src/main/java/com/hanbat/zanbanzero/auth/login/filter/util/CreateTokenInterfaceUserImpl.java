@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.auth.login.filter.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanbat.zanbanzero.dto.user.LoginDto;
+import com.hanbat.zanbanzero.dto.user.auth.LoginDto;
 import com.hanbat.zanbanzero.exception.exceptions.CreateTokenException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;

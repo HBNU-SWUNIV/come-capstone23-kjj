@@ -1,8 +1,9 @@
 package com.hanbat.zanbanzero.controller.user;
 
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
+import com.hanbat.zanbanzero.controller.user.manager.ManagerApiController;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
-import com.hanbat.zanbanzero.service.user.ManagerServiceImplV1;
+import com.hanbat.zanbanzero.service.user.manager.ManagerServiceImplV1;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

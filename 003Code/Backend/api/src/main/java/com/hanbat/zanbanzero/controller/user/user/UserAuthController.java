@@ -1,12 +1,13 @@
-package com.hanbat.zanbanzero.controller.user;
+package com.hanbat.zanbanzero.controller.user.user;
 
+import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
-import com.hanbat.zanbanzero.service.user.service.UserService;
-import com.hanbat.zanbanzero.service.user.service.UserSsoService;
+import com.hanbat.zanbanzero.service.user.user.UserService;
+import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -15,8 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api/user/login/")
+@RestControllerClass("/api/user/login/")
 @RequiredArgsConstructor
 public class UserAuthController {
     private final UserService userService;
