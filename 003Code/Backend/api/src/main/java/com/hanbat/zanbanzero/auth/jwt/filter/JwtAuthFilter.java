@@ -5,8 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
-import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import com.hanbat.zanbanzero.service.user.user.UserService;
 import jakarta.servlet.FilterChain;
@@ -54,8 +52,7 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족 (uri = " + request.getRequestURI() + ")");
 
         if (username != null) {
-            User user = userService.findByUsername(username);
-            UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);
+            UserDetailsInterface userDetails = userService.loadUserByUsername(username);
 
             // JWT 서명을 통해서 서명이 정상이면 Authentication 객체 만들어 줌
             Authentication authentication =

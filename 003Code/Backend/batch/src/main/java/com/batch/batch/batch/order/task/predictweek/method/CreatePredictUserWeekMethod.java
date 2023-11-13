@@ -87,7 +87,6 @@ public class CreatePredictUserWeekMethod {
             dayFoodMap.put(d, dayFood);
             userCountMap.put(d, allUser);
             if (DateTools.isNotBefore(thisMonday)) {
-                System.out.println("isNotBefor IN = " + d);
                 checkSelfOrders(connection, dayFoodMap, userCountMap, d, thisMonday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), menuFood);
             }
             thisMonday = thisMonday.plusDays(1);

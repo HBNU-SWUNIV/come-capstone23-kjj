@@ -46,7 +46,7 @@ public class ExceptionHandlingAspect {
         }
         else {
             authFlag.set(true);
-            slackTools.sendSlackMessage(ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), ex.getMessage());
+            slackTools.sendSlackMessage(ex, ex.getMessage());
         }
     }
 
@@ -54,7 +54,7 @@ public class ExceptionHandlingAspect {
     public void handleServiceException(JoinPoint joinPoint, Exception ex) {
         serviceFlag.set(true);
         sendLog(joinPoint, ex);
-        slackTools.sendSlackMessage(ex, joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName(), ex.getMessage());
+        slackTools.sendSlackMessage(ex, ex.getMessage());
     }
 
     private void sendLog(JoinPoint joinPoint, Exception ex) {

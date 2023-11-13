@@ -17,12 +17,12 @@ public class ManagerServiceImplV1 implements ManagerService {
 
     @Override
     public ManagerInfoDto getInfoForUsername(String username) {
-        return ManagerInfoDto.of(repository.findByUsername(username));
+        return ManagerInfoDto.from(repository.findByUsername(username));
     }
 
     @Override
     public ManagerInfoDto getInfo(String username) {
-        return ManagerInfoDto.of(repository.findByUsername(username));
+        return ManagerInfoDto.from(repository.findByUsername(username));
     }
 
     @Override

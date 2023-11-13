@@ -38,7 +38,7 @@ class UserServiceTest {
         User user = userRepository.findByUsername(username);
 
         UserInfoDto expected = new UserInfoDto(user.getId(), user.getUsername(), null);
-        UserInfoDto result = UserInfoDto.of(user);
+        UserInfoDto result = UserInfoDto.from(user);
 
         assertEquals(expected.toString(), result.toString());
     }

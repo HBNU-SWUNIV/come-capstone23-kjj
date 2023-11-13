@@ -22,4 +22,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserIdAndOrderDate_YearAndOrderDate_Month(Long id, int year, int month);
 
     void deleteAllByMenu(String menuName);
+
+    @Query("select o from Order o join fetch o.user u join fetch u.userMypage where o.id = :id")
+    Order findByIdWithFetch(Long id);
 }

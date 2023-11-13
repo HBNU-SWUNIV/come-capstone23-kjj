@@ -17,6 +17,6 @@ my:
   actuator:
     path: ENC(3aT/vVhONgwb9fUNyYcql3dB4otCYZzQvCWi4j5GLjE=)
   prometheus:
-    path: ENC(Z4NYl7Fxye+brx2H8pENelwfSDLHvV7NRI88yaDndFogL8U7mPtf3Q==)
+    path: ENC(cJN1Pem0F1zgoqBxW/lwXAi850Y8mfTv7f/SGlIH160+AkX5Zo7h/Q==)
   server:
-    address: ENC(gPJhlVKh3UhW4T03tRqZ3GQGiUOkWbsi)
+    address: ENC(Y8y6usFFNuq1/0VKRVTzPYDaI1xTOPTh)

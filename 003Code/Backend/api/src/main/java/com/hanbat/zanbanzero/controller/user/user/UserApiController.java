@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RequiredArgsConstructor
@@ -35,7 +34,7 @@ public class UserApiController {
      * @throws WrongRequestDetails - 비밀번호가 맞지 않을 경우 발생
      */
     @Operation(summary="회원탈퇴")
-    @PostMapping("/withdraw")
+    @DeleteMapping("/withdraw")
     public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         userService.withdraw(username, dto);

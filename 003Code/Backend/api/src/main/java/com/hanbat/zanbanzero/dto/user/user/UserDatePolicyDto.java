@@ -1,11 +1,9 @@
 package com.hanbat.zanbanzero.dto.user.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class UserDatePolicyDto {
     private boolean monday;

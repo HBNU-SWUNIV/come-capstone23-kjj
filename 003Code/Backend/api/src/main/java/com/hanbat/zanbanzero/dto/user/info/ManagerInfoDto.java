@@ -2,17 +2,17 @@ package com.hanbat.zanbanzero.dto.user.info;
 
 import com.hanbat.zanbanzero.entity.user.User;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ManagerInfoDto {
     private Long id;
     private String loginId;
 
-    public static ManagerInfoDto of(User manager) {
+    public static ManagerInfoDto from(User manager) {
         return new ManagerInfoDto(
                 manager.getId(),
                 manager.getUsername()

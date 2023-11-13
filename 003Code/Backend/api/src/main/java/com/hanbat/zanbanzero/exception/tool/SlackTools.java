@@ -19,20 +19,29 @@ public class SlackTools {
     @Value("${slack.webhook.url}") private String slackUrl;
     private final Slack slack = Slack.getInstance();
 
-    public void sendSlackMessage(Exception e, String pointcut, String method, String properties) {
+    public void sendSlackMessage(Exception e, String properties) {
         try {
-            slack.send(slackUrl, payload(p -> p.text("[API] " + method)
-                    .attachments(List.of(generateSlackAttachment(e, properties, pointcut)))));
+            slack.send(slackUrl, payload(p -> p.text("[API] " + e.getStackTrace()[0])
+                    .attachments(List.of(generateSlackAttachment(e, properties)))));
         } catch (IOException exception) {
             log.warn("Slack 전송 에러");
         }
     }
 
-    private Attachment generateSlackAttachment(Exception e, String properties, String pointcut) {
+    public void sendCacheErrorSlackMessage(Exception e, String key, String method) {
+        try {
+            slack.send(slackUrl, payload(p -> p.text("[API] " + method)
+                    .attachments(List.of(generateCacheErrorSlackAttachment(e, key, method)))));
+        } catch (IOException exception) {
+            log.warn("Slack 전송 에러");
+        }
+    }
+
+    private Attachment generateSlackAttachment(Exception e, String properties) {
         LocalDate time = LocalDate.now();
         return Attachment.builder()
                 .color("ff0000")
-                .title("[" + pointcut + "]" + time + " 발생 에러 로그")
+                .title(time + " 발생 에러 로그")
                 .fields(List.of(
                                 generateSlackField("Class", e.getClass().getSimpleName()),
                                 generateSlackField("Error Message", e.getMessage()),
@@ -41,6 +50,21 @@ public class SlackTools {
                 )
                 .build();
     }
+
+    private Attachment generateCacheErrorSlackAttachment(Exception e, String key, String method) {
+        LocalDate time = LocalDate.now();
+        return Attachment.builder()
+                .color("ff0000")
+                .title("[CACHE]" + time + " 에러 로그")
+                .fields(List.of(
+                                generateSlackField("Error", e.getClass().getSimpleName()),
+                                generateSlackField("Key", key),
+                                generateSlackField("Method", method)
+                        )
+                )
+                .build();
+    }
+
 
     private Field generateSlackField(String title, String value) {
         return Field.builder()

@@ -2,12 +2,10 @@ package com.hanbat.zanbanzero.dto.menu;
 
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class MenuDto {
     private Long id;
     private String name;
@@ -15,7 +13,7 @@ public class MenuDto {
     private String image;
     private Boolean sold;
 
-    public static MenuDto of(Menu menu) {
+    public static MenuDto from(Menu menu) {
         return new MenuDto(
                 menu.getId(),
                 menu.getName(),

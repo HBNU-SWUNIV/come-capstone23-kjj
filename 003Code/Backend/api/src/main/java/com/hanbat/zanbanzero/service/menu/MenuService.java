@@ -19,7 +19,7 @@ public interface MenuService {
 
     void setFood(Long menuId, Long foodId) throws CantFindByIdException;
 
-    List<MenuFoodDto> getFood();
+    MenuFoodDtos getFood();
 
     Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, MapToStringException;
 

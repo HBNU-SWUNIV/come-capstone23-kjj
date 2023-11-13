@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.User;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.user.UserService;
@@ -51,9 +52,9 @@ public class UserAuthController {
     @Operation(summary="Keycloak 로그인")
     @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)
     @PostMapping("keycloak")
-    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) {
+    public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws CantFindByIdException {
         User user = (User) request.getAttribute("user");
-        return ResponseEntity.ok(userSsoService.login(user));
+        return ResponseEntity.ok(userSsoService.login(user.getId()));
     }
 
     /**

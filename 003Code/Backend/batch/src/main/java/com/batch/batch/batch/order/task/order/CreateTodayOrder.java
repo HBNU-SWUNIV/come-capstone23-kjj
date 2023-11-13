@@ -58,14 +58,14 @@ public class CreateTodayOrder {
     @StepScope
     public JdbcCursorItemReader<UserPolicy> todayUserReader(@Value("#{jobParameters['today']}") String today) throws SQLException {
         initMenu();
-        String query = "select default_menu, user_id from user_policy where " + today + " = 1 and default_menu";
+        String query = "select default_menu, id from user_policy where " + today + " = 1 and default_menu";
         return new JdbcCursorItemReaderBuilder<UserPolicy>()
                 .name("jdbcCursorItemReader")
                 .sql(query)
                 .dataSource(dataSource)
                 .rowMapper((rs, rowNum) -> new UserPolicy(
                         rs.getString("default_menu"),
-                        rs.getString("user_id")
+                        rs.getString("id")
                 ))
                 .build();
     }
@@ -75,7 +75,7 @@ public class CreateTodayOrder {
 
         return item -> {
             boolean exists;
-            Long userId = item.getUserId();
+            Long userId = item.getId();
             Long defaultMenu = item.getDefaultMenu();
             String date = DateTools.getDate();
 

@@ -32,4 +32,3 @@ spring:
   data:
     redis:
       host: db-redis
-      port: 6379

@@ -45,7 +45,7 @@ public class InitRun {
         log.info("레시피 세팅 완료");
 
         for (Recipe recipe : result.values()) {
-            menuFoodRepository.save(MenuFood.of(recipe));
+            menuFoodRepository.save(MenuFood.from(recipe));
         }
         result.clear();
     }

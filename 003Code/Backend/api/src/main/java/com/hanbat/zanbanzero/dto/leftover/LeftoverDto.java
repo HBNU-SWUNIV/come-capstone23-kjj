@@ -3,23 +3,21 @@ package com.hanbat.zanbanzero.dto.leftover;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.time.LocalDate;
 
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Data
 public class LeftoverDto {
 
     private String date;
     private Double leftover;
 
-    public static LeftoverDto of(Leftover leftover) {
+    public static LeftoverDto from(Leftover leftover) {
         return new LeftoverDto(
-                DateUtil.makeLocaldateToFormatterString(leftover.getLeftoverPre().getCalculate().getDate()),
-                leftover.getLeftover()
+                DateUtil.makeLocaldateToFormatterString(leftover.getLeftoverPre().getDate()),
+                leftover.getData()
         );
     }
 

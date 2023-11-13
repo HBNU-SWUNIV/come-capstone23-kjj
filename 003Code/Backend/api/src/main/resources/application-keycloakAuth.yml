@@ -1,16 +1,24 @@
 # Keycloak
 my:
   keycloak:
-    host: ENC(ya+kx8xGeYXZRp358u1n+zZrIcrofult735ZIqwA5S8=)
+    host: ENC(Sez2UPBOBoqHa+o2Fj6aTkEsZdGNEeokyQV8r4xlw1qCvYg9irj1jw==)
     realm_name: test-app
     client_id: test-client
 
 keycloak:
   realm: test-app
-  auth-server-url: ENC(q1Up9lt7xL5+H2gAKovQRYP0mZlLXpArePF0v6GfKvvRHnHrGYYZMA==)
+  auth-server-url: ENC(veB90jPJM857AwP5I5yjmUUOqFnmqcVYFvARCV2LqV7B8BxrRqzBMg==)
   resource: test-client
-  username: ENC(h+pWKtcQV7SRHUInH3QBWg==)
-  password: ENC(O0DX8Uy+C3tQdcIGK3k6jjaXe/rQun+i)
   admin:
     username: ENC(h+pWKtcQV7SRHUInH3QBWg==)
-    password: ENC(h+pWKtcQV7SRHUInH3QBWg==)
+    password: ENC(O0DX8Uy+C3tQdcIGK3k6jjaXe/rQun+i)
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+my:
+  keycloak:
+    host: ENC(pW03rZrXHMpl4RCFiJvnt8zEXa4S9XI7w0+EWGsaGN5JmYPA4v21sw==)
+keycloak:
+  auth-server-url: ENC(nQ9fd30YYwH4788mE0n5KdAkRB16fZPt5nI/qN9hy81NmWZAYuzECw==)

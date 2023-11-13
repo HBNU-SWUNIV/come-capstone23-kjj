@@ -3,12 +3,10 @@ package com.hanbat.zanbanzero.dto.order;
 import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class LastOrderDto {
     private Long id;
 
@@ -17,7 +15,7 @@ public class LastOrderDto {
     private String orderDate;
     private boolean recognize;
 
-    public static LastOrderDto of(Order order) {
+    public static LastOrderDto from(Order order) {
         return new LastOrderDto(
                 order.getId(),
                 order.getMenu(),
