@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.controller;
 
-import com.batch.batch.batch.order.service.OrderBatchService;
+import com.batch.batch.batch.order.service.OrderBatchMethod;
+import com.batch.batch.batch.order.service.OrderBatchRunner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -17,7 +18,8 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public class OrderBatchController {
 
-    private final OrderBatchService batchService;
+    private final OrderBatchRunner batchService;
+    private final OrderBatchMethod batchMethod;
 
     @GetMapping("/predict-week-job")
     public String runPredictWeekJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException, SQLException {
@@ -27,7 +29,7 @@ public class OrderBatchController {
 
     @GetMapping("/order-job")
     public String runOrderJob() throws JobInstanceAlreadyCompleteException, SQLException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        batchService.clear();
+        batchMethod.clear();
         batchService.orderJob();
         return "orderJob success";
     }
