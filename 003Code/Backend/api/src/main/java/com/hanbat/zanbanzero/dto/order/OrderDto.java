@@ -4,10 +4,8 @@ import com.hanbat.zanbanzero.entity.order.Order;
 import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.*;
 
-
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Data
 public class OrderDto {
 
     private Long id;
@@ -19,7 +17,7 @@ public class OrderDto {
     private boolean expired;
     private boolean payment;
 
-    public static OrderDto of(Order order) {
+    public static OrderDto from(Order order) {
         return new OrderDto(
                 order.getId(),
                 order.getMenu(),

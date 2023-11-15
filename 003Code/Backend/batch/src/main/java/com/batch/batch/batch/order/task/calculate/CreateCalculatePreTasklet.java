@@ -46,16 +46,12 @@ public class CreateCalculatePreTasklet implements Tasklet {
                 return null;
             }
             method.initMenu(connection, menuIdToNameMap, menuNameToIdMap, menuNameToFoodIdMap);
-            log.info("execute - initMenu END: " + menuIdToNameMap);
 
             Map<String, Integer> result = method.getUserPolicy(connection, jobParameters.getString("day"), menuIdToNameMap);
-            log.info("execute - getUserPolicy END: " + result);
             method.checkOrders(connection, jobParameters.getString("date"), result);
-            log.info("execute - checkOrders END: " + result);
 
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Integer> predict = method.getPredictFood(connection, result, menuNameToFoodIdMap);
-            log.info("execute - getPredictFood END: " + predict);
             method.savePredictData(connection, calculateId, result.values().stream().mapToInt(Integer::intValue).sum(), objectMapper.writeValueAsString(predict), objectMapper.writeValueAsString(result));
         }
         clear();

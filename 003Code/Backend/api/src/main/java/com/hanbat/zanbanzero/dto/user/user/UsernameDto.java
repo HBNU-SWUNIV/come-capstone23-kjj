@@ -1,12 +1,10 @@
 package com.hanbat.zanbanzero.dto.user.user;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class UsernameDto {
     private String username;
 }

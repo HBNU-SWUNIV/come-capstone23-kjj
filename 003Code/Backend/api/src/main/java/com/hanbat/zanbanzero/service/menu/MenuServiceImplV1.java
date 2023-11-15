@@ -16,9 +16,7 @@ import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,21 +36,27 @@ public class MenuServiceImplV1 implements MenuService{
     private final OrderRepository orderRepository;
     private static final String REDIS_CACHE_MANAGER = "redisCacheManager";
 
+    private static final String ALL_MENUS_CACHE_KEY = "1";
+    private static final String ALL_MENUS_CACHE_VALUE = "AllMenus";
+
+    public static final String ALL_FOODS_CACHE_KEY = "2";
+    public static final String ALL_FOODS_CACHE_VALUE = "AllFoods";
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Cacheable(value = "MenuUserInfoDto", key = "#result?.id", cacheManager = REDIS_CACHE_MANAGER)
-    public List<MenuUserInfoDto> getMenus() {
-        return menuRepository.findAllWithMenuInfo().stream()
-                .map(MenuUserInfoDto::of)
-                .toList();
+    @Cacheable(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
+    public MenuUserInfoDtos getMenus() {
+        return MenuUserInfoDtos.from(menuRepository.findAllWithMenuInfo().stream()
+                .map(MenuUserInfoDto::from)
+                .toList());
     }
 
     @Override
     @Transactional
     public List<MenuManagerInfoDto> getMenusForManager() {
         return menuRepository.findAllWithMenuInfo().stream()
-                .map(MenuManagerInfoDto::of)
+                .map(MenuManagerInfoDto::from)
                 .toList();
     }
 
@@ -65,8 +69,8 @@ public class MenuServiceImplV1 implements MenuService{
         if (menuRepository.existsByName(dto.getName()) || (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner())) throw new SameNameException("dto : " + dto);
 
         Menu menu = menuRepository.save(Menu.of(dto, filePath));
-        menuInfoRepository.save(dto.of(menu));
-        return MenuDto.of(menu);
+        menuInfoRepository.save(dto.from(menu));
+        return MenuDto.from(menu);
     }
 
     @Override
@@ -78,10 +82,11 @@ public class MenuServiceImplV1 implements MenuService{
     }
 
     @Override
-    public List<MenuFoodDto> getFood() {
-        return menuFoodRepository.findAll().stream()
-                .map(MenuFoodDto::of)
-                .toList();
+    @Cacheable(value = ALL_FOODS_CACHE_VALUE, key = ALL_FOODS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
+    public MenuFoodDtos getFood() {
+        return MenuFoodDtos.from(menuFoodRepository.findAll().stream()
+                .map(MenuFoodDto::from)
+                .toList());
     }
 
     @Override
@@ -99,8 +104,7 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Transactional
-    @CachePut(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
-    @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
+    @CacheEvict(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, UploadFileException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuInfoId", id));
@@ -112,15 +116,12 @@ public class MenuServiceImplV1 implements MenuService{
 
         menu.patch(dto);
         menuInfo.patch(dto);
-        return MenuInfoDto.of(menuInfo);
+        return MenuInfoDto.from(menuInfo);
     }
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
-    })
+    @CacheEvict(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
     public MenuDto deleteMenu(Long id) throws CantFindByIdException {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
 
@@ -130,7 +131,7 @@ public class MenuServiceImplV1 implements MenuService{
         menuRepository.delete(menu);
         CompletableFuture.runAsync(() -> deleteOrders(menu.getName()));
 
-        return MenuDto.of(menu);
+        return MenuDto.from(menu);
     }
 
     @Transactional
@@ -140,10 +141,7 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Transactional
-    @Caching(evict = {
-            @CacheEvict(value = "MenuInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER),
-            @CacheEvict(value = "MenuUserInfoDto", key = "#id", cacheManager = REDIS_CACHE_MANAGER)
-    })
+    @CacheEvict(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
     public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
 
@@ -152,7 +150,7 @@ public class MenuServiceImplV1 implements MenuService{
             case "y" -> menu.setSoldTrue();
             default -> throw new WrongParameter(type);
         }
-        return MenuDto.of(menu);
+        return MenuDto.from(menu);
     }
 
     @Override
@@ -162,7 +160,7 @@ public class MenuServiceImplV1 implements MenuService{
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         menu.usePlanner();
-        return MenuDto.of(menu);
+        return MenuDto.from(menu);
     }
 
     @Override
@@ -173,17 +171,16 @@ public class MenuServiceImplV1 implements MenuService{
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id));
         menu.usePlanner();
-        return MenuDto.of(menu);
+        return MenuDto.from(menu);
     }
 
     @Override
     public MenuFoodDto addFood(String name, Map<String, Integer> data) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        return MenuFoodDto.of(menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data))));
+        return MenuFoodDto.from(menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data))));
     }
 
     @Override
     public MenuFoodDto getOneFood(Long id) throws CantFindByIdException {
-        return MenuFoodDto.of(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id)));
+        return MenuFoodDto.from(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("menuId", id)));
     }
 }

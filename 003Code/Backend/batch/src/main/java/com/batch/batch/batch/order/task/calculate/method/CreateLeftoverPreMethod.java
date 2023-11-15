@@ -14,25 +14,19 @@ import java.util.Map;
 @Slf4j
 @Component
 public class CreateLeftoverPreMethod {
-    public Map<String, Integer> getCalculateData(Connection connection) throws SQLException {
-        Map<String, Integer> result = new HashMap<>();
+    public Integer getCalculateData(Connection connection) throws SQLException {
         String date = DateTools.getDate();
-        String getQuery = "select id, today from calculate where date = ? limit 1";
+        String getQuery = "select today from calculate where date = ? limit 1";
         try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
             statement.setString(1, date);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    int id = resultSet.getInt("id");
-                    int today = resultSet.getInt("today");
-
-                    result.put("id", id);
-                    result.put("today", today);
-                }
-                else {
+                    return resultSet.getInt("today");
+                } else {
                     log.error(date + " : Calculate data not found");
+                    throw new SQLException("Calculate data not found");
                 }
             }
         }
-        return result;
     }
 }

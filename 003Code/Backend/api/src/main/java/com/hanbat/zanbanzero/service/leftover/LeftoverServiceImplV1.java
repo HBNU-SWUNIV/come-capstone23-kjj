@@ -1,18 +1,12 @@
 package com.hanbat.zanbanzero.service.leftover;
 
-import com.hanbat.zanbanzero.dto.leftover.LeftoverAndPreDto;
 import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
-import com.hanbat.zanbanzero.entity.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.leftover.Leftover;
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
-import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverPreRepository;
 import com.hanbat.zanbanzero.repository.leftover.LeftoverRepository;
 import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LeftoverServiceImplV1 implements LeftoverService{
 
-    private final CalculateRepository calculateRepository;
     private final LeftoverRepository leftoverRepository;
     private final LeftoverPreRepository leftoverPreRepository;
     private final DateUtil dateUtil;
@@ -34,55 +27,17 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     @Override
     @Transactional
     public LeftoverDto setLeftover(LeftoverDto dto) {
-        Calculate target;
-        if (dto.getDate() == null) target = calculateRepository.findByDate(dateUtil.makeTodayToLocalDate());
-        else target = calculateRepository.findByDate(LocalDate.parse(dto.getDate()));
+        LeftoverPre leftoverPre;
+        if (dto.getDate() == null) leftoverPre = leftoverPreRepository.findByDate(dateUtil.makeTodayToLocalDate());
+        else leftoverPre = leftoverPreRepository.findByDate(LocalDate.parse(dto.getDate()));
 
-        Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
+        Leftover leftover = leftoverRepository.findByLeftoverPreId(leftoverPre.getId());
         if (leftover != null) leftover.setLeftover(dto.getLeftover());
         else {
-            leftover = Leftover.of(leftoverPreRepository.getReferenceById(target.getId()), dto);
+            leftover = Leftover.of(leftoverPreRepository.getReferenceById(leftoverPre.getId()), dto);
             leftoverRepository.save(leftover);
         }
-        return LeftoverDto.of(leftover);
-    }
-
-    @Override
-    public int getAllLeftoverPage() {
-        Pageable pageable = PageRequest.of(0, DATA_SIZE);
-        Page<Leftover> result = leftoverRepository.findAll(pageable);
-
-        return result.getTotalPages();
-    }
-
-    @Override
-    @Transactional
-    public List<LeftoverDto> getLeftoverPage(int count) {
-        Pageable pageable = PageRequest.of(count, DATA_SIZE);
-        List<Leftover> result = leftoverRepository.findAllByOrderByLeftoverPreIdDesc(pageable).getContent();
-
-        return result.stream()
-                .map(LeftoverDto::of)
-                .toList();
-    }
-
-    @Override
-    @Transactional
-    public List<LeftoverAndPreDto> getAllLeftoverAndPre(int page) {
-        Pageable pageable = PageRequest.of(page, DATA_SIZE);
-        List<Calculate> calculates = calculateRepository.findAllByOrderByIdDesc(pageable)
-                .getContent().stream()
-                .toList();
-
-        List<LeftoverAndPreDto> result = new ArrayList<>();
-        for (Calculate c : calculates) {
-            Leftover leftover = leftoverRepository.findById(c.getId()).orElse(new Leftover(null, null, 0));
-            LeftoverPre leftoverPre = leftoverPreRepository.findById(c.getId()).orElse(new LeftoverPre(null, c, 0));
-
-            result.add(LeftoverAndPreDto.of(leftover, leftoverPre));
-        }
-
-        return result;
+        return LeftoverDto.from(leftover);
     }
 
     @Override
@@ -94,7 +49,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
         for (int i = 0; i < DATA_SIZE; i ++) {
             LocalDate targetDate = date.plusDays(i);
 
-            Calculate target = calculateRepository.findByDate(targetDate);
+            LeftoverPre target = leftoverPreRepository.findByDate(targetDate);
             if (target == null) {
                 result.add(LeftoverDto.of(targetDate, 0.0));
                 continue;
@@ -102,7 +57,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
 
             Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
             if (leftover == null) result.add(LeftoverDto.of(targetDate, 0.0));
-            else result.add(LeftoverDto.of(leftover));
+            else result.add(LeftoverDto.from(leftover));
         }
         return result;
     }

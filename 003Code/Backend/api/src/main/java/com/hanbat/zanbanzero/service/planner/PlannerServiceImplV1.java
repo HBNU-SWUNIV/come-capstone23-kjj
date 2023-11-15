@@ -36,7 +36,7 @@ public class PlannerServiceImplV1 implements PlannerService{
             planner = repository.save(Planner.of(dto, getPlannerMenu()));
         }
         else planner.setMenus(dto.getMenus());
-        return PlannerDto.of(planner);
+        return PlannerDto.from(planner);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PlannerServiceImplV1 implements PlannerService{
         Planner planner = repository.findOnePlanner(date);
         if (planner == null) return null;
 
-        return PlannerDto.of(planner);
+        return PlannerDto.from(planner);
     }
     @Override
     public List<PlannerDto> getPlannerByMonth(int year, int month) {
@@ -53,7 +53,7 @@ public class PlannerServiceImplV1 implements PlannerService{
         LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));
 
         return repository.findAllByDateBetween(start, end).stream()
-                .map(PlannerDto::of)
+                .map(PlannerDto::from)
                 .toList();
     }
 }

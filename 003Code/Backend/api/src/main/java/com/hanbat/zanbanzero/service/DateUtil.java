@@ -5,9 +5,7 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 
@@ -20,8 +18,7 @@ public class DateUtil {
      * @return LocalDate
      */
     public LocalDate makeTodayToLocalDate() {
-        ZonedDateTime date = ZonedDateTime.now().plusHours(9).truncatedTo(ChronoUnit.HOURS);
-        return date.toLocalDate();
+        return LocalDate.now();
     }
 
     /**

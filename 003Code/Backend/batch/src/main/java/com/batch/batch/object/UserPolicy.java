@@ -10,10 +10,10 @@ public class UserPolicy {
     private boolean thursday;
     private boolean friday;
     private Long defaultMenu;
-    private Long userId;
+    private Long id;
 
-    public UserPolicy(String defaultMenu, String userId) {
+    public UserPolicy(String defaultMenu, String id) {
         this.defaultMenu = Long.valueOf(defaultMenu);
-        this.userId = Long.valueOf(userId);
+        this.id = Long.valueOf(id);
     }
 }

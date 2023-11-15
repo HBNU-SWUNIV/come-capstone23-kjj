@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.controller.menu;
 import com.hanbat.zanbanzero.controller.ControllerTestClass;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
+import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
@@ -16,9 +16,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,7 +34,7 @@ class MenuManagerApiControllerTest extends ControllerTestClass {
         // 1. 정상 요청
         {
             // Given
-            List<MenuUserInfoDto> expected = new ArrayList<>();
+            MenuUserInfoDtos expected = new MenuUserInfoDtos();
             Mockito.when(menuService.getMenus()).thenReturn(expected);
 
             // When

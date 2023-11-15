@@ -3,11 +3,12 @@ package com.hanbat.zanbanzero.dto.menu;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class MenuInfoDto {
 
     private Long id;
@@ -19,7 +20,7 @@ public class MenuInfoDto {
     private String info;
     private String details;
 
-    public static MenuInfoDto of(MenuInfo menu) {
+    public static MenuInfoDto from(MenuInfo menu) {
         return new MenuInfoDto(
                 menu.getId(),
                 menu.getMenu().getName(),

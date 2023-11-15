@@ -4,11 +4,12 @@ import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 public class MenuUpdateDto {
     private String name;
     private Integer cost;
@@ -18,7 +19,7 @@ public class MenuUpdateDto {
 
     private Boolean usePlanner;
 
-    public MenuInfo of(Menu menu) {
+    public MenuInfo from(Menu menu) {
         return new MenuInfo(
                 null,
                 menu,

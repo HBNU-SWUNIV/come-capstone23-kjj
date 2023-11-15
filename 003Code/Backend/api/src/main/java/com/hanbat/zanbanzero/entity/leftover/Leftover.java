@@ -17,16 +17,15 @@ public class Leftover {
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "leftover_pre_id")
     private LeftoverPre leftoverPre;
 
-    private double leftover;
+    private double data;
 
     public static Leftover of(LeftoverPre leftoverPre, LeftoverDto dto) {
         return new Leftover(null, leftoverPre, dto.getLeftover());
     }
 
     public void setLeftover(double leftover) {
-        this.leftover = leftover;
+        this.data = leftover;
     }
 }

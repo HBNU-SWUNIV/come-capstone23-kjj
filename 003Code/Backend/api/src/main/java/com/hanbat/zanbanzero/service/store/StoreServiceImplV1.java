@@ -57,12 +57,12 @@ public class StoreServiceImplV1 implements StoreService {
     public StoreDto isSetting() {
         Store store = storeRepository.findById(FINAL_ID).orElse(null);
         if (store == null) return null;
-        return StoreDto.of(store);
+        return StoreDto.from(store);
     }
 
     @Override
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.of(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID)));
+        return StoreDto.from(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID)));
     }
 
     @Override
@@ -70,7 +70,7 @@ public class StoreServiceImplV1 implements StoreService {
     public StoreDto setSetting(StoreSettingDto dto) throws SameNameException {
         if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("dto : " + dto);
 
-        return StoreDto.of(storeRepository.save(Store.of(FINAL_ID, dto)));
+        return StoreDto.from(storeRepository.save(Store.of(FINAL_ID, dto)));
     }
 
     @Override
@@ -84,12 +84,12 @@ public class StoreServiceImplV1 implements StoreService {
 
     @Override
     public StoreTodayDto getToday() {
-        return StoreTodayDto.of(calculateRepository.findLastTwoToday());
+        return StoreTodayDto.from(calculateRepository.findLastTwoToday());
     }
 
     @Override
     public StoreSalesDto getSales() {
-        return StoreSalesDto.of(calculateRepository.findLastTwoSales());
+        return StoreSalesDto.from(calculateRepository.findLastTwoSales());
     }
 
     @Override
@@ -103,8 +103,8 @@ public class StoreServiceImplV1 implements StoreService {
             LocalDate targetDate = date.plusDays(i);
             Calculate calculate = calculateRepository.findByDate(targetDate);
 
-            if (calculate == null) result.add(StoreWeekendDto.createZeroStoreWeekendDto(targetDate));
-            else result.add(StoreWeekendDto.createStoreWeekendDto(targetDate, calculate.getToday()));
+            if (calculate == null) result.add(StoreWeekendDto.newZeroDataStoreWeekendDto(targetDate));
+            else result.add(StoreWeekendDto.of(targetDate, calculate.getToday()));
         }
 
         return result;
@@ -136,7 +136,7 @@ public class StoreServiceImplV1 implements StoreService {
         Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
         store.setName(dto.getName());
 
-        return StoreDto.of(store);
+        return StoreDto.from(store);
     }
 
     @Override
@@ -145,7 +145,7 @@ public class StoreServiceImplV1 implements StoreService {
         Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
         store.setInfo(dto.getInfo());
 
-        return StoreDto.of(store);
+        return StoreDto.from(store);
     }
 
     @Override
@@ -156,7 +156,7 @@ public class StoreServiceImplV1 implements StoreService {
         StoreState storeState = storeStateRepository.findByDate(date);
         if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto));
         else storeState.setOff(dto);
-        return StoreStateDto.of(storeState);
+        return StoreStateDto.from(storeState);
     }
 
     @Override
@@ -165,7 +165,7 @@ public class StoreServiceImplV1 implements StoreService {
         LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));
 
         return storeStateRepository.findAllByDateBetween(start, end).stream()
-                .map(StoreStateDto::of)
+                .map(StoreStateDto::from)
                 .toList();
     }
 
@@ -175,7 +175,7 @@ public class StoreServiceImplV1 implements StoreService {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
         Calculate calculate = calculateRepository.findTopByOrderByIdDesc();
 
-        return StorePreDto.of(List.of(calculate.getToday(), calculatePre.getPredictUser()));
+        return StorePreDto.from(List.of(calculate.getToday(), calculatePre.getPredictUser()));
     }
 
     @Override
@@ -205,11 +205,11 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public CalculatePreWeekDto getNextWeeksUser() {
-        return CalculatePreWeekDto.of(calculatePreWeekRepository.findFirstByOrderByIdDesc());
+        return CalculatePreWeekDto.from(calculatePreWeekRepository.findFirstByOrderByIdDesc());
     }
 
     @Override
     public WeeklyFoodPredictDto getNextWeeksFood() {
-        return WeeklyFoodPredictDto.of(sbizRepository.findFirstByOrderByIdDesc());
+        return WeeklyFoodPredictDto.from(sbizRepository.findFirstByOrderByIdDesc());
     }
 }

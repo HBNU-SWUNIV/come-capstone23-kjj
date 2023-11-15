@@ -4,24 +4,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.HashMap;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class MenuFoodDto {
     private Long id;
     private String name;
-    private Map<String, Integer> food;
+    private HashMap<String, Integer> food;
 
-    public static MenuFoodDto of(MenuFood menuFood) {
+    public static MenuFoodDto from(MenuFood menuFood) {
         ObjectMapper objectMapper = new ObjectMapper();
-        Map food;
+        HashMap<String, Integer> food;
         try {
-            food = objectMapper.readValue(menuFood.getFood(), Map.class);
+            food = objectMapper.readValue(menuFood.getFood(), HashMap.class);
         } catch (JsonProcessingException e) {
             food = null;
         }

@@ -13,11 +13,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserPolicy {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
-    private User user;
 
     private boolean monday;
     private boolean tuesday;
@@ -27,10 +24,9 @@ public class UserPolicy {
 
     private Long defaultMenu;
 
-    public static UserPolicy createNewUserPolicy(User user) {
+    public static UserPolicy createNewUserPolicy() {
         return new UserPolicy(
                 null,
-                user,
                 false,
                 false,
                 false,

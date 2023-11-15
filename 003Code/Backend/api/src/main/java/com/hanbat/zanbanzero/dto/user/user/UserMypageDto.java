@@ -2,17 +2,17 @@ package com.hanbat.zanbanzero.dto.user.user;
 
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserMypageDto {
     private Long userId;
     private int point;
 
-    public static UserMypageDto createUserMyPageDto(UserMypage userMyPage) {
+    public static UserMypageDto from(UserMypage userMyPage) {
         return new UserMypageDto(
                 userMyPage.getId(),
                 userMyPage.getPoint()

@@ -2,11 +2,9 @@ package com.hanbat.zanbanzero.dto.user.user;
 
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
-@Data
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
 public class UserPolicyDto {
     private boolean monday;
@@ -17,7 +15,7 @@ public class UserPolicyDto {
 
     private Long defaultMenu;
 
-    public static UserPolicyDto of(UserPolicy policy) {
+    public static UserPolicyDto from(UserPolicy policy) {
         return new UserPolicyDto(
                 policy.isMonday(),
                 policy.isTuesday(),

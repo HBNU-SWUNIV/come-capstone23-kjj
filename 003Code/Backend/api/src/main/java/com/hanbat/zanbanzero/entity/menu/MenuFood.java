@@ -37,7 +37,7 @@ public class MenuFood {
         );
     }
 
-    public static MenuFood of(Recipe recipe) {
+    public static MenuFood from(Recipe recipe) {
         return new MenuFood(
                 null,
                 null,

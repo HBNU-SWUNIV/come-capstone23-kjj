@@ -39,9 +39,9 @@ public class UserServiceImplV1 implements UserService {
     @Transactional
     public void join(UserJoinDto dto) {
         dto.setEncodePassword(bCryptPasswordEncoder);
-        User user = userRepository.save(User.of(dto));
-        userMypageRepository.save(UserMypage.createNewUserMyPage(user));
-        userPolicyRepository.save(UserPolicy.createNewUserPolicy(user));
+        UserMypage userMypage = userMypageRepository.save(UserMypage.createNewUserMyPage());
+        UserPolicy userPolicy = userPolicyRepository.save(UserPolicy.createNewUserPolicy());
+        userRepository.save(User.of(dto, userPolicy, userMypage));
     }
 
     @Override
@@ -60,20 +60,18 @@ public class UserServiceImplV1 implements UserService {
     @Override
     public UserInfoDto getInfo(Long id) throws CantFindByIdException {
         User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
-        return UserInfoDto.of(user);
+        return UserInfoDto.from(user);
     }
 
     @Override
-    public UserMypageDto getMyPage(Long id) throws CantFindByIdException {
-        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
-
-        return UserMypageDto.createUserMyPageDto(userMypage);
+    public UserMypageDto getMyPage(Long id) {
+        return UserMypageDto.from(userRepository.findByIdWithFetchMyPage(id).getUserMypage());
     }
 
     @Override
     @Transactional
-    public Integer usePoint(Long id, UsePointDto dto) throws CantFindByIdException, WrongRequestDetails {
-        UserMypage userMypage = userMypageRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
+    public Integer usePoint(Long id, UsePointDto dto) throws WrongRequestDetails {
+        UserMypage userMypage = userRepository.findByIdWithFetchMyPage(id).getUserMypage();
         int data = -1 * dto.getValue();
         if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("point : " + userMypage.getPoint());
         userMypage.updatePoint(data);
@@ -94,35 +92,36 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
-        policy.setPolicy(dto);
+    public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) {
+        User user = userRepository.findByIdWithFetchPolicy(id);
+        UserPolicy userPolicy = user.getUserPolicy();
+        userPolicy.setPolicy(dto);
 
-        return UserPolicyDto.of(policy);
+        return UserPolicyDto.from(userPolicy);
     }
 
     @Override
     @Transactional
-    public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws CantFindByIdException, WrongParameter {
+    public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws WrongParameter {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
 
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
+        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
         policy.setDefaultMenu(menuId);
 
-        return UserPolicyDto.of(policy);
+        return UserPolicyDto.from(policy);
     }
 
     @Override
-    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
-        return UserPolicyDto.of(policy);
+    public UserPolicyDto getUserPolicy(Long id) {
+        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
+        return UserPolicyDto.from(policy);
     }
 
     @Override
     @Transactional
     public UserInfoDto getInfoForUsername(String username) {
         User user = userRepository.findByUsername(username);
-        UserInfoDto userInfoDto = UserInfoDto.of(user);
+        UserInfoDto userInfoDto = UserInfoDto.from(user);
         user.updateLoginDate();
         return userInfoDto;
     }

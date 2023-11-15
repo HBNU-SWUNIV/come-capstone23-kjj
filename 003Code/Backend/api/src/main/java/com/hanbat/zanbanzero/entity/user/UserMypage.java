@@ -13,21 +13,15 @@ public class UserMypage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private User user;
-
     private int point;
 
     public void updatePoint(int value) {
         point += value;
     }
 
-    public static UserMypage createNewUserMyPage(User user) {
+    public static UserMypage createNewUserMyPage() {
         return new UserMypage(
-                user.getId(),
-                user,
+                null,
                 0
         );
     }

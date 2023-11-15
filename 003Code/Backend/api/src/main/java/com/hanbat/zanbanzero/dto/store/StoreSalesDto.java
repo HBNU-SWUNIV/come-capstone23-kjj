@@ -1,19 +1,17 @@
 package com.hanbat.zanbanzero.dto.store;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
 
 import java.util.List;
 
-@Data
+@Getter
 @AllArgsConstructor
-@NoArgsConstructor
 public class StoreSalesDto {
     int today;
     int yesterday;
 
-    public static StoreSalesDto of(List<Integer> list) {
+    public static StoreSalesDto from(List<Integer> list) {
         return new StoreSalesDto(
                 list.get(0),
                 list.get(1)

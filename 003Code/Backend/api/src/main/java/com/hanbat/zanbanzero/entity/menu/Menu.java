@@ -9,7 +9,6 @@ import java.util.List;
 
 @Entity
 @Getter
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class Menu {

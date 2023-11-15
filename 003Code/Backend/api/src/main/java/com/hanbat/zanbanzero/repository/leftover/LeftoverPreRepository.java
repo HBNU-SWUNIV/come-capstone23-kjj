@@ -1,10 +1,10 @@
 package com.hanbat.zanbanzero.repository.leftover;
 
 import com.hanbat.zanbanzero.entity.leftover.LeftoverPre;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.time.LocalDate;
+
 public interface LeftoverPreRepository extends JpaRepository<LeftoverPre, Long> {
-    Page<LeftoverPre> findAllByOrderByCalculateIdDesc(Pageable pageable);
+    LeftoverPre findByDate(LocalDate localDate);
 }

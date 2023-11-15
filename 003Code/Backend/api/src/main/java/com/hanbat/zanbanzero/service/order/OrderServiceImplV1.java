@@ -15,7 +15,6 @@ import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
-import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateUtil;
@@ -40,7 +39,6 @@ public class OrderServiceImplV1 implements OrderService{
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
-    private final UserMyPageRepository userMyPageRepository;
     private final DateUtil dateUtil;
 
     private static final int PAGE_SIZE = 10;
@@ -68,7 +66,7 @@ public class OrderServiceImplV1 implements OrderService{
 
         if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenuId(id), date, false));
         else order.setRecognizeToCancel();
-        return OrderDto.of(order);
+        return OrderDto.from(order);
     }
 
     @Override
@@ -82,7 +80,7 @@ public class OrderServiceImplV1 implements OrderService{
             order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId)));
             order.setRecognizeToUse();
         }
-        return OrderDto.of(order);
+        return OrderDto.from(order);
     }
 
     @Override
@@ -98,7 +96,7 @@ public class OrderServiceImplV1 implements OrderService{
         List<Order> orders = orderRepository.findByUserId(id);
 
         return orders.stream()
-                .map(OrderDto::of)
+                .map(OrderDto::from)
                 .toList();
     }
 
@@ -109,7 +107,7 @@ public class OrderServiceImplV1 implements OrderService{
 
         return orderPage.getContent()
                 .stream()
-                .map(OrderDto::of)
+                .map(OrderDto::from)
                 .toList();
     }
 
@@ -119,7 +117,7 @@ public class OrderServiceImplV1 implements OrderService{
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
         if (order == null) return null;
-        return LastOrderDto.of(order);
+        return LastOrderDto.from(order);
     }
 
     @Override
@@ -142,7 +140,7 @@ public class OrderServiceImplV1 implements OrderService{
 
         List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
         return order.stream()
-                .map(OrderDto::of)
+                .map(OrderDto::from)
                 .toList();
     }
 
@@ -151,19 +149,18 @@ public class OrderServiceImplV1 implements OrderService{
     public OrderDto getOrderDay(Long id, int year, int month, int day) {
         Order order = orderRepository.findByUserIdAndOrderDate(id, dateUtil.makeLocalDate(year, month, day));
         if (order == null) return null;
-        else return OrderDto.of(order);
+        else return OrderDto.from(order);
     }
 
     @Override
     @Transactional
-    public void checkOrder(Long id) throws CantFindByIdException {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId", id));
+    public void checkOrder(Long id) {
+        Order order = orderRepository.findByIdWithFetch(id);
         if (!order.isExpired()) {
             order.setExpiredTrue();
 
-            Long userId = order.getUser().getId();
             int point = 50;
-            UserMypage myPage = userMyPageRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("userMypageId", userId));
+            UserMypage myPage = order.getUser().getUserMypage();
             myPage.updatePoint(point);
         }
     }
@@ -172,7 +169,7 @@ public class OrderServiceImplV1 implements OrderService{
     @Transactional
     public OrderDto getOrderInfo(Long id, Long orderId) throws CantFindByIdException {
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId", orderId));
-        return OrderDto.of(order);
+        return OrderDto.from(order);
     }
 
     @Override
@@ -180,6 +177,6 @@ public class OrderServiceImplV1 implements OrderService{
     public OrderDto setPaymentTrue(Long id) throws CantFindByIdException  {
         Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId", id));
         order.setPaymentTrue();
-        return OrderDto.of(order);
+        return OrderDto.from(order);
     }
 }

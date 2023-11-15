@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakWithdrawException;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
@@ -47,10 +48,10 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
     @Transactional
     public User join(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
-        userMypageRepository.save(UserMypage.createNewUserMyPage(savedUser));
-        userPolicyRepository.save(UserPolicy.createNewUserPolicy(savedUser));
-        return savedUser;
+        user.setUserPolicy(userPolicyRepository.save(UserPolicy.createNewUserPolicy()));
+        user.setUserMypage(userMypageRepository.save(UserMypage.createNewUserMyPage()));
+
+        return userRepository.save(user);
     }
 
     @Override
@@ -94,9 +95,9 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
 
     @Override
     @Transactional
-    public UserInfoDto login(User u) {
-        User user = userRepository.findByUsername(u.getUsername());
-        UserInfoDto userInfoDto = UserInfoDto.of(user);
+    public UserInfoDto login(Long id) throws CantFindByIdException {
+        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
+        UserInfoDto userInfoDto = UserInfoDto.from(user);
         user.updateLoginDate();
         return userInfoDto;
     }

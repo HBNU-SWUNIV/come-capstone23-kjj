@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.task.calculate;
 
 import com.batch.batch.batch.order.task.calculate.method.CreateLeftoverPreMethod;
+import com.batch.batch.tools.DateTools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
@@ -30,13 +31,11 @@ public class CreateLeftoverPreTasklet implements Tasklet {
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
         try (Connection connection = dataSource.getConnection()) {
-            Map<String, Integer> calculateData = method.getCalculateData(connection);
-            int id = calculateData.get("id");
-            int today = calculateData.get("today");
+            Integer today = method.getCalculateData(connection);
 
-            String query = "insert into leftover_pre(calculate_id, predict) values(?, ?)";
+            String query = "insert into leftover_pre(date, predict) values(?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setLong(1, id);
+                statement.setString(1, DateTools.getDate());
                 double aver = 120;
                 statement.setDouble(2, aver * today);
 
