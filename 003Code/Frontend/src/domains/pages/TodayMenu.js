@@ -6,17 +6,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
 import axios from 'axios';
+import { useRef, useState } from 'react';
 import { useMutation, useQuery } from 'react-query';
 import { styled } from 'styled-components';
 import { getTodayMenu } from '../../api/apis';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import TodayMenuAddDialog from '../../components/todaymenu/TodayMenuAddDialog';
 import TodayMenuCalander from '../../components/todaymenu/TodayMenuCalander';
 import TodayMenuSlider from '../../components/todaymenu/TodayMenuSlider';
 import UseErrorHandler from '../../hooks/UseErrorHandler';
 import UseImageHandler from '../../hooks/UseImageHandler';
+import { flexCenter } from '../../styles/global.style';
+import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
 import Nav from '../nav/Nav';
-import { useRef, useState } from 'react';
 
 export default function TodayMenu() {
   const config = ConfigWithToken();
@@ -154,7 +155,7 @@ export default function TodayMenu() {
         <Box component="main" sx={dailymenuBoxStyle}>
           <Toolbar />
           <Container maxWidth="xl" sx={{ mt: 4 }}>
-            <Wrapper $isTodayMenu={isTodayMenu}>
+            <TodayMenuLayout $isTodayMenu={isTodayMenu}>
               <TodayMenuLeftItems>
                 {todaymenu_left_button_and_text_datas.map(
                   (items) =>
@@ -189,7 +190,7 @@ export default function TodayMenu() {
                 <TodayMenuSlider />
               </TodayMenuLeftItems>
               <TodayMenuCalander isTodayMenu={isTodayMenu} />
-            </Wrapper>
+            </TodayMenuLayout>
           </Container>
 
           <TodayMenuAddDialog {...todaymenu_dialog_props} />
@@ -237,37 +238,26 @@ const todaymenu_guide =
 
 const todaymenu_add_guide = `오른쪽 달력에 요일을 클릭하여 일 별 메뉴를 작성해주세요. 요일을 클릭하면 예시가 나옵니다.`;
 
-export const Circle = styled.div`
-  width: 0.313rem;
-  height: 0.313rem;
-  margin-right: 0.313rem;
-  border-radius: 0.656rem;
-  background-color: #b0b3bc;
-`;
-
-const Wrapper = styled.div`
+const TodayMenuLayout = styled.div`
   display: flex;
   justify-content: space-between;
   margin-top: 0;
 `;
 
 const TodayMenuLeftItems = styled.div`
-  @media screen and (max-width:1200px){
-    display:none;
+  max-width: 50%;
+  height: 100%;
+  ${flexCenter};
+  flex-direction: column;
+  margin-top: 10vh;
+
+  @media screen and (max-width: 1200px) {
+    display: none;
   }
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
 
-  margin-top:10vh;
-
-  max-width:5%:
-  height:100%;
-  
-  span{
-    font-size:20px;
-    white-space:nowrap;
-    font-weight:600;
+  span {
+    font-size: 20px;
+    white-space: nowrap;
+    font-weight: 600;
   }
 `;

@@ -12,7 +12,7 @@ import styled from 'styled-components';
 const UpdateNameModal = (props) => {
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <Wrapper>
+      <UpdateNameModalLayout>
         <DialogTitle sx={DialogTitleStyle}>
           식당 이름 {props.isName ? '수정' : '설정'}
         </DialogTitle>
@@ -35,7 +35,7 @@ const UpdateNameModal = (props) => {
             fullWidth
           />
         </DialogContent>
-      </Wrapper>
+      </UpdateNameModalLayout>
 
       <DialogActions sx={{ backgroundColor: '#24292e' }}>
         <Button onClick={props.onUpdateMarketName}>등록</Button>
@@ -49,7 +49,7 @@ const UpdateNameModal = (props) => {
 
 export default UpdateNameModal;
 
-const Wrapper = styled.div`
+const UpdateNameModalLayout = styled.div`
   background-color: #24292e;
 `;
 

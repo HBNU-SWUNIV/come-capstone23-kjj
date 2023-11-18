@@ -1,3 +1,7 @@
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import NoMealsIcon from '@mui/icons-material/NoMeals';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Table from '@mui/material/Table';
@@ -6,68 +10,15 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
-import { styled } from 'styled-components';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import NoMealsIcon from '@mui/icons-material/NoMeals';
 import axios from 'axios';
-import { ConfigWithToken, ManagerBaseApi } from '../../../auth/authConfig';
 import { useState } from 'react';
-import MenulistUpDownArrow from './MenulistUpDownArrow';
-import MenulistSaleStatus from './MenulistSaleStatus';
+import { styled } from 'styled-components';
+import { ConfigWithToken, ManagerBaseApi } from '../../../utils/utils';
 import MenulistMenusbar from './MenulistMenusbar';
+import MenulistSaleStatus from './MenulistSaleStatus';
+import MenulistUpDownArrow from './MenulistUpDownArrow';
+import { flexJBetween } from '../../../styles/global.style';
 
-const ingredientTableTitleStyle = {
-  fontWeight: 600,
-  fontSize: '16px',
-};
-
-const TableName = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-
-  }
-`;
-
-const table_head_data = [
-  {
-    id: 0,
-    text: '이름',
-    sx: ingredientTableTitleStyle,
-  },
-  {
-    id: 1,
-  },
-  {
-    id: 2,
-  },
-  {
-    id: 3,
-    text: '무게 (1인분 기준)',
-    sx: ingredientTableTitleStyle,
-    align: 'right',
-  },
-];
-
-const table_body_data = [
-  {
-    id: 0,
-    component: 'th',
-    scope: 'row',
-  },
-  {
-    id: 1,
-  },
-  {
-    id: 2,
-  },
-  {
-    id: 3,
-    align: 'right',
-  },
-];
 const MenulistRow = (props) => {
   const { row, onDelete, soldout, resale, onUpdate } = props;
   const config = ConfigWithToken();
@@ -245,3 +196,51 @@ const MenulistRow = (props) => {
 };
 
 export default MenulistRow;
+
+const ingredientTableTitleStyle = {
+  fontWeight: 600,
+  fontSize: '16px',
+};
+
+const TableName = styled.div`
+  width: 100%;
+  ${flexJBetween};
+`;
+
+const table_head_data = [
+  {
+    id: 0,
+    text: '이름',
+    sx: ingredientTableTitleStyle,
+  },
+  {
+    id: 1,
+  },
+  {
+    id: 2,
+  },
+  {
+    id: 3,
+    text: '무게 (1인분 기준)',
+    sx: ingredientTableTitleStyle,
+    align: 'right',
+  },
+];
+
+const table_body_data = [
+  {
+    id: 0,
+    component: 'th',
+    scope: 'row',
+  },
+  {
+    id: 1,
+  },
+  {
+    id: 2,
+  },
+  {
+    id: 3,
+    align: 'right',
+  },
+];

@@ -1,23 +1,18 @@
-import { useState } from 'react';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import MenuUpdateAddInputs from '../MenuUpdateAddInputs';
-import UseGetAxios from '../../../hooks/UseGetAxios';
+import { useState } from 'react';
+import { useSetRecoilState } from 'recoil';
 import { getIngredientsInfo } from '../../../api/apis';
-import { useRecoilState } from 'recoil';
 import { IngredientsIdAtom } from '../../../atom/menuAtom';
-
-const weightFontStyle = { fontWeight: 600 };
-const dialogContentStyle = { display: 'flex', flexDirection: 'column', gap: '1vh' };
-const dialogContentTextStyle = { ...weightFontStyle, fontSize: '15px' };
+import UseGetAxios from '../../../hooks/UseGetAxios';
+import MenuUpdateAddInputs from '../MenuUpdateAddInputs';
 
 const MenuAddDialog = (props) => {
-  const [selectedIngredientsId, setSelectedIngredientsId] =
-    useRecoilState(IngredientsIdAtom);
+  const setSelectedIngredientsId = useSetRecoilState(IngredientsIdAtom);
   const { data, isLoading } = UseGetAxios({
     name: 'getIngredientsNames',
     api: getIngredientsInfo,
@@ -92,7 +87,7 @@ const MenuAddDialog = (props) => {
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <DialogTitle sx={weightFontStyle}>메뉴 등록</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600 }}>메뉴 등록</DialogTitle>
       <DialogContent sx={dialogContentStyle}>
         <DialogContentText sx={dialogContentTextStyle}>
           이미지 파일을 추가하여 이미지를 등록해주세요.
@@ -108,10 +103,10 @@ const MenuAddDialog = (props) => {
       </DialogContent>
 
       <DialogActions>
-        <Button sx={weightFontStyle} onClick={props.onAddMenu}>
+        <Button sx={{ fontWeight: 600 }} onClick={props.onAddMenu}>
           등록
         </Button>
-        <Button sx={weightFontStyle} color="error" onClick={props.onClose}>
+        <Button sx={{ fontWeight: 600 }} color="error" onClick={props.onClose}>
           닫기
         </Button>
       </DialogActions>
@@ -120,3 +115,6 @@ const MenuAddDialog = (props) => {
 };
 
 export default MenuAddDialog;
+
+const dialogContentStyle = { display: 'flex', flexDirection: 'column', gap: '1vh' };
+const dialogContentTextStyle = { fontWeight: 600, fontSize: '15px' };

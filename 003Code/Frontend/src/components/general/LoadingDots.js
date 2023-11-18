@@ -1,13 +1,13 @@
-import React from 'react';
 import { keyframes, styled } from 'styled-components';
+import { flexCenter } from '../../styles/global.style';
 
 const LoadingDots = (props) => {
   return (
-    <DotsWrapper>
+    <LoadingDotsLayout>
       {[1, 2, 3].map((item, idx) => (
         <Dots key={idx} $isGray={props.isGray} />
       ))}
-    </DotsWrapper>
+    </LoadingDotsLayout>
   );
 };
 
@@ -24,17 +24,13 @@ const puls = keyframes`
     }
 `;
 
-const DotsWrapper = styled.div`
+const LoadingDotsLayout = styled.div`
   width: 50px;
   height: 30px;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
+  ${flexCenter};
   gap: 5px;
 
-  div:first-child {
+  div:nth-child(1) {
     animation: ${puls} 0.3s ease 0s infinite alternate;
   }
 
@@ -42,7 +38,7 @@ const DotsWrapper = styled.div`
     animation: ${puls} 0.3s ease 0.2s infinite alternate;
   }
 
-  div:last-child {
+  div:nth-child(3) {
     animation: ${puls} 0.3s ease 0.4s infinite alternate;
   }
 `;
@@ -50,7 +46,6 @@ const DotsWrapper = styled.div`
 const Dots = styled.div`
   width: 5px;
   height: 5px;
-
   border-radius: 2.5px;
   background-color: ${({ $isGray }) => ($isGray ? 'gray' : 'white')};
 `;

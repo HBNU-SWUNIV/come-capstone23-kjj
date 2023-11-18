@@ -10,10 +10,6 @@ const UserMenuModal = (props) => {
       htmlforname: 'info',
       text: '식당 소개 메시지 변경',
     },
-    // {
-    //   htmlforname: 'image',
-    //   text: '식당 이미지 변경',
-    // },
     {
       text: '로그아웃',
       onClick: props.onLogout,

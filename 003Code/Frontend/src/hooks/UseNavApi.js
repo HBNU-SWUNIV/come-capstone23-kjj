@@ -1,8 +1,8 @@
+import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { getMarketDetails } from '../api/apis';
-import { ConfigWithToken, ManagerBaseApi } from '../auth/authConfig';
-import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
+import { ConfigWithToken, ManagerBaseApi } from '../utils/utils';
 
 const UseNavApi = (closeFn) => {
   const config = ConfigWithToken();

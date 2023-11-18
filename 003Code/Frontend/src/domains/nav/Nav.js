@@ -16,110 +16,7 @@ import UserMenuModal from '../../components/nav/UserMenuModal';
 import UseNav from '../../hooks/UseNav';
 import UseNavApi from '../../hooks/UseNavApi';
 import favicon from '../../image/favico.png';
-
-// Appbar, Drawer은 mui 부트스트랩 기본 함수들, 건드리지 않음.
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(['width', 'margin'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  border: '1px solid rgb(69, 75, 95)',
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-  ({ theme, open }) => ({
-    '& .MuiDrawer-paper': {
-      top: '-10px',
-      position: 'relative',
-      whiteSpace: 'nowrap',
-      width: drawerWidth,
-      height: 'calc(100% + 10px)',
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      border: '1px solid #24292e',
-      boxSizing: 'border-box',
-      ...(!open && {
-        overflowX: 'hidden',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.leavingScreen,
-        }),
-        width: theme.spacing(7),
-        [theme.breakpoints.up('sm')]: {
-          width: theme.spacing(9),
-        },
-      }),
-    },
-  })
-);
-
-const screenWidth = window.innerWidth;
-const drawerWidth = screenWidth < 450 ? 20 : 220;
-const pagesNameStyle = {
-  flexGrow: 1,
-  fontWeight: 600,
-  fontSize: '20px',
-};
-const listStyle = {
-  backgroundColor: 'rgb(69,75,95)',
-  height: '100%',
-};
-
-const headerToolbarStyle = {
-  backgroundColor: '#24292e',
-  pr: '24px',
-};
-
-const drawerStyle = {
-  border: '1px solid rgb(69, 75, 95)',
-};
-
-const drawerToolbarStyle = {
-  backgroundColor: 'rgb(69, 75, 95)',
-  zIndex: 3,
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  px: [1],
-};
-
-const marketNameStyle = {
-  fontWeight: '600',
-  color: 'inherit',
-  textDecoration: 'underline',
-  textDecorationThickness: '1px',
-  whiteSpace: 'nowrap',
-  textAlign: 'right',
-};
-
-const AppbarUser = Cstyled.div`
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-  padding:0 20px;
-  flex-direction:column;
-
-`;
-
-const AppbarUserTitle = Cstyled.span`
-  font-size:20px;
-  font-weight:700;
-  color:inherit;
-  margin-bottom:1px;
-`;
+import { flexJCenter } from '../../styles/global.style';
 
 function Nav(props) {
   const {
@@ -243,3 +140,109 @@ function Nav(props) {
 }
 
 export default Nav;
+
+// Appbar, Drawer은 mui 부트스트랩 기본 함수들, 건드리지 않음.
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  zIndex: theme.zIndex.drawer + 1,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  border: '1px solid rgb(69, 75, 95)',
+  ...(open && {
+    marginLeft: drawerWidth,
+    width: `calc(100% - ${drawerWidth}px)`,
+    transition: theme.transitions.create(['width', 'margin'], {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+  ({ theme, open }) => ({
+    '& .MuiDrawer-paper': {
+      top: '-10px',
+      position: 'relative',
+      whiteSpace: 'nowrap',
+      width: drawerWidth,
+      height: 'calc(100% + 10px)',
+      transition: theme.transitions.create('width', {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      border: '1px solid #24292e',
+      boxSizing: 'border-box',
+      ...(!open && {
+        overflowX: 'hidden',
+        transition: theme.transitions.create('width', {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen,
+        }),
+        width: theme.spacing(7),
+        [theme.breakpoints.up('sm')]: {
+          width: theme.spacing(9),
+        },
+      }),
+    },
+  })
+);
+
+const screenWidth = window.innerWidth;
+
+const drawerWidth = screenWidth < 450 ? 20 : 220;
+
+const pagesNameStyle = {
+  flexGrow: 1,
+  fontWeight: 600,
+  fontSize: '20px',
+};
+
+const listStyle = {
+  backgroundColor: 'rgb(69,75,95)',
+  height: '100%',
+};
+
+const headerToolbarStyle = {
+  backgroundColor: '#24292e',
+  pr: '24px',
+};
+
+const drawerStyle = {
+  border: '1px solid rgb(69, 75, 95)',
+};
+
+const drawerToolbarStyle = {
+  backgroundColor: 'rgb(69, 75, 95)',
+  zIndex: 3,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  px: [1],
+};
+
+const marketNameStyle = {
+  fontWeight: '600',
+  color: 'inherit',
+  textDecoration: 'underline',
+  textDecorationThickness: '1px',
+  whiteSpace: 'nowrap',
+  textAlign: 'right',
+};
+
+const AppbarUser = Cstyled.div`
+  ${flexJCenter};
+  flex-direction:column;
+  align-items:flex-end;
+  padding:0 20px;
+`;
+
+const AppbarUserTitle = Cstyled.span`
+  margin-bottom:1px;
+
+  font-size:20px;
+  font-weight:700;
+  color:inherit;
+`;

@@ -1,8 +1,8 @@
-import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
 import styled from 'styled-components';
-import { c_color } from '../../styles/global';
 import UseGetCharts from '../../hooks/UseGetCharts';
+import Title from '../general/Title';
+import { flexColumn, flexJBetween } from '../../styles/global.style';
 
 export default function FoodStatisticsChart() {
   const { predictMenusArray } = UseGetCharts();
@@ -11,11 +11,7 @@ export default function FoodStatisticsChart() {
     <>
       <Wrapper>
         <ChartWrapper>
-          <Title>
-            <span style={{ ...c_color, fontSize: '16px', fontWeight: 600 }}>
-              익일 예약 메뉴
-            </span>
-          </Title>
+          <Title>익일 예약 메뉴</Title>
           <ApexCharts
             width={450}
             height={400}
@@ -47,14 +43,12 @@ export default function FoodStatisticsChart() {
 }
 
 const Wrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
+  ${flexJBetween};
   @media (max-width: 1000px) {
     flex-direction: column;
   }
 `;
 const ChartWrapper = styled.div`
   width: 40%;
-  display: flex;
-  flex-direction: column;
+  ${flexColumn};
 `;

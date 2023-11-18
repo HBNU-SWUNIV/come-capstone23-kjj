@@ -1,15 +1,40 @@
-import { styled as cStyled } from 'styled-components';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
+import { styled as cStyled } from 'styled-components';
 import Gibeom from '../../image/gi.png';
 import Heongmok from '../../image/hy.png';
 import Seonghun from '../../image/se.png';
-import { styled } from '@mui/material/styles';
 import Developer from './Developer';
+import { flexICenter } from '../../styles/global.style';
+
+const Developers = ({ onClose, open }) => {
+  return (
+    <BootstrapDialog
+      onClose={onClose}
+      aria-labelledby="customized-dialog-title"
+      open={open}
+    >
+      <DialogContent dividers sx={developerContentStyle}>
+        <DeveloperTitle>개발자 정보</DeveloperTitle>
+
+        <DevelopersLayout>
+          {developers.map((user, index) => (
+            <Developer key={index} {...user} />
+          ))}
+        </DevelopersLayout>
+
+        <span style={{ fontSize: '16px' }}>Capstone Design 2023 KJJ Team</span>
+      </DialogContent>
+    </BootstrapDialog>
+  );
+};
+
+export default Developers;
 
 const developers = [
   {
@@ -31,30 +56,6 @@ const developers = [
     position: 'App Frontend',
   },
 ];
-
-const Developers = ({ onClose, open }) => {
-  return (
-    <BootstrapDialog
-      onClose={onClose}
-      aria-labelledby="customized-dialog-title"
-      open={open}
-    >
-      <DialogContent dividers sx={developerContentStyle}>
-        <DeveloperTitle>개발자 정보</DeveloperTitle>
-
-        <DeveloperInfoWrapper>
-          {developers.map((user, index) => (
-            <Developer key={index} {...user} />
-          ))}
-        </DeveloperInfoWrapper>
-
-        <span style={{ fontSize: '16px' }}>Capstone Design 2023 KJJ Team</span>
-      </DialogContent>
-    </BootstrapDialog>
-  );
-};
-
-export default Developers;
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -101,17 +102,16 @@ const developerContentStyle = {
   justifyContent: 'center',
 };
 
-const DeveloperInfoWrapper = cStyled.div`
-display:flex;
-justify-content:space-around;
-box-sizing:border-box;
-align-items:center;
-padding:50px 10px;
+const DevelopersLayout = cStyled.div`
 width: 600px;
 height: 250px;
+${flexICenter};
+justify-content:space-around;
+box-sizing:border-box;
+padding:50px 10px;
 `;
 
 const DeveloperTitle = cStyled.span`
-    font-size:24px;
-    font-weight:600px;
+  font-size:24px;
+  font-weight:600px;
 `;

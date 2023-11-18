@@ -11,24 +11,23 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
-import axios from 'axios';
 import { useKeycloak } from '@react-keycloak/web';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useActionData, useNavigate, useNavigation, useSubmit } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import { styled } from 'styled-components';
-
-import React, { useEffect, useState } from 'react';
 import { isloginAtom } from '../../atom/loginAtom';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Copyright from '../../components/general/Copyright';
 import ErrorInform from '../../components/general/ErrorInform';
 import LoadingDots from '../../components/general/LoadingDots';
+import UseInput from '../../hooks/UseInput';
+import UseValidate from '../../hooks/UseValidate';
 import background from '../../image/capstone_background.png';
 import keycloakimg from '../../image/keycloak.png';
-import { validateRules } from '../../auth/validateRules';
-import UseValidate from '../../hooks/UseValidate';
-import UseInput from '../../hooks/UseInput';
+import { ConfigWithToken, ManagerBaseApi, validateRules } from '../../utils/utils';
+import { flexICenter } from '../../styles/global.style';
 
 export default function Login() {
   const { error, validateWithRules } = UseValidate({ rules: validateRules });
@@ -56,7 +55,7 @@ export default function Login() {
 
   const verifyFirstLogin = () => {
     axios
-      .get(`${ManagerBaseApi}/setting`, config)
+      .get(`${ManagerBaseApi}/store/setting`, config)
       .then((res) => {
         if (res.data.name === '' && res.data.info === '') navigate('/initialLogin');
         else navigate('/home');
@@ -226,6 +225,8 @@ const keycloakimgstyle = {
 };
 
 const HrWrapper = styled.div`
+  ${flexICenter};
+  justify-content: space-around;
   padding: 10px 0;
 
   div {
@@ -233,10 +234,6 @@ const HrWrapper = styled.div`
     height: 1px;
     background-color: #717171;
   }
-
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
 
   span {
     font-size: 16px;

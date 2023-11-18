@@ -15,9 +15,16 @@ import { useMutation, useQuery } from 'react-query';
 import shortid from 'shortid';
 import styled from 'styled-components';
 import { getHoliday, getOffDay } from '../../api/apis';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
+import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
 import Circle from '../general/Circle';
 import DayoffDialog from './DayoffDialog';
+import {
+  flexCenter,
+  flexColumn,
+  flexICenter,
+  flexJBetween,
+  fullSize,
+} from '../../styles/global.style';
 
 function DayoffCalander() {
   const config = ConfigWithToken();
@@ -68,7 +75,6 @@ function DayoffCalander() {
       axios.post(`${ManagerBaseApi}/store/off/${year}/${month}/${day}`, body, config);
     },
     {
-      // network탭에서 폭포 확인해봤을 때, onSuccess랑 위에 post api가 동시에 요청됨.. QueryClient에서 defualt값을 설정해줘야 하나?
       onSuccess: () => {
         setTimeout(() => {
           refreshOffday();
@@ -92,7 +98,7 @@ function DayoffCalander() {
   };
 
   for (let i = 0; i < 7; i++) {
-    days.push(<DaysDiv key={shortid.generate()}>{date[i]}</DaysDiv>);
+    days.push(<Days key={shortid.generate()}>{date[i]}</Days>);
   }
 
   while (day <= endDate) {
@@ -102,15 +108,15 @@ function DayoffCalander() {
 
       if (format(monthStart, 'M') != format(day, 'M')) {
         dayss.push(
-          <DivDay key={shortid.generate()}>
+          <Day key={shortid.generate()}>
             <span style={divDaySpanStyle}>{formattedDate}</span>
-          </DivDay>
+          </Day>
         );
       } else {
         dayss.push(
-          <DivDay onClick={() => handleOpen(id)} key={shortid.generate()}>
+          <Day onClick={() => handleOpen(id)} key={shortid.generate()}>
             <span>{formattedDate}</span>
-            <span style={{ color: customRed }}>
+            <span style={{ color: (props) => props.theme.colors.red }}>
               {!isArray && holiday?.locdate == id && holiday?.dateName}
               {isArray && holiday?.map((hol) => hol?.locdate == id && hol?.dateName)}
               {offday?.filter((offday) => offday.date === id)[0]?.name}
@@ -121,149 +127,140 @@ function DayoffCalander() {
             {!isArray
               ? holiday?.locdate == id && <Circle color="red" />
               : holiday?.map((hol) => hol?.locdate == id && <Circle color="red" />)}
-          </DivDay>
+          </Day>
         );
       }
       day = addDays(day, 1);
     }
-    line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
+    line.push(<DayRow key={shortid.generate()}>{dayss}</DayRow>);
     dayss = [];
   }
 
+  const DayOffDialogProps = {
+    open: open,
+    onClose: handleClose,
+    dayId: dayId,
+    offNameRef: offNameRef,
+    isArray: isArray,
+    holiday: holiday,
+    offday: offday,
+    onOnday: onOnday,
+    onOffday: onOffday,
+  };
+
   return (
-    <Wrapper>
-      <HeaderW>
-        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
+    <DayoffCalanderLayout>
+      <DayoffCalanderHeaderRow>
+        <AiOutlineLeft style={{ ...arrowStyle }} onClick={prevMonth} />
         <span>
           {format(currentMonth, 'yyyy')}.{format(currentMonth, 'MM')}
         </span>
-        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
-      </HeaderW>
+        <AiOutlineRight style={{ ...arrowStyle }} onClick={nextMonth} />
+      </DayoffCalanderHeaderRow>
 
-      <DaysWrapper>{days}</DaysWrapper>
-      <DivWrapper>{line}</DivWrapper>
+      <DaysRow>{days}</DaysRow>
+      <DayCol>{line}</DayCol>
 
-      <DayoffDialog
-        open={open}
-        onClose={handleClose}
-        dayId={dayId}
-        offNameRef={offNameRef}
-        isArray={isArray}
-        holiday={holiday}
-        offday={offday}
-        onOnday={onOnday}
-        onOffday={onOffday}
-      />
-    </Wrapper>
+      <DayoffDialog {...DayOffDialogProps} />
+    </DayoffCalanderLayout>
   );
 }
 
 export default DayoffCalander;
 
 const divDaySpanStyle = {
+  margin: '5px 5px',
+
   fontSize: '13px',
   fontWeight: 600,
-  margin: '5px 5px',
   color: 'rgba(0,0,0,0.3)',
 };
 
-const ArrowCSS = {
-  color: '#969696',
-  fontSize: '18px',
+const arrowStyle = {
   margin: '0 20px',
-  fontWeight: 600,
   cursor: 'pointer',
+
+  fontSize: '18px',
+  fontWeight: 600,
+  color: '#969696',
 };
 
-const customBlue = '#64b5f6';
-const customRed = '#f44336';
-
-const Wrapper = styled.div`
+const DayoffCalanderLayout = styled.div`
   width: 100%;
-
+  ${flexColumn};
+  align-items: center;
   margin-left: -1vw;
   margin-top: -4vh;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
 `;
-const HeaderW = styled.div`
+
+const DayoffCalanderHeaderRow = styled.div`
   width: 100%;
   height: 12vh;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  ${flexCenter};
 
   span {
-    color: ${customBlue};
+    color: ${(props) => props.theme.colors.blue};
     font-size: 25px;
     font-weight: 600;
   }
 `;
-const DaysDiv = styled.div`
+const Days = styled.div`
   width: 100%;
   height: 5vh;
-
-  padding-left: 3px;
-
-  display: flex;
+  ${flexICenter};
   justify-content: flex-start;
-  align-items: center;
-
+  padding-left: 3px;
   background-color: rgba(0, 0, 0, 0.1);
 `;
-const DaysWrapper = styled.div`
-  display: flex;
-  justify-content: space-between;
+
+const DaysRow = styled.div`
+  width: 100%;
+  ${flexJBetween};
 
   font-weight: 600;
 
-  width: 100%;
-
   div:first-child {
-    color: ${customRed};
+    color: ${(props) => props.theme.colors.red};
   }
   div:last-child {
-    color: ${customBlue};
+    color: ${(props) => props.theme.colors.blue};
   }
 `;
-const DivDay = styled.div`
-  position: relative;
+
+const Day = styled.div`
   width: 15%;
   height: 100%;
-
-  display: flex;
-  justify-content: space-between;
-
+  position: relative;
+  ${flexJBetween};
   border: 0.1px solid rgba(0, 0, 0, 0.1);
 
   span {
-    font-size: 13px;
-    font-weight: 600;
     margin: 5px 6px;
     z-index: 1;
+
+    font-size: 13px;
+    font-weight: 600;
   }
 `;
-const DivWeek = styled.div`
-  display: flex;
+
+const DayRow = styled.div`
   width: 100%;
   height: 13vh;
+  display: flex;
+
   div:first-child {
     span {
-      color: ${customRed};
+      color: ${(props) => props.theme.colors.red};
     }
   }
   div:last-child {
     span {
-      color: ${customBlue};
+      color: ${(props) => props.theme.colors.blue};
     }
   }
 `;
-const DivWrapper = styled.div`
-  width: 100%;
-  height: 100%;
 
+const DayCol = styled.div`
+  ${fullSize};
   border: 1px solid rgba(0, 0, 0, 0.1);
 `;
