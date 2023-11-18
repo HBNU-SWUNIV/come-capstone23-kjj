@@ -25,7 +25,7 @@
 <img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/215b4737-4f37-448e-9733-94db5279f64d" />
 
 - 전체 시스템 흐름도
-<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/d4d0c53c-0ff1-49a4-a092-94beb5f77aa7" />
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/d6e9bb54-e08f-4c6a-ad62-79dea596f8f1" />
 
 - ### System Requirements
 
