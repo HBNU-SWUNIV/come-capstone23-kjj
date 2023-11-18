@@ -1,21 +1,12 @@
-import styled from 'styled-components';
-import Statistics from './general/Statistics';
-import UseGetCharts from '../hooks/UseGetCharts';
-import UseCalculateFood from '../hooks/UseCalculateFood';
-import visitorImg from '../image/working.png';
 import { useState } from 'react';
-import UseUserPop from '../hooks/dashboard_statistics/UseUserPop';
+import styled from 'styled-components';
+import UseCalculateFood from '../hooks/UseCalculateFood';
+import UseGetCharts from '../hooks/UseGetCharts';
 import UsePredictPop from '../hooks/dashboard_statistics/UsePredictPop';
-
-const Wrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  place-items: center;
-  grid-gap: 30px;
-
-  width: 100%;
-  height: 100%;
-`;
+import UseUserPop from '../hooks/dashboard_statistics/UseUserPop';
+import visitorImg from '../image/working.png';
+import { fullSize } from '../styles/global.style';
+import Statistics from './dashboard/Statistics';
 
 const Visitor = () => {
   return <img src={visitorImg} width={'90%'} height={'100%'} />;
@@ -75,12 +66,20 @@ const StatisticsWrap = () => {
   ];
 
   return (
-    <Wrapper>
+    <StatisticsWrapLayout>
       {statistics_datas.map((item, idx) => (
         <Statistics key={idx + 'statisticskey'} {...item} />
       ))}
-    </Wrapper>
+    </StatisticsWrapLayout>
   );
 };
 
 export default StatisticsWrap;
+
+const StatisticsWrapLayout = styled.div`
+  ${fullSize};
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  place-items: center;
+  grid-gap: 30px;
+`;

@@ -1,22 +1,28 @@
+import axios from 'axios';
 import {
+  addDays,
   addMonths,
-  subMonths,
+  endOfMonth,
+  endOfWeek,
   format,
   startOfMonth,
-  endOfMonth,
   startOfWeek,
-  endOfWeek,
-  addDays,
+  subMonths,
 } from 'date-fns';
 import { useState } from 'react';
-import styled from 'styled-components';
 import { AiOutlineLeft, AiOutlineRight } from 'react-icons/ai';
-import shortid from 'shortid';
-import axios from 'axios';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import { useMutation, useQuery } from 'react-query';
+import shortid from 'shortid';
+import styled from 'styled-components';
 import { getDailyMenu } from '../../api/apis';
+import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
 import TodayMenuInputDialog from './TodayMenuInputDialog';
+import {
+  flexCenter,
+  flexColumn,
+  flexICenter,
+  flexJBetween,
+} from '../../styles/global.style';
 
 function TodayMenuCalander(props) {
   const config = ConfigWithToken();
@@ -87,7 +93,7 @@ function TodayMenuCalander(props) {
   );
 
   for (let i = 0; i < 7; i++) {
-    days.push(<DaysDiv key={shortid.generate()}>{date[i]}</DaysDiv>);
+    days.push(<DaysRow key={shortid.generate()}>{date[i]}</DaysRow>);
   }
 
   while (day <= endDate) {
@@ -96,7 +102,7 @@ function TodayMenuCalander(props) {
       const id = format(day, 'yyyyMMdd').toString();
       if (format(monthStart, 'M') != format(day, 'M')) {
         dayss.push(
-          <DivDay
+          <Day
             style={{
               opacity: '0',
             }}
@@ -105,33 +111,33 @@ function TodayMenuCalander(props) {
         );
       } else {
         dayss.push(
-          <DivDay onClick={() => handleClickOpen(id)} key={shortid.generate()}>
+          <Day onClick={() => handleClickOpen(id)} key={shortid.generate()}>
             <span>{formattedDate}</span>
             <span>
               {savedDailyMenuInfo?.map((savedbackban) =>
                 savedbackban.date === id ? savedbackban.menus : null
               )}
             </span>
-          </DivDay>
+          </Day>
         );
       }
       day = addDays(day, 1);
     }
-    line.push(<DivWeek key={shortid.generate()}>{dayss}</DivWeek>);
+    line.push(<DayRow key={shortid.generate()}>{dayss}</DayRow>);
     dayss = [];
   }
 
   return (
-    <Wrapper $isTodayMenu={props.isTodayMenu}>
-      <HeaderW>
-        <AiOutlineLeft style={{ ...ArrowCSS }} onClick={prevMonth} />
+    <TodayMenuCalanderLayout $isTodayMenu={props.isTodayMenu}>
+      <TodayMenuCalanderHeaderRow>
+        <AiOutlineLeft style={{ ...arrowStyle }} onClick={prevMonth} />
         <span style={headerWSpanStyle}>
           {format(currentDate, 'yy')}년 {format(currentDate, 'MM')}월
         </span>
-        <AiOutlineRight style={{ ...ArrowCSS }} onClick={nextMonth} />
-      </HeaderW>
-      <DaysWrapper>{days}</DaysWrapper>
-      <DivWrapper>{line}</DivWrapper>
+        <AiOutlineRight style={{ ...arrowStyle }} onClick={nextMonth} />
+      </TodayMenuCalanderHeaderRow>
+      <DaysCol>{days}</DaysCol>
+      <DayCol>{line}</DayCol>
 
       <TodayMenuInputDialog
         open={open}
@@ -141,13 +147,13 @@ function TodayMenuCalander(props) {
         dailyMenusInputHandler={dailyMenusInputHandler}
         onSaveDailyMenus={onSaveDailyMenus}
       />
-    </Wrapper>
+    </TodayMenuCalanderLayout>
   );
 }
 
 export default TodayMenuCalander;
 
-const ArrowCSS = {
+const arrowStyle = {
   color: 'black',
   fontSize: '1.2rem',
   margin: '0 1.25rem',
@@ -160,50 +166,54 @@ const headerWSpanStyle = {
   fontSize: '20px',
 };
 
-const Wrapper = styled.div`
+const TodayMenuCalanderLayout = styled.div`
+  width: 65%;
+  ${flexColumn};
+  align-items: center;
+  opacity: ${({ $isTodayMenu }) => ($isTodayMenu ? '1' : '0.5')};
+  pointer-events: ${({ $isTodayMenu }) => ($isTodayMenu ? 'auto' : 'none')};
+
   @media screen and (max-width: 1200px) {
     width: 95%;
   }
-  width: 65%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-
-  opacity: ${({ $isTodayMenu }) => ($isTodayMenu ? '1' : '0.5')};
-  pointer-events: ${({ $isTodayMenu }) => ($isTodayMenu ? 'auto' : 'none')};
 `;
-const HeaderW = styled.div`
+const TodayMenuCalanderHeaderRow = styled.div`
   width: 100%;
-  display: flex;
+  ${flexCenter};
   position: relative;
-  justify-content: center;
-  align-items: center;
   margin-bottom: 3%;
+
   span {
     color: #383838;
     font-size: 1.563rem;
     font-weight: 600;
   }
 `;
-const DaysDiv = styled.div`
+
+const DaysRow = styled.div`
   width: 15%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  ${flexCenter};
+
   font-size: 15px;
   font-weight: 500;
 `;
-const DaysWrapper = styled.div`
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
+
+const DaysCol = styled.div`
   width: 100%;
+  ${flexICenter};
+  justify-content: space-around;
 `;
-const DivDay = styled.div`
-  &:hover {
-    cursor: pointer;
-  }
+
+const Day = styled.div`
+  width: 90%;
+  height: 12vh;
+  ${flexJBetween};
+  box-sizing: border-box;
+  padding: 10px;
+  margin-bottom: 10%;
+  border-radius: 20px;
   background-color: #f5f5f5;
+
   overflow: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -211,16 +221,9 @@ const DivDay = styled.div`
     display: none;
   }
 
-  height: 12vh;
-  width: 90%;
-  border-radius: 20px;
-
-  display: flex;
-  justify-content: space-between;
-
-  box-sizing: border-box;
-  margin-bottom: 10%;
-  padding: 10px;
+  &:hover {
+    cursor: pointer;
+  }
 
   span:first-child {
     font-size: 0.7rem;
@@ -234,12 +237,14 @@ const DivDay = styled.div`
     text-align: right;
   }
 `;
-const DivWeek = styled.div`
+
+const DayRow = styled.div`
   width: 100%;
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   place-items: center;
 `;
-const DivWrapper = styled.div`
+
+const DayCol = styled.div`
   width: 100%;
 `;

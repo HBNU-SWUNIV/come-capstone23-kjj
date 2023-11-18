@@ -1,6 +1,6 @@
 import { useQuery } from 'react-query';
-import { ConfigWithToken } from '../../auth/authConfig';
 import { getPredictUsers } from '../../api/apis';
+import { ConfigWithToken } from '../../utils/utils';
 
 const UsePredictPop = () => {
   const config = ConfigWithToken();

@@ -1,16 +1,12 @@
 import axios from 'axios';
-import { ManagerBaseApi } from '../auth/authConfig';
+import { ManagerBaseApi } from '../utils/utils';
 
 const holiday_service_key = `ziROfCzWMmrKIseBzkXs58HpS39GI%2FmxjSEmUeZbKwYuyxnSc2kILXCBXlRpPZ8iam5cqwZqtw6db7CnWG%2FQQQ%3D%3D`;
 const holiday_base_api = `http://apis.data.go.kr/B090041/openapi/service/SpcdeInfoService/getHoliDeInfo?`;
 
-// useQuery 사용을 위한 파일입니다.
-
-// dashboard 관련
-
 export async function getCosts(config) {
   try {
-    const res = await axios.get(`${ManagerBaseApi}/store/sales`, config);
+    const res = await axios.get(`${ManagerBaseApi}/state/store/sales`, config);
     return res.data;
   } catch (err) {
     console.log('costerror=', err);
@@ -23,15 +19,6 @@ export async function getUserPop(config) {
     return res.data;
   } catch (err) {
     console.log('userpoperror=', err);
-  }
-}
-
-export async function getReservation(config) {
-  try {
-    const response = await axios.get(`${ManagerBaseApi}/state/next-week/user`, config);
-    return response.data;
-  } catch (err) {
-    console.error('getReservation_Error=', err);
   }
 }
 
@@ -128,7 +115,7 @@ export async function getHoliday(year, month) {
 
 // nav
 export async function getMarketDetails(config) {
-  const res = await getAxios(`${ManagerBaseApi}/setting`, config);
+  const res = await getAxios(`${ManagerBaseApi}/store/setting`, config);
   return res;
 }
 

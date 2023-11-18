@@ -9,41 +9,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import styled from 'styled-components';
-
-const MenuButtonWrapper = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  width: 100%;
-  button {
-    width: 20%;
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-`;
-
-const cardStyle = {
-  width: '260px',
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const cardMediaStyle = {
-  width: '100%',
-  height: '260px',
-};
-
-const cardContentStyle = {
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-};
-
-const weightFontStyle = {
-  fontWeight: 600,
-};
+import { flexICenter } from '../../styles/global.style';
 
 const MenuCard = (props) => {
   return (
@@ -123,7 +89,7 @@ const MenuCard = (props) => {
                       <Typography
                         key={idx}
                         sx={{
-                          ...weightFontStyle,
+                          fontWeight: 600,
                           opacity: item.sx_opacity,
                           fontSize: item.sx_fontSize,
                         }}
@@ -136,7 +102,7 @@ const MenuCard = (props) => {
               </CardContent>
 
               <CardActions>
-                <MenuButtonWrapper>
+                <MenuButtonBox>
                   {menucard_buttons.map(
                     (item, idx) =>
                       item.condition && (
@@ -150,7 +116,7 @@ const MenuCard = (props) => {
                         </Button>
                       )
                   )}
-                </MenuButtonWrapper>
+                </MenuButtonBox>
               </CardActions>
             </Card>
           </Grid>
@@ -161,3 +127,35 @@ const MenuCard = (props) => {
 };
 
 export default MenuCard;
+
+const MenuButtonBox = styled.div`
+  width: 100%;
+  ${flexICenter};
+  justify-content: space-evenly;
+
+  button {
+    width: 20%;
+
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+`;
+
+const cardStyle = {
+  width: '260px',
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const cardMediaStyle = {
+  width: '100%',
+  height: '260px',
+};
+
+const cardContentStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};

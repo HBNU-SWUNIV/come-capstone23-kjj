@@ -1,37 +1,35 @@
 import styled from '@emotion/styled';
 import { Tooltip } from '@mui/material';
+import {
+  flexCenter,
+  flexColumn,
+  flexICenter,
+  flexJBetween,
+  fullSize,
+} from '../../styles/global.style';
 
-const Wrapper = styled.div`
+const StatisticsLayout = styled.div`
   width: 95%;
   height: 100%;
-
-  display: flex;
-  align-items: center;
+  ${flexICenter};
   background-color: white;
 `;
 
-const ContentWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-
+const ContentBox = styled.div`
+  ${fullSize};
+  ${flexJBetween};
+  border: 1px solid rgb(0, 0, 0, 0.1);
   border-radius: 5px;
-
-  display: flex;
-  justify-content: space-between;
-
   box-sizing: border-box;
   padding: 20px;
-
-  border: 1px solid rgb(0, 0, 0, 0.1);
   position: relative;
 `;
 
-const Left = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+const ContentLeft = styled.div`
   width: 45%;
   height: 100%;
+  ${flexColumn};
+  justify-content: space-around;
 
   white-space: nowrap;
 
@@ -46,10 +44,9 @@ const Left = styled.div`
   }
 `;
 
-const Right = styled.div`
+const ContentRight = styled.div`
   height: 100%;
   width: 50%;
-
   position: relative;
 `;
 
@@ -60,35 +57,28 @@ const Image = styled.div`
 `;
 
 const Label = styled.div`
+  width: 40px;
+  ${flexCenter};
+  border-radius: 5px;
+  background-color: rgb(71, 130, 218);
   position: absolute;
   top: 0;
   right: 0;
 
-  width: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 5px;
   font-size: 13px;
-
-  background-color: rgb(71, 130, 218);
   color: white;
 `;
 
-const LastText = styled.div`
-  display: flex;
-  align-items: center;
+const StatisticsValue = styled.div`
+  ${flexICenter};
   gap: 10px;
 
   div {
+    height: 22px;
+    ${flexCenter};
+    border-radius: 5px;
     background: ${({ $chipColor }) =>
       $chipColor ? 'rgba(244, 67, 54, 0.1)' : 'rgba(76, 175, 80, 0.1)'};
-    height: 22px;
-    border-radius: 5px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
 
     font-size: 12px;
     font-weight: 600;
@@ -104,26 +94,26 @@ const LastText = styled.div`
 
 const Statistics = (props) => {
   return (
-    <Wrapper>
-      <ContentWrapper>
-        <Left>
+    <StatisticsLayout>
+      <ContentBox>
+        <ContentLeft>
           <span>{props.title}</span>
           <Tooltip title={props.tip}>
             <span>{props.data}</span>
           </Tooltip>
 
-          <LastText $chipColor={props.chipcolor}>
+          <StatisticsValue $chipColor={props.chipcolor}>
             <div>{props.chip}</div>
             <p>{props.isWeek ? 'Since last week' : 'Since yesterday'}</p>
-          </LastText>
-        </Left>
+          </StatisticsValue>
+        </ContentLeft>
 
-        <Right>
+        <ContentRight>
           <Image>{props.icon}</Image>
           <Label>{props.date}</Label>
-        </Right>
-      </ContentWrapper>
-    </Wrapper>
+        </ContentRight>
+      </ContentBox>
+    </StatisticsLayout>
   );
 };
 
