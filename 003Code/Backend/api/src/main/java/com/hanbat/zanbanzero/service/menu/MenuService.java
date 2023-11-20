@@ -21,8 +21,6 @@ public interface MenuService {
 
     MenuFoodDtos getFood();
 
-    Map<String, Integer> updateFood(Long id, Map<String, Integer> map) throws CantFindByIdException, MapToStringException;
-
     MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, UploadFileException;
 
     MenuDto deleteMenu(Long id) throws CantFindByIdException;

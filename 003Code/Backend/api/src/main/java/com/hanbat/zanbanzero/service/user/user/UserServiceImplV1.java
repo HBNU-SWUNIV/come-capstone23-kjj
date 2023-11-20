@@ -46,24 +46,29 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
+    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
         User user = userRepository.findByUsername(username);
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(userRepository.findById(user.getId()).orElseThrow(() -> new CantFindByIdException("userId", user.getId())));
-        else throw new WrongRequestDetails("error");
+        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
+        else throw new WrongRequestDetails("비밀번호가 맞지 않습니다.");
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean check(String username) {
         return userRepository.existsByUsername(username);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserInfoDto getInfo(Long id) throws CantFindByIdException {
-        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저를 찾을 수 없습니다.
+                id :""", id));
         return UserInfoDto.from(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserMypageDto getMyPage(Long id) {
         return UserMypageDto.from(userRepository.findByIdWithFetchMyPage(id).getUserMypage());
     }
@@ -73,19 +78,24 @@ public class UserServiceImplV1 implements UserService {
     public Integer usePoint(Long id, UsePointDto dto) throws WrongRequestDetails {
         UserMypage userMypage = userRepository.findByIdWithFetchMyPage(id).getUserMypage();
         int data = -1 * dto.getValue();
-        if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("point : " + userMypage.getPoint());
+        if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("""
+            포인트가 부족합니다.
+            포인트 사용 시 잔여 포인트가 음수가 됩니다.
+            point : """ + userMypage.getPoint());
         userMypage.updatePoint(data);
 
         return userMypage.getPoint();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         return new UserDetailsInterfaceImpl(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
@@ -103,7 +113,9 @@ public class UserServiceImplV1 implements UserService {
     @Override
     @Transactional
     public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws WrongParameter {
-        if (!menuRepository.existsById(menuId)) throw new WrongParameter("menuId : " + menuId);
+        if (!menuRepository.existsById(menuId)) throw new WrongParameter("""
+                menuId를 가진 메뉴 데이터가 존재하지 않습니다.
+                menuId : """ + menuId);
 
         UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
         policy.setDefaultMenu(menuId);
@@ -112,6 +124,7 @@ public class UserServiceImplV1 implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserPolicyDto getUserPolicy(Long id) {
         UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
         return UserPolicyDto.from(policy);

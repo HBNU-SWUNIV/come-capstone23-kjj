@@ -96,7 +96,10 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
     @Override
     @Transactional
     public UserInfoDto login(Long id) throws CantFindByIdException {
-        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException(id));
+        User user = userRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
+            해당 id의 유저를 찾을 수 없습니다.
+            Filter에서 진행된 가입 절차에 문제가 발생했을 가능성이 있습니다.
+            id : """, id));
         UserInfoDto userInfoDto = UserInfoDto.from(user);
         user.updateLoginDate();
         return userInfoDto;

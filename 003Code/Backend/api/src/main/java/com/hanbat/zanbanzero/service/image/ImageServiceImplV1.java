@@ -25,7 +25,10 @@ public class ImageServiceImplV1 implements ImageService{
             Files.createDirectories(Paths.get(uploadDir));
             Files.copy(file.getInputStream(), Paths.get(filePath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UploadFileException(String.format("fileName : %s / filePath : %s", fileName, filePath), e);
+            throw new UploadFileException(String.format("""
+                    파일을 저장할 디렉토리를 생성하고,
+                    파일을 복사하는 과정에서 에러가 발생했습니다.
+                    fileName : %s / filePath : %s""", fileName, filePath), e);
         }
         return filePath;
     }
@@ -35,7 +38,9 @@ public class ImageServiceImplV1 implements ImageService{
         try {
             Files.copy(file.getInputStream(), Paths.get(oldPath), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new UploadFileException(String.format("fileOldPath : %s", oldPath), e);
+            throw new UploadFileException(String.format("""
+                    기존 경로의 파일에 덮어쓰기 과정 중에 에러가 발생했습니다.
+                    fileOldPath : %s""", oldPath), e);
         }
     }
 }

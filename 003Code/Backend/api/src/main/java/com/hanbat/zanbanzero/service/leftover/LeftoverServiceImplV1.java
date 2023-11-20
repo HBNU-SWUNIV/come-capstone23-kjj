@@ -41,7 +41,7 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<LeftoverDto> getLastWeeksLeftovers(int type) {
         List<LeftoverDto> result = new ArrayList<>();
         LocalDate date = dateUtil.getLastWeeksMonday(type);
