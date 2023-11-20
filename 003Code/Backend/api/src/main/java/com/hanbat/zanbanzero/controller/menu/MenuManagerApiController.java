@@ -128,21 +128,6 @@ public class MenuManagerApiController {
         return ResponseEntity.ok(menuService.getOneFood(id));
     }
 
-    /**
-     * 식자재 정보 수정 - 사용되지 않음
-     *
-     * @param data - Map<String, Integer> 타입
-     * @param id - menu ID
-     * @return Map<String, Integer>
-     * @throws JsonProcessingException - data 형식이 잘못되었을 때 발생
-     * @throws CantFindByIdException - 메뉴가 없을 때 발생
-     */
-    @Operation(summary="관리자 - 식자재 정보 수정 / 사용불가")
-    @PatchMapping("/{id}/food")
-    public ResponseEntity<Map<String, Integer>> updateFood(@RequestBody Map<String, Integer> data, @PathVariable Long id) throws JsonProcessingException, CantFindByIdException {
-        return ResponseEntity.ok(menuService.updateFood(id, data));
-    }
-
     @Operation(summary="관리자 - 식자재 정보 추가")
     @PostMapping("/food")
     public ResponseEntity<MenuFoodDto> addFood(@RequestParam("name") String name, @RequestBody Map<String, Integer> data) throws JsonProcessingException {

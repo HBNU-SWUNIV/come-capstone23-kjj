@@ -34,15 +34,19 @@ public class CreatePredictWeekTasklet implements Tasklet {
         this.method = method;
     }
 
-    // 이번 주 월~금 이용인원 계산
+    // 이번 주 월~금 이용 인원 계산
     @Override
     public RepeatStatus execute(StepContribution contribution, @NotNull ChunkContext chunkContext) throws Exception {
         Map<String, Integer> result = new HashMap<>();
-        Map<String, List<Long>> doubleCheckMap = new HashMap<>();
+
+        // 수동 이용 내역을 고려해서 정책을 카운트 하기 위한 Map
+        // key에는 요일(monday), value에는 user_id를 담는 ArrayList<Long>
+        Map<String, LinkedList<Long>> doubleCheckMap = new HashMap<>();
+        // day = {"monday", "tuesday", "wednesday", "thursday", "friday"}
         String[] day = DateTools.getDayArray();
         for (String d : day) {
             result.put(d, 0);
-            doubleCheckMap.put(d, new ArrayList<>());
+            doubleCheckMap.put(d, new LinkedList<>());
         }
         try (Connection connection = dataSource.getConnection()) {
             method.countOrders(connection, result, doubleCheckMap);

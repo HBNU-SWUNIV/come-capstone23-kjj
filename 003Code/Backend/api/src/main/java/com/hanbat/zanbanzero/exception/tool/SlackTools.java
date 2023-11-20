@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.exception.tool;
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -28,10 +29,10 @@ public class SlackTools {
         }
     }
 
-    public void sendCacheErrorSlackMessage(Exception e, String key, String method) {
+    public void sendRequestDetailSlackMessage(Exception e, HttpServletRequest request) {
         try {
-            slack.send(slackUrl, payload(p -> p.text("[API] " + method)
-                    .attachments(List.of(generateCacheErrorSlackAttachment(e, key, method)))));
+            slack.send(slackUrl, payload(p -> p.text("[FILTER] " + e.getStackTrace()[0])
+                    .attachments(List.of(generateFilterRequestSlackAttachment(e, request)))));
         } catch (IOException exception) {
             log.warn("Slack 전송 에러");
         }
@@ -51,15 +52,15 @@ public class SlackTools {
                 .build();
     }
 
-    private Attachment generateCacheErrorSlackAttachment(Exception e, String key, String method) {
+    private Attachment generateFilterRequestSlackAttachment(Exception e, HttpServletRequest request) {
         LocalDate time = LocalDate.now();
         return Attachment.builder()
                 .color("ff0000")
-                .title("[CACHE]" + time + " 에러 로그")
+                .title(time + " Request 로그")
                 .fields(List.of(
                                 generateSlackField("Error", e.getClass().getSimpleName()),
-                                generateSlackField("Key", key),
-                                generateSlackField("Method", method)
+                                generateSlackField("URI", request.getRequestURI()),
+                                generateSlackField("IP", request.getRemoteAddr())
                         )
                 )
                 .build();

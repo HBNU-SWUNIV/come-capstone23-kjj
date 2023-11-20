@@ -1,7 +1,7 @@
 package com.batch.batch.batch.order.task.order;
 
-import com.batch.batch.object.Order;
-import com.batch.batch.object.UserPolicy;
+import com.batch.batch.entity.Order;
+import com.batch.batch.entity.UserPolicy;
 import com.batch.batch.tools.DateTools;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

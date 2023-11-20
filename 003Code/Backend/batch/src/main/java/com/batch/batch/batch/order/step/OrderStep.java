@@ -1,8 +1,7 @@
 package com.batch.batch.batch.order.step;
 
-import com.batch.batch.batch.order.task.order.CountOrdersByDateTasklet;
-import com.batch.batch.object.Order;
-import com.batch.batch.object.UserPolicy;
+import com.batch.batch.entity.Order;
+import com.batch.batch.entity.UserPolicy;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -14,8 +13,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import javax.sql.DataSource;
 
 @Component
 public class OrderStep {

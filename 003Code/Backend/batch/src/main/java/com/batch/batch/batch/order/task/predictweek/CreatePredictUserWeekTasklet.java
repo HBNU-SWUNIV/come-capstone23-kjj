@@ -1,7 +1,7 @@
 package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.batch.order.task.predictweek.method.CreatePredictUserWeekMethod;
-import com.batch.batch.object.FoodPredict;
+import com.batch.batch.entity.FoodPredict;
 import com.batch.batch.tools.DateTools;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;

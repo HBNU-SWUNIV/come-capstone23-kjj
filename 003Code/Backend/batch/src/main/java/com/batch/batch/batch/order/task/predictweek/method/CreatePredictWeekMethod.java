@@ -12,6 +12,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import java.util.Map;
 @Component
 public class CreatePredictWeekMethod {
 
-    public void countOrders(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
+    public void countOrders(Connection connection, Map<String, Integer> result, Map<String, LinkedList<Long>> doubleCheckMap) throws SQLException {
         LocalDate today = LocalDate.now();
         LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -42,7 +43,7 @@ public class CreatePredictWeekMethod {
         }
     }
 
-    public void checkPolicy(Connection connection, Map<String, Integer> result, Map<String, List<Long>> doubleCheckMap) throws SQLException {
+    public void checkPolicy(Connection connection, Map<String, Integer> result, Map<String, LinkedList<Long>> doubleCheckMap) throws SQLException {
         for (String d : DateTools.getDayArray()) {
             String getQuery = "select u.id as id from user as u join user_policy as up on u.user_policy_id = up.id where up." + d + " = 1 and default_menu;";
             try (PreparedStatement statement = connection.prepareStatement(getQuery)) {

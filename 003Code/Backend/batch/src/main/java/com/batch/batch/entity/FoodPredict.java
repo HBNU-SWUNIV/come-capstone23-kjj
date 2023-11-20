@@ -1,11 +1,9 @@
-package com.batch.batch.object;
+package com.batch.batch.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import java.sql.Timestamp;
 
 @Data
 @ToString
