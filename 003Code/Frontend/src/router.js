@@ -1,13 +1,13 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import App from './router/App';
-import RootContainer from './router/RootContainer';
-import Login, { action as loginAction } from './domains/accounts/Login';
 import InitialLogin from './domains/accounts/InitialLogin';
-import TodayMenu from './domains/pages/TodayMenu';
+import Login, { action as loginAction } from './domains/accounts/Login';
 import Dashboard from './domains/pages/Dashboard';
-import Menus from './domains/pages/Menus';
 import Dayoff from './domains/pages/Dayoff';
+import Menus from './domains/pages/Menus';
+import TodayMenu from './domains/pages/TodayMenu';
+import App from './router/App';
 import ErrorBoundary from './router/ErrorBoundary';
+import RootContainer from './router/RootContainer';
 
 const router = createBrowserRouter([
   {

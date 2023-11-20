@@ -1,7 +1,7 @@
-import { useQuery } from 'react-query';
-import { ConfigWithToken } from '../auth/authConfig';
-import { getStatusFood } from '../api/apis';
 import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { getStatusFood } from '../api/apis';
+import { ConfigWithToken } from '../utils/utils';
 import { dateObject } from './dashboard_statistics/UseUserPop';
 
 const UseCalculateFood = (props) => {

@@ -1,5 +1,4 @@
 import { Dialog, DialogActions, DialogContent, DialogContentText } from '@mui/material';
-import React from 'react';
 import ConfirmButton from './ConfirmButton';
 
 const DeleteDialog = (props) => {

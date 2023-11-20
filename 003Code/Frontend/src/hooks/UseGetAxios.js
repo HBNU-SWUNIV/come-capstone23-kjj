@@ -1,5 +1,5 @@
-import { ConfigWithToken } from '../auth/authConfig';
 import { useQuery } from 'react-query';
+import { ConfigWithToken } from '../utils/utils';
 
 const UseGetAxios = ({ name, api }) => {
   const config = ConfigWithToken();

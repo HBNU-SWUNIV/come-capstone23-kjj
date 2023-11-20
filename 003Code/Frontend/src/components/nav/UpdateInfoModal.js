@@ -22,16 +22,17 @@ const UpdateInfoModal = (props) => {
       placeholder: props.info,
     },
   ];
+
   return (
     <Dialog open={props.open} onClose={props.onClose}>
-      <Wrapper>
+      <UpdateInfoModalLayout>
         <DialogTitle sx={DialogTitleStyle}>식당 소개 메시지 변경</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ ...DialogTextStyle, marginBottom: '10px' }}>
             소개 메시지를 변경할 수 있습니다.
           </DialogContentText>
 
-          <TextfieldWrapper>
+          <TextFieldBox>
             {updateinfomodal_textfield_data.map((item, idx) => (
               <TextField
                 sx={textfieldStyle}
@@ -46,7 +47,7 @@ const UpdateInfoModal = (props) => {
                 placeholder={item.placeholder}
               />
             ))}
-          </TextfieldWrapper>
+          </TextFieldBox>
         </DialogContent>
 
         <DialogActions>
@@ -55,31 +56,34 @@ const UpdateInfoModal = (props) => {
             닫기
           </Button>
         </DialogActions>
-      </Wrapper>
+      </UpdateInfoModalLayout>
     </Dialog>
   );
 };
 
 export default UpdateInfoModal;
 
-const Wrapper = styled.div`
+const UpdateInfoModalLayout = styled.div`
   background-color: #24292e;
   color: white;
 `;
-const TextfieldWrapper = styled.div`
+const TextFieldBox = styled.div`
   display: flex;
   gap: 20px;
 `;
+
 const textfieldStyle = {
   backgroundColor: 'white',
   border: '1px solid white',
 };
+
 const DialogTitleStyle = {
   margin: '0 auto',
   fontSize: '20px',
   fontWeight: '600',
   color: 'white',
 };
+
 const DialogTextStyle = {
   fontSize: '15px',
   fontWeight: '600',

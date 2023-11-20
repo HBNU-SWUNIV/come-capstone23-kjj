@@ -1,10 +1,10 @@
 import { Skeleton, TextField } from '@mui/material';
 import ErrorInform from '../general/ErrorInform';
-const img_div_style = { display: 'flex', alignItems: 'center' };
+
 const MenuUpdateAddInputs = (props) => {
   return (
     <>
-      <div style={img_div_style}>
+      <div style={imgStyle}>
         {props.selectedImg ? (
           <img src={props.selectedImg} width={210} height={118} />
         ) : (
@@ -66,3 +66,5 @@ const MenuUpdateAddInputs = (props) => {
 };
 
 export default MenuUpdateAddInputs;
+
+const imgStyle = { display: 'flex', alignItems: 'center' };

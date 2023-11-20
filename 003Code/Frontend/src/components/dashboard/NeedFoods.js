@@ -9,26 +9,17 @@ import {
 } from '@mui/material';
 import styled from 'styled-components';
 import UseGetCharts from '../../hooks/UseGetCharts';
-
-const TableName = styled.div`
-  font-size: 16px;
-  font-weight: 600;
-  color: rgb(27 27 27);
-
-  margin-bottom: 20px;
-`;
-
-const tableheadStyle = {
-  fontWeight: 600,
-  fontSize: '16px',
-};
+import Title from '../general/Title';
 
 const NeedFoods = () => {
   const { predictfoodsArray } = UseGetCharts();
 
   return (
     <>
-      <TableName>익일 필요 식재료</TableName>
+      <TableName>
+        <Title>익일 필요 식재료</Title>
+      </TableName>
+
       <TableContainer component={Paper} sx={{ overflow: 'scroll', maxHeight: '400px' }}>
         <Table aria-label="simple table">
           <TableHead>
@@ -57,3 +48,12 @@ const NeedFoods = () => {
 };
 
 export default NeedFoods;
+
+const TableName = styled.div`
+  margin-bottom: 20px;
+`;
+
+const tableheadStyle = {
+  fontWeight: 600,
+  fontSize: '16px',
+};

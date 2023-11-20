@@ -1,8 +1,8 @@
-import { useMutation, useQuery } from 'react-query';
-import { ConfigWithToken, ManagerBaseApi } from '../../../auth/authConfig';
 import axios from 'axios';
-import { getMenus } from '../../../api/apis';
 import { useState } from 'react';
+import { useMutation, useQuery } from 'react-query';
+import { getMenus } from '../../../api/apis';
+import { ConfigWithToken, ManagerBaseApi } from '../../../utils/utils';
 
 const MenuUpdateApis = () => {
   const [success, setSuccess] = useState({

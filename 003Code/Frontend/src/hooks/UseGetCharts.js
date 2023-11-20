@@ -1,14 +1,13 @@
 import { useQuery } from 'react-query';
-import { ConfigWithToken } from '../auth/authConfig';
 import {
   getCosts,
   getPredictFoods,
   getPredictMenus,
   getPredictUsers,
-  getReservation,
   getTodayPop,
   getUserPop,
 } from '../api/apis';
+import { ConfigWithToken } from '../utils/utils';
 
 const UseGetCharts = () => {
   const config = ConfigWithToken();
@@ -38,8 +37,8 @@ const UseGetCharts = () => {
 
   // reservation-infos
   const { data: reservation, isLoading: reservationloading } = useQuery(
-    ['getreservation', config],
-    () => getReservation(config)
+    ['getUserPop', config],
+    () => getUserPop(config)
   );
   const reservationArray = Object.entries(!reservationloading && reservation).slice(1);
 

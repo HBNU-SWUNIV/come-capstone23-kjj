@@ -14,54 +14,19 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import { useMutation } from 'react-query';
+import { useRecoilState } from 'recoil';
+import { IngredientsIdAtom } from '../../atom/menuAtom';
+import DeleteDialog from '../../components/general/DeleteDialog';
 import MenuCard from '../../components/menu/MenuCard';
 import MenuUpdateApis from '../../components/menu/apis/MenuUpdateApis';
-import MenuIngredientsDialog from '../../components/menu/dialogs/MenuIngredientsDialog';
 import MenuAddDialog from '../../components/menu/dialogs/MenuAddDialog';
+import MenuIngredientsDialog from '../../components/menu/dialogs/MenuIngredientsDialog';
 import MenuUpdateDialog from '../../components/menu/dialogs/MenuUpdateDialog';
 import Menulist from '../../components/menu/list/Menulist';
-import DeleteDialog from '../../components/general/DeleteDialog';
 import UseImageHandler from '../../hooks/UseImageHandler';
 import UseOnOffHandler from '../../hooks/UseOnOffHandler';
+import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
 import Nav from '../nav/Nav';
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { IngredientsIdAtom } from '../../atom/menuAtom';
-
-const defaultTheme = createTheme();
-export const NanumFontStyle = {
-  fontWeight: '600',
-};
-const MenusBoxStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: 'white',
-  flexGrow: 1,
-  height: '100%',
-  minHeight: '100vh',
-  overflow: 'auto',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
-};
-const MenusButtonStyle = {
-  fontWeight: '500',
-  fontSize: '16px',
-  backgroundColor: 'rgb(0, 171, 85)',
-};
-const toggle_button_list_data = [
-  {
-    id: 0,
-    value: 'card',
-    aria_label: 'card',
-    icon: <ViewModuleIcon />,
-  },
-  {
-    id: 1,
-    value: 'list',
-    aria_label: 'list',
-    icon: <ViewListIcon />,
-  },
-];
 
 export default function Menus() {
   const [selectedIngredients, setSelectedIngredients] = useRecoilState(IngredientsIdAtom);
@@ -365,3 +330,38 @@ export default function Menus() {
     </ThemeProvider>
   );
 }
+
+const defaultTheme = createTheme();
+
+const MenusBoxStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  backgroundColor: 'white',
+  flexGrow: 1,
+  height: '100%',
+  minHeight: '100vh',
+  overflow: 'auto',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+};
+
+const MenusButtonStyle = {
+  fontWeight: '500',
+  fontSize: '16px',
+  backgroundColor: 'rgb(0, 171, 85)',
+};
+
+const toggle_button_list_data = [
+  {
+    id: 0,
+    value: 'card',
+    aria_label: 'card',
+    icon: <ViewModuleIcon />,
+  },
+  {
+    id: 1,
+    value: 'list',
+    aria_label: 'list',
+    icon: <ViewListIcon />,
+  },
+];

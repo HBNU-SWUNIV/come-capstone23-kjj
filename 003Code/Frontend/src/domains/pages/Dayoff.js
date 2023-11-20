@@ -3,16 +3,14 @@ import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import CssBaseline from '@mui/material/CssBaseline';
 import Snackbar from '@mui/material/Snackbar';
-import Stack from '@mui/material/Stack';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import * as React from 'react';
-import Nav from '../nav/Nav';
 import DayoffCalander from '../../components/dayoff/DayoffCalander';
+import Nav from '../nav/Nav';
+import { useState } from 'react';
 
 export default function Dayoff() {
-  const [state, setState] = React.useState({
+  const [state, setState] = useState({
     open: false,
     vertical: 'top',
     horizontal: 'center',

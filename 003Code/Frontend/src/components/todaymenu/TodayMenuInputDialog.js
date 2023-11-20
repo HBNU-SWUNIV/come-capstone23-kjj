@@ -8,12 +8,6 @@ import {
   TextField,
 } from '@mui/material';
 
-const DailyMenuInputDialogContentTextStyle = {
-  marginBottom: '20px',
-  color: '#FF385C',
-  fontSize: '14px',
-};
-
 const TodayMenuInputDialog = (props) => {
   const todaymenu_input_dialog_textfield_datas = [
     {
@@ -81,3 +75,9 @@ const TodayMenuInputDialog = (props) => {
 };
 
 export default TodayMenuInputDialog;
+
+const DailyMenuInputDialogContentTextStyle = {
+  marginBottom: '20px',
+  color: '#FF385C',
+  fontSize: '14px',
+};
