@@ -60,7 +60,8 @@ public class ExceptionHandlingAspect {
     private void sendLog(JoinPoint joinPoint, Exception ex) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String username = jwtUtil.getUsernameFromRequest(request);
-        logger.error("[{}] {}:{} {} - {}",
+        logger.error("{} [{}] {}:{} {} - {}",
+                request.getRemoteAddr(),
                 username,
                 joinPoint.getTarget().getClass().getName(),
                 joinPoint.getSignature().getName(),

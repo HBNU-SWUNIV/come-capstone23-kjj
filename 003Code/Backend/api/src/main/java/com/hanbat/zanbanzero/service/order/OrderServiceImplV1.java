@@ -15,7 +15,6 @@ import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
-import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import com.hanbat.zanbanzero.service.DateUtil;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ import java.util.List;
 public class OrderServiceImplV1 implements OrderService{
 
     private final UserRepository userRepository;
-    private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
     private final OrderRepository orderRepository;
     private final DateUtil dateUtil;
@@ -44,17 +42,30 @@ public class OrderServiceImplV1 implements OrderService{
     private static final int PAGE_SIZE = 10;
 
     private Long getDefaultMenuId(Long userId) throws CantFindByIdException {
-        UserPolicy policy = userPolicyRepository.findById(userId).orElseThrow(() -> new CantFindByIdException(userId));
+        UserPolicy policy = userRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 user가 없습니다.
+                userId : """, userId)).getUserPolicy();
+        if (policy == null) throw new CantFindByIdException("""
+                user가 UserPolicy를 가지고 있지 않습니다.
+                """, userId);
         Long defaultMenu = policy.getDefaultMenu();
         if (defaultMenu == null) return null;
-        else return menuRepository.findById(defaultMenu).orElseThrow(() -> new CantFindByIdException("defaultMenu", defaultMenu)).getId();
+        else return menuRepository.findById(defaultMenu).orElseGet( () -> {
+                    policy.setDefaultMenu(null);
+                    return null;
+                }
+        ).getId();
     }
 
     @Override
     @Transactional
     public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException, WrongRequestDetails {
-        if (menuId == null) throw new WrongRequestDetails("menuId", menuId);
-        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId));
+        if (menuId == null) throw new WrongRequestDetails("""
+                전달된 menuId가 null 입니다.
+                menuId : """, menuId);
+        Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
+                menuId는 전달되었으나, 해당 id를 가진 메뉴가 존재하지 않습니다.
+                menuId : """, menuId));
         return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
     }
 
@@ -77,13 +88,16 @@ public class OrderServiceImplV1 implements OrderService{
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
-            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("menuId", menuId)));
+            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
+                    해당 id를 가진 menu를 찾을 수 없습니다.
+                    menuId : """, menuId)));
             order.setRecognizeToUse();
         }
         return OrderDto.from(order);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int countPages(Long id) {
         Pageable pageable = PageRequest.of(0, PAGE_SIZE);
 
@@ -92,6 +106,7 @@ public class OrderServiceImplV1 implements OrderService{
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDto> getOrders(Long id) {
         List<Order> orders = orderRepository.findByUserId(id);
 
@@ -101,7 +116,7 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<OrderDto> getOrdersPage(Long id, int page) {
         Page<Order> orderPage = orderRepository.findByUserIdOrderByIdDesc(id, PageRequest.of(page, PAGE_SIZE));
 
@@ -112,7 +127,7 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public LastOrderDto getLastOrder(Long id){
         Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
@@ -121,7 +136,6 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
     public BufferedImage getOrderQr(Long id) throws WriterException {
         String domain = "http://kjj.kjj.r-e.kr:8080";
         String endPoint = "/api/user/order/" + id + "/qr";
@@ -136,6 +150,7 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrderDto> getOrderMonth(Long id, int year, int month) {
 
         List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
@@ -145,7 +160,7 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderDto getOrderDay(Long id, int year, int month, int day) {
         Order order = orderRepository.findByUserIdAndOrderDate(id, dateUtil.makeLocalDate(year, month, day));
         if (order == null) return null;
@@ -166,16 +181,20 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public OrderDto getOrderInfo(Long id, Long orderId) throws CantFindByIdException {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("orderId", orderId));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 Order 데이터를 찾을 수 없습니다.
+                orderId : """, orderId));
         return OrderDto.from(order);
     }
 
     @Override
     @Transactional
     public OrderDto setPaymentTrue(Long id) throws CantFindByIdException  {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("orderId", id));
+        Order order = orderRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 Order 데이터를 찾을 수 없습니다.
+                orderId : """, id));
         order.setPaymentTrue();
         return OrderDto.from(order);
     }

@@ -29,10 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -54,6 +51,7 @@ public class StoreServiceImplV1 implements StoreService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
+    @Transactional(readOnly = true)
     public StoreDto isSetting() {
         Store store = storeRepository.findById(FINAL_ID).orElse(null);
         if (store == null) return null;
@@ -61,14 +59,20 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.from(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID)));
+        return StoreDto.from(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+                ID가 1인 Store 데이터가 존재하지 않습니다.
+                존재 여부를 확인해주세요.
+                storeId : """, FINAL_ID)));
     }
 
     @Override
     @Transactional
     public StoreDto setSetting(StoreSettingDto dto) throws SameNameException {
-        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("dto : " + dto);
+        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("""
+                이미 ID가 1인 Store 데이터가 존재합니다.
+                dto : """ + dto);
 
         return StoreDto.from(storeRepository.save(Store.of(FINAL_ID, dto)));
     }
@@ -76,24 +80,29 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public void setStoreImage(MultipartFile file) throws CantFindByIdException, UploadFileException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+                ID가 1인 Store 데이터가 존재하지 않습니다.
+                존재 여부를 확인해주세요.
+                storeId : """, FINAL_ID));
         String uploadDir = "img/store";
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
         else imageService.updateImage(file, store.getImage());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public StoreTodayDto getToday() {
         return StoreTodayDto.from(calculateRepository.findLastTwoToday());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public StoreSalesDto getSales() {
         return StoreSalesDto.from(calculateRepository.findLastTwoSales());
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<StoreWeekendDto> getLastWeeksUser() {
         List<StoreWeekendDto> result = new ArrayList<>();
         LocalDate date = dateUtil.getLastWeeksMonday(0);
@@ -111,13 +120,14 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public int getAllUsers() {
         Integer result = calculateMenuRepository.getAllUsers();
         return (result != null) ? result : 0;
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public List<CalculateMenuForGraphDto> getPopularMenus() {
         List<Long> idList = calculateRepository.findTop5ByIdOrderByIdDesc().stream()
                 .map(Calculate::getId)
@@ -133,7 +143,10 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreTitle(StoreTitleDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+                ID가 1인 Store 데이터가 존재하지 않습니다.
+                존재 여부를 확인해주세요.
+                storeId : """, FINAL_ID));
         store.setName(dto.getName());
 
         return StoreDto.from(store);
@@ -142,7 +155,10 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreInfo(StoreInfoDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("storeId", FINAL_ID));
+        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+                ID가 1인 Store 데이터가 존재하지 않습니다.
+                존재 여부를 확인해주세요.
+                storeId : """, FINAL_ID));
         store.setInfo(dto.getInfo());
 
         return StoreDto.from(store);
@@ -160,6 +176,7 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<StoreStateDto> getClosedDays(int year, int month) {
         LocalDate start = dateUtil.makeLocalDate(year, month, 1);
         LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));
@@ -170,7 +187,7 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public StorePreDto getCalculatePreUser() {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
         Calculate calculate = calculateRepository.findTopByOrderByIdDesc();
@@ -179,36 +196,53 @@ public class StoreServiceImplV1 implements StoreService {
     }
 
     @Override
-    @Transactional
-    public Map<String, Integer> getCalculatePreFood() throws StringToMapException {
+    @Transactional(readOnly = true)
+    public Map<String, Integer> getCalculatePreFood() throws StringToMapException, CantFindByIdException {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
 
         try {
-            return objectMapper.readValue(calculatePre.getPredictFood(), Map.class);
+            return objectMapper.readValue(calculatePre.getPredictFood(), HashMap.class);
         } catch (JsonProcessingException e) {
-            throw new StringToMapException("PredictFood : " + calculatePre.getPredictFood() ,e);
+            throw new StringToMapException("""
+                    calculatePre는 존재하지만, 
+                    PredictMenu 필드를 HashMap으로 변환하는 과정에서 에러가 발생했습니다.
+                    PredictFood : """ + calculatePre.getPredictFood() ,e);
+        } catch (NullPointerException e) {
+            throw new CantFindByIdException("""
+                    calculatePre가 null 입니다.
+                    데이터가 존재하는지 확인해주세요.
+                    """, e);
         }
     }
 
     @Override
-    @Transactional
-    public Map<String, Integer> getCalculatePreMenu() throws StringToMapException {
+    @Transactional(readOnly = true)
+    public Map<String, Integer> getCalculatePreMenu() throws StringToMapException, CantFindByIdException {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
 
         try {
-            return objectMapper.readValue(calculatePre.getPredictMenu(), Map.class);
+            return objectMapper.readValue(calculatePre.getPredictMenu(), HashMap.class);
         } catch (JsonProcessingException e) {
-            throw new StringToMapException("PredictFood : " + calculatePre.getPredictFood() ,e);
+            throw new StringToMapException("""
+                    calculatePre는 존재하지만, 
+                    PredictMenu 필드를 HashMap으로 변환하는 과정에서 에러가 발생했습니다.
+                    PredictFood : """ + calculatePre.getPredictFood() ,e);
+        } catch (NullPointerException e) {
+            throw new CantFindByIdException("""
+                    calculatePre가 null 입니다.
+                    데이터가 존재하는지 확인해주세요.
+                    """, e);
         }
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public CalculatePreWeekDto getNextWeeksUser() {
         return CalculatePreWeekDto.from(calculatePreWeekRepository.findFirstByOrderByIdDesc());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public WeeklyFoodPredictDto getNextWeeksFood() {
         return WeeklyFoodPredictDto.from(sbizRepository.findFirstByOrderByIdDesc());
     }

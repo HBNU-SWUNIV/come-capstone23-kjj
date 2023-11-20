@@ -51,6 +51,8 @@ public class DataSourceConfig {
     @Primary
     public DataSource dataSource() {
         DataSource determinedDataSource = dataSourceRouter(masterDataSource(), slaveDataSource());
+        // 스프링은 기본적으로 트랜잭션 시작과 동시에 DataSource Connection을 생성한다.
+        // 하지만 트랜잭션 시작 시점이 아닌, 쿼리를 실행할 때마다 DataSource를 결정해야 하므로 LazyConnectionDataSourceProxy 사용
         return new LazyConnectionDataSourceProxy(determinedDataSource);
     }
 }

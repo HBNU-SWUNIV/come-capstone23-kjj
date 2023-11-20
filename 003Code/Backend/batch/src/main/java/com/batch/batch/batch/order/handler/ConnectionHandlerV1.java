@@ -1,4 +1,4 @@
-package com.batch.batch.batch.order.aop.handler;
+package com.batch.batch.batch.order.handler;
 
 import com.batch.batch.tools.SlackTools;
 import lombok.RequiredArgsConstructor;

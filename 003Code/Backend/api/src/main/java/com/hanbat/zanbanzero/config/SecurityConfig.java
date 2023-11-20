@@ -77,8 +77,9 @@ public class SecurityConfig {
                 .addFilter(corsFilter)
                 .csrf().disable()
                 .formLogin().disable()
-                .httpBasic().disable()
-                .addFilterBefore(new IpCheckFilter(prometheusPath, new String[]{address}), UsernamePasswordAuthenticationFilter.class)
+                .httpBasic().disable();
+
+        http.addFilterBefore(new IpCheckFilter(prometheusPath, new String[]{address}), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
@@ -86,8 +87,9 @@ public class SecurityConfig {
                 .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userService, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userService, jwtTemplate, jwtUtil))
-                .addFilterBefore(new ExceptionHandlerBeforeJwtAuth(), JwtAuthFilter.class)
-                .authorizeHttpRequests()
+                .addFilterBefore(new ExceptionHandlerBeforeJwtAuth(), JwtAuthFilter.class);
+
+        http.authorizeHttpRequests()
                 .requestMatchers("/api/image").permitAll()
                 .requestMatchers("/api/user/login/**").permitAll()
                 .requestMatchers("/api/user/order/**/qr").permitAll()
@@ -97,6 +99,9 @@ public class SecurityConfig {
                 .requestMatchers(prometheusPath).permitAll()
                 .requestMatchers(actuatorPath + "health").permitAll()
                 .anyRequest().authenticated();
+
+        http.headers().xssProtection()
+                .and().contentSecurityPolicy("script-src 'self'");
 
         return http.build();
     }

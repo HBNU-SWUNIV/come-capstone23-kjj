@@ -40,9 +40,9 @@ public interface StoreService {
 
     StorePreDto getCalculatePreUser();
 
-    Map<String, Integer> getCalculatePreFood() throws StringToMapException;
+    Map<String, Integer> getCalculatePreFood() throws StringToMapException, CantFindByIdException;
 
-    Map<String, Integer> getCalculatePreMenu() throws StringToMapException;
+    Map<String, Integer> getCalculatePreMenu() throws StringToMapException, CantFindByIdException;
 
     CalculatePreWeekDto getNextWeeksUser();
 

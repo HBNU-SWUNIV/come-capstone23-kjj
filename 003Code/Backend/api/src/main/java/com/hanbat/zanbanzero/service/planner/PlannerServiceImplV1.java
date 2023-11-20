@@ -40,6 +40,7 @@ public class PlannerServiceImplV1 implements PlannerService{
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PlannerDto getPlannerByDay(int year, int month, int day) {
         LocalDate date = dateUtil.makeLocalDate(year, month, day);
         Planner planner = repository.findOnePlanner(date);
@@ -48,6 +49,7 @@ public class PlannerServiceImplV1 implements PlannerService{
         return PlannerDto.from(planner);
     }
     @Override
+    @Transactional(readOnly = true)
     public List<PlannerDto> getPlannerByMonth(int year, int month) {
         LocalDate start = dateUtil.makeLocalDate(year, month, 1);
         LocalDate end = dateUtil.makeLocalDate(year, month, dateUtil.getLastDay(year, month));

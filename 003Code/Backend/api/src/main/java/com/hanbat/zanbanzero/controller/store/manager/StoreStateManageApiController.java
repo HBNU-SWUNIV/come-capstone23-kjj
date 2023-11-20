@@ -8,6 +8,7 @@ import com.hanbat.zanbanzero.dto.store.StorePreDto;
 import com.hanbat.zanbanzero.dto.store.StoreSalesDto;
 import com.hanbat.zanbanzero.dto.store.StoreTodayDto;
 import com.hanbat.zanbanzero.dto.store.StoreWeekendDto;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.service.store.StoreService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +98,7 @@ public class StoreStateManageApiController {
      */
     @Operation(summary="익일 예측 식재료 소비량 데이터 조회", description = "10시 30분마다 갱신")
     @GetMapping("/predict/food")
-    public ResponseEntity<Map<String, Integer>> getCalculatePreFood() throws JsonProcessingException {
+    public ResponseEntity<Map<String, Integer>> getCalculatePreFood() throws JsonProcessingException, CantFindByIdException {
         return ResponseEntity.ok(storeService.getCalculatePreFood());
     }
 
@@ -109,7 +110,7 @@ public class StoreStateManageApiController {
      */
     @Operation(summary="익일 예측 메뉴별 판매량 조회", description = "10시 30분마다 갱신")
     @GetMapping("/predict/menu")
-    public ResponseEntity<Map<String, Integer>> getCalculatePreMenu() throws JsonProcessingException {
+    public ResponseEntity<Map<String, Integer>> getCalculatePreMenu() throws JsonProcessingException, CantFindByIdException {
         return ResponseEntity.ok(storeService.getCalculatePreMenu());
     }
 }
