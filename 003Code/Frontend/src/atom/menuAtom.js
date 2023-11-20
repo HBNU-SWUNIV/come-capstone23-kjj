@@ -2,12 +2,12 @@ import { atom } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 
 const { persistAtom } = recoilPersist({
-  key: 'local',
+  key: 'localstorage-ingredients',
   storage: localStorage,
 });
 
 export const IngredientsIdAtom = atom({
-  key: 'isSetIngredientsIdAtomKey',
+  key: 'ingredients',
   default: {
     name: '',
     id: '',

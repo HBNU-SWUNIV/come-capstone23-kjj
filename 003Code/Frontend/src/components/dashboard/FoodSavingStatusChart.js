@@ -1,20 +1,13 @@
-import Title from '../general/Title';
 import ApexCharts from 'react-apexcharts';
-import { c_color } from '../../styles/global';
-import UseNavApi from '../../hooks/UseNavApi';
 import UseCalculateFood from '../../hooks/UseCalculateFood';
+import Title from '../general/Title';
 
 const FoodSavingStatusChart = () => {
   const { chartdata } = UseCalculateFood();
-  const { marketDetails } = UseNavApi();
 
   return (
     <>
-      <Title>
-        <span style={{ fontWeight: '600', fontSize: '16px', ...c_color }}>
-          식재료를 이정도나 절약했어요!
-        </span>
-      </Title>
+      <Title>식재료를 이정도나 절약했어요!</Title>
       <ApexCharts
         series={[
           {
@@ -23,7 +16,7 @@ const FoodSavingStatusChart = () => {
             type: 'area',
           },
           {
-            name: `기존 ${marketDetails?.name} 식재료 발주량`,
+            name: `기존 식당 식재료 발주량`,
             data: Object.values(chartdata?.prev),
             type: 'line',
           },

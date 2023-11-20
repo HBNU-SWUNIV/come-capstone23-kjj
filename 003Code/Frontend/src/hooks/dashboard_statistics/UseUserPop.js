@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { getUserPop } from '../../api/apis';
-import { ConfigWithToken } from '../../auth/authConfig';
-import { useEffect, useState } from 'react';
+import { ConfigWithToken } from '../../utils/utils';
 
 export const dateObject = [
   {

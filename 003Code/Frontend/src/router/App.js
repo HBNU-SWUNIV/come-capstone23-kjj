@@ -1,38 +1,36 @@
 import { Outlet } from 'react-router-dom';
-import Copyright from '../components/general/Copyright';
 import { styled } from 'styled-components';
 import Auth from '../auth/Auth';
+import Copyright from '../components/general/Copyright';
+import { flexCenter } from '../styles/global.style';
 
 function App() {
   return (
     <Auth>
-      <OutletWrapper>
+      <OutletBox>
         <Outlet />
-      </OutletWrapper>
+      </OutletBox>
 
-      <CopyrightWrapper>
+      <CopyrightBox>
         <Copyright />
-      </CopyrightWrapper>
+      </CopyrightBox>
     </Auth>
   );
 }
 
 export default App;
 
-const CopyrightWrapper = styled.div`
+const CopyrightBox = styled.div`
+  width: 100%;
+  height: 3vh;
+  ${flexCenter};
+
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-
-  height: 3vh;
-  width: 100%;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
 `;
 
-const OutletWrapper = styled.div`
+const OutletBox = styled.div`
   height: 100%;
 `;

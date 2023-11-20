@@ -11,16 +11,6 @@ import {
 import ErrorInform from '../general/ErrorInform';
 import LoadingDots from '../general/LoadingDots';
 
-const weightFontStyle = {
-  fontWeight: 600,
-};
-
-const dailymenuContentStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '1vh',
-};
-
 const TodayMenuAddDialog = (props) => {
   const todaymenu_add_dialog_textfiled_datas = [
     {
@@ -44,13 +34,12 @@ const TodayMenuAddDialog = (props) => {
     },
   ];
 
-  console.log(props);
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>오늘의메뉴 등록</DialogTitle>
 
       <DialogContent sx={dailymenuContentStyle}>
-        <DialogContentText sx={weightFontStyle}>
+        <DialogContentText sx={{ fontWeight: 600 }}>
           이미지 파일을 추가하여 이미지를 등록해주세요.
         </DialogContentText>
 
@@ -85,11 +74,11 @@ const TodayMenuAddDialog = (props) => {
       </DialogContent>
 
       <DialogActions>
-        <Button sx={weightFontStyle} onClick={props.addTodayMenu}>
+        <Button sx={{ fontWeight: 600 }} onClick={props.addTodayMenu}>
           {props.isLoading ? <LoadingDots isGray={true} /> : '등록'}
         </Button>
 
-        <Button sx={weightFontStyle} color="error" onClick={props.onClose}>
+        <Button sx={{ fontWeight: 600 }} color="error" onClick={props.onClose}>
           닫기
         </Button>
       </DialogActions>
@@ -98,3 +87,9 @@ const TodayMenuAddDialog = (props) => {
 };
 
 export default TodayMenuAddDialog;
+
+const dailymenuContentStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1vh',
+};

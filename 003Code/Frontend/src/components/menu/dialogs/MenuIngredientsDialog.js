@@ -1,19 +1,12 @@
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import { ConfigWithToken, ManagerBaseApi } from '../../../auth/authConfig';
-import IngredientsTable from '../ingredients/MenuIngredientsTable';
-import { useEffect, useState } from 'react';
 import axios from 'axios';
-
-const IngredientsContentStyle = {
-  display: 'flex',
-  gap: '1vh',
-  height: '40vh',
-  minWidth: '45vw',
-};
+import { useEffect, useState } from 'react';
+import { ConfigWithToken, ManagerBaseApi } from '../../../utils/utils';
+import IngredientsTable from '../ingredients/MenuIngredientsTable';
 
 const MenuIngredientsDialog = (props) => {
   const config = ConfigWithToken();
@@ -63,3 +56,10 @@ const MenuIngredientsDialog = (props) => {
 };
 
 export default MenuIngredientsDialog;
+
+const IngredientsContentStyle = {
+  display: 'flex',
+  gap: '1vh',
+  height: '40vh',
+  minWidth: '45vw',
+};

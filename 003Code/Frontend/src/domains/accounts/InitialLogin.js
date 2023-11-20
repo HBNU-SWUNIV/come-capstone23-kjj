@@ -1,3 +1,4 @@
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import {
   Avatar,
   Box,
@@ -11,17 +12,15 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-import { ConfigWithToken, ManagerBaseApi } from '../../auth/authConfig';
 import Copyright from '../../components/general/Copyright';
 import ErrorInform from '../../components/general/ErrorInform';
-import background from '../../image/capstone_background.png';
-import UseValidate from '../../hooks/UseValidate';
 import UseInput from '../../hooks/UseInput';
+import UseValidate from '../../hooks/UseValidate';
+import background from '../../image/capstone_background.png';
+import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
 
 export default function InitialLogin() {
   const { data, handleDatas } = UseInput();
@@ -169,6 +168,7 @@ export default function InitialLogin() {
 }
 
 const defaultTheme = createTheme();
+
 const initialloginGridStyle = {
   backgroundImage: `url(${background})`,
   backgroundRepeat: 'no-repeat',
@@ -185,6 +185,7 @@ const initialloginBoxStyle = {
   flexDirection: 'column',
   alignItems: 'center',
 };
+
 const nextsetuptextStyle = {
   cursor: 'pointer',
   fontSize: '15px',

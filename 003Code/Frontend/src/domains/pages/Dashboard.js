@@ -5,39 +5,11 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Toolbar from '@mui/material/Toolbar';
-import Nav from '../nav/Nav';
-import FoodStatisticsChart from '../../components/dashboard/FoodStatisticsChart';
 import FoodSavingStatusChart from '../../components/dashboard/FoodSavingStatusChart';
-import StatisticsWrap from '../../components/StatisticsWrap';
+import FoodStatisticsChart from '../../components/dashboard/FoodStatisticsChart';
 import NeedFoods from '../../components/dashboard/NeedFoods';
-
-const defaultTheme = createTheme();
-
-const boxStyle = {
-  backgroundColor: 'white',
-  flexGrow: 1,
-  minHeight: '100vh',
-  overflow: 'scroll',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
-  backgroundColor: 'rgb(245 247 252)',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
-
-const paperStyle = {
-  height: '100%',
-  minHeight: '30vh',
-  p: 2,
-  display: 'flex',
-  flexDirection: 'column',
-};
-
-const containerStyle = {
-  mt: 4,
-  mb: 4,
-};
+import StatisticsWrap from '../../components/StatisticsWrap';
+import Nav from '../nav/Nav';
 
 const GridItem = (props) => {
   return (
@@ -101,3 +73,31 @@ export default function Dashboard() {
     </ThemeProvider>
   );
 }
+
+const defaultTheme = createTheme();
+
+const boxStyle = {
+  backgroundColor: 'white',
+  flexGrow: 1,
+  minHeight: '100vh',
+  overflow: 'scroll',
+  boxSizing: 'border-box',
+  paddingBottom: 'var(--copyright-height)',
+  backgroundColor: 'rgb(245 247 252)',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
+
+const paperStyle = {
+  height: '100%',
+  minHeight: '30vh',
+  p: 2,
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const containerStyle = {
+  mt: 4,
+  mb: 4,
+};

@@ -1,36 +1,35 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { FaGithub } from 'react-icons/fa';
+import { flexCenter, flexICenter } from '../../styles/global.style';
 
 const Developer = (user) => {
   const { imgsrc, name, github, position } = user;
 
   return (
-    <DeveloperWrapper>
+    <DeveloperLayout>
       <img src={imgsrc} alt="이미지없음" />
-      <Contact>
+      <DeveloperRow>
         <DeveloperName>{name}</DeveloperName>
         <DeveloperGithub>
           <Link to={github} target="_blank">
             <FaGithub />
           </Link>
         </DeveloperGithub>
-      </Contact>
+      </DeveloperRow>
       <DeveloperInfo>{position}</DeveloperInfo>
-    </DeveloperWrapper>
+    </DeveloperLayout>
   );
 };
 
 export default Developer;
 
-const DeveloperWrapper = styled.div`
+const DeveloperLayout = styled.div`
   width: 30%;
   min-height: 150px;
-  display: flex;
+  ${flexCenter};
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+
   img {
     width: 130px;
     height: 130px;
@@ -38,11 +37,11 @@ const DeveloperWrapper = styled.div`
   }
 `;
 
-const Contact = styled.div`
+const DeveloperRow = styled.div`
   width: 90%;
-  display: flex;
-  align-items: center;
+  ${flexICenter};
   justify-content: space-between;
+
   a {
     color: black;
   }
@@ -55,9 +54,10 @@ const DeveloperName = styled.span`
 
 const DeveloperInfo = styled.span`
   width: 90%;
+  margin-top: -10px;
+
   font-size: 14px;
   font-weight: 500;
-  margin-top: -10px;
 `;
 
 const DeveloperGithub = styled.span`
