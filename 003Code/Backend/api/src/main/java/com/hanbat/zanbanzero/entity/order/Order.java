@@ -44,13 +44,14 @@ public class Order {
     @Column(columnDefinition = "BOOLEAN DEFAULT false")
     private boolean payment;
 
-    public void setMenu(Menu menu) {this.menu = menu.getName();}
+    public void setMenuAndRecognizeTrue(Menu menu) {
+        this.menu = menu.getName();
+        recognize = true;
+    }
 
     public void setRecognizeToCancel() {
         recognize = false;
     }
-
-    public void setRecognizeToUse() { recognize = true; }
 
     public void setExpiredTrue() {
         expired = true;

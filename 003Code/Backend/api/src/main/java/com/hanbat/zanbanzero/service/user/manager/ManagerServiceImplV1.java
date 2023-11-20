@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.entity.user.User;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -18,26 +19,33 @@ public class ManagerServiceImplV1 implements ManagerService {
 
     @Override
     @Transactional(readOnly = true)
-    public ManagerInfoDto getInfoForUsername(String username) {
-        return ManagerInfoDto.from(userRepository.findByUsername(username));
+    public ManagerInfoDto getInfoForUsername(String username) throws CantFindByUsernameException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                username을 가진 유저 데이터가 없습니다.
+                username : """, username));
+        return ManagerInfoDto.from(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ManagerInfoDto getInfo(String username) {
-        return ManagerInfoDto.from(userRepository.findByUsername(username));
+    public ManagerInfoDto getInfo(String username) throws CantFindByUsernameException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                username을 가진 유저 데이터가 없습니다.
+                username : """, username));
+        return ManagerInfoDto.from(user);
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException {
-        User manager = userRepository.findByUsername(username);
-        if (manager == null) throw new UsernameNotFoundException("""
-                username을 가진 Manager를 찾을 수 없습니다.
-                username : """ + username);
+        User manager = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("""
+                username을 가진 유저 데이터가 없습니다.
+                username : """ + username));
+
         if (!manager.getRoles().equals("ROLE_MANAGER")) throw new UsernameNotFoundException("""
                 권한이 없습니다.
                 username : """ + username);
+
         return new UserDetailsInterfaceImpl(manager);
     }
 }

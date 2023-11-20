@@ -25,22 +25,6 @@ public class LeftoverServiceImplV1 implements LeftoverService{
     private static final int DATA_SIZE = 5;
 
     @Override
-    @Transactional
-    public LeftoverDto setLeftover(LeftoverDto dto) {
-        LeftoverPre leftoverPre;
-        if (dto.getDate() == null) leftoverPre = leftoverPreRepository.findByDate(dateUtil.makeTodayToLocalDate());
-        else leftoverPre = leftoverPreRepository.findByDate(LocalDate.parse(dto.getDate()));
-
-        Leftover leftover = leftoverRepository.findByLeftoverPreId(leftoverPre.getId());
-        if (leftover != null) leftover.setLeftover(dto.getLeftover());
-        else {
-            leftover = Leftover.of(leftoverPreRepository.getReferenceById(leftoverPre.getId()), dto);
-            leftoverRepository.save(leftover);
-        }
-        return LeftoverDto.from(leftover);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<LeftoverDto> getLastWeeksLeftovers(int type) {
         List<LeftoverDto> result = new ArrayList<>();
@@ -49,13 +33,13 @@ public class LeftoverServiceImplV1 implements LeftoverService{
         for (int i = 0; i < DATA_SIZE; i ++) {
             LocalDate targetDate = date.plusDays(i);
 
-            LeftoverPre target = leftoverPreRepository.findByDate(targetDate);
+            LeftoverPre target = leftoverPreRepository.findByDate(targetDate).orElse(null);
             if (target == null) {
                 result.add(LeftoverDto.of(targetDate, 0.0));
                 continue;
             }
 
-            Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId());
+            Leftover leftover = leftoverRepository.findByLeftoverPreId(target.getId()).orElse(null);
             if (leftover == null) result.add(LeftoverDto.of(targetDate, 0.0));
             else result.add(LeftoverDto.from(leftover));
         }

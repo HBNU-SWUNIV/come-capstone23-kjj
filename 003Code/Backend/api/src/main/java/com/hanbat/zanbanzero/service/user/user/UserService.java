@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.*;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,7 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 public interface UserService extends UserDetailsService {
     void join(UserJoinDto dto);
 
-    void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException;
+    void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException, CantFindByUsernameException;
 
     boolean check(String username);
 
@@ -30,10 +31,10 @@ public interface UserService extends UserDetailsService {
 
     UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException;
 
-    UserInfoDto getInfoForUsername(String username);
+    UserInfoDto getInfoForUsername(String username) throws CantFindByUsernameException;
 
     @Override
     UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException;
 
-    User findByUsername(String username);
+    User findByUsername(String username) throws CantFindByUsernameException;
 }

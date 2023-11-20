@@ -1,8 +1,7 @@
 package com.hanbat.zanbanzero.dto.menu;
 
-import com.hanbat.zanbanzero.entity.menu.MenuInfo;
+import com.hanbat.zanbanzero.entity.menu.Menu;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,15 +19,15 @@ public class MenuInfoDto {
     private String info;
     private String details;
 
-    public static MenuInfoDto from(MenuInfo menu) {
+    public static MenuInfoDto from(Menu menu) {
         return new MenuInfoDto(
                 menu.getId(),
-                menu.getMenu().getName(),
-                menu.getMenu().getCost(),
-                menu.getMenu().getImage(),
-                menu.getMenu().getSold(),
-                menu.getInfo(),
-                menu.getDetails()
+                menu.getName(),
+                menu.getCost(),
+                menu.getImage(),
+                menu.getSold(),
+                menu.getMenuInfo().getInfo(),
+                menu.getMenuInfo().getDetails()
         );
     }
 }

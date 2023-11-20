@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.User;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;
 import com.hanbat.zanbanzero.external.KeycloakProperties;
 import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -60,7 +62,12 @@ public class KeycloakLoginFilterV2 extends AbstractAuthenticationProcessingFilte
         if (sub == null) throw new KeycloakLoginException("keycloak user sub is null");
 
         String userSub = sub + "_keycloak";
-        User user = userService.findByUsername(userSub);
+        User user;
+        try {
+            user = userService.findByUsername(userSub);
+        } catch (CantFindByUsernameException e) {
+            throw new AuthenticationServiceException(e.getMessage(), e);
+        }
         if (user == null) user = userSsoService.join(User.of(userSub, checkUserInfo(userInfo)));
         request.setAttribute("user", user);
 

@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.service.user.manager.ManagerService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class ManagerApiController {
      */
     @Operation(summary="관리자 로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("/login/id")
-    public ResponseEntity<ManagerInfoDto> managerLogin(HttpServletRequest request) {
+    public ResponseEntity<ManagerInfoDto> managerLogin(HttpServletRequest request) throws CantFindByUsernameException {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.ok(managerService.getInfoForUsername(username));
     }
@@ -39,7 +40,7 @@ public class ManagerApiController {
      */
     @Operation(summary="관리자 대표정보 조회")
     @GetMapping("/info")
-    public ResponseEntity<ManagerInfoDto> getInfo(HttpServletRequest request) {
+    public ResponseEntity<ManagerInfoDto> getInfo(HttpServletRequest request) throws CantFindByUsernameException {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         return ResponseEntity.ok(managerService.getInfo(username));
     }

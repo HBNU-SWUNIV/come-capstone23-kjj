@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.auth.WithdrawDto;
 import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
 import com.hanbat.zanbanzero.service.user.user.UserService;
@@ -35,7 +36,7 @@ public class UserApiController {
      */
     @Operation(summary="회원탈퇴")
     @DeleteMapping("/withdraw")
-    public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException {
+    public ResponseEntity<String> withdraw(HttpServletRequest request, @RequestBody WithdrawDto dto) throws WrongRequestDetails, CantFindByIdException, CantFindByUsernameException {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         userService.withdraw(username, dto);
 
@@ -44,7 +45,7 @@ public class UserApiController {
 
     @Operation(summary="Keycloak 회원탈퇴")
     @DeleteMapping("/withdraw/keycloak")
-    public ResponseEntity<String> withdrawKeycloak(HttpServletRequest request) {
+    public ResponseEntity<String> withdrawKeycloak(HttpServletRequest request) throws CantFindByUsernameException {
         String username = jwtUtil.getUsernameFromToken(request.getHeader(jwtTemplate.getHeaderString()));
         userSsoService.withdrawSso(username);
         return ResponseEntity.ok("Keyclaok 탈퇴되었습니다.");

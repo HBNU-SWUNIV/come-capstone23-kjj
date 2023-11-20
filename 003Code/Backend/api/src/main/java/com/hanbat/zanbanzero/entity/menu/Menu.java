@@ -1,11 +1,10 @@
 package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.entity.planner.Planner;
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
@@ -17,13 +16,10 @@ public class Menu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "menu", cascade = CascadeType.ALL)
-    private List<Planner> planners;
-
-    @OneToOne(mappedBy = "menu", cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private MenuInfo menuInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private MenuFood menuFood;
 
     @org.hibernate.annotations.Index(name = "menu_name_index")
@@ -45,11 +41,10 @@ public class Menu {
         }
     }
 
-    public static Menu of(MenuUpdateDto dto, String filePath) {
+    public static Menu of(MenuUpdateDto dto, MenuInfo menuInfo, String filePath) {
         return new Menu(
                 null,
-                null,
-                null,
+                menuInfo,
                 null,
                 dto.getName(),
                 dto.getCost(),

@@ -110,7 +110,7 @@ public class StoreServiceImplV1 implements StoreService {
         int dataSize = 5;
         for (int i = 0; i < dataSize; i ++) {
             LocalDate targetDate = date.plusDays(i);
-            Calculate calculate = calculateRepository.findByDate(targetDate);
+            Calculate calculate = calculateRepository.findByDate(targetDate).orElse(null);
 
             if (calculate == null) result.add(StoreWeekendDto.newZeroDataStoreWeekendDto(targetDate));
             else result.add(StoreWeekendDto.of(targetDate, calculate.getToday()));
@@ -169,9 +169,8 @@ public class StoreServiceImplV1 implements StoreService {
     public StoreStateDto setOff(StoreOffDto dto, int year, int month, int day) {
         LocalDate date = dateUtil.makeLocalDate(year, month, day);
 
-        StoreState storeState = storeStateRepository.findByDate(date);
-        if (storeState == null) storeState = storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto));
-        else storeState.setOff(dto);
+        StoreState storeState = storeStateRepository.findByDate(date).orElse(storeStateRepository.save(StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto)));
+        storeState.setOff(dto);
         return StoreStateDto.from(storeState);
     }
 

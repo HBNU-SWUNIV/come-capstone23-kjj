@@ -4,6 +4,7 @@ import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface UserSsoService {
@@ -18,5 +19,5 @@ public interface UserSsoService {
     @Transactional
     UserInfoDto login(Long id) throws CantFindByIdException;
 
-    void withdrawSso(String username);
+    void withdrawSso(String username) throws CantFindByUsernameException;
 }

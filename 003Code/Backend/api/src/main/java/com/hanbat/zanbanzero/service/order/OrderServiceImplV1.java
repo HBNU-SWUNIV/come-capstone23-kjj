@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.image.BufferedImage;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,9 +46,11 @@ public class OrderServiceImplV1 implements OrderService{
         UserPolicy policy = userRepository.findById(userId).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 user가 없습니다.
                 userId : """, userId)).getUserPolicy();
+
         if (policy == null) throw new CantFindByIdException("""
                 user가 UserPolicy를 가지고 있지 않습니다.
-                """, userId);
+                userId : """, userId);
+
         Long defaultMenu = policy.getDefaultMenu();
         if (defaultMenu == null) return null;
         else return menuRepository.findById(defaultMenu).orElseGet( () -> {
@@ -63,17 +66,21 @@ public class OrderServiceImplV1 implements OrderService{
         if (menuId == null) throw new WrongRequestDetails("""
                 전달된 menuId가 null 입니다.
                 menuId : """, menuId);
+
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
                 menuId는 전달되었으나, 해당 id를 가진 메뉴가 존재하지 않습니다.
                 menuId : """, menuId));
-        return orderRepository.save(Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type));
+
+        Order order = Order.createNewOrder(userRepository.getReferenceById(userId), menu.getName(), menu.getCost(), date, type);
+
+        return orderRepository.save(order);
     }
 
     @Override
     @Transactional
     public OrderDto cancelOrder(Long id, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
         LocalDate date = dateUtil.makeLocalDate(year, month, day);
-        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date).orElse(null);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, getDefaultMenuId(id), date, false));
         else order.setRecognizeToCancel();
@@ -84,14 +91,13 @@ public class OrderServiceImplV1 implements OrderService{
     @Transactional
     public OrderDto addOrder(Long id, Long menuId, int year, int month, int day) throws CantFindByIdException, WrongRequestDetails {
         LocalDate date = dateUtil.makeLocalDate(year, month, day);
-        Order order = orderRepository.findByUserIdAndOrderDate(id, date);
+        Order order = orderRepository.findByUserIdAndOrderDate(id, date).orElse(null);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
         else {
-            order.setMenu(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
+            order.setMenuAndRecognizeTrue(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
                     해당 id를 가진 menu를 찾을 수 없습니다.
                     menuId : """, menuId)));
-            order.setRecognizeToUse();
         }
         return OrderDto.from(order);
     }
@@ -129,16 +135,17 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional(readOnly = true)
     public LastOrderDto getLastOrder(Long id){
-        Order order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
+        Optional<Order> order = orderRepository.findFirstByUserIdOrderByIdDesc(id);
 
-        if (order == null) return null;
-        return LastOrderDto.from(order);
+        return order.map(LastOrderDto::from)
+                .orElse(null);
     }
 
     @Override
     public BufferedImage getOrderQr(Long id) throws WriterException {
         String domain = "http://kjj.kjj.r-e.kr:8080";
         String endPoint = "/api/user/order/" + id + "/qr";
+
         return createQRCode(domain + endPoint);
     }
 
@@ -146,15 +153,16 @@ public class OrderServiceImplV1 implements OrderService{
     public BufferedImage createQRCode(String data) throws WriterException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(data, BarcodeFormat.QR_CODE, 100, 100);
+
         return MatrixToImageWriter.toBufferedImage(bitMatrix);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OrderDto> getOrderMonth(Long id, int year, int month) {
+        List<Order> orders = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
 
-        List<Order> order = orderRepository.findByUserIdAndOrderDate_YearAndOrderDate_Month(id, year, month);
-        return order.stream()
+        return orders.stream()
                 .map(OrderDto::from)
                 .toList();
     }
@@ -162,15 +170,18 @@ public class OrderServiceImplV1 implements OrderService{
     @Override
     @Transactional(readOnly = true)
     public OrderDto getOrderDay(Long id, int year, int month, int day) {
-        Order order = orderRepository.findByUserIdAndOrderDate(id, dateUtil.makeLocalDate(year, month, day));
-        if (order == null) return null;
-        else return OrderDto.from(order);
+        Optional<Order> order = orderRepository.findByUserIdAndOrderDate(id, dateUtil.makeLocalDate(year, month, day));
+
+        return order.map(OrderDto::from)
+                .orElse(null);
     }
 
     @Override
     @Transactional
-    public void checkOrder(Long id) {
-        Order order = orderRepository.findByIdWithFetch(id);
+    public void checkOrder(Long id) throws CantFindByIdException {
+        Order order = orderRepository.findByIdWithFetch(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 Order 데이터를 찾을 수 없습니다.
+                orderId : """, id));
         if (!order.isExpired()) {
             order.setExpiredTrue();
 
@@ -186,6 +197,7 @@ public class OrderServiceImplV1 implements OrderService{
         Order order = orderRepository.findById(orderId).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Order 데이터를 찾을 수 없습니다.
                 orderId : """, orderId));
+
         return OrderDto.from(order);
     }
 
@@ -196,6 +208,7 @@ public class OrderServiceImplV1 implements OrderService{
                 해당 id를 가진 Order 데이터를 찾을 수 없습니다.
                 orderId : """, id));
         order.setPaymentTrue();
+
         return OrderDto.from(order);
     }
 }

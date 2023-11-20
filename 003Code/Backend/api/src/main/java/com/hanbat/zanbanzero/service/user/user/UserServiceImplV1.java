@@ -9,6 +9,7 @@ import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
@@ -46,8 +47,10 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails {
-        User user = userRepository.findByUsername(username);
+    public void withdraw(String username, WithdrawDto dto) throws WrongRequestDetails, CantFindByUsernameException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                해당 username을 가진 유저 데이터를 찾을 수 없습니다.
+                username : """, username));
         if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
         else throw new WrongRequestDetails("비밀번호가 맞지 않습니다.");
     }
@@ -69,41 +72,52 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserMypageDto getMyPage(Long id) {
-        return UserMypageDto.from(userRepository.findByIdWithFetchMyPage(id).getUserMypage());
+    public UserMypageDto getMyPage(Long id) throws CantFindByIdException {
+        UserMypage mypage= userRepository.findByIdWithFetchMyPage(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저 데이터를 찾을 수 없습니다.
+                id : """, id)).getUserMypage();
+        return UserMypageDto.from(mypage);
     }
 
     @Override
     @Transactional
-    public Integer usePoint(Long id, UsePointDto dto) throws WrongRequestDetails {
-        UserMypage userMypage = userRepository.findByIdWithFetchMyPage(id).getUserMypage();
+    public Integer usePoint(Long id, UsePointDto dto) throws WrongRequestDetails, CantFindByIdException {
+        UserMypage mypage= userRepository.findByIdWithFetchMyPage(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저 데이터를 찾을 수 없습니다.
+                id : """, id)).getUserMypage();
         int data = -1 * dto.getValue();
-        if (userMypage.getPoint() + data < 0) throw new WrongRequestDetails("""
+        if (mypage.getPoint() + data < 0) throw new WrongRequestDetails("""
             포인트가 부족합니다.
             포인트 사용 시 잔여 포인트가 음수가 됩니다.
-            point : """ + userMypage.getPoint());
-        userMypage.updatePoint(data);
+            point : """ + mypage.getPoint());
+        mypage.updatePoint(data);
 
-        return userMypage.getPoint();
+        return mypage.getPoint();
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("""
+                해당 username을 가진 유저 데이터를 찾을 수 없습니다.
+                username : """ + username));
         return new UserDetailsInterfaceImpl(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public User findByUsername(String username) throws CantFindByUsernameException {
+        return userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                해당 username을 가진 유저 데이터를 찾을 수 없습니다.
+                username : """, username));
     }
 
     @Override
     @Transactional
-    public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) {
-        User user = userRepository.findByIdWithFetchPolicy(id);
+    public UserPolicyDto setUserDatePolicy(UserDatePolicyDto dto, Long id) throws CantFindByIdException {
+        User user = userRepository.findByIdWithFetchPolicy(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저 데이터를 찾을 수 없습니다.
+                id : """, id));
         UserPolicy userPolicy = user.getUserPolicy();
         userPolicy.setPolicy(dto);
 
@@ -112,12 +126,14 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional
-    public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws WrongParameter {
+    public UserPolicyDto setUserMenuPolicy(Long id, Long menuId) throws WrongParameter, CantFindByIdException {
         if (!menuRepository.existsById(menuId)) throw new WrongParameter("""
                 menuId를 가진 메뉴 데이터가 존재하지 않습니다.
                 menuId : """ + menuId);
 
-        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
+        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저 데이터를 찾을 수 없습니다.
+                id : """, id)).getUserPolicy();
         policy.setDefaultMenu(menuId);
 
         return UserPolicyDto.from(policy);
@@ -125,15 +141,19 @@ public class UserServiceImplV1 implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserPolicyDto getUserPolicy(Long id) {
-        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).getUserPolicy();
+    public UserPolicyDto getUserPolicy(Long id) throws CantFindByIdException {
+        UserPolicy policy = userRepository.findByIdWithFetchPolicy(id).orElseThrow(() -> new CantFindByIdException("""
+                해당 id를 가진 유저 데이터를 찾을 수 없습니다.
+                id : """, id)).getUserPolicy();
         return UserPolicyDto.from(policy);
     }
 
     @Override
     @Transactional
-    public UserInfoDto getInfoForUsername(String username) {
-        User user = userRepository.findByUsername(username);
+    public UserInfoDto getInfoForUsername(String username) throws CantFindByUsernameException {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                해당 username을 가진 유저를 찾을 수 없습니다.
+                username : """, username));
         UserInfoDto userInfoDto = UserInfoDto.from(user);
         user.updateLoginDate();
         return userInfoDto;

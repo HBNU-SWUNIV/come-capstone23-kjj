@@ -16,10 +16,6 @@ public class MenuInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
-    private Menu menu;
-
     private String info;
     private String details;
 
