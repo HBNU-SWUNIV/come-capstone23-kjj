@@ -38,8 +38,8 @@ public class ExceptionHandlingAspect {
     /**
      * 에러 발생 시 slack 메시지 알림 전송하는 AOP
      */
-    @AfterThrowing(pointcut = "authPointcut() || controllerPointcut()", throwing = "ex")
-    public void handleAuthException(JoinPoint joinPoint, Exception ex) {
+    @AfterThrowing(pointcut = "controllerPointcut()", throwing = "ex")
+    public void handleControllerException(JoinPoint joinPoint, Exception ex) {
         if (serviceFlag.get() || authFlag.get()) {
             serviceFlag.remove();
             authFlag.remove();
@@ -47,6 +47,19 @@ public class ExceptionHandlingAspect {
         else {
             authFlag.set(true);
             slackTools.sendSlackMessage(ex, ex.getMessage());
+        }
+    }
+
+    @AfterThrowing(pointcut = "authPointcut()", throwing = "ex")
+    public void handleAuthException(JoinPoint joinPoint, Exception ex) {
+        if (serviceFlag.get() || authFlag.get()) {
+            serviceFlag.remove();
+            authFlag.remove();
+        }
+        else {
+            authFlag.set(true);
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+            slackTools.sendRequestDetailSlackMessage(ex, request);
         }
     }
 
