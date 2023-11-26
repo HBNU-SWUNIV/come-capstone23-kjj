@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface PlannerRepository extends JpaRepository<Planner, Long> {
 
-    @Query("select p from Planner p where p.date = :date")
+    @Query("SELECT p FROM Planner p WHERE p.date = :date")
     Optional<Planner> findOnePlanner(@Param("date")LocalDate date);
 
     List<Planner> findAllByDateBetween(LocalDate start, LocalDate end);

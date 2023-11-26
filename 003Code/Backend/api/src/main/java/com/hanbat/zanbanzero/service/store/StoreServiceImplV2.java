@@ -7,7 +7,6 @@ import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
 import com.hanbat.zanbanzero.dto.sbiz.WeeklyFoodPredictDto;
 import com.hanbat.zanbanzero.dto.store.*;
 import com.hanbat.zanbanzero.entity.calculate.Calculate;
-import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
 import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
@@ -25,7 +24,6 @@ import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateUtil;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,9 +31,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 
-@Service
+//@Service
 @RequiredArgsConstructor
-public class StoreServiceImplV1 implements StoreService {
+public class StoreServiceImplV2 implements StoreService {
 
     private final ImageService imageService;
     private final StoreRepository storeRepository;
@@ -127,40 +125,38 @@ public class StoreServiceImplV1 implements StoreService {
         return (result != null) ? result : 0;
     }
 
-    private Map<String, Integer> getMenuCountMap(List<Long> idList) {
-        Map<String, Integer> result = new HashMap<>();
-
-        List<CalculateMenu> calculateMenus = calculateMenuRepository.getPopularMenus(idList);
-        calculateMenus.forEach(calculateMenu -> {
-            String name = calculateMenu.getMenu();
-            Integer count = calculateMenu.getCount();
-            result.put(name, result.getOrDefault(name, 0) + count);
-        });
-        return result;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public List<CalculateMenuForGraphDto> getPopularMenus() {
-        // 최근 5영업일 정산 데이터 id 조회
-        List<Long> idList = calculateRepository.findTop5IdOrderByIdDesc();
-
-        Map<String, Integer> menuCountMap = getMenuCountMap(idList);
-        // maxHeap 생성
-        PriorityQueue<Map.Entry<String, Integer>> maxHeap = new PriorityQueue<>(
-                (entry1, entry2) -> Integer.compare(entry2.getValue(), entry1.getValue())
-        );
-        maxHeap.addAll(menuCountMap.entrySet());
-
-        // result 생성
-        List<CalculateMenuForGraphDto> result = new ArrayList<>();
-        int size = 3;
-        while (size > 0 && !maxHeap.isEmpty()) {
-            Map.Entry<String, Integer> poll = maxHeap.poll();
-            result.add(CalculateMenuForGraphDto.from(poll.getKey(), poll.getValue()));
-            size--;
-        }
-        return result;
+        // 최근 5영업일 Calculate 정보 조회 (join fetch CalculateMenu)
+//        List<Calculate> calculates = calculateRepository.findTop5ByIdWithCalculateMenuOrderByIdDesc();
+//
+//        // CalculateMenu name: count 인 Map 생성
+//        Map<String, Integer> countMap = new HashMap<>();
+//
+//        calculates.parallelStream().forEach(calculate ->
+//                calculate.getCalculateMenus().parallelStream().forEach(calculateMenu -> {
+//                    String name = calculateMenu.getMenu();
+//                    Integer count = calculateMenu.getCount();
+//                    countMap.put(name, countMap.getOrDefault(name, 0) + count);
+//                }));
+//
+//        // maxHeap 생성
+//        PriorityQueue<Map.Entry<String, Integer>> maxHeap = new PriorityQueue<>(
+//                (entry1, entry2) -> Integer.compare(entry2.getValue(), entry1.getValue())
+//        );
+//        maxHeap.addAll(countMap.entrySet());
+//
+//        // result 생성
+//        List<CalculateMenuForGraphDto> result = new ArrayList<>();
+//        int size = 3;
+//        while (size > 0 && !maxHeap.isEmpty()) {
+//            Map.Entry<String, Integer> poll = maxHeap.poll();
+//            result.add(CalculateMenuForGraphDto.from(poll.getKey(), poll.getValue()));
+//            size--;
+//        }
+//        return result;
+        return null;
     }
 
     @Override

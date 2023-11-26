@@ -24,6 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     void deleteAllByMenu(String menuName);
 
-    @Query("select o from Order o join fetch o.user u join fetch u.userMypage where o.id = :id")
+    @Query("SELECT o FROM Order o JOIN FETCH o.user u JOIN FETCH u.userMypage WHERE o.id = :id")
     Optional<Order> findByIdWithFetch(Long id);
 }

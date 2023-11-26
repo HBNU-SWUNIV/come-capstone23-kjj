@@ -1,21 +1,15 @@
 # env
 spring:
   profiles:
-    include: db, dbAuth, slack, keycloakAuth, chatgptApi, monitor
+    include: db, slack, keycloakAuth, chatgptApi, monitor
 
   application:
     name: zanbanzero
 
-  task:
-    execution:
-      pool:
-        core-size: 1
-        max-size: 1
-
   # data.sql
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     properties:
         hibernate:
           show_sql: true

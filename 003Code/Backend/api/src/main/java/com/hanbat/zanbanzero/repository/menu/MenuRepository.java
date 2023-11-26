@@ -11,14 +11,14 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     Boolean existsByName(String name);
 
-    @Query("select m from Menu m left join fetch m.menuInfo left join fetch m.menuFood")
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.menuInfo LEFT JOIN FETCH m.menuFood")
     List<Menu> findAllWithMenuInfoAndMenuFood();
 
     Optional<Menu> findByUsePlanner(boolean b);
 
     Boolean existsByUsePlannerTrue();
 
-    @Query("select m from Menu m left join fetch m.menuInfo where m.id = :id")
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.menuInfo WHERE m.id = :id")
     Optional<Menu> findByIdWithMenuInfo(Long id);
     Optional<Menu> findByName(String menuName);
 }

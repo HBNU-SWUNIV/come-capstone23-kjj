@@ -7,6 +7,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CalculateMenuForGraphDto {
     private String name;
-    private long count;
+    private Integer count;
 
+    public static CalculateMenuForGraphDto from(String name, Integer count) {
+        return new CalculateMenuForGraphDto(
+                name,
+                count
+        );
+    }
 }
