@@ -1,19 +1,19 @@
 # env
 spring:
   profiles:
-    include: db, slackWebHook, monitor
+    include: slack, monitor
 
 # Batch Table
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: ${my.batchuri_docker}
-    username: ${my.mysqlUsername}
-    password: ${my.mysqlPassword}
+    jdbc-url: ENC(2HnCb5o4AirPvDP1vMXqEiDmkchEiPO7oYP8/oqeUgJBTSWfM76PhZffimMRf7qpmFOuz4QgUJrTg6mGMVEi92DVz1uJtQp+)
+    username: ENC(ablWyFhr4StpQS5uR2duxH5hfd4Gllp2)
+    password: ENC(BUIhVSzuPftr//0joDiak/zvZ/AbOJDX)
     data:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: ${my.mysqluri_docker}
-      username: ${my.mysqlUsername}
-      password: ${my.mysqlPassword}
+      jdbc-url: ENC(7Vcf+03tOggTi0grSNA2c+DD5DgFehwSVBNMuH28OpaEpPJjUzJO5EzAOAUvD9Iudv5/tXtLn3KKeQf8kHyj2g==)
+      username: ENC(ablWyFhr4StpQS5uR2duxH5hfd4Gllp2)
+      password: ENC(BUIhVSzuPftr//0joDiak/zvZ/AbOJDX)
 
 # spring
   main:
@@ -25,12 +25,17 @@ spring:
       initialize-schema: always
     job:
       enabled: false
+
+# jasypt
+jasypt:
+  encryptor:
+    bean: jasypt
 ---
 spring:
   config:
     activate.on-profile: dev
 # DB
   datasource:
-    jdbc-url: ${my.batchuri_local}
+    jdbc-url: jdbc:mysql://localhost:3306/zanbanzero_batch?useSSL=false&allowPublicKeyRetrieval=true
     data:
-      jdbc-url: ${my.mysqluri_local}
+      jdbc-url: jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
