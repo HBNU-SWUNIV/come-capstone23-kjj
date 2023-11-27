@@ -14,13 +14,18 @@ import org.springframework.stereotype.Component;
 public class SlackAspect {
 
     private final SlackTools slackTools;
+    private final ThreadLocal<Boolean> taskFlag = ThreadLocal.withInitial(() -> false);
 
     @Pointcut("execution(* com.batch.batch.batch.order.task..*.*(..))")
     private void taskPointcut() {}
 
     @AfterThrowing(pointcut = "taskPointcut()", throwing = "ex")
     public void connectionHandlerAop(JoinPoint joinPoint, Exception ex) throws Exception {
-        slackTools.sendSlackErrorMessage(ex, "[" + joinPoint.getTarget().getClass().getSimpleName() + "]" + " : "+ joinPoint.getSignature().getName());
+        if (taskFlag.get()) taskFlag.remove();
+        else {
+            taskFlag.set(true);
+            slackTools.sendSlackErrorMessage(ex, "[" + joinPoint.getTarget().getClass().getSimpleName() + "]" + " : "+ joinPoint.getSignature().getName());
+        }
         throw ex;
     }
 }

@@ -26,7 +26,7 @@ spring:
 
   datasource:
     master:
-      jdbc-url: ${mysql.uri}
+      jdbc-url: ENC(7Vcf+03tOggTi0grSNA2c+DD5DgFehwSVBNMuH28OpaEpPJjUzJO5EzAOAUvD9Iudv5/tXtLn3KKeQf8kHyj2g==)
 
   # Redis
   data:

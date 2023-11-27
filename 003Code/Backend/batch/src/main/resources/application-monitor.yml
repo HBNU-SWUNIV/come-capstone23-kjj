@@ -1,0 +1,14 @@
+# Actuator
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health, prometheus
+      base-path: ENC(7Br3hhVq66/sAE7e8i8KARuAE36elNWc5NBqKIXGaEs=)
+
+  endpoint:
+    health:
+      enabled: true
+    prometheus:
+      enabled: true
