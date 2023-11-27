@@ -8,13 +8,14 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(long l);
 
-    Order findByUserIdAndOrderDate(Long id, LocalDate date);
+    Optional<Order> findByUserIdAndOrderDate(Long id, LocalDate date);
 
-    Order findFirstByUserIdOrderByIdDesc(Long id);
+    Optional<Order> findFirstByUserIdOrderByIdDesc(Long id);
 
     Page<Order> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
 
@@ -23,6 +24,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     void deleteAllByMenu(String menuName);
 
-    @Query("select o from Order o join fetch o.user u join fetch u.userMypage where o.id = :id")
-    Order findByIdWithFetch(Long id);
+    @Query("SELECT o FROM Order o JOIN FETCH o.user u JOIN FETCH u.userMypage WHERE o.id = :id")
+    Optional<Order> findByIdWithFetch(Long id);
 }

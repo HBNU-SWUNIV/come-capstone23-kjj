@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.controller.menu;
 
-import com.hanbat.zanbanzero.controller.ControllerTestClass;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.MenuInfoDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
 import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
@@ -9,19 +9,28 @@ import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@RunWith(SpringRunner.class) // application context 전체를 로딩하지 않고 필요한 bean만 주입받음
 @WebMvcTest(MenuManagerApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class MenuManagerApiControllerTest extends ControllerTestClass {
+class MenuManagerApiControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
     MenuService menuService;

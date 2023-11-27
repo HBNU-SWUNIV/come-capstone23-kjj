@@ -57,8 +57,7 @@ public class KeycloakLoginFilterV1 extends AbstractAuthenticationProcessingFilte
         if (sub == null) throw new KeycloakLoginException("keycloak user sub is null");
 
         String userSub = sub + "_keycloak";
-        User user = userRepository.findByUsername(userSub);
-        if (user == null) user = userService.join(User.of(userSub, checkUserInfo(userInfo)));
+        User user = userRepository.findByUsername(userSub).orElse(userService.join(User.of(userSub, checkUserInfo(userInfo))));
         request.setAttribute("user", user);
 
         UserDetailsInterface userDetails = new UserDetailsInterfaceImpl(user);

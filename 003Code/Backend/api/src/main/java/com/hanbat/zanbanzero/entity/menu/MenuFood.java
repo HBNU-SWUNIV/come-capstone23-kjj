@@ -24,10 +24,6 @@ public class MenuFood {
 
     private String food;
 
-    public void setFood(String food) {
-        this.food = food;
-    }
-
     public static MenuFood of(String name, String food) {
         return new MenuFood(
                 null,

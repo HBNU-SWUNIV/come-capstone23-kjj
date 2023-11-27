@@ -5,6 +5,7 @@ import com.hanbat.zanbanzero.dto.user.info.UserInfoDto;
 import com.hanbat.zanbanzero.dto.user.user.UserJoinDto;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.user.user.UserService;
@@ -31,7 +32,7 @@ public class UserAuthController {
      */
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
     @PostMapping("id")
-    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) {
+    public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) throws CantFindByUsernameException {
         String username = (String) request.getAttribute("username");
         return ResponseEntity.ok(userService.getInfoForUsername(username));
     }

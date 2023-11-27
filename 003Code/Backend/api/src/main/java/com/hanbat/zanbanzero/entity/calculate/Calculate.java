@@ -20,9 +20,6 @@ public class Calculate {
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "calculate")
     List<CalculateMenu> calculateMenus;
 
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "calculate")
-    private CalculatePre calculatePre;
-
     private LocalDate date;
     private int today;
     private int sales;

@@ -15,7 +15,6 @@ public class CalculatePre {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @MapsId
     private Calculate calculate;
 
     private Integer predictUser;

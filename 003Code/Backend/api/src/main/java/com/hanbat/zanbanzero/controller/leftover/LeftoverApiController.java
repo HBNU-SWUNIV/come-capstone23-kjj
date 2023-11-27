@@ -3,15 +3,12 @@ package com.hanbat.zanbanzero.controller.leftover;
 import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.dto.leftover.LeftoverDto;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
-import com.hanbat.zanbanzero.exception.exceptions.WrongRequestDetails;
 import com.hanbat.zanbanzero.service.leftover.LeftoverService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -20,21 +17,6 @@ import java.util.List;
 public class LeftoverApiController {
 
     private final LeftoverService leftoverService;
-
-    /**
-     * 잔반 감소량 설정
-     *
-     * @param dto - String date(yyyy-MM-dd), Double leftover
-     * @return LeftoverDto
-     * @throws WrongRequestDetails - leftover가 null이면 발생
-     */
-    @Operation(summary="잔반 감소량 설정")
-    @PostMapping
-    public ResponseEntity<LeftoverDto> setLeftover(@RequestBody LeftoverDto dto) throws WrongRequestDetails {
-        if (dto.getLeftover() == null) throw new WrongRequestDetails("Leftover : null");
-
-        return ResponseEntity.ok(leftoverService.setLeftover(dto));
-    }
 
     /**
      * 이전 주 월 ~ 금 잔반 발생량 조회

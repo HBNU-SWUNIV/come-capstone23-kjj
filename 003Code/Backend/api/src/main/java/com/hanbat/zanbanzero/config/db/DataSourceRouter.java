@@ -7,10 +7,8 @@ public class DataSourceRouter extends AbstractRoutingDataSource {
     @Override
     protected Object determineCurrentLookupKey() {
         if (TransactionSynchronizationManager.isCurrentTransactionReadOnly()) {
-            System.out.println("read only");
             return "SLAVE";
         }
-        System.out.println("not read only");
         return "MASTER";
     }
 }

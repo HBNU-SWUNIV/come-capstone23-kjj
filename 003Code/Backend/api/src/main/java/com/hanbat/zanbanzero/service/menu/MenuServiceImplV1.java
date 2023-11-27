@@ -51,7 +51,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Transactional(readOnly = true)
     @Cacheable(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
     public MenuUserInfoDtos getMenus() {
-        return MenuUserInfoDtos.from(menuRepository.findAllWithMenuInfo().stream()
+        return MenuUserInfoDtos.from(menuRepository.findAllWithMenuInfoAndMenuFood().stream()
                 .map(MenuUserInfoDto::from)
                 .toList());
     }
@@ -59,7 +59,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional(readOnly = true)
     public List<MenuManagerInfoDto> getMenusForManager() {
-        return menuRepository.findAllWithMenuInfo().stream()
+        return menuRepository.findAllWithMenuInfoAndMenuFood().stream()
                 .map(MenuManagerInfoDto::from)
                 .toList();
     }
@@ -79,8 +79,8 @@ public class MenuServiceImplV1 implements MenuService{
                 식단을 미사용하거나, 기존에 식단을 사용하는 메뉴를 취소해주세요.
                 dto : """ + dto);
 
-        Menu menu = menuRepository.save(Menu.of(dto, filePath));
-        menuInfoRepository.save(dto.from(menu));
+        MenuInfo menuInfo = menuInfoRepository.save(dto.from());
+        Menu menu = menuRepository.save(Menu.of(dto, menuInfo, filePath));
         return MenuDto.from(menu);
     }
 
@@ -107,21 +107,20 @@ public class MenuServiceImplV1 implements MenuService{
     @Transactional
     @CacheEvict(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
     public MenuInfoDto updateMenu(MenuUpdateDto dto, MultipartFile file, Long id, String uploadDir) throws CantFindByIdException, UploadFileException {
-        Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
+        Menu menu = menuRepository.findByIdWithMenuInfo(id).orElseThrow(() ->
+                new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, id));
-        MenuInfo menuInfo = menuInfoRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
-                해당 id를 가진 MenuInfo 데이터를 찾을 수 없습니다.
-                menuInfoId : """, id));
 
         if (file != null) {
             if (menu.getImage() == null) menu.setImage(menuImageService.uploadImage(file, uploadDir));
             else menuImageService.updateImage(file, menu.getImage());
         }
+        MenuInfo menuInfo = menu.getMenuInfo();
 
         menu.patch(dto);
         menuInfo.patch(dto);
-        return MenuInfoDto.from(menuInfo);
+        return MenuInfoDto.from(menu);
     }
 
     @Override
@@ -180,8 +179,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     public MenuDto changePlanner(Long id) throws CantFindByIdException {
-        Menu old = menuRepository.findByUsePlanner(true);
-        if (old != null) old.notUsePlanner();
+        menuRepository.findByUsePlanner(true).ifPresent(Menu::notUsePlanner);
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.

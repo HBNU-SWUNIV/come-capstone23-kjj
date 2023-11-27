@@ -6,6 +6,7 @@ import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.entity.user.UserMypage;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakJoinException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakWithdrawException;
 import com.hanbat.zanbanzero.repository.user.UserMyPageRepository;
@@ -106,13 +107,15 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
     }
 
     @Override
-    public void withdrawSso(String username) {
+    public void withdrawSso(String username) throws CantFindByUsernameException{
         String originUsername = username.replace("_keycloak", "");
 
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
         try (Response response = usersResource.delete(originUsername)) {
-            if (response.getStatus() == 204) userRepository.delete(userRepository.findByUsername(username));
+            if (response.getStatus() == 204) userRepository.delete(userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
+                    해당 username을 가진 유저 데이터를 찾을 수 없습니다.
+                    username : """, username)));
             else throw new KeycloakWithdrawException("username = " + username);
         }
     }

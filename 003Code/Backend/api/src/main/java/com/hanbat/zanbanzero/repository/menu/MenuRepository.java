@@ -5,15 +5,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     Boolean existsByName(String name);
 
-    @Query("select m from Menu m join fetch m.menuInfo join fetch m.menuFood")
-    List<Menu> findAllWithMenuInfo();
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.menuInfo LEFT JOIN FETCH m.menuFood")
+    List<Menu> findAllWithMenuInfoAndMenuFood();
 
-    Menu findByUsePlanner(boolean b);
+    Optional<Menu> findByUsePlanner(boolean b);
 
     Boolean existsByUsePlannerTrue();
+
+    @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.menuInfo WHERE m.id = :id")
+    Optional<Menu> findByIdWithMenuInfo(Long id);
+    Optional<Menu> findByName(String menuName);
 }

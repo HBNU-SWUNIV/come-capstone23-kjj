@@ -24,8 +24,4 @@ public class Leftover {
     public static Leftover of(LeftoverPre leftoverPre, LeftoverDto dto) {
         return new Leftover(null, leftoverPre, dto.getLeftover());
     }
-
-    public void setLeftover(double leftover) {
-        this.data = leftover;
-    }
 }

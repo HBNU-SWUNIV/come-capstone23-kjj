@@ -1,10 +1,9 @@
 package com.hanbat.zanbanzero.repository.calculate;
 
-import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -12,6 +11,6 @@ public interface CalculateMenuRepository extends JpaRepository<CalculateMenu, Lo
     @Query("SELECT SUM(c.count) FROM CalculateMenu c")
     Integer getAllUsers();
 
-    @Query("select new com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto(cm.menu, sum(cm.count)) from CalculateMenu cm where cm.calculate.id in (:idList) group by cm.menu")
-    List<CalculateMenuForGraphDto> getPopularMenus(@Param("idList") List<Long> idList);
+    @Query("SELECT cm FROM CalculateMenu cm WHERE cm.calculate.id IN (:idList)")
+    List<CalculateMenu> getPopularMenus(@Param("idList") List<Long> idList);
 }

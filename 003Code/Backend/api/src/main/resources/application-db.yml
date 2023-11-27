@@ -2,14 +2,14 @@ spring:
   datasource:
     master:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: ${mysql.uri-dev}
-      username: ${mysql.username}
-      password: ${mysql.slave.password}
+      jdbc-url: jdbc:mysql://localhost:3306/zanbanzero?useSSL=false&allowPublicKeyRetrieval=true
+      username: ENC(pjhOrcAP1pMETn/qH0IcRA==)
+      password: ENC(y5AeZxxjZ6aB6a7QWBz5FQ==)
     slave:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      jdbc-url: ${mysql.slave.uri}
-      username: ${mysql.slave.username}
-      password: ${mysql.slave.password}
+      jdbc-url: ENC(uy3YbGjjo0wTg2eTCnvQfvkvVaYtZoQYe5Br0EPt6zOG29iCpkZdbAdmuVCg596fLpmsYB6COWLNhrscdH6Vd4ARWiLQNr7w)
+      username: ENC(pjhOrcAP1pMETn/qH0IcRA==)
+      password: ENC(y5AeZxxjZ6aB6a7QWBz5FQ==)
 
   # Redis
   cache:
