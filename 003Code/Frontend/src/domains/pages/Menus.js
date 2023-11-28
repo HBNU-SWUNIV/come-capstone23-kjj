@@ -1,5 +1,5 @@
-import ViewListIcon from '@mui/icons-material/ViewList';
-import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ViewListIcon from "@mui/icons-material/ViewList";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import {
   Box,
   Button,
@@ -8,31 +8,31 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Toolbar,
-} from '@mui/material';
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import axios from 'axios';
-import { useEffect, useRef, useState } from 'react';
-import { useMutation } from 'react-query';
-import { useRecoilState } from 'recoil';
-import { IngredientsIdAtom } from '../../atom/menuAtom';
-import DeleteDialog from '../../components/general/DeleteDialog';
-import MenuCard from '../../components/menu/MenuCard';
-import MenuUpdateApis from '../../components/menu/apis/MenuUpdateApis';
-import MenuAddDialog from '../../components/menu/dialogs/MenuAddDialog';
-import MenuIngredientsDialog from '../../components/menu/dialogs/MenuIngredientsDialog';
-import MenuUpdateDialog from '../../components/menu/dialogs/MenuUpdateDialog';
-import Menulist from '../../components/menu/list/Menulist';
-import UseImageHandler from '../../hooks/UseImageHandler';
-import UseOnOffHandler from '../../hooks/UseOnOffHandler';
-import { ConfigWithToken, ManagerBaseApi } from '../../utils/utils';
-import Nav from '../nav/Nav';
+} from "@mui/material";
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { useMutation } from "react-query";
+import { useRecoilState } from "recoil";
+import { IngredientsIdAtom } from "../../atom/menuAtom";
+import DeleteDialog from "../../components/general/DeleteDialog";
+import MenuCard from "../../components/menu/MenuCard";
+import MenuUpdateApis from "../../components/menu/apis/MenuUpdateApis";
+import MenuAddDialog from "../../components/menu/dialogs/MenuAddDialog";
+import MenuIngredientsDialog from "../../components/menu/dialogs/MenuIngredientsDialog";
+import MenuUpdateDialog from "../../components/menu/dialogs/MenuUpdateDialog";
+import Menulist from "../../components/menu/list/Menulist";
+import UseImageHandler from "../../hooks/UseImageHandler";
+import UseOnOffHandler from "../../hooks/UseOnOffHandler";
+import { ConfigWithToken, ManagerBaseApi } from "../../utils/utils";
+import Nav from "../nav/Nav";
 
 export default function Menus() {
   const [selectedIngredients, setSelectedIngredients] = useRecoilState(IngredientsIdAtom);
 
-  const [selectedFoodId, setSelectedFood] = useState('');
-  const [updateID, setUpdateID] = useState('');
+  const [selectedFoodId, setSelectedFood] = useState("");
+  const [updateID, setUpdateID] = useState("");
   const [addMenu, setAddMenu] = useState(false);
   const [updateMenu, setUpdatemenu] = useState(false);
   const [deleteMenu, setDeleteMenu] = useState(false);
@@ -40,17 +40,17 @@ export default function Menus() {
   const [nameDuplicate, setNameDuplicate] = useState(false);
   const [image, setImage] = useState([]);
   const [selectedImg, setSelectedImg] = useState(null);
-  const menuNameRef = useRef('');
-  const menuDetailsRef = useRef('');
-  const menuCostRef = useRef('');
-  const [view, setView] = useState('card');
+  const menuNameRef = useRef("");
+  const menuDetailsRef = useRef("");
+  const menuCostRef = useRef("");
+  const [view, setView] = useState("card");
   const handleView = (event, nextView) => {
     if (nextView !== null) setView(nextView);
   };
   const config = ConfigWithToken();
   const formdataConfig = {
     headers: {
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
       ...config.headers,
     },
   };
@@ -64,11 +64,6 @@ export default function Menus() {
     success,
   } = MenuUpdateApis();
 
-  const menuInputsIsNotNull =
-    menuNameRef?.current?.value !== '' &&
-    menuDetailsRef?.current?.value !== '' &&
-    menuCostRef?.current?.value !== '';
-
   useEffect(() => {
     if (success.addmenus) handleAddClose();
     else if (success.isDuplicatedName) setNameDuplicate(true);
@@ -77,7 +72,7 @@ export default function Menus() {
   const updateMenus = useMutation(
     (updateData) =>
       axios({
-        method: 'PATCH',
+        method: "PATCH",
         url: `${ManagerBaseApi}/menu/${updateID.id}`,
         data: updateData,
         ...formdataConfig,
@@ -85,14 +80,14 @@ export default function Menus() {
     {
       onSuccess: () => {
         if (image?.length !== 0) {
-          setImage('');
+          setImage("");
           window.location.reload();
           return;
         }
         handleUpdateClose();
       },
       onError: (err) => {
-        console.log('updateMenu Error=', err);
+        console.log("updateMenu Error=", err);
       },
     }
   );
@@ -119,7 +114,7 @@ export default function Menus() {
     setUpdatemenu(false);
     setNameDuplicate(false);
     setSelectedImg(null);
-    setUpdateID('');
+    setUpdateID("");
   };
   const handleIngredientsOpen = (menu) => {
     const foodId = menus.filter((item) => item.id == menu.id)[0].foodId;
@@ -128,7 +123,7 @@ export default function Menus() {
   };
   const handleIngredientsClose = () => {
     setOpenIngredients(false);
-    setUpdateID('');
+    setUpdateID("");
   };
 
   const menuDelete = () => {
@@ -142,6 +137,11 @@ export default function Menus() {
     resaleMenus.mutate(id);
   };
   const onAddMenu = () => {
+    const menuInputsIsNotNull =
+      menuNameRef?.current?.value !== "" &&
+      menuDetailsRef?.current?.value !== "" &&
+      menuCostRef?.current?.value !== "";
+
     const formdata = new FormData();
     const body = {
       name: menuNameRef?.current?.value,
@@ -149,27 +149,27 @@ export default function Menus() {
       details: menuDetailsRef?.current?.value,
       usePlanner: false,
     };
-    const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
-    formdata.append('data', blob);
-    formdata.append('file', image);
+    const blob = new Blob([JSON.stringify(body)], { type: "application/json" });
+    formdata.append("data", blob);
+    formdata.append("file", image);
     if (menuInputsIsNotNull) addMenus.mutate(formdata);
   };
 
   const onUpdateMenu = () => {
     const formdata = new FormData();
     const validateDuplicatedName =
-      updateID !== '' &&
+      updateID !== "" &&
       menus
         .filter((item) => item.id != updateID.id)
         .filter((n) => n.name === menuNameRef?.current?.value).length != 0;
     const nameValue =
-      menuNameRef?.current?.value === '' ? updateID.name : menuNameRef?.current?.value;
+      menuNameRef?.current?.value === "" ? updateID.name : menuNameRef?.current?.value;
     const detailsValue =
-      menuDetailsRef?.current?.value === ''
+      menuDetailsRef?.current?.value === ""
         ? updateID.details
         : menuDetailsRef?.current?.value;
     const costValue =
-      menuCostRef?.current?.value === '' ? updateID.cost : menuCostRef?.current?.value;
+      menuCostRef?.current?.value === "" ? updateID.cost : menuCostRef?.current?.value;
 
     if (validateDuplicatedName) return setNameDuplicate(true);
     const body = {
@@ -179,14 +179,14 @@ export default function Menus() {
       usePlanner: false,
     };
 
-    const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
-    formdata.append('data', blob);
-    image != null && formdata.append('file', image);
+    const blob = new Blob([JSON.stringify(body)], { type: "application/json" });
+    formdata.append("data", blob);
+    image != null && formdata.append("file", image);
     updateMenus.mutate(formdata);
 
     if (selectedFoodId !== undefined) {
       axios({
-        method: 'PATCH',
+        method: "PATCH",
         url: `${ManagerBaseApi}/menu/${updateID.id}/food/${selectedFoodId}`,
         ...formdataConfig,
       })
@@ -197,24 +197,31 @@ export default function Menus() {
 
   const newAddedMenu = menus !== undefined && menus[menus?.length - 1];
   const needSetIngredients = newAddedMenu?.name == selectedIngredients?.name;
+  console.log(newAddedMenu);
+  console.log(selectedIngredients?.id);
+
+  const onRemoveSelectedIngredients = () =>
+    setSelectedIngredients({
+      id: "",
+      name: "",
+    });
 
   useEffect(() => {
     if (needSetIngredients) {
-      if (newAddedMenu?.id !== '' && selectedIngredients?.id !== '') {
-        console.log('123');
+      if (newAddedMenu?.id !== "" && selectedIngredients?.id !== "") {
         axios({
-          method: 'PATCH',
+          method: "PATCH",
           url: `${ManagerBaseApi}/menu/${newAddedMenu?.id}/food/${selectedIngredients?.id}`,
           ...formdataConfig,
         })
           .then((res) => {
-            setSelectedIngredients({
-              id: '',
-              name: '',
-            });
+            onRemoveSelectedIngredients();
             window.location.reload();
           })
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            console.error("식재료 추가 에러", err);
+            onRemoveSelectedIngredients();
+          });
       }
     } else return;
   });
@@ -240,9 +247,9 @@ export default function Menus() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Nav pages={'메뉴'} />
+        <Nav pages={"메뉴"} />
 
         <Box component="main" sx={MenusBoxStyle}>
           <Toolbar />
@@ -283,8 +290,8 @@ export default function Menus() {
           </Container>
 
           <Container sx={{ py: 1 }} maxWidth="lg">
-            {view === 'card' && <MenuCard {...menuDatas[0]} />}
-            {view === 'list' && <Menulist {...menuDatas[1]} />}
+            {view === "card" && <MenuCard {...menuDatas[0]} />}
+            {view === "list" && <Menulist {...menuDatas[1]} />}
           </Container>
         </Box>
       </Box>
@@ -334,34 +341,35 @@ export default function Menus() {
 const defaultTheme = createTheme();
 
 const MenusBoxStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  backgroundColor: 'white',
+  display: "flex",
+  flexDirection: "column",
+  backgroundColor: "white",
   flexGrow: 1,
-  height: '100%',
-  minHeight: '100vh',
-  overflow: 'auto',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
+  height: "100%",
+  minHeight: "100vh",
+  overflow: "auto",
+  boxSizing: "border-box",
+  paddingBottom: "5vh",
+  marginLeft: "8vw",
 };
 
 const MenusButtonStyle = {
-  fontWeight: '500',
-  fontSize: '16px',
-  backgroundColor: 'rgb(0, 171, 85)',
+  fontWeight: "500",
+  fontSize: "16px",
+  backgroundColor: "rgb(0, 171, 85)",
 };
 
 const toggle_button_list_data = [
   {
     id: 0,
-    value: 'card',
-    aria_label: 'card',
+    value: "card",
+    aria_label: "card",
     icon: <ViewModuleIcon />,
   },
   {
     id: 1,
-    value: 'list',
-    aria_label: 'list',
+    value: "list",
+    aria_label: "list",
     icon: <ViewListIcon />,
   },
 ];

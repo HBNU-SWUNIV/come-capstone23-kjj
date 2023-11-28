@@ -1,12 +1,12 @@
-import styled from '@emotion/styled';
-import { Tooltip } from '@mui/material';
+import styled from "@emotion/styled";
+import { Tooltip } from "@mui/material";
 import {
   flexCenter,
   flexColumn,
   flexICenter,
   flexJBetween,
   fullSize,
-} from '../../styles/global.style';
+} from "../../styles/global.style";
 
 const StatisticsLayout = styled.div`
   width: 95%;
@@ -78,11 +78,11 @@ const StatisticsValue = styled.div`
     ${flexCenter};
     border-radius: 5px;
     background: ${({ $chipColor }) =>
-      $chipColor ? 'rgba(244, 67, 54, 0.1)' : 'rgba(76, 175, 80, 0.1)'};
+      $chipColor ? "rgba(244, 67, 54, 0.1)" : "rgba(76, 175, 80, 0.1)"};
 
     font-size: 12px;
     font-weight: 600;
-    color: ${({ $chipColor }) => ($chipColor ? 'rgb(244, 67, 54)' : 'rgb(76, 175, 80)')};
+    color: ${({ $chipColor }) => ($chipColor ? "rgb(244, 67, 54)" : "rgb(76, 175, 80)")};
   }
 
   p {
@@ -104,7 +104,7 @@ const Statistics = (props) => {
 
           <StatisticsValue $chipColor={props.chipcolor}>
             <div>{props.chip}</div>
-            <p>{props.isWeek ? 'Since last week' : 'Since yesterday'}</p>
+            <p>{props.isWeek ? "전주 대비" : "전일 대비"}</p>
           </StatisticsValue>
         </ContentLeft>
 
