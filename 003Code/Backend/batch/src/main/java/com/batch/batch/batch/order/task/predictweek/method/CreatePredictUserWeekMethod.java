@@ -62,6 +62,22 @@ public class CreatePredictUserWeekMethod {
         }
     }
 
+    private Map<String, Integer> getUserRatio(Connection connection, long entireUser, Map<String, Integer> userCountMap) throws SQLException {
+        int count;
+        Map<String, Integer> userCountAfterRatioMap = new HashMap<>();
+
+        String query = "select count(*) as count from user where roles='ROLE_USER';";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                resultSet.next();
+                count = resultSet.getInt("count");
+            }
+        }
+
+        for (String d : day) userCountAfterRatioMap.put(d, (int) (entireUser * userCountMap.get(d) / count));
+        return userCountAfterRatioMap;
+    }
+
     public FoodPredict getPart(Connection connection, long entireUser, Map<Long, Integer> menuFood) throws SQLException {
         Map<String, Integer> dayFoodMap = new HashMap<>();
         Map<String, Integer> userCountMap = new HashMap<>();
@@ -86,17 +102,18 @@ public class CreatePredictUserWeekMethod {
             }
             dayFoodMap.put(d, dayFood);
             userCountMap.put(d, allUser);
-            if (DateTools.isNotBefore(thisMonday)) {
-                checkSelfOrders(connection, dayFoodMap, userCountMap, d, thisMonday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), menuFood);
-            }
+            checkSelfOrders(connection, dayFoodMap, userCountMap, d, thisMonday.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), menuFood);
             thisMonday = thisMonday.plusDays(1);
         }
+
+        Map<String, Integer> userRatio = getUserRatio(connection, entireUser, userCountMap);
+
         return new FoodPredict(
-                (double) (entireUser * dayFoodMap.get(day[0])) / userCountMap.get(day[0]),
-                (double) (entireUser * dayFoodMap.get(day[1])) / userCountMap.get(day[1]),
-                (double) (entireUser * dayFoodMap.get(day[2])) / userCountMap.get(day[2]),
-                (double) (entireUser * dayFoodMap.get(day[3])) / userCountMap.get(day[3]),
-                (double) (entireUser * dayFoodMap.get(day[4])) / userCountMap.get(day[4])
+                (double) (userRatio.get(day[0]) * dayFoodMap.get(day[0])) / userCountMap.get(day[0]),
+                (double) (userRatio.get(day[1]) * dayFoodMap.get(day[1])) / userCountMap.get(day[1]),
+                (double) (userRatio.get(day[2]) * dayFoodMap.get(day[2])) / userCountMap.get(day[2]),
+                (double) (userRatio.get(day[3]) * dayFoodMap.get(day[3])) / userCountMap.get(day[3]),
+                (double) (userRatio.get(day[4]) * dayFoodMap.get(day[4])) / userCountMap.get(day[4])
         );
     }
 
