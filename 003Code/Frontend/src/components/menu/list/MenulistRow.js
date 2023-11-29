@@ -1,23 +1,23 @@
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import NoMealsIcon from '@mui/icons-material/NoMeals';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import Box from '@mui/material/Box';
-import Collapse from '@mui/material/Collapse';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Typography from '@mui/material/Typography';
-import axios from 'axios';
-import { useState } from 'react';
-import { styled } from 'styled-components';
-import { ConfigWithToken, ManagerBaseApi } from '../../../utils/utils';
-import MenulistMenusbar from './MenulistMenusbar';
-import MenulistSaleStatus from './MenulistSaleStatus';
-import MenulistUpDownArrow from './MenulistUpDownArrow';
-import { flexJBetween } from '../../../styles/global.style';
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import NoMealsIcon from "@mui/icons-material/NoMeals";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import Box from "@mui/material/Box";
+import Collapse from "@mui/material/Collapse";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import axios from "axios";
+import { useState } from "react";
+import { styled } from "styled-components";
+import { ConfigWithToken, ManagerBaseApi } from "../../../utils/utils";
+import MenulistMenusbar from "./MenulistMenusbar";
+import MenulistSaleStatus from "./MenulistSaleStatus";
+import MenulistUpDownArrow from "./MenulistUpDownArrow";
+import { flexJBetween } from "../../../styles/global.style";
 
 const MenulistRow = (props) => {
   const { row, onDelete, soldout, resale, onUpdate } = props;
@@ -68,7 +68,7 @@ const MenulistRow = (props) => {
       id: 0,
       onClick: handleUpdate,
       icon: <EditIcon />,
-      text: '수정',
+      text: "수정",
       isAllData: true,
       data: row,
     },
@@ -77,7 +77,7 @@ const MenulistRow = (props) => {
       id: 1,
       onClick: handleSoldout,
       icon: <NoMealsIcon />,
-      text: '품절',
+      text: "품절",
       data: row,
     },
     {
@@ -85,7 +85,7 @@ const MenulistRow = (props) => {
       id: 2,
       onClick: handleResale,
       icon: <RefreshIcon />,
-      text: '재판매',
+      text: "재판매",
       data: row,
     },
     {
@@ -93,33 +93,34 @@ const MenulistRow = (props) => {
       id: 3,
       onClick: handleDelete,
       icon: <DeleteIcon />,
-      text: '삭제',
+      text: "삭제",
       data: row,
     },
   ];
 
+  console.log(row);
   const menu_table_row_cell_datas = [
     {
       text: <MenulistUpDownArrow open={open} onClick={handlerOpen} />,
     },
     {
       sx_fontWeight: 600,
-      sx_color: row.usePlanner ? '#1565c0' : 'inherit',
+      sx_color: row.usePlanner ? "#1565c0" : "inherit",
       text: row.name,
     },
     {
       sx_fontWeight: 500,
       text: row.details,
-      align: 'left',
+      align: "left",
     },
     {
       sx_fontWeight: 600,
       text: row.cost,
-      align: 'right',
+      align: "right",
     },
     {
       text: <MenulistSaleStatus condition={row.sold === true} />,
-      align: 'right',
+      align: "right",
     },
     {
       text: (
@@ -131,13 +132,13 @@ const MenulistRow = (props) => {
           listData={menu_list_Items_data}
         />
       ),
-      align: 'right',
+      align: "right",
     },
   ];
 
   return (
     <>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         {menu_table_row_cell_datas.map((item, idx) => (
           <TableCell
             key={idx}
@@ -199,7 +200,7 @@ export default MenulistRow;
 
 const ingredientTableTitleStyle = {
   fontWeight: 600,
-  fontSize: '16px',
+  fontSize: "16px",
 };
 
 const TableName = styled.div`
@@ -210,7 +211,7 @@ const TableName = styled.div`
 const table_head_data = [
   {
     id: 0,
-    text: '이름',
+    text: "이름",
     sx: ingredientTableTitleStyle,
   },
   {
@@ -221,17 +222,17 @@ const table_head_data = [
   },
   {
     id: 3,
-    text: '무게 (1인분 기준)',
+    text: "무게 (1인분 기준)",
     sx: ingredientTableTitleStyle,
-    align: 'right',
+    align: "right",
   },
 ];
 
 const table_body_data = [
   {
     id: 0,
-    component: 'th',
-    scope: 'row',
+    component: "th",
+    scope: "row",
   },
   {
     id: 1,
@@ -241,6 +242,6 @@ const table_body_data = [
   },
   {
     id: 3,
-    align: 'right',
+    align: "right",
   },
 ];

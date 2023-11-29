@@ -1,15 +1,15 @@
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import CssBaseline from '@mui/material/CssBaseline';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Toolbar from '@mui/material/Toolbar';
-import FoodSavingStatusChart from '../../components/dashboard/FoodSavingStatusChart';
-import FoodStatisticsChart from '../../components/dashboard/FoodStatisticsChart';
-import NeedFoods from '../../components/dashboard/NeedFoods';
-import StatisticsWrap from '../../components/StatisticsWrap';
-import Nav from '../nav/Nav';
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import CssBaseline from "@mui/material/CssBaseline";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Toolbar from "@mui/material/Toolbar";
+import FoodSavingStatusChart from "../../components/dashboard/FoodSavingStatusChart";
+import FoodStatisticsChart from "../../components/dashboard/FoodStatisticsChart";
+import NeedFoods from "../../components/dashboard/NeedFoods";
+import StatisticsWrap from "../../components/StatisticsWrap";
+import Nav from "../nav/Nav";
 
 const GridItem = (props) => {
   return (
@@ -54,9 +54,9 @@ const gridItems = [
 export default function Dashboard() {
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Box sx={{ display: 'flex' }}>
+      <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <Nav pages={'홈'} />
+        <Nav pages={"홈"} />
 
         <Box component="main" sx={boxStyle}>
           <Toolbar />
@@ -77,24 +77,25 @@ export default function Dashboard() {
 const defaultTheme = createTheme();
 
 const boxStyle = {
-  backgroundColor: 'white',
+  backgroundColor: "white",
   flexGrow: 1,
-  minHeight: '100vh',
-  overflow: 'scroll',
-  boxSizing: 'border-box',
-  paddingBottom: 'var(--copyright-height)',
-  backgroundColor: 'rgb(245 247 252)',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
+  minHeight: "100vh",
+  overflow: "scroll",
+  boxSizing: "border-box",
+  paddingBottom: "var(--copyright-height)",
+  backgroundColor: "rgb(245 247 252)",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  marginLeft: "5vw",
 };
 
 const paperStyle = {
-  height: '100%',
-  minHeight: '30vh',
+  height: "100%",
+  minHeight: "30vh",
   p: 2,
-  display: 'flex',
-  flexDirection: 'column',
+  display: "flex",
+  flexDirection: "column",
 };
 
 const containerStyle = {
