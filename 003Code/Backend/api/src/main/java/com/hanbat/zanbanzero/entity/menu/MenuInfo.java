@@ -23,4 +23,12 @@ public class MenuInfo {
         if (dto.getInfo() != null) this.info = dto.getInfo();
         if (dto.getDetails() != null) this.details = dto.getDetails();
     }
+
+    public static MenuInfo from(MenuUpdateDto dto) {
+        return new MenuInfo(
+                null,
+                dto.getInfo(),
+                dto.getDetails()
+        );
+    }
 }

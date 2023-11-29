@@ -69,7 +69,6 @@ public class MenuServiceImplV1 implements MenuService{
     public Boolean isPlanned() { return menuRepository.existsByUsePlannerTrue(); }
 
     @Override
-    @Transactional
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
         if (menuRepository.existsByName(dto.getName())) throw new SameNameException("""
                 이미 해당 이름을 가진 메뉴가 존재합니다.
@@ -79,7 +78,7 @@ public class MenuServiceImplV1 implements MenuService{
                 식단을 미사용하거나, 기존에 식단을 사용하는 메뉴를 취소해주세요.
                 dto : """ + dto);
 
-        MenuInfo menuInfo = menuInfoRepository.save(dto.from());
+        MenuInfo menuInfo = menuInfoRepository.save(MenuInfo.from(dto));
         Menu menu = menuRepository.save(Menu.of(dto, menuInfo, filePath));
         return MenuDto.from(menu);
     }

@@ -61,7 +61,6 @@ public class OrderServiceImplV1 implements OrderService{
     }
 
     @Override
-    @Transactional
     public Order createNewOrder(Long userId, Long menuId, LocalDate date, boolean type) throws CantFindByIdException, WrongRequestDetails {
         if (menuId == null) throw new WrongRequestDetails("""
                 전달된 menuId가 null 입니다.
@@ -94,11 +93,8 @@ public class OrderServiceImplV1 implements OrderService{
         Order order = orderRepository.findByUserIdAndOrderDate(id, date).orElse(null);
 
         if (order == null) order = orderRepository.save(createNewOrder(id, menuId, date, true));
-        else {
-            order.setMenuAndRecognizeTrue(menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
-                    해당 id를 가진 menu를 찾을 수 없습니다.
-                    menuId : """, menuId)));
-        }
+        else order.setMenuAndRecognizeTrue(menuRepository.getReferenceById(menuId));
+
         return OrderDto.from(order);
     }
 
