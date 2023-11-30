@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.dto.menu;
 
-import com.hanbat.zanbanzero.entity.menu.MenuInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,14 +15,6 @@ public class MenuUpdateDto {
     private String details;
 
     private Boolean usePlanner;
-
-    public MenuInfo from() {
-        return new MenuInfo(
-                null,
-                info,
-                details
-        );
-    }
 
     public boolean check() {
         if (name == null || cost == null || usePlanner == null) return false;

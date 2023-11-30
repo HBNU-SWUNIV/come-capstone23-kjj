@@ -6,7 +6,7 @@ spring:
 # Batch Table
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    jdbc-url: ENC(2HnCb5o4AirPvDP1vMXqEiDmkchEiPO7oYP8/oqeUgJBTSWfM76PhZffimMRf7qpmFOuz4QgUJrTg6mGMVEi92DVz1uJtQp+)
+    jdbc-url: ENC(wcMTQBSY8e9Noi4nhYNys8lhE/ZEtY1p9Su5rPEB7d3XcSfvXpFFKCTh7wdG8AUuhs/SsTWjYATOasNmTXMo/jq374Wp8HHo)
     username: ENC(ablWyFhr4StpQS5uR2duxH5hfd4Gllp2)
     password: ENC(BUIhVSzuPftr//0joDiak/zvZ/AbOJDX)
     data:

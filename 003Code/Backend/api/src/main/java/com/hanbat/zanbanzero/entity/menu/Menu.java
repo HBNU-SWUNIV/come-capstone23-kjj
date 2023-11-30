@@ -73,4 +73,7 @@ public class Menu {
     public void notUsePlanner() {
         usePlanner = false;
     }
+    public void setMenuInfo(MenuInfo menuInfo) {
+        this.menuInfo = menuInfo;
+    }
 }
