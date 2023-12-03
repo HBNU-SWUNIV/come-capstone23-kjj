@@ -81,4 +81,10 @@ public class JwtUtil {
         if (data == null) throw new JwtTokenException("username can not be null");
         return data;
     }
+
+    public String getRolesFromToken(String token) {
+        token = token.replace(jwtTemplate.getTokenPrefix(), "");
+
+        return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("roles").asString();
+    }
 }
