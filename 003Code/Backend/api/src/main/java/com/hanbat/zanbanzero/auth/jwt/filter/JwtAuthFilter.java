@@ -1,7 +1,5 @@
 package com.hanbat.zanbanzero.auth.jwt.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
 import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
@@ -34,19 +32,17 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        String jwtHeader = request.getHeader(jwtTemplate.getHeaderString());
+        String token = request.getHeader(jwtTemplate.getHeaderString());
 //         JWT(Header)가 있는지 확인
-        if ((jwtHeader == null || !jwtHeader.startsWith(jwtTemplate.getTokenPrefix()))) {
+        if ((token == null || !token.startsWith(jwtTemplate.getTokenPrefix()))) {
             chain.doFilter(request, response);
             return;
         }
 
         // JWT 검증
-        String jwtToken = jwtHeader.replace(jwtTemplate.getTokenPrefix(), "");
-
-        if (jwtUtil.isTokenExpired(jwtToken)) throw new JwtTokenException("토큰이 만료되었습니다.");
-        String username = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("username").asString();
-        String roles = JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(jwtToken).getClaim("roles").asString();
+        if (jwtUtil.isTokenExpired(token)) throw new JwtTokenException("토큰이 만료되었습니다.");
+        String username = jwtUtil.getUsernameFromToken(token);
+        String roles = jwtUtil.getRolesFromToken(token);
 
         String managerApiPrefix = "/api/manager";
         if (request.getRequestURI().startsWith(managerApiPrefix) && roles.equals("ROLE_USER")) throw new ServletException("권한 부족 (uri = " + request.getRequestURI() + ")");
