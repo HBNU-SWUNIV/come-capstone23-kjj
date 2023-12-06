@@ -10,6 +10,7 @@ public record MenuInfoDto(
         String info,
         String details) {
 
+
     public static MenuInfoDto from(Menu menu) {
         return new MenuInfoDto(
                 menu.getId(),

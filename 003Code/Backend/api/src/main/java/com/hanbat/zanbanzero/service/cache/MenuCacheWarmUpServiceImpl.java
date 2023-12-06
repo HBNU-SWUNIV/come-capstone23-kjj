@@ -1,5 +1,6 @@
 package com.hanbat.zanbanzero.service.cache;
 
+import com.hanbat.zanbanzero.service.menu.MenuService;
 import com.hanbat.zanbanzero.service.menu.MenuServiceImplV1;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MenuCacheWarmUpServiceImpl implements CacheWarmUpService{
 
-    private final MenuServiceImplV1 menuService;
+    private final MenuService menuService;
     private final CacheManager cacheManager;
 
     @Override

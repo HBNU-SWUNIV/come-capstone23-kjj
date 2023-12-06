@@ -16,6 +16,7 @@ public record MenuManagerInfoDto(
         String details
 ) {
 
+
     public static MenuManagerInfoDto from(Menu menu) {
         MenuFood menuFood = menu.getMenuFood();
         MenuInfo menuInfo = menu.getMenuInfo();

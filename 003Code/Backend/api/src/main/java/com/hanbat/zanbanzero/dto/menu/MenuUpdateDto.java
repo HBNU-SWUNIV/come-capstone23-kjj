@@ -8,6 +8,7 @@ public record MenuUpdateDto(
         Boolean usePlanner
 ) {
 
+
     public boolean check() {
         if (name == null || cost == null || usePlanner == null) return false;
         return true;

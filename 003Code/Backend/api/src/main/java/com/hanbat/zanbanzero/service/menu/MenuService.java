@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface MenuService {
+
     MenuUserInfoDtos getMenus();
 
     List<MenuManagerInfoDto> getMenusForManager();
