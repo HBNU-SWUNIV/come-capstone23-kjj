@@ -3,22 +3,19 @@ package com.hanbat.zanbanzero.dto.menu;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class MenuManagerInfoDto {
-    private Long id;
-    private String name;
-    private int cost;
-    private String image;
-    private Boolean sold;
-    private Boolean usePlanner;
-    private Long foodId;
+public record MenuManagerInfoDto(
+        Long id,
+        String name,
+        int cost,
+        String image,
+        Boolean sold,
+        Boolean usePlanner,
+        Long foodId,
+        String info,
+        String details
+) {
 
-    private String info;
-    private String details;
 
     public static MenuManagerInfoDto from(Menu menu) {
         MenuFood menuFood = menu.getMenuFood();

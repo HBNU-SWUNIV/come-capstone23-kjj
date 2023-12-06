@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,8 +42,21 @@ public class User {
                 userPolicy,
                 userMypage,
                 null,
-                dto.getUsername(),
-                dto.getPassword(),
+                dto.username(),
+                dto.password(),
+                "ROLE_USER",
+                null
+        );
+    }
+
+    public static User of(UserJoinDto dto, String newUsername, UserPolicy userPolicy, UserMypage userMypage) {
+        return new User(
+                null,
+                userPolicy,
+                userMypage,
+                null,
+                newUsername,
+                dto.password(),
                 "ROLE_USER",
                 null
         );
@@ -80,6 +94,9 @@ public class User {
     }
     public void setPassword(String password) {
         this.password = password;
+    }
+    public void setEncodePassword(BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.password = bCryptPasswordEncoder.encode(password);
     }
     public void updateLoginDate() {
         loginDate = LocalDate.now().toString();

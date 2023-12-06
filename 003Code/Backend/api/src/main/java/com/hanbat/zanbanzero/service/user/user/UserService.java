@@ -37,4 +37,6 @@ public interface UserService extends UserDetailsService {
     UserDetailsInterface loadUserByUsername(String username) throws UsernameNotFoundException;
 
     User findByUsername(String username) throws CantFindByUsernameException;
+
+    void joinSso(UserJoinDto dto, String newUsername);
 }

@@ -27,13 +27,6 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(exceptionResponse, status);
     }
 
-    @ExceptionHandler(JwtException.class)
-    public final ResponseEntity<Object> jwt(Exception ex, WebRequest request){
-        status = HttpStatus.FORBIDDEN;
-        ExceptionTemplate exceptionResponse = new ExceptionTemplate(new Date().toString(), ex.getMessage(), ((ServletWebRequest)request).getRequest().getRequestURI(), status.value());
-        return new ResponseEntity<>(exceptionResponse, status);
-    }
-
     @ExceptionHandler(CantFindByIdException.class)
     public final ResponseEntity<Object> cantFindById(Exception ex, WebRequest request){
         status = HttpStatus.BAD_REQUEST;

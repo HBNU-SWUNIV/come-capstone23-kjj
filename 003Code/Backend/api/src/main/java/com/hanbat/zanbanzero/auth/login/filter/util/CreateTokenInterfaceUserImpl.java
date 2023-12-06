@@ -18,11 +18,11 @@ public class CreateTokenInterfaceUserImpl implements CreateTokenInterface {
         try {
             try (ServletInputStream inputStream = request.getInputStream()) {
                 user = objectMapper.readValue(inputStream, LoginDto.class);
-                request.setAttribute("username", user.getUsername());
+                request.setAttribute("username", user.username());
             }
         } catch (IOException e) {
             throw new CreateTokenException(e);
         }
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
+        return new UsernamePasswordAuthenticationToken(user.username(), user.password());
     }
 }

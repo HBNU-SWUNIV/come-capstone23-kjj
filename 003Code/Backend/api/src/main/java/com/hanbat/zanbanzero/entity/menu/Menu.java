@@ -30,14 +30,14 @@ public class Menu {
     private boolean usePlanner;
 
     public void patch(MenuUpdateDto dto) {
-        if (dto.getName() != null) {
-            this.name = dto.getName();
+        if (dto.name() != null) {
+            this.name = dto.name();
         }
-        if (dto.getCost() != null) {
-            this.cost = dto.getCost();
+        if (dto.cost() != null) {
+            this.cost = dto.cost();
         }
-        if (dto.getUsePlanner() != null) {
-            this.usePlanner = dto.getUsePlanner();
+        if (dto.usePlanner() != null) {
+            this.usePlanner = dto.usePlanner();
         }
     }
 
@@ -46,11 +46,11 @@ public class Menu {
                 null,
                 menuInfo,
                 null,
-                dto.getName(),
-                dto.getCost(),
+                dto.name(),
+                dto.cost(),
                 filePath,
                 true,
-                dto.getUsePlanner()
+                dto.usePlanner()
         );
     }
 

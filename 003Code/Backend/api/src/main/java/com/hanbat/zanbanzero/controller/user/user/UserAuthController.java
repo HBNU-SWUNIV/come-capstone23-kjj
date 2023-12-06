@@ -40,7 +40,7 @@ public class UserAuthController {
     @Operation(summary="Keycloak 회원가입")
     @PostMapping("join/keycloak")
     public ResponseEntity<String> joinKeycloak(@RequestBody UserJoinDto dto) {
-        if (userSsoService.existsByUsername(dto.getUsername())) throw new KeycloakJoinException("username already exists - username : " + dto.getUsername());
+        if (userSsoService.existsByUsername(dto.username())) throw new KeycloakJoinException("username already exists - username : " + dto.username());
         userSsoService.joinSso(dto);
         return ResponseEntity.ok("join success");
     }
