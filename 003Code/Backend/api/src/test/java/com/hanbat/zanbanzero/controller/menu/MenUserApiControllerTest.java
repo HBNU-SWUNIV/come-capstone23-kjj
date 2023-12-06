@@ -8,7 +8,6 @@ import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
-import com.hanbat.zanbanzero.service.image.ImageService;
 import com.hanbat.zanbanzero.service.menu.MenuService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +17,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -30,9 +27,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@WebMvcTest(MenuManagerApiController.class)
+@WebMvcTest(MenuUserApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
-class MenuManagerApiControllerTest {
+class MenUserApiControllerTest {
 
     private final String name = "test menuUpdateDto name";
     private final int cost = 3000;
@@ -48,14 +45,12 @@ class MenuManagerApiControllerTest {
 
     @MockBean
     MenuService menuService;
-    @MockBean
-    ImageService imageService;
 
     private final Long testId = 1L;
     private final String uploadDir = "img/menu";
 
     @Test
-    @DisplayName("[MENU_MANAGER] 관리자 전용 전체 메뉴 조회 API")
+    @DisplayName("유저 전용 전체 메뉴 조회 API")
     void getMenus() throws Exception{
         // 1. 정상 요청
         {
@@ -65,99 +60,68 @@ class MenuManagerApiControllerTest {
             Mockito.when(menuService.getMenus()).thenReturn(expected);
 
             // When & Then
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu"))
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/user/menu"))
                     .andExpect(MockMvcResultMatchers.status().isOk());
             Mockito.verify(menuService, Mockito.times(1)).getMenus();
         }
     }
 
     @Test
-    @DisplayName("[MENU_MANAGER] 식단표 사용 유무 조회 API")
-    void isPlanned() throws Exception{
-        // 1. 식단표 사용중
-        {
-            // Given
-            Mockito.when(menuService.isPlanned()).thenReturn(true);
-
-            // When & Then
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu/planner"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(result -> {
-                        assertEquals("true", result.getResponse().getContentAsString());
-                    });
-            Mockito.verify(menuService, Mockito.times(1)).isPlanned();
-        }
-        // 1. 식단표 미사용
-        {
-            // Given
-            Mockito.when(menuService.isPlanned()).thenReturn(false);
-
-            // When & Then
-            mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu/planner"))
-                    .andExpect(MockMvcResultMatchers.status().isOk())
-                    .andExpect(result -> {
-                        assertEquals("false", result.getResponse().getContentAsString());
-                    });
-            Mockito.verify(menuService, Mockito.times(2)).isPlanned();
-        }
-    }
-
-    @Test
-    @DisplayName("[MENU_MANAGER] 메뉴 추가 API")
+    @DisplayName("메뉴 추가 API")
     void addMenu() throws Exception {
-
-        // Given
-        MenuUpdateDto target = new MenuUpdateDto(
-                name,
-                cost,
-                info,
-                details,
-                usePlanner
-        );
-        MenuDto dto = new MenuDto(
-                null,
-                name,
-                cost,
-                image,
-                sold
-        );
-        MockMultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.png",
-                "multipart/form-data",
-                "test".getBytes()
-        );
-        MockPart data = new MockPart("data", objectMapper.writeValueAsBytes(target));
-        data.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-
         // 1. 정상 요청
         {
             // Given
-            Mockito.when(menuService.addMenu(target, null)).thenReturn(dto);
+            MenuUpdateDto expected = new MenuUpdateDto(
+                    name,
+                    cost,
+                    info,
+                    details,
+                    usePlanner
+            );
+            MenuDto dto = new MenuDto(
+                    null,
+                    name,
+                    cost,
+                    image,
+                    sold
+            );
+            Mockito.when(menuService.addMenu(expected, "path")).thenReturn(dto);
 
             // When & Then
-            mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/menu")
-                            .file(multipartFile)
-                            .part(data))
-                    .andExpect(MockMvcResultMatchers.status().isOk());
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/manager/menu")
+                    .content(objectMapper.writeValueAsString(expected))
+                    .contentType(MediaType.MULTIPART_FORM_DATA))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals(dto.toString(), result.getResponse().getContentAsString());
+                    });
 
-            Mockito.verify(menuService, Mockito.times(1)).addMenu(target, null);
+            Mockito.verify(menuService, Mockito.times(1)).addMenu(expected, "path");
         }
 
         // 2. 중복 상품명 등록
         {
             // Given
+            MenuUpdateDto expected = new MenuUpdateDto(
+                    name,
+                    cost,
+                    info,
+                    details,
+                    usePlanner
+            );
             Mockito.doThrow(new SameNameException("""
                 이미 해당 이름을 가진 메뉴가 존재합니다.
-                dto : """)).when(menuService).addMenu(target, null);
+                dto : """)).when(menuService).addMenu(expected, "path");
 
             // When & Then
-            mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/menu")
-                            .part(data))
+            mockMvc.perform(MockMvcRequestBuilders.post("/api/manager/menu")
+                            .content(objectMapper.writeValueAsString(expected))
+                            .contentType(MediaType.MULTIPART_FORM_DATA))
                     .andExpect(MockMvcResultMatchers.status().is(409));
 
             // Then
-            Mockito.verify(menuService, Mockito.times(2)).addMenu(target, null);
+            Mockito.verify(menuService, Mockito.times(2)).addMenu(expected, "path");
         }
     }
 

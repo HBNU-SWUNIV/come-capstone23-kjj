@@ -1,19 +1,14 @@
 package com.hanbat.zanbanzero.dto.sbiz;
 
 import com.hanbat.zanbanzero.entity.sbiz.WeeklyFoodPredict;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
-public class WeeklyFoodPredictDto {
-    private LocalDate date;
-
-    private EntireData entire;
-
-    private PartData part;
+public record WeeklyFoodPredictDto(
+        LocalDate date,
+        EntireData entire,
+        PartData part
+) {
 
     public static WeeklyFoodPredictDto from(WeeklyFoodPredict predict) {
         return new WeeklyFoodPredictDto(

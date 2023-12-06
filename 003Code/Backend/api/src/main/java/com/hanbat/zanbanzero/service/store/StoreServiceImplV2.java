@@ -166,7 +166,7 @@ public class StoreServiceImplV2 implements StoreService {
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
                 storeId : """, FINAL_ID));
-        store.setName(dto.getName());
+        store.setName(dto.name());
 
         return StoreDto.from(store);
     }
@@ -178,7 +178,7 @@ public class StoreServiceImplV2 implements StoreService {
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
                 storeId : """, FINAL_ID));
-        store.setInfo(dto.getInfo());
+        store.setInfo(dto.info());
 
         return StoreDto.from(store);
     }

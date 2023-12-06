@@ -119,7 +119,7 @@ public class MenuManagerApiController {
     @Operation(summary="관리자 - 전체 식재료 정보 조회")
     @GetMapping("/food")
     public ResponseEntity<List<MenuFoodDto>> getFood() {
-        return ResponseEntity.ok(menuService.getFood().getDtos());
+        return ResponseEntity.ok(menuService.getFood().dtos());
     }
 
     @Operation(summary="관리자 - 특정 식재료 정보 조회")

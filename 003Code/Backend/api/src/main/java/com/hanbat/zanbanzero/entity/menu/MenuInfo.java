@@ -20,15 +20,15 @@ public class MenuInfo {
     private String details;
 
     public void patch(MenuUpdateDto dto) {
-        if (dto.getInfo() != null) this.info = dto.getInfo();
-        if (dto.getDetails() != null) this.details = dto.getDetails();
+        if (dto.info() != null) this.info = dto.info();
+        if (dto.details() != null) this.details = dto.details();
     }
 
     public static MenuInfo from(MenuUpdateDto dto) {
         return new MenuInfo(
                 null,
-                dto.getInfo(),
-                dto.getDetails()
+                dto.info(),
+                dto.details()
         );
     }
 }

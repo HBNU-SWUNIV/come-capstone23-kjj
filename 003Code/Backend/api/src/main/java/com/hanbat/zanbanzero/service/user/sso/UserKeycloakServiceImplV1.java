@@ -67,7 +67,7 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
     public void joinSso(UserJoinDto dto) {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setEnabled(true);
-        userRepresentation.setUsername(dto.getUsername());
+        userRepresentation.setUsername(dto.username());
 
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersResource = realmResource.users();
@@ -78,7 +78,7 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
                 CredentialRepresentation passwordCred = new CredentialRepresentation();
                 passwordCred.setTemporary(false);
                 passwordCred.setType(CredentialRepresentation.PASSWORD);
-                passwordCred.setValue(dto.getPassword());
+                passwordCred.setValue(dto.password());
                 UserResource userResource = usersResource.get(userId);
 
                 userResource.resetPassword(passwordCred);
@@ -87,8 +87,7 @@ public class UserKeycloakServiceImplV1 implements UserSsoService {
                 RoleRepresentation realmRoleRep = realmResource.roles().get(roleName).toRepresentation();
                 userResource.roles().realmLevel().add(Arrays.asList(realmRoleRep));
 
-                dto.setUsername(userId + "_keycloak");
-                userService.join(dto);
+                userService.joinSso(dto, userId + "_keycloak");
             }
             else throw new KeycloakJoinException("keycloak join error - code : " + response.getStatus());
         }

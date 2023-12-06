@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Index;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Entity
 @AllArgsConstructor
@@ -27,12 +26,11 @@ public class Planner {
     private LocalDate date;
     private String menus;
 
-    public static Planner of(PlannerDto dto){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static Planner of(PlannerDto dto, LocalDate date){
         return new Planner(
                 null,
-                LocalDate.parse(dto.getDate(), formatter),
-                dto.getMenus()
+                date,
+                dto.menus()
         );
     }
 

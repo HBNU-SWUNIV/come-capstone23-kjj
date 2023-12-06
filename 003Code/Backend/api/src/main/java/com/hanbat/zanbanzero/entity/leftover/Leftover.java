@@ -22,6 +22,6 @@ public class Leftover {
     private double data;
 
     public static Leftover of(LeftoverPre leftoverPre, LeftoverDto dto) {
-        return new Leftover(null, leftoverPre, dto.getLeftover());
+        return new Leftover(null, leftoverPre, dto.leftover());
     }
 }

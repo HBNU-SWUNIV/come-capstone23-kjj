@@ -1,21 +1,10 @@
 package com.hanbat.zanbanzero.dto.calculate;
 
 import com.hanbat.zanbanzero.entity.calculate.CalculatePreWeek;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
-public class CalculatePreWeekDto {
-    private LocalDate date;
-    private int monday;
-    private int tuesday;
-    private int wednesday;
-    private int thursday;
-    private int friday;
+public record CalculatePreWeekDto(LocalDate date, int monday, int tuesday, int wednesday, int thursday, int friday) {
 
     public static CalculatePreWeekDto from(CalculatePreWeek data) {
         return new CalculatePreWeekDto(

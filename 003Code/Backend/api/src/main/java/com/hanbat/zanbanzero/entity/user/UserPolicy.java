@@ -37,11 +37,11 @@ public class UserPolicy {
     }
 
     public void setPolicy(UserDatePolicyDto dto) {
-        monday = dto.isMonday();
-        tuesday = dto.isTuesday();
-        wednesday = dto.isWednesday();
-        thursday = dto.isThursday();
-        friday = dto.isFriday();
+        monday = dto.monday();
+        tuesday = dto.tuesday();
+        wednesday = dto.wednesday();
+        thursday = dto.thursday();
+        friday = dto.friday();
     }
 
     public void setDefaultMenu(Long id) {

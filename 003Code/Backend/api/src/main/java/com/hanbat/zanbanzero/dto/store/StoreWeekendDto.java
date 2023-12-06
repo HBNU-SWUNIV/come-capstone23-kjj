@@ -1,17 +1,13 @@
 package com.hanbat.zanbanzero.dto.store;
 
 import com.hanbat.zanbanzero.service.DateUtil;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
 import java.time.LocalDate;
 
-@Getter
-@AllArgsConstructor
-public class StoreWeekendDto {
-    private String date;
-    private int count;
-
+public record StoreWeekendDto(
+        String date,
+        int count
+) {
     public static StoreWeekendDto newZeroDataStoreWeekendDto(LocalDate targetDate) {
         return new StoreWeekendDto(
                 DateUtil.makeLocaldateToFormatterString(targetDate),

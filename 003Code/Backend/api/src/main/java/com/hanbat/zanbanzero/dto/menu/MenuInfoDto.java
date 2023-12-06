@@ -1,23 +1,14 @@
 package com.hanbat.zanbanzero.dto.menu;
 
 import com.hanbat.zanbanzero.entity.menu.Menu;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class MenuInfoDto {
-
-    private Long id;
-    private String name;
-    private Integer cost;
-    private String image;
-    private Boolean sold;
-
-    private String info;
-    private String details;
+public record MenuInfoDto(
+        Long id,
+        String name,
+        Integer cost,
+        String image,
+        Boolean sold,
+        String info,
+        String details) {
 
     public static MenuInfoDto from(Menu menu) {
         return new MenuInfoDto(

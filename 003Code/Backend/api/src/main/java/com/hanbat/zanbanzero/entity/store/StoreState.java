@@ -27,8 +27,8 @@ public class StoreState {
     private String name;
 
     public void setOff(StoreOffDto dto) {
-        off = dto.isOff();
-        name = dto.getName();
+        off = dto.off();
+        name = dto.name();
     }
 
     public static StoreState createNewOffStoreState(Store store, LocalDate date, StoreOffDto dto) {
@@ -36,8 +36,8 @@ public class StoreState {
                 null,
                 store,
                 date,
-                dto.isOff(),
-                dto.getName()
+                dto.off(),
+                dto.name()
         );
     }
 }

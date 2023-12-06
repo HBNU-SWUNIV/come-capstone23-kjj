@@ -39,10 +39,21 @@ public class UserServiceImplV1 implements UserService {
     @Override
     @Transactional
     public void join(UserJoinDto dto) {
-        dto.setEncodePassword(bCryptPasswordEncoder);
         UserMypage userMypage = userMypageRepository.save(UserMypage.createNewUserMyPage());
         UserPolicy userPolicy = userPolicyRepository.save(UserPolicy.createNewUserPolicy());
-        userRepository.save(User.of(dto, userPolicy, userMypage));
+        User user = User.of(dto, userPolicy, userMypage);
+        user.setEncodePassword(bCryptPasswordEncoder);
+        userRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void joinSso(UserJoinDto dto, String newUsername) {
+        UserMypage userMypage = userMypageRepository.save(UserMypage.createNewUserMyPage());
+        UserPolicy userPolicy = userPolicyRepository.save(UserPolicy.createNewUserPolicy());
+        User user = User.of(dto, newUsername, userPolicy, userMypage);
+        user.setEncodePassword(bCryptPasswordEncoder);
+        userRepository.save(user);
     }
 
     @Override
@@ -51,7 +62,7 @@ public class UserServiceImplV1 implements UserService {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new CantFindByUsernameException("""
                 해당 username을 가진 유저 데이터를 찾을 수 없습니다.
                 username : """, username));
-        if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPassword())) userRepository.delete(user);
+        if (bCryptPasswordEncoder.matches(dto.password(), user.getPassword())) userRepository.delete(user);
         else throw new WrongRequestDetails("비밀번호가 맞지 않습니다.");
     }
 
@@ -85,7 +96,7 @@ public class UserServiceImplV1 implements UserService {
         UserMypage mypage= userRepository.findByIdWithFetchMyPage(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 유저 데이터를 찾을 수 없습니다.
                 id : """, id)).getUserMypage();
-        int data = -1 * dto.getValue();
+        int data = -1 * dto.value();
         if (mypage.getPoint() + data < 0) throw new WrongRequestDetails("""
             포인트가 부족합니다.
             포인트 사용 시 잔여 포인트가 음수가 됩니다.

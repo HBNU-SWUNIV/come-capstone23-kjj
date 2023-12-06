@@ -22,13 +22,14 @@ public class PlannerServiceImplV1 implements PlannerService{
     @Transactional
     public PlannerDto setPlanner(PlannerDto dto, int year, int month, int day) {
         LocalDate dateString = dateUtil.makeLocalDate(year, month, day);
-        dto.setDate(dateString.toString());
 
         Planner planner = repository.findOnePlanner(dateString).orElse(null);
         if (planner == null) {
-            planner = repository.save(Planner.of(dto));
+            planner = repository.save(Planner.of(dto, dateString));
         }
-        else planner.setMenus(dto.getMenus());
+        else {
+            planner.setMenus(dto.menus());
+        }
         return PlannerDto.from(planner);
     }
 

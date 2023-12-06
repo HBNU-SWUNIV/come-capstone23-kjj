@@ -70,10 +70,10 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     public MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException {
-        if (menuRepository.existsByName(dto.getName())) throw new SameNameException("""
+        if (menuRepository.existsByName(dto.name())) throw new SameNameException("""
                 이미 해당 이름을 가진 메뉴가 존재합니다.
                 dto : """ + dto);
-        if (menuRepository.existsByUsePlannerTrue() && dto.getUsePlanner()) throw new SameNameException("""
+        if (menuRepository.existsByUsePlannerTrue() && dto.usePlanner()) throw new SameNameException("""
                 이미 식단을 사용중인 메뉴가 있는 상태입니다.
                 식단을 미사용하거나, 기존에 식단을 사용하는 메뉴를 취소해주세요.
                 dto : """ + dto);
