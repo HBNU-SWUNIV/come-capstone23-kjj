@@ -5,12 +5,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.entity.menu.MenuFood;
 
 import java.util.HashMap;
+import java.util.Map;
 
-public record MenuFoodDto(Long id, String name, HashMap<String, Integer> food) {
+public record MenuFoodDto(Long id, String name, Map<String, Integer> food) {
 
     public static MenuFoodDto from(MenuFood menuFood) {
         ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String, Integer> food;
+        Map<String, Integer> food;
         try {
             food = objectMapper.readValue(menuFood.getFood(), HashMap.class);
         } catch (JsonProcessingException e) {

@@ -1,10 +1,7 @@
 package com.hanbat.zanbanzero.controller.menu;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hanbat.zanbanzero.dto.menu.MenuDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDto;
-import com.hanbat.zanbanzero.dto.menu.MenuUserInfoDtos;
+import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
@@ -17,67 +14,60 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.mock.web.MockPart;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static com.hanbat.zanbanzero.util.MenuTestTemplate.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 
 @WebMvcTest(MenuManagerApiController.class)
 @AutoConfigureMockMvc(addFilters = false)
 class MenuManagerApiControllerTest {
-
-    private final String name = "test menuUpdateDto name";
-    private final int cost = 3000;
-    private final String info = "test menuUpdateDto info";
-    private final String details = "test menuUpdateDto details";
-    private final boolean usePlanner = false;
-    private final String image = "image";
-    private final boolean sold = true;
 
     @Autowired
     private MockMvc mockMvc;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @MockBean
-    MenuService menuService;
-    @MockBean
-    ImageService imageService;
+    private MenuService menuService;
 
-    private final Long testId = 1L;
-    private final String uploadDir = "img/menu";
+    @MockBean
+    private ImageService imageService;
 
     @Test
     @DisplayName("[MENU_MANAGER] 관리자 전용 전체 메뉴 조회 API")
-    void getMenus() throws Exception{
-        // 1. 정상 요청
+    void getMenusForManager() throws Exception{
+        // 1. 정상 시나리오
         {
             // Given
-            List<MenuUserInfoDto> menuUserInfoDtoList = new ArrayList<>();
-            MenuUserInfoDtos expected = new MenuUserInfoDtos(menuUserInfoDtoList);
-            Mockito.when(menuService.getMenus()).thenReturn(expected);
+            List<MenuManagerInfoDto> expected = new ArrayList<>();
+            when(menuService.getMenusForManager()).thenReturn(expected);
 
             // When & Then
             mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu"))
                     .andExpect(MockMvcResultMatchers.status().isOk());
-            Mockito.verify(menuService, Mockito.times(1)).getMenus();
+            verify(menuService, times(1)).getMenusForManager();
         }
     }
 
     @Test
-    @DisplayName("[MENU_MANAGER] 식단표 사용 유무 조회 API")
+    @DisplayName("[MENU_MANAGER] 식단표 사용 메뉴 유무 조회 API")
     void isPlanned() throws Exception{
         // 1. 식단표 사용중
         {
             // Given
-            Mockito.when(menuService.isPlanned()).thenReturn(true);
+            when(menuService.isPlanned()).thenReturn(true);
 
             // When & Then
             mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu/planner"))
@@ -85,12 +75,12 @@ class MenuManagerApiControllerTest {
                     .andExpect(result -> {
                         assertEquals("true", result.getResponse().getContentAsString());
                     });
-            Mockito.verify(menuService, Mockito.times(1)).isPlanned();
+            verify(menuService, times(1)).isPlanned();
         }
-        // 1. 식단표 미사용
+        // 2. 식단표 미사용
         {
             // Given
-            Mockito.when(menuService.isPlanned()).thenReturn(false);
+            when(menuService.isPlanned()).thenReturn(false);
 
             // When & Then
             mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu/planner"))
@@ -98,7 +88,59 @@ class MenuManagerApiControllerTest {
                     .andExpect(result -> {
                         assertEquals("false", result.getResponse().getContentAsString());
                     });
-            Mockito.verify(menuService, Mockito.times(2)).isPlanned();
+            verify(menuService, times(2)).isPlanned();
+        }
+    }
+    
+    @Test
+    @DisplayName("[MENU_MANAGER] 식단표 사용 설정 API")
+    void setPlanner() throws Exception {
+        // 1. 정상 시나리오
+        {
+            // Given
+            when(menuService.setPlanner(testMenuId())).thenReturn(true);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.post(String.format("/api/manager/menu/%s/planner", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).setPlanner(testMenuId());
+        }
+        // 2. 이미 식단표를 사용하는 메뉴가 있는 경우
+        {
+            // Given
+            when(menuService.setPlanner(testMenuId())).thenReturn(false);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.post(String.format("/api/manager/menu/%s/planner", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(2)).setPlanner(testMenuId());
+        }
+    }
+
+    @Test
+    @DisplayName("[MENU_MANAGER] 식단표 교체 설정 API")
+    void changePlanner() throws Exception {
+        // 1. 정상 시나리오
+        {
+            // Given
+            when(menuService.changePlanner(testMenuId())).thenReturn(true);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/change/planner", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).changePlanner(testMenuId());
+        }
+        // 2. menuId 데이터를 찾을 수 없는 경우
+        {
+            // Given
+            when(menuService.changePlanner(testMenuId())).thenThrow(new CantFindByIdException("""
+                해당 id를 가진 Menu를 찾을 수 없습니다.
+                menuId : """, testMenuId()));
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/change/planner", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).changePlanner(testMenuId());
         }
     }
 
@@ -108,18 +150,18 @@ class MenuManagerApiControllerTest {
 
         // Given
         MenuUpdateDto target = new MenuUpdateDto(
-                name,
-                cost,
-                info,
-                details,
-                usePlanner
+                testMenuName(),
+                testCost(),
+                testInfo(),
+                testDetails(),
+                testUsePlanner()
         );
-        MenuDto dto = new MenuDto(
+        MenuDto expected = new MenuDto(
                 null,
-                name,
-                cost,
-                image,
-                sold
+                testMenuName(),
+                testCost(),
+                testImage(),
+                testSold()
         );
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "file",
@@ -130,18 +172,17 @@ class MenuManagerApiControllerTest {
         MockPart data = new MockPart("data", objectMapper.writeValueAsBytes(target));
         data.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
-        // 1. 정상 요청
+        // 1. 정상 시나리오
         {
             // Given
-            Mockito.when(menuService.addMenu(target, null)).thenReturn(dto);
+            when(menuService.addMenu(target, null)).thenReturn(expected);
 
             // When & Then
             mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/menu")
                             .file(multipartFile)
                             .part(data))
                     .andExpect(MockMvcResultMatchers.status().isOk());
-
-            Mockito.verify(menuService, Mockito.times(1)).addMenu(target, null);
+            verify(menuService, times(1)).addMenu(target, null);
         }
 
         // 2. 중복 상품명 등록
@@ -155,199 +196,294 @@ class MenuManagerApiControllerTest {
             mockMvc.perform(MockMvcRequestBuilders.multipart("/api/manager/menu")
                             .part(data))
                     .andExpect(MockMvcResultMatchers.status().is(409));
-
-            // Then
-            Mockito.verify(menuService, Mockito.times(2)).addMenu(target, null);
+            verify(menuService, times(2)).addMenu(target, null);
         }
     }
 
     @Test
-    void updateMenu() throws Exception {
-        // 1. 정상 요청
+    @DisplayName("[MENU_MANAGER] 메뉴에 식재료 정보 등록 API")
+    void setFood() throws Exception{
+        // 1. 정상 시나리오
         {
             // Given
-            String expectedMsg = "수정되었습니다.";
-            MenuUpdateDto expected = new MenuUpdateDto(
-                    name,
-                    cost,
-                    info,
-                    details,
-                    usePlanner
+            when(menuService.setFood(testMenuId(), testFoodId())).thenReturn(true);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/food/%s", testMenuId(), testFoodId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals("true", result.getResponse().getContentAsString());
+                    });
+            verify(menuService, times(1)).setFood(testMenuId(), testFoodId());
+        }
+        // 2. menuId 데이터를 찾을 수 없는 경우
+        {
+            // Given
+            when(menuService.setFood(testMenuId(), testFoodId())).thenThrow(new CantFindByIdException("""
+                해당 id를 가진 Menu를 찾을 수 없습니다.
+                menuId : """, testMenuId()));
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/food/%s", testMenuId(), testFoodId())))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).setFood(testMenuId(), testFoodId());
+        }
+    }
+
+    @Test
+    @DisplayName("[MENU_MANAGER] 전체 식재료 정보 조회 API")
+    void getFood() throws Exception{
+        // 1. 정상 시나리오
+        {
+            // Given
+            List<MenuFoodDto> menuFoodDtos = new ArrayList<>();
+            MenuFoodDtos expected = new MenuFoodDtos(menuFoodDtos);
+            when(menuService.getFood()).thenReturn(expected);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.get("/api/manager/menu/food"))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).getFood();
+        }
+    }
+
+    @Test
+    @DisplayName("[MENU_MANAGER] 특정 식재료 정보 조회 API")
+    void getOneFood() throws Exception{
+        // 1. 정상 시나리오
+        {
+            // Given
+            Map<String, Integer> testFood = new HashMap<>();
+            MenuFoodDto expected = new MenuFoodDto(
+                    testFoodId(),
+                    testMenuName(),
+                    testFood
             );
-            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId, uploadDir);
+            when(menuService.getOneFood(testFoodId())).thenReturn(expected);
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/update")
-                            .content(objectMapper.writeValueAsString(expected))
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/manager/menu/food/%s", testFoodId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).getOneFood(testFoodId());
+        }
+        // 2. foodId 데이터를 찾을 수 없는 경우
+        {
+            // Given
+            when(menuService.getOneFood(testFoodId())).thenThrow(new CantFindByIdException("""
+                해당 id를 가진 식재료 데이터를 찾을 수 없습니다.
+                menuId : """, testFoodId()));
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.get(String.format("/api/manager/menu/food/%s", testFoodId())))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).getOneFood(testFoodId());
+        }
+    }
+
+    @Test
+    @DisplayName("[MENU_MANAGER] 식재료 정보 추가 API")
+    void addFood() throws Exception{
+        // Given
+        Map<String, Integer> testFoodData = new HashMap<>();
+
+        // 1. 정상 시나리오
+        {
+            // Given
+            when(menuService.addFood(testFoodName(), testFoodData)).thenReturn(true);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders
+                            .post("/api/manager/menu/food")
+                            .param("name", testFoodName())
+                            .content(objectMapper.writeValueAsBytes(testFoodData))
                             .contentType(MediaType.APPLICATION_JSON))
-                    .andReturn();
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals("true", result.getResponse().getContentAsString());
+                    });
+            verify(menuService, times(1)).addFood(testFoodName(), testFoodData);
+        }
+        // 2. name이 중복되는 경우
+        {
+            // Given
+            when(menuService.addFood(testFoodName(), testFoodData)).thenReturn(false);
 
-            // Then
-            assertEquals(expectedMsg, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders
+                            .post("/api/manager/menu/food")
+                            .param("name", testFoodName())
+                            .content(objectMapper.writeValueAsBytes(testFoodData))
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals("false", result.getResponse().getContentAsString());
+                    });
+            verify(menuService, times(2)).addFood(testFoodName(), testFoodData);
+        }
+    }
 
-            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId, uploadDir);
+    @Test
+    @DisplayName("[MENU_MANAGER] 메뉴 수정 API")
+    void updateMenu() throws Exception {
+        // Given
+        MenuUpdateDto target = new MenuUpdateDto(
+                testMenuName(),
+                testCost(),
+                testInfo(),
+                testDetails(),
+                testUsePlanner()
+        );
+
+        MockMultipartFile multipartFile = new MockMultipartFile(
+                "file",
+                "test.png",
+                "multipart/form-data",
+                "test".getBytes()
+        );
+        MockPart mockPartNameData = new MockPart("data", objectMapper.writeValueAsBytes(target));
+        mockPartNameData.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+
+        MenuInfoDto expected = new MenuInfoDto(
+                testMenuId(),
+                testMenuName(),
+                testCost(),
+                testImage(),
+                testSold(),
+                testInfo(),
+                testDetails()
+        );
+
+        // 1. 정상 시나리오
+        {
+            // Given
+            when(menuService.updateMenu(target, multipartFile, testMenuId(), testFilePath())).thenReturn(expected);
+
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders
+                            .multipart(HttpMethod.PATCH, String.format("/api/manager/menu/%s", testMenuId()))
+                            .file(multipartFile)
+                            .part(mockPartNameData))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).updateMenu(target, multipartFile, testMenuId(), testFilePath());
         }
 
         // 2. 중복 상품명 등록
         {
             // Given
-            String expectedMsg = "데이터 중복입니다.";
-            MenuUpdateDto expected = new MenuUpdateDto(
-                    name,
-                    cost,
-                    info,
-                    details,
-                    usePlanner
-            );
-            Mockito.doThrow(new SameNameException(expectedMsg)).when(menuService).updateMenu(expected,  null, testId, uploadDir);
+            when(menuService.updateMenu(target, multipartFile, testMenuId(), testFilePath()))
+                    .thenThrow(new CantFindByIdException("""
+                해당 id를 가진 Menu를 찾을 수 없습니다.
+                menuId : """, testMenuId()));
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/update")
-                            .content(objectMapper.writeValueAsString(expected))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResolvedException().getMessage());
-            assertEquals(409, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(2)).updateMenu(expected, null, testId, uploadDir);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders
+                            .multipart(HttpMethod.PATCH, String.format("/api/manager/menu/%s", testMenuId()))
+                            .file(multipartFile)
+                            .part(mockPartNameData))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).updateMenu(target, multipartFile, testMenuId(), testFilePath());
         }
     }
 
     @Test
-    void updateMenuInfo() throws Exception{
-        // 1. 정상 요청
-        {
-            // Given
-            String expectedMsg = "수정되었습니다.";
-            MenuUpdateDto expected = new MenuUpdateDto(
-                    name,
-                    cost,
-                    info,
-                    details,
-                    usePlanner
-            );
-            Mockito.doNothing().when(menuService).updateMenu(expected, null, testId, uploadDir);
-
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/info/update")
-                            .content(objectMapper.writeValueAsString(expected))
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(1)).updateMenu(expected, null, testId, uploadDir);
-        }
-    }
-
-    @Test
+    @DisplayName("[MENU_MANAGER] 메뉴 삭제 API")
     void deleteMenu() throws Exception{
+        // Given
+        MenuDto expected = new MenuDto(
+                testMenuId(),
+                testMenuName(),
+                testCost(),
+                testImage(),
+                testSold()
+        );
+
         // 1. 정상 요청
         {
             // Given
-            String expectedMsg = "삭제되었습니다.";
-            Mockito.doNothing().when(menuService).deleteMenu(testId);
+            when(menuService.deleteMenu(testMenuId())).thenReturn(expected);
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/manager/menu/1/del")).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(1)).deleteMenu(testId);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.delete(String.format("/api/manager/menu/%s", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().isOk());
+            verify(menuService, times(1)).deleteMenu(testMenuId());
         }
 
-        // 2. 없는 id 요청
+        // 2. menuId 데이터가 없는 경우
         {
             // Given
-            String expectedMsg = "잘못된 id 입니다.";
-            Mockito.doThrow(new CantFindByIdException(1L)).when(menuService).deleteMenu(testId);
+            when(menuService.deleteMenu(testMenuId()))
+                    .thenThrow(new CantFindByIdException("""
+                해당 id를 가진 Menu를 찾을 수 없습니다.
+                menuId : """, testMenuId()));
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.delete("/api/manager/menu/1/del")).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResolvedException().getMessage());
-            assertEquals(500, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(2)).deleteMenu(testId);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.delete(String.format("/api/manager/menu/%s", testMenuId())))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).deleteMenu(testMenuId());
         }
     }
 
     @Test
+    @DisplayName("[MENU_MANAGER] 품절 설정 API")
     void setSoldOut() throws Exception{
         // 1. 정상 요청 - 품절 처리
         {
             // Given
-            String expectedMsg = "반영되었습니다.";
             String type = "y";
-            Mockito.doNothing().when(menuService).setSoldOut(testId, type);
+            when(menuService.setSoldOut(testMenuId(), type)).thenReturn(true);
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/sold/" + type)).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(1)).setSoldOut(testId, type);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/sold/%s", testMenuId(), type)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals("true", result.getResponse().getContentAsString());
+                    });
+            verify(menuService, times(1)).setSoldOut(testMenuId(), type);
         }
 
-        // 2. 정상 요청 - 품절 처리 취소
+        // 2. 정상 요청 - 재판매 처리
         {
             // Given
-            String expectedMsg = "반영되었습니다.";
             String type = "n";
-            Mockito.doNothing().when(menuService).setSoldOut(testId, type);
+            when(menuService.setSoldOut(testMenuId(), type)).thenReturn(true);
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/sold/" + type)).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResponse().getContentAsString());
-            assertEquals(200, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(1)).setSoldOut(testId, type);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/sold/%s", testMenuId(), type)))
+                    .andExpect(MockMvcResultMatchers.status().isOk())
+                    .andExpect(result -> {
+                        assertEquals("true", result.getResponse().getContentAsString());
+                    });
+            verify(menuService, times(1)).setSoldOut(testMenuId(), type);
         }
-
-        // 3. 없는 id 요청
+        
+        // 3. menuId 데이터가 없는 경우
         {
             // Given
-            String expectedMsg = "잘못된 id 입니다.";
             String type = "y";
-            Mockito.doThrow(new CantFindByIdException(expectedMsg, new IllegalArgumentException())).when(menuService).setSoldOut(testId, type);
+            when(menuService.setSoldOut(testMenuId(), type))
+                    .thenThrow(new CantFindByIdException("""
+                해당 id를 가진 Menu를 찾을 수 없습니다.
+                menuId : """, testMenuId()));
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/sold/" + type)).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResolvedException().getMessage());
-            assertEquals(500, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(2)).setSoldOut(testId, type);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/sold/%s", testMenuId(), type)))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(2)).setSoldOut(testMenuId(), type);
         }
 
-        // 4. 잘못된 파라미터 요청
+        // 4. 잘못된 파라미터가 전달된 경우
         {
             // Given
-            String expectedMsg = "잘못된 파라미터입니다.";
-            String type = "z";
-            Mockito.doThrow(new WrongParameter(expectedMsg)).when(menuService).setSoldOut(testId, type);
+            String type = "s";
+            when(menuService.setSoldOut(testMenuId(), type))
+                    .thenThrow(new WrongParameter("""
+                    잘못된 타입입니다. (y || n)
+                    type : """, type));
 
-            // When
-            MvcResult result = mockMvc.perform(MockMvcRequestBuilders.patch("/api/manager/menu/1/sold/" + type)).andReturn();
-
-            // Then
-            assertEquals(expectedMsg, result.getResolvedException().getMessage());
-            assertEquals(400, result.getResponse().getStatus());
-
-            Mockito.verify(menuService, Mockito.times(1)).setSoldOut(testId, type);
+            // When & Then
+            mockMvc.perform(MockMvcRequestBuilders.patch(String.format("/api/manager/menu/%s/sold/%s", testMenuId(), type)))
+                    .andExpect(MockMvcResultMatchers.status().is(400));
+            verify(menuService, times(1)).setSoldOut(testMenuId(), type);
         }
     }
 }

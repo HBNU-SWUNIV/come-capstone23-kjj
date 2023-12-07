@@ -18,7 +18,7 @@ public interface MenuService {
 
     MenuDto addMenu(MenuUpdateDto dto, String filePath) throws SameNameException;
 
-    void setFood(Long menuId, Long foodId) throws CantFindByIdException;
+    Boolean setFood(Long menuId, Long foodId) throws CantFindByIdException;
 
     MenuFoodDtos getFood();
 
@@ -26,13 +26,13 @@ public interface MenuService {
 
     MenuDto deleteMenu(Long id) throws CantFindByIdException;
 
-    MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter;
+    Boolean setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter;
 
-    MenuDto setPlanner(Long id) throws CantFindByIdException, WrongParameter;
+    Boolean setPlanner(Long id) throws CantFindByIdException;
 
-    MenuDto changePlanner(Long id) throws CantFindByIdException;
+    Boolean changePlanner(Long id) throws CantFindByIdException;
 
-    MenuFoodDto addFood(String name, Map<String, Integer> data) throws JsonProcessingException;
+    Boolean addFood(String name, Map<String, Integer> data) throws JsonProcessingException;
 
     MenuFoodDto getOneFood(Long id) throws CantFindByIdException;
 }
