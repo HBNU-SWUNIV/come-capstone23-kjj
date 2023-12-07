@@ -54,25 +54,25 @@ public class MenuManagerApiController {
      * 식단표 사용 설정
      * 
      * @param id - menu ID
-     * @return MenuDto
+     * @return Boolean
      * @throws CantFindByIdException - menu가 없을 때 발생
      * @throws WrongParameter - 이미 식단표를 사용중일 때 발생
      */
     @Operation(summary="식단표 사용 설정")
     @PostMapping("/{id}/planner")
-    public ResponseEntity<MenuDto> setPlanner(@PathVariable Long id) throws CantFindByIdException, WrongParameter {
+    public ResponseEntity<Boolean> setPlanner(@PathVariable Long id) throws CantFindByIdException, WrongParameter {
         return ResponseEntity.ok(menuService.setPlanner(id));
     }
 
     /**
      * 식단표 교체
      * @param id - menu ID
-     * @return MenuDto
+     * @return Boolean
      * @throws CantFindByIdException - 메뉴가 없을 때 발생
      */
     @Operation(summary="식단표 교체 설정")
     @PatchMapping("/{id}/change/planner")
-    public ResponseEntity<MenuDto> changePlanner(@PathVariable Long id) throws CantFindByIdException {
+    public ResponseEntity<Boolean> changePlanner(@PathVariable Long id) throws CantFindByIdException {
         return ResponseEntity.ok(menuService.changePlanner(id));
     }
 
@@ -106,9 +106,8 @@ public class MenuManagerApiController {
      */
     @Operation(summary="관리자 - 메뉴에 식재료 정보 등록", description = "foodId가 0이면 식재료 정보 삭제")
     @PatchMapping("/{menuId}/food/{foodId}")
-    public ResponseEntity<String> setFood(@PathVariable Long menuId, @PathVariable Long foodId) throws CantFindByIdException {
-        menuService.setFood(menuId, foodId);
-        return ResponseEntity.ok("등록 완료");
+    public ResponseEntity<Boolean> setFood(@PathVariable Long menuId, @PathVariable Long foodId) throws CantFindByIdException {
+        return ResponseEntity.ok(menuService.setFood(menuId, foodId));
     }
 
     /**
@@ -128,9 +127,9 @@ public class MenuManagerApiController {
         return ResponseEntity.ok(menuService.getOneFood(id));
     }
 
-    @Operation(summary="관리자 - 식자재 정보 추가")
+    @Operation(summary="관리자 - 식재료 정보 추가")
     @PostMapping("/food")
-    public ResponseEntity<MenuFoodDto> addFood(@RequestParam("name") String name, @RequestBody Map<String, Integer> data) throws JsonProcessingException {
+    public ResponseEntity<Boolean> addFood(@RequestParam("name") String name, @RequestBody Map<String, Integer> data) throws JsonProcessingException {
         return ResponseEntity.ok(menuService.addFood(name, data));
     }
 
@@ -175,7 +174,7 @@ public class MenuManagerApiController {
      */
     @Operation(summary="관리자 - 품절 지정")
     @PatchMapping("/{id}/sold/{type}")
-    public ResponseEntity<MenuDto> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {
+    public ResponseEntity<Boolean> setSoldOut(@PathVariable Long id, @PathVariable String type) throws CantFindByIdException, WrongParameter {
         return ResponseEntity.ok(menuService.setSoldOut(id, type));
     }
 }

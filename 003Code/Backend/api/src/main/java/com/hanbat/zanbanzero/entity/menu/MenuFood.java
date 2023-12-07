@@ -12,6 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(indexes ={
+        @Index(name = "menu_food_name_index", columnList = "name")
+})
 public class MenuFood {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

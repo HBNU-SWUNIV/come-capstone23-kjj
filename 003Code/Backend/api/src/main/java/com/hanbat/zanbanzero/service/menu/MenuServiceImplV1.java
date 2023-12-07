@@ -85,12 +85,13 @@ public class MenuServiceImplV1 implements MenuService{
 
     @Override
     @Transactional
-    public void setFood(Long menuId, Long foodId) throws CantFindByIdException {
+    public Boolean setFood(Long menuId, Long foodId) throws CantFindByIdException {
         Menu menu = menuRepository.findById(menuId).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, menuId));
         if (foodId == 0) menu.clearMenuFood();
         else menu.setMenuFood(menuFoodRepository.getReferenceById(foodId));
+        return true;
     }
 
     @Override
@@ -147,7 +148,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     @CacheEvict(value = ALL_MENUS_CACHE_VALUE, key = ALL_MENUS_CACHE_KEY, cacheManager = REDIS_CACHE_MANAGER)
-    public MenuDto setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
+    public Boolean setSoldOut(Long id, String type) throws CantFindByIdException, WrongParameter {
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, id));
@@ -155,48 +156,49 @@ public class MenuServiceImplV1 implements MenuService{
         switch (type) {
             case "n" -> menu.setSoldFalse();
             case "y" -> menu.setSoldTrue();
-            default -> throw new WrongParameter(type);
+            default -> throw new WrongParameter("""
+                    잘못된 타입입니다. (y || n)
+                    type : """, type);
         }
-        return MenuDto.from(menu);
+        return true;
     }
 
     @Override
     @Transactional
-    public MenuDto setPlanner(Long id) throws CantFindByIdException, WrongParameter {
-        if (menuRepository.existsByUsePlannerTrue()) throw new WrongParameter("""
-                이미 식단표를 사용하고 있습니다.
-                id의 메뉴 정보를 수정할 수 없습니다.
-                id : """ + id);
+    public Boolean setPlanner(Long id) throws CantFindByIdException {
+        if (menuRepository.existsByUsePlannerTrue()) return false;
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, id));
         menu.usePlanner();
-        return MenuDto.from(menu);
+        return true;
     }
 
     @Override
     @Transactional
-    public MenuDto changePlanner(Long id) throws CantFindByIdException {
+    public Boolean changePlanner(Long id) throws CantFindByIdException {
         menuRepository.findByUsePlanner(true).ifPresent(Menu::notUsePlanner);
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, id));
         menu.usePlanner();
-        return MenuDto.from(menu);
+        return true;
     }
 
     @Override
-    public MenuFoodDto addFood(String name, Map<String, Integer> data) throws JsonProcessingException {
-        return MenuFoodDto.from(menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data))));
+    public Boolean addFood(String name, Map<String, Integer> data) throws JsonProcessingException {
+        if (menuFoodRepository.existsByName(name)) return false;
+        menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data)));
+        return true;
     }
 
     @Override
     @Transactional(readOnly = true)
     public MenuFoodDto getOneFood(Long id) throws CantFindByIdException {
         return MenuFoodDto.from(menuFoodRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
-                해당 id를 가진 Menu를 찾을 수 없습니다.
+                해당 id를 가진 식재료 데이터를 찾을 수 없습니다.
                 menuId : """, id)));
     }
 }
