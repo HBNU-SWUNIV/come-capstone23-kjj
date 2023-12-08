@@ -154,7 +154,7 @@ class MenuManagerApiControllerTest {
                 testCost(),
                 testInfo(),
                 testDetails(),
-                testUsePlanner()
+                testUsePlannerFalse()
         );
         MenuDto expected = new MenuDto(
                 null,
@@ -163,18 +163,13 @@ class MenuManagerApiControllerTest {
                 testImage(),
                 testSold()
         );
-        MockMultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.png",
-                "multipart/form-data",
-                "test".getBytes()
-        );
         MockPart data = new MockPart("data", objectMapper.writeValueAsBytes(target));
         data.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
         // 1. 정상 시나리오
         {
             // Given
+            MockMultipartFile multipartFile = testMultipartFile();
             when(menuService.addMenu(target, null)).thenReturn(expected);
 
             // When & Then
@@ -331,15 +326,10 @@ class MenuManagerApiControllerTest {
                 testCost(),
                 testInfo(),
                 testDetails(),
-                testUsePlanner()
+                testUsePlannerFalse()
         );
 
-        MockMultipartFile multipartFile = new MockMultipartFile(
-                "file",
-                "test.png",
-                "multipart/form-data",
-                "test".getBytes()
-        );
+        MockMultipartFile multipartFile = testMultipartFile();
         MockPart mockPartNameData = new MockPart("data", objectMapper.writeValueAsBytes(target));
         mockPartNameData.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 

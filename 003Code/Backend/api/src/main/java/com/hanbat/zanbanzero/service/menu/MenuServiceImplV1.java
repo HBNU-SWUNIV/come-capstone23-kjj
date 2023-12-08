@@ -178,7 +178,7 @@ public class MenuServiceImplV1 implements MenuService{
     @Override
     @Transactional
     public Boolean changePlanner(Long id) throws CantFindByIdException {
-        menuRepository.findByUsePlanner(true).ifPresent(Menu::notUsePlanner);
+        menuRepository.findByUsePlannerTrue().ifPresent(Menu::notUsePlanner);
 
         Menu menu = menuRepository.findById(id).orElseThrow(() -> new CantFindByIdException("""
                 해당 id를 가진 Menu를 찾을 수 없습니다.
