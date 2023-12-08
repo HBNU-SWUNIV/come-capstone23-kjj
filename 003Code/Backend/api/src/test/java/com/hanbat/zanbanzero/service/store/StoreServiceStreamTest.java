@@ -15,7 +15,7 @@ import java.util.Map;
 
 @Slf4j
 @SpringBootTest
-class StoreServiceImplV2Test {
+class StoreServiceStreamTest {
 
     @Autowired
     private CalculateMenuRepository calculateMenuRepository;
