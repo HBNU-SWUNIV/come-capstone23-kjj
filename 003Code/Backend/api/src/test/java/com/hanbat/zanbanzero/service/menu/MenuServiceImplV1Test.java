@@ -391,7 +391,7 @@ class MenuServiceImplV1Test {
         {
             // Given
             Menu menu = testMenu(null,null, null, testUsePlannerFalse());
-            when(menuRepository.findByUsePlanner(true)).thenReturn(Optional.empty());
+            when(menuRepository.findByUsePlannerTrue()).thenReturn(Optional.empty());
             when(menuRepository.findById(testMenuId())).thenReturn(Optional.of(menu));
 
             // When
@@ -407,7 +407,7 @@ class MenuServiceImplV1Test {
             // Given
             Menu beforeUsePlannerMenu = testMenu(null,null, null, testUsePlannerTrue());
             Menu newUsePlannerMenu = testMenu(null,null, null, testUsePlannerFalse());
-            when(menuRepository.findByUsePlanner(true)).thenReturn(Optional.of(beforeUsePlannerMenu));
+            when(menuRepository.findByUsePlannerTrue()).thenReturn(Optional.of(beforeUsePlannerMenu));
             when(menuRepository.findById(testMenuId())).thenReturn(Optional.of(newUsePlannerMenu));
 
             // When

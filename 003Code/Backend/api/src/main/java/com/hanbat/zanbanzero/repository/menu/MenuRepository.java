@@ -14,7 +14,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query("SELECT m FROM Menu m LEFT JOIN FETCH m.menuInfo LEFT JOIN FETCH m.menuFood")
     List<Menu> findAllWithMenuInfoAndMenuFood();
 
-    Optional<Menu> findByUsePlanner(boolean b);
+    Optional<Menu> findByUsePlannerTrue();
 
     Boolean existsByUsePlannerTrue();
 
