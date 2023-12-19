@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.auth.login.userDetails;
+package com.hanbat.zanbanzero.auth.login.user_details;
 
 import com.hanbat.zanbanzero.entity.user.User;
 import lombok.Data;

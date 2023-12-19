@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.service.user.manager;
 
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import org.springframework.security.core.userdetails.UserDetailsService;

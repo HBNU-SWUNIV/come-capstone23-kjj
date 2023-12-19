@@ -1,8 +1,8 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.login.filter.util.CustomUriMapperV1;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
 import com.hanbat.zanbanzero.exception.exceptions.LoginFilterException;
 import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;

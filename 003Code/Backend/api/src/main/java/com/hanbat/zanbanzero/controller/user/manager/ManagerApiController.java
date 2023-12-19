@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.controller.user.manager;
 
 import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.dto.user.info.ManagerInfoDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.service.user.manager.ManagerService;

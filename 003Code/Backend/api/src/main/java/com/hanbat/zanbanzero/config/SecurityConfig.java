@@ -1,13 +1,14 @@
 package com.hanbat.zanbanzero.config;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtAuthFilter;
 import com.hanbat.zanbanzero.auth.jwt.filter.JwtRefreshFilter;
 import com.hanbat.zanbanzero.auth.login.filter.KeycloakLoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.LoginFilterV2;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterfaceUserImpl;
 import com.hanbat.zanbanzero.auth.monitor.IpCheckFilter;
+import com.hanbat.zanbanzero.auth.util.RedisAuthUtil;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeJwtAuth;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeKeycloak;
 import com.hanbat.zanbanzero.exception.handler.filter.ExceptionHandlerBeforeUsernamePassword;
@@ -47,6 +48,7 @@ public class SecurityConfig {
     private final UserSsoService userSsoService;
     private final AuthenticationManager authenticationManager;
     private final KeycloakProperties properties;
+    private final RedisAuthUtil redisAuthUtil;
 
     /**
      * Spring Security 설정을 무시하기 위한 빈
@@ -81,11 +83,11 @@ public class SecurityConfig {
 
         http.addFilterBefore(new IpCheckFilter(prometheusPath, new String[]{address}), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeUsernamePassword(), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilterV2("/api/user/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate, redisAuthUtil), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new LoginFilterV2("/api/manager/login/id", authenticationManager, new CreateTokenInterfaceUserImpl(), jwtUtil, jwtTemplate, redisAuthUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new ExceptionHandlerBeforeKeycloak(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new KeycloakLoginFilterV2("/api/user/login/keycloak", restTemplate, properties, jwtUtil, jwtTemplate, userService, userSsoService, keycloak), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtRefreshFilter("/api/user/login/refresh", userService, jwtUtil, jwtTemplate, redisAuthUtil), UsernamePasswordAuthenticationFilter.class)
                 .addFilter(new JwtAuthFilter(authenticationManager, userService, jwtTemplate, jwtUtil))
                 .addFilterBefore(new ExceptionHandlerBeforeJwtAuth(), JwtAuthFilter.class);
 

@@ -1,9 +1,10 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.filter.util.CreateTokenInterface;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.util.RedisAuthUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +22,15 @@ public class LoginFilterV2 extends AbstractAuthenticationProcessingFilter {
     private final CreateTokenInterface tokenInterface;
     private final JwtUtil jwtUtil;
     private final JwtTemplate jwtTemplate;
+    private final RedisAuthUtil redisAuthUtil;
 
-    public LoginFilterV2(String loginEndPath, AuthenticationManager authenticationManager, CreateTokenInterface tokenInterface, JwtUtil jwtUtil, JwtTemplate jwtTemplate) {
+    public LoginFilterV2(String loginEndPath, AuthenticationManager authenticationManager, CreateTokenInterface tokenInterface, JwtUtil jwtUtil, JwtTemplate jwtTemplate, RedisAuthUtil redisAuthUtil) {
         super(loginEndPath);
         this.authenticationManager = authenticationManager;
         this.tokenInterface = tokenInterface;
         this.jwtUtil = jwtUtil;
         this.jwtTemplate = jwtTemplate;
+        this.redisAuthUtil = redisAuthUtil;
     }
 
     @Override
@@ -42,11 +45,11 @@ public class LoginFilterV2 extends AbstractAuthenticationProcessingFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         UserDetailsInterface principalDetails = (UserDetailsInterface) authResult.getPrincipal();
 
-        String jwtToken = jwtUtil.createToken(principalDetails);
+        String accessToken = jwtUtil.createToken(principalDetails);
         String refreshToken = jwtUtil.createRefreshToken(principalDetails);
 
-        response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + jwtToken);
-        response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
+        jwtUtil.setTokenToResponseHeader(response, accessToken, refreshToken);
+        redisAuthUtil.setRefreshTokenDataToRedis(principalDetails.getUsername(), refreshToken);
 
         chain.doFilter(request, response);
     }

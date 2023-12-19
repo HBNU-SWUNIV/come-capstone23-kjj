@@ -2,7 +2,7 @@ package com.hanbat.zanbanzero.controller.order;
 
 import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.dto.order.LastOrderDto;
 import com.hanbat.zanbanzero.dto.order.OrderDto;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;

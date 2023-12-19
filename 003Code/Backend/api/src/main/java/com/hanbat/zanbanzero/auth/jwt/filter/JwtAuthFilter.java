@@ -1,8 +1,8 @@
 package com.hanbat.zanbanzero.auth.jwt.filter;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import com.hanbat.zanbanzero.service.user.user.UserService;
 import jakarta.servlet.FilterChain;
