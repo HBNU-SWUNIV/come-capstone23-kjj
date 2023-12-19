@@ -3,7 +3,7 @@ package com.hanbat.zanbanzero.auth.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
