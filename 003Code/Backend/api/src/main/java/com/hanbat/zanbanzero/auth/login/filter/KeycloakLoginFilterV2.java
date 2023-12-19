@@ -1,10 +1,10 @@
 package com.hanbat.zanbanzero.auth.login.filter;
 
 import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.auth.login.dto.KeycloakUserInfoDto;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterfaceImpl;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterfaceImpl;
 import com.hanbat.zanbanzero.entity.user.User;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByUsernameException;
 import com.hanbat.zanbanzero.exception.exceptions.KeycloakLoginException;

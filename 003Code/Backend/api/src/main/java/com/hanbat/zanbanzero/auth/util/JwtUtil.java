@@ -1,11 +1,13 @@
-package com.hanbat.zanbanzero.auth.jwt;
+package com.hanbat.zanbanzero.auth.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.hanbat.zanbanzero.auth.login.userDetails.UserDetailsInterface;
+import com.hanbat.zanbanzero.auth.jwt.JwtTemplate;
+import com.hanbat.zanbanzero.auth.login.user_details.UserDetailsInterface;
 import com.hanbat.zanbanzero.exception.exceptions.JwtTokenException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -86,5 +88,10 @@ public class JwtUtil {
         token = token.replace(jwtTemplate.getTokenPrefix(), "");
 
         return JWT.require(Algorithm.HMAC256(jwtTemplate.getSecret())).build().verify(token).getClaim("roles").asString();
+    }
+
+    public void setTokenToResponseHeader(HttpServletResponse response, String accessToken, String refreshToken) {
+        response.addHeader(jwtTemplate.getHeaderString(), jwtTemplate.getTokenPrefix() + accessToken);
+        response.addHeader(jwtTemplate.getRefreshHeaderString(), jwtTemplate.getTokenPrefix() + refreshToken);
     }
 }

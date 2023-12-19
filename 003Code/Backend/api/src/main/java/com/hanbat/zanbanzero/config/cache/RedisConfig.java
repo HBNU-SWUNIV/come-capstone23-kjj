@@ -3,6 +3,7 @@ package com.hanbat.zanbanzero.config.cache;
 import com.hanbat.zanbanzero.exception.tool.SlackTools;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import redis.clients.jedis.Jedis;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.support.NoOpCacheManager;
@@ -63,5 +64,10 @@ public class RedisConfig {
                 .entryTtl(Duration.ZERO);
         builder.cacheDefaults(configuration);
         return builder.build();
+    }
+
+    @Bean
+    public Jedis jedis() {
+        return new Jedis(host, port);
     }
 }

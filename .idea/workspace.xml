@@ -13,6 +13,9 @@
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 6
+}]]></component>
   <component name="ProjectId" id="2S3WJruvo1hwP7kwS7p414unVsn" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -23,6 +26,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "C:/Users/jhm10/Documents/Git/come-capstone23-kjj/003Code/Backend/api",
     "vue.rearranger.settings.migration": "true"
   }
@@ -37,6 +41,7 @@
       <updated>1688375675486</updated>
       <workItem from="1688375678533" duration="2000" />
       <workItem from="1697956299151" duration="22000" />
+      <workItem from="1702910427078" duration="24000" />
     </task>
     <servers />
   </component>

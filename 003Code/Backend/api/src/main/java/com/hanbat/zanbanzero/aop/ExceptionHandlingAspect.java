@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.aop;
 
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.exception.tool.SlackTools;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

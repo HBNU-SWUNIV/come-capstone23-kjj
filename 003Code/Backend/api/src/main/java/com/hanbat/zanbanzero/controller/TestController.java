@@ -1,7 +1,7 @@
 package com.hanbat.zanbanzero.controller;
 
 import com.hanbat.zanbanzero.aop.annotation.RestControllerClass;
-import com.hanbat.zanbanzero.auth.jwt.JwtUtil;
+import com.hanbat.zanbanzero.auth.util.JwtUtil;
 import com.hanbat.zanbanzero.service.user.manager.ManagerService;
 import com.hanbat.zanbanzero.service.user.user.UserService;
 import lombok.RequiredArgsConstructor;
