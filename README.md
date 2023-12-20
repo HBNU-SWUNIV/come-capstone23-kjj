@@ -46,7 +46,7 @@
 ![웹](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/d075023f-7849-4151-b649-2c4b2cb482b7)
 ![앱](https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/101088024/e0198d1d-7319-4845-96ca-968e896b1a49)
 
-- ### 20XX 년 OO학술대회
+- ### 2023 년 한국정보기술학회 대학생논문경진대회 동상
 
 ## Git rules
 
