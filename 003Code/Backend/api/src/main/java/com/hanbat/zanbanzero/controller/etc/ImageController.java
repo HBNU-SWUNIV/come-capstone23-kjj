@@ -3,6 +3,9 @@ package com.hanbat.zanbanzero.controller.etc;
 import com.google.zxing.WriterException;
 import com.hanbat.zanbanzero.service.order.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
@@ -21,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Tag(name = "이미지 컨트롤러", description = "이미지를 조회하는 API")
 @Controller
 @RequestMapping("/api/image")
 @RequiredArgsConstructor
@@ -34,7 +38,11 @@ public class ImageController {
      * @param dir - DB에 저장된 경로
      * @return 이미지 파일
      */
-    @Operation(summary="이미지 조회")
+    @Operation(summary="이미지 조회", description = "dir 파라미터를 전달받아 해당 경로의 이미지를 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "이미지 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "이미지 조회 실패")
+    })
     @GetMapping
     public ResponseEntity<FileSystemResource> getImage(@RequestParam("dir") String dir) throws IOException {
         String localPath = "/";
@@ -50,15 +58,19 @@ public class ImageController {
     /**
      * QR코드 이미지 조회
      *
-     * @param id - Order ID
+     * @param orderId - Order ID
      * @throws WriterException - QR 생성 라이브러리 사용 중 발생
      * @throws IOException - 응답에 QR코드 작성 중 발생
      */
     @Operation(summary="QR코드 이미지 조회")
-    @GetMapping("/order/{id}")
-    public void getOrderQr(HttpServletResponse response, @PathVariable Long id) throws WriterException, IOException {
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "QR 생성 성공"),
+            @ApiResponse(responseCode = "500", description = "서버 에러 발생")
+    })
+    @GetMapping("/order/{orderId}")
+    public void getOrderQr(HttpServletResponse response, @PathVariable Long orderId) throws WriterException, IOException {
         response.setContentType("image/png");
         response.setHeader("Content-Disposition", "inline; filename=qrcode.png");
-        ImageIO.write(orderService.getOrderQr(id), "png", response.getOutputStream());
+        ImageIO.write(orderService.getOrderQr(orderId), "png", response.getOutputStream());
     }
 }
