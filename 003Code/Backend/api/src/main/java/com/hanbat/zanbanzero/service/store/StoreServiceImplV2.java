@@ -212,7 +212,7 @@ public class StoreServiceImplV2 implements StoreService {
     @Transactional(readOnly = true)
     public StorePreDto getCalculatePreUser() {
         CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
-        Calculate calculate = calculateRepository.findTopByOrderByIdDesc();
+        Calculate calculate = calculateRepository.findTopByOrderByIdDesc().orElse(Calculate.createZeroCalculateData());
 
         return StorePreDto.from(List.of(calculate.getToday(), calculatePre.getPredictUser()));
     }

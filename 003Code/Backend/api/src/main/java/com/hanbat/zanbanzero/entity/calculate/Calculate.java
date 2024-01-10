@@ -23,4 +23,14 @@ public class Calculate {
     private LocalDate date;
     private int today;
     private int sales;
+
+    public static Calculate createZeroCalculateData() {
+        return new Calculate(
+                null,
+                null,
+                LocalDate.now(),
+                0,
+                0
+        );
+    }
 }
