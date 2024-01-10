@@ -1,10 +1,8 @@
 package com.hanbat.zanbanzero.service.menu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.entity.menu.Menu;
-import com.hanbat.zanbanzero.entity.menu.MenuFood;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
 import com.hanbat.zanbanzero.entity.user.UserPolicy;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -25,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -184,13 +181,6 @@ public class MenuServiceImplV1 implements MenuService{
                 해당 id를 가진 Menu를 찾을 수 없습니다.
                 menuId : """, id));
         menu.usePlanner();
-        return true;
-    }
-
-    @Override
-    public Boolean addFood(String name, Map<String, Integer> data) throws JsonProcessingException {
-        if (menuFoodRepository.existsByName(name)) return false;
-        menuFoodRepository.save(MenuFood.of(name, objectMapper.writeValueAsString(data)));
         return true;
     }
 

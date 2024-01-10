@@ -1,12 +1,13 @@
 package com.hanbat.zanbanzero.service.menu;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanbat.zanbanzero.dto.menu.*;
-import com.hanbat.zanbanzero.exception.exceptions.*;
+import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
+import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
+import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
+import com.hanbat.zanbanzero.exception.exceptions.WrongParameter;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Map;
 
 public interface MenuService {
 
@@ -31,8 +32,6 @@ public interface MenuService {
     Boolean setPlanner(Long id) throws CantFindByIdException;
 
     Boolean changePlanner(Long id) throws CantFindByIdException;
-
-    Boolean addFood(String name, Map<String, Integer> data) throws JsonProcessingException;
 
     MenuFoodDto getOneFood(Long id) throws CantFindByIdException;
 }

@@ -13,11 +13,15 @@ import com.hanbat.zanbanzero.service.user.sso.UserSsoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "인증 컨트롤러", description = "인증 관련 API")
 @RestControllerClass("/api/user/login/")
 @RequiredArgsConstructor
 public class UserAuthController {
@@ -31,6 +35,10 @@ public class UserAuthController {
      * @return UserInfoDto
      */
     @Operation(summary="로그인", description="username과 password를 입력받아 로그인 시도")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "username이나 password가 잘못된 경우")
+    })
     @PostMapping("id")
     public ResponseEntity<UserInfoDto> userLogin(HttpServletRequest request) throws CantFindByUsernameException {
         String username = (String) request.getAttribute("username");
@@ -38,9 +46,16 @@ public class UserAuthController {
     }
 
     @Operation(summary="Keycloak 회원가입")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "가입 성공"),
+            @ApiResponse(responseCode = "400", description = "username이 중복인 경우")
+    })
     @PostMapping("join/keycloak")
     public ResponseEntity<String> joinKeycloak(@RequestBody UserJoinDto dto) {
-        if (userSsoService.existsByUsername(dto.username())) throw new KeycloakJoinException("username already exists - username : " + dto.username());
+        if (userSsoService.existsByUsername(dto.username())) throw new KeycloakJoinException("""
+                username이 중복입니다. 
+                username : 
+                """ + dto.username());
         userSsoService.joinSso(dto);
         return ResponseEntity.ok("join success");
     }
@@ -51,6 +66,10 @@ public class UserAuthController {
      * @return UserInfoDto
      */
     @Operation(summary="Keycloak 로그인")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "로그인 성공"),
+            @ApiResponse(responseCode = "400", description = "username이 잘못된 경우")
+    })
     @Parameter(name = "token", description = "Keycloak에서 발급받은 token", required = true, in = ParameterIn.QUERY)
     @PostMapping("keycloak")
     public ResponseEntity<UserInfoDto> userLoginFromKeycloak(HttpServletRequest request) throws CantFindByIdException {
@@ -63,6 +82,9 @@ public class UserAuthController {
      * response header에 access, refresh 모두 재발급
      */
     @Operation(summary="Access Token 재발급", description = "request header에 Refresh token 첨부 필요")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공")
+    })
     @PostMapping("refresh")
     public ResponseEntity<String> refreshToken() {
         return ResponseEntity.ok("refresh success");
@@ -75,6 +97,10 @@ public class UserAuthController {
      * @throws WrongRequestDetails - username, password 둘 중 하나라도 null일 때 발생
      */
     @Operation(summary="회원가입", description="username과 password를 입력받아 회원가입 시도")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "가입 성공"),
+            @ApiResponse(responseCode = "400", description = "body 형식이 잘못된 경우")
+    })
     @PostMapping("join")
     public ResponseEntity<String> join(@RequestBody UserJoinDto dto) throws WrongRequestDetails {
         if (!dto.checkForm()) throw new WrongRequestDetails("dto : " + dto);
@@ -89,7 +115,10 @@ public class UserAuthController {
      * @param username - 로그인 아이디
      * @return Boolean
      */
-    @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복체크")
+    @Operation(summary="아이디 중복 체크", description="username만 입력받아 중복 체크")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "중복 체크 성공")
+    })
     @GetMapping("join/check")
     public ResponseEntity<Boolean> check(@RequestParam("username") String username) {
         return ResponseEntity.ok(userService.check(username));

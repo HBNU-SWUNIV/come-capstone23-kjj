@@ -20,5 +20,5 @@ public interface CalculateRepository extends JpaRepository<Calculate, Long> {
     @Query("SELECT c.sales FROM Calculate c ORDER BY c.id DESC LIMIT 2")
     List<Integer> findLastTwoSales();
 
-    Calculate findTopByOrderByIdDesc();
+    Optional<Calculate> findTopByOrderByIdDesc();
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Index;
 
 import java.time.LocalDate;
 
@@ -13,6 +12,9 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes ={
+        @jakarta.persistence.Index(name = "store_state_date_index", columnList = "date")
+})
 public class StoreState {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +23,6 @@ public class StoreState {
     @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
 
-    @Index(name = "store_state_date_index")
     private LocalDate date;
     private Boolean off;
     private String name;
