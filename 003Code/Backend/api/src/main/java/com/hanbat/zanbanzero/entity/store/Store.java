@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class Store {
+    public static final long FINAL_STORE_ID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

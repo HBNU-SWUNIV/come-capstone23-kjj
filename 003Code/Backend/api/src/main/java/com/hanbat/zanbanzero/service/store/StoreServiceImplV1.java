@@ -6,20 +6,22 @@ import com.hanbat.zanbanzero.dto.calculate.CalculateMenuForGraphDto;
 import com.hanbat.zanbanzero.dto.calculate.CalculatePreWeekDto;
 import com.hanbat.zanbanzero.dto.sbiz.WeeklyFoodPredictDto;
 import com.hanbat.zanbanzero.dto.store.*;
-import com.hanbat.zanbanzero.entity.calculate.Calculate;
-import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
-import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
+import com.hanbat.zanbanzero.entity.batch.BatchDate;
+import com.hanbat.zanbanzero.entity.batch.calculate.Calculate;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculateMenu;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculatePre;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
 import com.hanbat.zanbanzero.exception.exceptions.SameNameException;
 import com.hanbat.zanbanzero.exception.exceptions.StringToMapException;
 import com.hanbat.zanbanzero.exception.exceptions.UploadFileException;
-import com.hanbat.zanbanzero.repository.calculate.CalculateMenuRepository;
-import com.hanbat.zanbanzero.repository.calculate.CalculatePreRepository;
-import com.hanbat.zanbanzero.repository.calculate.CalculatePreWeekRepository;
-import com.hanbat.zanbanzero.repository.calculate.CalculateRepository;
-import com.hanbat.zanbanzero.repository.sbiz.SbizRepository;
+import com.hanbat.zanbanzero.repository.batch.BatchDateRepository;
+import com.hanbat.zanbanzero.repository.batch.calculate.CalculateMenuRepository;
+import com.hanbat.zanbanzero.repository.batch.calculate.CalculatePreRepository;
+import com.hanbat.zanbanzero.repository.batch.calculate.CalculatePreWeekRepository;
+import com.hanbat.zanbanzero.repository.batch.calculate.CalculateRepository;
+import com.hanbat.zanbanzero.repository.batch.predict.WeeklyFoodPredictRepository;
 import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.store.StoreStateRepository;
 import com.hanbat.zanbanzero.service.DateUtil;
@@ -32,6 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.*;
 
+import static com.hanbat.zanbanzero.entity.store.Store.FINAL_STORE_ID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,19 +46,18 @@ public class StoreServiceImplV1 implements StoreService {
     private final CalculateRepository calculateRepository;
     private final CalculateMenuRepository calculateMenuRepository;
     private final CalculatePreWeekRepository calculatePreWeekRepository;
+    private final BatchDateRepository batchDateRepository;
     private final CalculatePreRepository calculatePreRepository;
     private final StoreStateRepository storeStateRepository;
-    private final SbizRepository sbizRepository;
+    private final WeeklyFoodPredictRepository weeklyFoodPredictRepository;
     private final DateUtil dateUtil;
-
-    private static final Long FINAL_ID = 1L;
-
+    
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @Transactional(readOnly = true)
     public StoreDto isSetting() {
-        Store store = storeRepository.findById(FINAL_ID).orElse(null);
+        Store store = storeRepository.findById(FINAL_STORE_ID).orElse(null);
         if (store == null) return null;
         return StoreDto.from(store);
     }
@@ -62,29 +65,29 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public StoreDto getStoreData() throws CantFindByIdException {
-        return StoreDto.from(storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+        return StoreDto.from(storeRepository.findById(FINAL_STORE_ID).orElseThrow(() -> new CantFindByIdException("""
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
-                storeId : """, FINAL_ID)));
+                storeId : """, FINAL_STORE_ID)));
     }
 
     @Override
     @Transactional
     public StoreDto setSetting(StoreSettingDto dto) throws SameNameException {
-        if (storeRepository.existsById(FINAL_ID)) throw new SameNameException("""
+        if (storeRepository.existsById(FINAL_STORE_ID)) throw new SameNameException("""
                 이미 ID가 1인 Store 데이터가 존재합니다.
                 dto : """ + dto);
 
-        return StoreDto.from(storeRepository.save(Store.of(FINAL_ID, dto)));
+        return StoreDto.from(storeRepository.save(Store.of(FINAL_STORE_ID, dto)));
     }
 
     @Override
     @Transactional
     public void setStoreImage(MultipartFile file) throws CantFindByIdException, UploadFileException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+        Store store = storeRepository.findById(FINAL_STORE_ID).orElseThrow(() -> new CantFindByIdException("""
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
-                storeId : """, FINAL_ID));
+                storeId : """, FINAL_STORE_ID));
         String uploadDir = "img/store";
         if (store.getImage() == null) store.setImage(imageService.uploadImage(file, uploadDir));
         else imageService.updateImage(file, store.getImage());
@@ -111,10 +114,13 @@ public class StoreServiceImplV1 implements StoreService {
         int dataSize = 5;
         for (int i = 0; i < dataSize; i ++) {
             LocalDate targetDate = date.plusDays(i);
-            Calculate calculate = calculateRepository.findByDate(targetDate).orElse(null);
+            BatchDate batchDate = batchDateRepository.findByDate(targetDate).orElse(null);
 
-            if (calculate == null) result.add(StoreWeekendDto.newZeroDataStoreWeekendDto(targetDate));
-            else result.add(StoreWeekendDto.of(targetDate, calculate.getToday()));
+            if (batchDate == null) result.add(StoreWeekendDto.newZeroDataStoreWeekendDto(targetDate));
+            else {
+                Calculate calculate = calculateRepository.findByBatchDate(batchDate).orElse(Calculate.createZeroCalculateData());
+                result.add(StoreWeekendDto.of(targetDate, calculate.getToday()));
+            }
         }
 
         return result;
@@ -166,10 +172,10 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreTitle(StoreTitleDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+        Store store = storeRepository.findById(FINAL_STORE_ID).orElseThrow(() -> new CantFindByIdException("""
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
-                storeId : """, FINAL_ID));
+                storeId : """, FINAL_STORE_ID));
         store.setName(dto.name());
 
         return StoreDto.from(store);
@@ -178,10 +184,10 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional
     public StoreDto updateStoreInfo(StoreInfoDto dto) throws CantFindByIdException {
-        Store store = storeRepository.findById(FINAL_ID).orElseThrow(() -> new CantFindByIdException("""
+        Store store = storeRepository.findById(FINAL_STORE_ID).orElseThrow(() -> new CantFindByIdException("""
                 ID가 1인 Store 데이터가 존재하지 않습니다.
                 존재 여부를 확인해주세요.
-                storeId : """, FINAL_ID));
+                storeId : """, FINAL_STORE_ID));
         store.setInfo(dto.info());
 
         return StoreDto.from(store);
@@ -194,7 +200,7 @@ public class StoreServiceImplV1 implements StoreService {
 
         StoreState storeState = storeStateRepository.findByDate(date).orElse(null);
         if (storeState == null) {
-            StoreState newData = StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_ID), date, dto);
+            StoreState newData = StoreState.createNewOffStoreState(storeRepository.getReferenceById(FINAL_STORE_ID), date, dto);
             storeState = storeStateRepository.save(newData);
         }
         else storeState.setOff(dto);
@@ -270,6 +276,6 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public WeeklyFoodPredictDto getNextWeeksFood() {
-        return WeeklyFoodPredictDto.from(sbizRepository.findFirstByOrderByIdDesc());
+        return WeeklyFoodPredictDto.from(weeklyFoodPredictRepository.findFirstByOrderByIdDesc());
     }
 }

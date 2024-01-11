@@ -1,6 +1,6 @@
 package com.batch.batch.batch.order.handler;
 
-import com.batch.batch.tools.SlackTools;
+import com.batch.batch.tool.SlackTool;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,7 @@ import java.sql.Connection;
 @Component
 @RequiredArgsConstructor
 public class ConnectionHandlerV1 implements ConnectionHandler {
-    private final SlackTools slackTools;
+    private final SlackTool slackTool;
 
     @Override
     public void execute(Connection connection, ExceptionRunnable runnable) throws Exception {
@@ -19,7 +19,7 @@ public class ConnectionHandlerV1 implements ConnectionHandler {
             connection.commit();
         } catch (Exception e) {
             connection.rollback();
-            slackTools.sendSlackErrorMessage(e, runnable.getClass().getName());
+            slackTool.sendSlackErrorMessage(e, runnable.getClass().getName());
             throw e;
         } finally {
             connection.close();

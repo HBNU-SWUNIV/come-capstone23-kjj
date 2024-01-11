@@ -1,7 +1,8 @@
 package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.batch.order.task.predictweek.method.CreatePredictWeekMethod;
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.batch.order.task.start.method.StartTodayBatchMethod;
+import com.batch.batch.tool.DateTool;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.StepContribution;
@@ -14,12 +15,6 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 @Slf4j
@@ -28,10 +23,12 @@ public class CreatePredictWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final CreatePredictWeekMethod method;
+    private final StartTodayBatchMethod batchMethod;
 
-    public CreatePredictWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource, CreatePredictWeekMethod method) {
+    public CreatePredictWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource, CreatePredictWeekMethod method, StartTodayBatchMethod batchMethod) {
         this.dataSource = dataSource;
         this.method = method;
+        this.batchMethod = batchMethod;
     }
 
     // 이번 주 월~금 이용 인원 계산
@@ -43,7 +40,7 @@ public class CreatePredictWeekTasklet implements Tasklet {
         // key에는 요일(monday), value에는 user_id를 담는 ArrayList<Long>
         Map<String, LinkedList<Long>> doubleCheckMap = new HashMap<>();
         // day = {"monday", "tuesday", "wednesday", "thursday", "friday"}
-        String[] day = DateTools.getDayArray();
+        String[] day = DateTool.getDayArray();
         for (String d : day) {
             result.put(d, 0);
             doubleCheckMap.put(d, new LinkedList<>());
@@ -51,10 +48,11 @@ public class CreatePredictWeekTasklet implements Tasklet {
         try (Connection connection = dataSource.getConnection()) {
             method.countOrders(connection, result, doubleCheckMap);
             method.checkPolicy(connection, result, doubleCheckMap);
+            Long batchDateId = batchMethod.getTodayBatchDateId(connection);
 
-            String insertQuery = "insert into calculate_pre_week(date, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
+            String insertQuery = "insert into calculate_pre_week(batch_date_id, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?)";
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setString(1, DateTools.getDate());
+                insertStatement.setLong(1, batchDateId);
                 insertStatement.setInt(2, result.get(day[0]));
                 insertStatement.setInt(3, result.get(day[1]));
                 insertStatement.setInt(4, result.get(day[2]));

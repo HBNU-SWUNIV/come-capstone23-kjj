@@ -1,6 +1,8 @@
 package com.batch.batch.batch.order.task.order.method;
 
 import com.batch.batch.batch.order.task.order.CreateTodayOrder;
+import com.batch.batch.batch.order.task.start.method.StartTodayBatchMethod;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,11 +14,14 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CountOrdersByDateMethod {
+    private final StartTodayBatchMethod batchMethod;
     public Long initOrder(Connection connection, String date, int today, int sales) throws SQLException {
-        String initQuery = "insert into calculate(date, today, sales) value(?, ?, ?)";
+        Long batchDateId = batchMethod.getTodayBatchDateId(connection);
+        String initQuery = "insert into calculate(batch_date_id, today, sales) value(?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(initQuery)) {
-            statement.setString(1, date);
+            statement.setLong(1, batchDateId);
             statement.setInt(2, today);
             statement.setInt(3, sales);
             statement.executeUpdate();

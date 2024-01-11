@@ -1,7 +1,6 @@
 package com.batch.batch.batch.order.task.predictweek.method;
 
 import com.batch.batch.entity.FoodPredict;
-import com.batch.batch.tools.DateTools;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

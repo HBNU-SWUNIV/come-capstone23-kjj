@@ -1,6 +1,6 @@
-package com.hanbat.zanbanzero.repository.calculate;
+package com.hanbat.zanbanzero.repository.batch.calculate;
 
-import com.hanbat.zanbanzero.entity.calculate.CalculatePre;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculatePre;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CalculatePreRepository extends JpaRepository<CalculatePre, Long> {

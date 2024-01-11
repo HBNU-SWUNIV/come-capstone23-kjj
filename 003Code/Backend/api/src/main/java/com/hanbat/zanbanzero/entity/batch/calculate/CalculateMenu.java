@@ -1,4 +1,4 @@
-package com.hanbat.zanbanzero.entity.store;
+package com.hanbat.zanbanzero.entity.batch.calculate;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,14 +9,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreFood {
-
+public class CalculateMenu {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private Store store;
+    private Calculate calculate;
 
-    private String food;
+    private String menu;
+
+    private int count;
+    private int sales;
 }

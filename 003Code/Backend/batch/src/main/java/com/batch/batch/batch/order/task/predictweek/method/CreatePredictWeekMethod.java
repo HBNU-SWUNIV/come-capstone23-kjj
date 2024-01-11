@@ -1,6 +1,7 @@
 package com.batch.batch.batch.order.task.predictweek.method;
 
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.tool.DateTool;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -24,7 +24,7 @@ public class CreatePredictWeekMethod {
         LocalDate today = LocalDate.now();
         LocalDate thisMonday = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)); // 이번 주 월요일
         DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        for (String d : DateTools.getDayArray()) {
+        for (String d : DateTool.getDayArray()) {
             String formatted = thisMonday.format(format);
             int count = 0;
 
@@ -44,7 +44,7 @@ public class CreatePredictWeekMethod {
     }
 
     public void checkPolicy(Connection connection, Map<String, Integer> result, Map<String, LinkedList<Long>> doubleCheckMap) throws SQLException {
-        for (String d : DateTools.getDayArray()) {
+        for (String d : DateTool.getDayArray()) {
             String getQuery = "select u.id as id from user as u join user_policy as up on u.user_policy_id = up.id where up." + d + " = 1 and default_menu;";
             try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
                 try (ResultSet resultSet = statement.executeQuery()) {

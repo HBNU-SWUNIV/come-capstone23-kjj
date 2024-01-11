@@ -1,7 +1,7 @@
 package com.batch.batch.batch.order.service;
 
-import com.batch.batch.tools.DateTools;
-import com.batch.batch.tools.SlackTools;
+import com.batch.batch.tool.DateTool;
+import com.batch.batch.tool.SlackTool;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -22,39 +22,39 @@ public class OrderBatchRunner {
     private final Job firstJob;
     private final Job secondJob;
     private final Job predictWeekJob;
-    private final SlackTools slackTools;
+    private final SlackTool slackTool;
     private final OrderBatchMethod batchMethod;
 
 
-    public OrderBatchRunner(JobLauncher jobLauncher, JobParamService jobParamService, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("createPredictWeekJob") Job predictWeekJob, SlackTools slackTools, OrderBatchMethod batchMethod) {
+    public OrderBatchRunner(JobLauncher jobLauncher, JobParamService jobParamService, @Qualifier("countOrdersByDateJob") Job firstJob, @Qualifier("createPredictDataJob") Job secondJob, @Qualifier("createPredictWeekJob") Job predictWeekJob, SlackTool slackTool, OrderBatchMethod batchMethod) {
         this.jobLauncher = jobLauncher;
         this.jobParamService = jobParamService;
         this.firstJob = firstJob;
         this.secondJob = secondJob;
         this.predictWeekJob = predictWeekJob;
-        this.slackTools = slackTools;
+        this.slackTool = slackTool;
         this.batchMethod = batchMethod;
     }
 
 
     public void orderJob() throws SQLException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        String today = DateTools.getToday();
-        String date = DateTools.getDate();
+        String today = DateTool.getToday();
+        String date = DateTool.getDate();
         String firstJobName = "OrderJob";
         String secondJobName = "CalculateJob";
         boolean off = batchMethod.isOffDay(date);
         if (!today.equals("SATURDAY") && !today.equals("SUNDAY") && !off) {
             JobExecution run = jobLauncher.run(firstJob, jobParamService.getOrderJobsFirstParameters());
             if (run.getStatus() != BatchStatus.FAILED) {
-                slackTools.sendSlackMessage(firstJobName);
+                slackTool.sendSlackMessage(firstJobName);
                 if (!today.equals("FRIDAY")) {
                     JobExecution secondRun = jobLauncher.run(secondJob, jobParamService.getOrderJobsSecondJobParameters());
-                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage(secondJobName);
+                    if (secondRun.getStatus() != BatchStatus.FAILED) slackTool.sendSlackMessage(secondJobName);
                 }
-                else slackTools.sendSlackMessage("Friday! " + secondJobName + " is resting");
+                else slackTool.sendSlackMessage("Friday! " + secondJobName + " is resting");
             }
             else {
-                slackTools.sendSlackFailMessage(firstJobName, run.getStatus().name());
+                slackTool.sendSlackFailMessage(firstJobName, run.getStatus().name());
             }
         }
     }
@@ -62,7 +62,7 @@ public class OrderBatchRunner {
     public void predictWeekJob() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         String jobName = "PredictWeekJob";
         JobExecution run = jobLauncher.run(predictWeekJob, jobParamService.getPredictWeekJobParameters());
-        if (run.getStatus() != BatchStatus.FAILED) slackTools.sendSlackMessage(jobName);
-        else slackTools.sendSlackFailMessage(jobName, run.getStatus().name());
+        if (run.getStatus() != BatchStatus.FAILED) slackTool.sendSlackMessage(jobName);
+        else slackTool.sendSlackFailMessage(jobName, run.getStatus().name());
     }
 }

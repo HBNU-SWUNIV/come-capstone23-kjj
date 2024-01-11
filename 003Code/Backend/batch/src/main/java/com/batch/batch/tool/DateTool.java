@@ -1,4 +1,4 @@
-package com.batch.batch.tools;
+package com.batch.batch.tool;
 
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
@@ -8,8 +8,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateTools {
-    private DateTools() throws IllegalArgumentException {
+public class DateTool {
+    private DateTool() throws IllegalArgumentException {
         throw new IllegalArgumentException("DateTools can not init");
     }
 

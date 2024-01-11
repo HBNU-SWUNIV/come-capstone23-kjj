@@ -1,11 +1,11 @@
-package com.hanbat.zanbanzero.entity.calculate;
+package com.hanbat.zanbanzero.entity.batch.calculate;
 
+import com.hanbat.zanbanzero.entity.batch.BatchDate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -18,9 +18,11 @@ public class Calculate {
     private Long id;
 
     @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "calculate")
-    List<CalculateMenu> calculateMenus;
+    private List<CalculateMenu> calculateMenus;
 
-    private LocalDate date;
+    @OneToOne(fetch = FetchType.LAZY)
+    private BatchDate batchDate;
+
     private int today;
     private int sales;
 
@@ -28,7 +30,7 @@ public class Calculate {
         return new Calculate(
                 null,
                 null,
-                LocalDate.now(),
+                null,
                 0,
                 0
         );

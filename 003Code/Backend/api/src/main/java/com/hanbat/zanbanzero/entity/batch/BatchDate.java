@@ -1,27 +1,23 @@
-package com.hanbat.zanbanzero.entity.sbiz;
+package com.hanbat.zanbanzero.entity.batch;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Entity
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Revenue {
+public class BatchDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Timestamp date;
-
-    private Long monday;
-    private Long tuesday;
-    private Long wednesday;
-    private Long thursday;
-    private Long friday;
+    private LocalDate date;
 }

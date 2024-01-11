@@ -2,7 +2,7 @@ package com.batch.batch.batch.order.task.order;
 
 import com.batch.batch.entity.Order;
 import com.batch.batch.entity.UserPolicy;
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.tool.DateTool;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.configuration.annotation.StepScope;
@@ -77,7 +77,7 @@ public class CreateTodayOrder {
             boolean exists;
             Long userId = item.getId();
             Long defaultMenu = item.getDefaultMenu();
-            String date = DateTools.getDate();
+            String date = DateTool.getDate();
 
             try (Connection connection = dataSource.getConnection()) {
                 String findOrderQuery = "select * from orders where user_id = ? and order_date = ?";
@@ -117,6 +117,6 @@ public class CreateTodayOrder {
 
     @Bean
     public ItemWriter<Order> orderItemWriter() {
-        return chunk -> log.info(DateTools.getDate() + "(" + DateTools.getToday() + ") 오더 생성 완료 - 신규 Order : " + chunk.size());
+        return chunk -> log.info(DateTool.getDate() + "(" + DateTool.getToday() + ") 오더 생성 완료 - 신규 Order : " + chunk.size());
     }
 }

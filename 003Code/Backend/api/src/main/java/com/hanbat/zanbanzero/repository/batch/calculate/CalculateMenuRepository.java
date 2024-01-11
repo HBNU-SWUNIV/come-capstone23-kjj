@@ -1,6 +1,6 @@
-package com.hanbat.zanbanzero.repository.calculate;
+package com.hanbat.zanbanzero.repository.batch.calculate;
 
-import com.hanbat.zanbanzero.entity.calculate.CalculateMenu;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculateMenu;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
