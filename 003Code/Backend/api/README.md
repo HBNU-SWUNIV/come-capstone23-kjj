@@ -35,4 +35,7 @@
 ## [API](http://kjj.kjj.r-e.kr:8080/apis)
 
 - Path : /apis
-  <img src="https://github.com/HyeongMokJeong/Coding-Test/assets/94634916/3d7f649c-90c2-41a5-b5e1-a60c11ff3c42" />
+  <img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/334d8777-8cfb-465e-8834-e4a899c8507a" />
+
+## [ERD](https://www.erdcloud.com/d/iiGBzHyKQzPHEhkj4)
+<img src="https://github.com/HBNU-SWUNIV/come-capstone23-kjj/assets/94634916/ec81dec8-eec5-46e7-914a-8b3fb62db442" />
