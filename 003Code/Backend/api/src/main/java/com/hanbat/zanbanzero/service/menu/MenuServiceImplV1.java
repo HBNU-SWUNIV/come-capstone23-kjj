@@ -1,6 +1,5 @@
 package com.hanbat.zanbanzero.service.menu;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanbat.zanbanzero.dto.menu.*;
 import com.hanbat.zanbanzero.entity.menu.Menu;
 import com.hanbat.zanbanzero.entity.menu.MenuInfo;
@@ -13,6 +12,7 @@ import com.hanbat.zanbanzero.repository.menu.MenuFoodRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuInfoRepository;
 import com.hanbat.zanbanzero.repository.menu.MenuRepository;
 import com.hanbat.zanbanzero.repository.order.OrderRepository;
+import com.hanbat.zanbanzero.repository.store.StoreRepository;
 import com.hanbat.zanbanzero.repository.user.UserPolicyRepository;
 import com.hanbat.zanbanzero.service.image.ImageService;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import static com.hanbat.zanbanzero.entity.store.Store.FINAL_STORE_ID;
+
 @Service
 @RequiredArgsConstructor
 public class MenuServiceImplV1 implements MenuService{
+    private final StoreRepository storeRepository;
     private final ImageService menuImageService;
     private final UserPolicyRepository userPolicyRepository;
     private final MenuRepository menuRepository;
@@ -41,8 +44,6 @@ public class MenuServiceImplV1 implements MenuService{
 
     public static final String ALL_FOODS_CACHE_KEY = "2";
     public static final String ALL_FOODS_CACHE_VALUE = "AllFoods";
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     @Transactional(readOnly = true)
@@ -76,7 +77,7 @@ public class MenuServiceImplV1 implements MenuService{
                 dto : """ + dto);
 
         MenuInfo menuInfo = menuInfoRepository.save(MenuInfo.from(dto));
-        Menu menu = menuRepository.save(Menu.of(dto, menuInfo, filePath));
+        Menu menu = menuRepository.save(Menu.of(storeRepository.getReferenceById(FINAL_STORE_ID), dto, menuInfo, filePath));
         return MenuDto.from(menu);
     }
 

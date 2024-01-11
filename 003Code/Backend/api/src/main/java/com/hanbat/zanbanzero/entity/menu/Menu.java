@@ -1,6 +1,7 @@
 package com.hanbat.zanbanzero.entity.menu;
 
 import com.hanbat.zanbanzero.dto.menu.MenuUpdateDto;
+import com.hanbat.zanbanzero.entity.store.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +11,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes ={
+        @jakarta.persistence.Index(name = "menu_name_index", columnList = "name")
+})
 public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Store store;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private MenuInfo menuInfo;
@@ -22,7 +29,6 @@ public class Menu {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private MenuFood menuFood;
 
-    @org.hibernate.annotations.Index(name = "menu_name_index")
     private String name;
     private int cost;
     private String image;
@@ -41,9 +47,10 @@ public class Menu {
         }
     }
 
-    public static Menu of(MenuUpdateDto dto, MenuInfo menuInfo, String filePath) {
+    public static Menu of(Store store, MenuUpdateDto dto, MenuInfo menuInfo, String filePath) {
         return new Menu(
                 null,
+                store,
                 menuInfo,
                 null,
                 dto.name(),
@@ -72,8 +79,5 @@ public class Menu {
     }
     public void notUsePlanner() {
         usePlanner = false;
-    }
-    public void setMenuInfo(MenuInfo menuInfo) {
-        this.menuInfo = menuInfo;
     }
 }

@@ -1,14 +1,11 @@
 package com.hanbat.zanbanzero.entity.planner;
 
 import com.hanbat.zanbanzero.dto.planner.PlannerDto;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.hanbat.zanbanzero.entity.store.Store;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Index;
 
 import java.time.LocalDate;
 
@@ -16,19 +13,25 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Table(indexes ={
+        @jakarta.persistence.Index(name = "planner_date_index", columnList = "date")
+})
 public class Planner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Index(name = "planner_date_index")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Store store;
+
     private LocalDate date;
     private String menus;
 
-    public static Planner of(PlannerDto dto, LocalDate date){
+    public static Planner of(Store store, PlannerDto dto, LocalDate date){
         return new Planner(
                 null,
+                store,
                 date,
                 dto.menus()
         );

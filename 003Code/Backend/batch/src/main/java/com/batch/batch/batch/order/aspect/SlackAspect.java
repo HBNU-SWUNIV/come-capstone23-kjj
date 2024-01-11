@@ -1,6 +1,6 @@
 package com.batch.batch.batch.order.aspect;
 
-import com.batch.batch.tools.SlackTools;
+import com.batch.batch.tool.SlackTool;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SlackAspect {
 
-    private final SlackTools slackTools;
+    private final SlackTool slackTool;
     private final ThreadLocal<Boolean> taskFlag = ThreadLocal.withInitial(() -> false);
 
     @Pointcut("execution(* com.batch.batch.batch.order.task..*.*(..))")
@@ -24,7 +24,7 @@ public class SlackAspect {
         if (taskFlag.get()) taskFlag.remove();
         else {
             taskFlag.set(true);
-            slackTools.sendSlackErrorMessage(ex, "[" + joinPoint.getTarget().getClass().getSimpleName() + "]" + " : "+ joinPoint.getSignature().getName());
+            slackTool.sendSlackErrorMessage(ex, "[" + joinPoint.getTarget().getClass().getSimpleName() + "]" + " : "+ joinPoint.getSignature().getName());
         }
         throw ex;
     }

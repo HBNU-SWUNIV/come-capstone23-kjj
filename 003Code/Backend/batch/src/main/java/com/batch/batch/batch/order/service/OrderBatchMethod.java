@@ -1,6 +1,6 @@
 package com.batch.batch.batch.order.service;
 
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.tool.DateTool;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
@@ -44,7 +44,7 @@ public class OrderBatchMethod {
     private Long getCalculateId(Connection connection) throws SQLException{
         String getQuery = "select id from calculate where date = ?;";
         try (PreparedStatement statement = connection.prepareStatement(getQuery)) {
-            statement.setString(1, DateTools.getDate());
+            statement.setString(1, DateTool.getDate());
             try (ResultSet resultSet = statement.executeQuery()) {
                 resultSet.next();
                 return resultSet.getLong("id");

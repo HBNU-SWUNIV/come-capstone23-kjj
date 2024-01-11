@@ -1,15 +1,15 @@
-package com.hanbat.zanbanzero.repository.calculate;
+package com.hanbat.zanbanzero.repository.batch.calculate;
 
-import com.hanbat.zanbanzero.entity.calculate.Calculate;
+import com.hanbat.zanbanzero.entity.batch.BatchDate;
+import com.hanbat.zanbanzero.entity.batch.calculate.Calculate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface CalculateRepository extends JpaRepository<Calculate, Long> {
-    Optional<Calculate> findByDate(LocalDate todayDate);
+    Optional<Calculate> findByBatchDate(BatchDate batchDate);
 
     @Query("SELECT c.id FROM Calculate c ORDER BY c.id DESC LIMIT 5")
     List<Long> findTop5IdOrderByIdDesc();

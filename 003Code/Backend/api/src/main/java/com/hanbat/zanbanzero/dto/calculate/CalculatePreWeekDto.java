@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.dto.calculate;
 
-import com.hanbat.zanbanzero.entity.calculate.CalculatePreWeek;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculatePreWeek;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,7 @@ public record CalculatePreWeekDto(LocalDate date, int monday, int tuesday, int w
 
     public static CalculatePreWeekDto from(CalculatePreWeek data) {
         return new CalculatePreWeekDto(
-                data.getDate(),
+                data.getBatchDate().getDate(),
                 data.getMonday(),
                 data.getTuesday(),
                 data.getWednesday(),

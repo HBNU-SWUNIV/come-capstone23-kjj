@@ -1,8 +1,9 @@
 package com.batch.batch.batch.order.task.predictweek;
 
 import com.batch.batch.batch.order.task.predictweek.method.CreatePredictUserWeekMethod;
+import com.batch.batch.batch.order.task.start.method.StartTodayBatchMethod;
 import com.batch.batch.entity.FoodPredict;
-import com.batch.batch.tools.DateTools;
+import com.batch.batch.tool.DateTool;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.batch.core.StepContribution;
@@ -23,10 +24,12 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
 
     private final DataSource dataSource;
     private final CreatePredictUserWeekMethod method;
+    private final StartTodayBatchMethod batchMethod;
 
-    public CreatePredictUserWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource, CreatePredictUserWeekMethod method) {
+    public CreatePredictUserWeekTasklet(@Qualifier("dataDataSource") DataSource dataSource, CreatePredictUserWeekMethod method, StartTodayBatchMethod batchMethod) {
         this.dataSource = dataSource;
         this.method = method;
+        this.batchMethod = batchMethod;
     }
 
     // 매출액 기반 월~금 이용자 수, 전체 인원 중 이용자 비율 기반 월~금 이용자 수
@@ -39,9 +42,11 @@ public class CreatePredictUserWeekTasklet implements Tasklet {
             FoodPredict entire = method.getEntire(connection, entireUser, menuFood);
             FoodPredict part = method.getPart(connection, entireUser, menuFood);
 
-            String insertQuery = "insert into weekly_food_predict(date, entire_monday, entire_tuesday, entire_wednesday, entire_thursday, entire_friday, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            Long batchDateId = batchMethod.getTodayBatchDateId(connection);
+
+            String insertQuery = "insert into weekly_food_predict(batch_date_id, entire_monday, entire_tuesday, entire_wednesday, entire_thursday, entire_friday, monday, tuesday, wednesday, thursday, friday) values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             try (PreparedStatement insertStatement = connection.prepareStatement(insertQuery)) {
-                insertStatement.setString(1, DateTools.getDate());
+                insertStatement.setLong(1, batchDateId);
                 insertStatement.setLong(2, Math.round(entire.getMonday()));
                 insertStatement.setLong(3, Math.round(entire.getTuesday()));
                 insertStatement.setLong(4, Math.round(entire.getWednesday()));

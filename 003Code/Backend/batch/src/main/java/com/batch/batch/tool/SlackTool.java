@@ -1,4 +1,4 @@
-package com.batch.batch.tools;
+package com.batch.batch.tool;
 
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
@@ -14,7 +14,7 @@ import static com.slack.api.webhook.WebhookPayloads.payload;
 
 @Slf4j
 @Component
-public class SlackTools {
+public class SlackTool {
 
     @Value("${slack.webhook.url}") private String slackUrl;
     private final Slack slack = Slack.getInstance();
@@ -49,7 +49,7 @@ public class SlackTools {
     }
 
     private Attachment generateSlackAttachment(String jobName) {
-        String time = DateTools.getDateAndTime();
+        String time = DateTool.getDateAndTime();
         return Attachment.builder()
                 .color(SUCCESS_COLOR)
                 .title("[Batch] " + time + " 성공 로그")
@@ -61,7 +61,7 @@ public class SlackTools {
     }
 
     private Attachment generateSlackAttachment(String jobName, String jobState) {
-        String time = DateTools.getDateAndTime();
+        String time = DateTool.getDateAndTime();
         return Attachment.builder()
                 .color(FAIL_COLOR)
                 .title("[Batch] " + time + " 실패 로그")
@@ -74,7 +74,7 @@ public class SlackTools {
     }
 
     private Attachment generateSlackAttachment(Exception e) {
-        String time = DateTools.getDateAndTime();
+        String time = DateTool.getDateAndTime();
         return Attachment.builder()
                 .color(FAIL_COLOR)
                 .title("[Batch] " + time + " 발생 에러 로그")

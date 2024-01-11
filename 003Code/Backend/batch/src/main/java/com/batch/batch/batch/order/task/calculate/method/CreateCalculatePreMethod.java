@@ -1,7 +1,9 @@
 package com.batch.batch.batch.order.task.calculate.method;
 
+import com.batch.batch.batch.order.task.start.method.StartTodayBatchMethod;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -16,13 +18,16 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class CreateCalculatePreMethod {
+    private final StartTodayBatchMethod batchMethod;
     public Long calculateCheck(Connection connection, String today, String day) throws SQLException {
         // 만약 일요일이여서 월요일 calculate 데이터가 없다면 생성
         if (day.equals("monday")) {
-            String query = "insert into calculate(date, today, sales) values(?, ?, ?)";
+            Long batchDateId = batchMethod.getTodayBatchDateId(connection);
+            String query = "insert into calculate(batch_date_id, today, sales) values(?, ?, ?)";
             try (PreparedStatement statement = connection.prepareStatement(query)) {
-                statement.setString(1, today);
+                statement.setLong(1, batchDateId);
                 statement.setInt(2, 0);
                 statement.setInt(3, 0);
                 statement.executeUpdate();

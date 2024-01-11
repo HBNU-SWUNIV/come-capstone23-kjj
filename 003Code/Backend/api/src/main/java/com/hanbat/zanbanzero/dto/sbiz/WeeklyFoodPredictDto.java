@@ -1,6 +1,6 @@
 package com.hanbat.zanbanzero.dto.sbiz;
 
-import com.hanbat.zanbanzero.entity.sbiz.WeeklyFoodPredict;
+import com.hanbat.zanbanzero.entity.batch.predict.WeeklyFoodPredict;
 
 import java.time.LocalDate;
 
@@ -12,7 +12,7 @@ public record WeeklyFoodPredictDto(
 
     public static WeeklyFoodPredictDto from(WeeklyFoodPredict predict) {
         return new WeeklyFoodPredictDto(
-                predict.getDate(),
+                predict.getBatchDate().getDate(),
                 new EntireData(
                         predict.getEntireMonday(),
                         predict.getEntireTuesday(),
