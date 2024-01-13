@@ -10,6 +10,8 @@ import com.hanbat.zanbanzero.entity.batch.BatchDate;
 import com.hanbat.zanbanzero.entity.batch.calculate.Calculate;
 import com.hanbat.zanbanzero.entity.batch.calculate.CalculateMenu;
 import com.hanbat.zanbanzero.entity.batch.calculate.CalculatePre;
+import com.hanbat.zanbanzero.entity.batch.calculate.CalculatePreWeek;
+import com.hanbat.zanbanzero.entity.batch.predict.WeeklyFoodPredict;
 import com.hanbat.zanbanzero.entity.store.Store;
 import com.hanbat.zanbanzero.entity.store.StoreState;
 import com.hanbat.zanbanzero.exception.exceptions.CantFindByIdException;
@@ -221,7 +223,8 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public StorePreDto getCalculatePreUser() {
-        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc()
+                .orElse(CalculatePre.createZeroDataCalculatePre());
         Calculate calculate = calculateRepository.findTopByOrderByIdDesc().orElse(Calculate.createZeroCalculateData());
 
         return StorePreDto.from(List.of(calculate.getToday(), calculatePre.getPredictUser()));
@@ -230,7 +233,8 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Integer> getCalculatePreFood() throws StringToMapException, CantFindByIdException {
-        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc()
+                .orElse(CalculatePre.createZeroDataCalculatePre());
 
         try {
             return objectMapper.readValue(calculatePre.getPredictFood(), HashMap.class);
@@ -250,7 +254,8 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public Map<String, Integer> getCalculatePreMenu() throws StringToMapException, CantFindByIdException {
-        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc();
+        CalculatePre calculatePre = calculatePreRepository.findTopByOrderByIdDesc()
+                .orElse(CalculatePre.createZeroDataCalculatePre());
 
         try {
             return objectMapper.readValue(calculatePre.getPredictMenu(), HashMap.class);
@@ -270,12 +275,16 @@ public class StoreServiceImplV1 implements StoreService {
     @Override
     @Transactional(readOnly = true)
     public CalculatePreWeekDto getNextWeeksUser() {
-        return CalculatePreWeekDto.from(calculatePreWeekRepository.findFirstByOrderByIdDesc());
+        CalculatePreWeek calculatePreWeek = calculatePreWeekRepository.findFirstByOrderByIdDesc()
+                .orElse(CalculatePreWeek.createZeroCalculatePreWeek());
+        return CalculatePreWeekDto.from(calculatePreWeek);
     }
 
     @Override
     @Transactional(readOnly = true)
     public WeeklyFoodPredictDto getNextWeeksFood() {
-        return WeeklyFoodPredictDto.from(weeklyFoodPredictRepository.findFirstByOrderByIdDesc());
+        WeeklyFoodPredict weeklyFoodPredict = weeklyFoodPredictRepository.findFirstByOrderByIdDesc()
+                .orElse(WeeklyFoodPredict.createZeroWeeklyFoodPredict());
+        return WeeklyFoodPredictDto.from(weeklyFoodPredict);
     }
 }

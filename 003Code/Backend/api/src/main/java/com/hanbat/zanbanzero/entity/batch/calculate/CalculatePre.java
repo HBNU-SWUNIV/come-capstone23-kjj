@@ -21,4 +21,14 @@ public class CalculatePre {
     @Column(columnDefinition = "TEXT")
     private String predictFood;
     private String predictMenu;
+
+    public static CalculatePre createZeroDataCalculatePre() {
+        return new CalculatePre(
+                null,
+                null,
+                0,
+                null,
+                null
+        );
+    }
 }

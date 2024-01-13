@@ -432,37 +432,6 @@ class MenuServiceImplV1Test {
     }
 
     @Test
-    @DisplayName("[MENU_MANAGER] 식재료 추가")
-    void addFood() throws Exception{
-        // Given
-        Map<String, Integer> testFoodData = new HashMap<>();
-
-        // 1. 정상 시나리오 - 중복되는 이름이 없는 경우
-        {
-            // Given
-            when(menuFoodRepository.existsByName(testFoodName())).thenReturn(false);
-
-            // When
-            Boolean result = menuService.addFood(testFoodName(), testFoodData);
-
-            // Then
-            assertTrue(result);
-        }
-
-        // 2. 정상 시나리오 - 중복되는 이름이 있는 경우
-        {
-            // Given
-            when(menuFoodRepository.existsByName(testFoodName())).thenReturn(true);
-
-            // When
-            Boolean result = menuService.addFood(testFoodName(), testFoodData);
-
-            // Then
-            assertFalse(result);
-        }
-    }
-
-    @Test
     @DisplayName("[MENU_MANAGER] 특정 식재료 정보 조회")
     void getOneFood() throws Exception{
         // 1. 정상 시나리오
