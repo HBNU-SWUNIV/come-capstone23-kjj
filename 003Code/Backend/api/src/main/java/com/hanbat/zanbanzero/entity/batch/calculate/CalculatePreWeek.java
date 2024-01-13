@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -22,4 +24,16 @@ public class CalculatePreWeek {
     private int wednesday;
     private int thursday;
     private int friday;
+
+    public static CalculatePreWeek createZeroCalculatePreWeek() {
+        return new CalculatePreWeek(
+                null,
+                new BatchDate(null, LocalDate.now()),
+                0,
+                0,
+                0,
+                0,
+                0
+        );
+    }
 }

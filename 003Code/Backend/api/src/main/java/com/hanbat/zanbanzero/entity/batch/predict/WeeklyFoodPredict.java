@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @AllArgsConstructor
@@ -29,4 +31,21 @@ public class WeeklyFoodPredict {
     private long wednesday;
     private long thursday;
     private long friday;
+
+    public static WeeklyFoodPredict createZeroWeeklyFoodPredict() {
+        return new WeeklyFoodPredict(
+                null,
+                new BatchDate(null, LocalDate.now()),
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+        );
+    }
 }

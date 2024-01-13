@@ -1,9 +1,6 @@
 package com.hanbat.zanbanzero.entity.leftover;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +11,9 @@ import java.time.LocalDate;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(indexes ={
+        @jakarta.persistence.Index(name = "leftover_pre_date_index", columnList = "date")
+})
 public class LeftoverPre {
 
     @Id
